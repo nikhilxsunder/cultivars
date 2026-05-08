@@ -1,0 +1,60 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "cultivars"
+version = "0.0.1"
+description = "A modern computing library in python for providing vector autoregressions and similar economic models."
+authors = [
+    "Nikhil Sunder <nsunder724@gmail.com>"
+]
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/nikhilxsunder/cultivars"
+documentation = "https://nikhilxsunder.github.io/cultivars/"
+packages = [{include = "cultivars", from = "src"}]
+include = ["src/cultivars/py.typed"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Topic :: Office/Business :: Financial :: Investment"
+]
+keywords = [
+]
+
+[tool.poetry.dependencies]
+
+[tool.poetry.group.dev.dependencies]
+
+[tool.poetry.extras]
+
+[tool.mypy]
+files = "cultivars"
+ignore_missing_imports = true
+
+[tool.pylint]
+max-line-length = 200
+ignore-patterns = [".*\\.pyi$"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "docs"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=term-missing --cov-report=html"
+testpaths = ["tests"]
+pythonpath = "src"
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
