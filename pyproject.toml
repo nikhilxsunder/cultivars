@@ -1,44 +1,115 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "cultivars"
 version = "0.0.1"
 description = "A modern computing library in python for providing vector autoregressions and similar economic models."
-authors = [
-    "Nikhil Sunder <nsunder724@gmail.com>"
-]
 readme = "README.md"
-license = "MIT"
-repository = "https://github.com/nikhilxsunder/cultivars"
-documentation = "https://nikhilxsunder.github.io/cultivars/"
-packages = [{include = "cultivars", from = "src"}]
-include = ["src/cultivars/py.typed"]
+license = { text = "MIT" }
+authors = [
+    { name = "Nikhil Sunder", email = "nsunder724@gmail.com" }
+]
+requires-python = ">=3.10,<4.0"
+keywords = [
+    "vector autoregression", "VAR", "econometrics", "time series", "economic modeling", "financial modeling"
+]
 classifiers = [
-    "Programming Language :: Python :: 3",
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Financial and Insurance Industry",
     "Topic :: Office/Business :: Financial :: Investment"
 ]
-keywords = [
+dependencies = [
+    "numpy"
 ]
 
-[tool.poetry.dependencies]
+[project.optional-dependencies]
 
-[tool.poetry.group.dev.dependencies]
+[project.urls]
+Repository    = "https://github.com/nikhilxsunder/cultivars"
+Documentation = "https://nikhilxsunder.github.io/cultivars/"
 
-[tool.poetry.extras]
+# ── Composable dependency groups ─────────────────────────────────────────────
+# Each group is independently installable; `dev` composes all of them.
+# CI jobs use the minimal group they need (e.g. --group test for test runs).
+
+[dependency-groups]
+types = []
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-asyncio",
+    "pytest-mock",
+    "hypothesis",
+    { include-group = "types" },
+]
+lint = [
+    "ruff",
+    "mypy",
+    "bandit",
+    "pip-audit",
+    { include-group = "types" },
+]
+docs = [
+    "sphinx",
+    "pydata-sphinx-theme",
+    "sphinx-design",
+    "sphinx-autodoc-typehints",
+    "myst-parser",
+    "linkify-it-py",
+    "sphinx-sitemap",
+    "sphinxext-opengraph",
+    "matplotlib",
+]
+notebooks = [
+    "ipykernel",
+    "notebook",
+]
+extras = []
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "docs" },
+    { include-group = "notebooks" },
+    { include-group = "extras" },
+]
+
+# ── uv config ────────────────────────────────────────────────────────────────
+
+[tool.uv]
+managed = true
+
+# ── build ────────────────────────────────────────────────────────────────────
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cultivars"]
+
+# ── tool configs ─────────────────────────────────────────────────────────────
 
 [tool.mypy]
-files = "cultivars"
+files = "src/cultivars"
 ignore_missing_imports = true
 
-[tool.pylint]
-max-line-length = 200
-ignore-patterns = [".*\\.pyi$"]
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "ANN", "D"]
+ignore = ["D203", "D213"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.bandit]
 exclude_dirs = ["tests", "docs"]
@@ -50,6 +121,12 @@ pythonpath = "src"
 
 [tool.coverage.run]
 source = ["src"]
+omit = [
+    "tests/*",
+    "*/tests/*",
+    "*_test.py",
+]
+
 
 [tool.coverage.report]
 exclude_lines = [
@@ -57,4 +134,5 @@ exclude_lines = [
     "def __repr__",
     "raise AssertionError",
     "raise NotImplementedError",
+    '@(typing\.)?overload',
 ]
