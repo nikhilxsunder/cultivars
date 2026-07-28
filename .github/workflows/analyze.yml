@@ -1,0 +1,38 @@
+name: Analyze
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: uv sync --group lint
+
+      - name: Run ruff (Linting)
+        continue-on-error: true
+        run: uv run ruff check --exclude "*.pyi" src/fedfred/
+
+      - name: Run mypy (Type Checking)
+        continue-on-error: true
+        run: uv run mypy src/fedfred/
+
+      - name: Run Bandit (Security Check)
+        continue-on-error: true
+        run: uv run bandit -r src/fedfred/
+
+      - name: Run pip-audit (Dependency Security Check)
+        continue-on-error: true
+        run: uv run pip-audit

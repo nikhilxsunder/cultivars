@@ -1,0 +1,60 @@
+name: Reports
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+
+    env:
+      CULTIVARS_SRC: "src/cultivars"
+      CULTIVARS_TESTS: "tests"
+      REPORT_DIR: "reports/"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: uv sync --group lint
+
+      - name: Create report directory
+        run: mkdir -p "${REPORT_DIR}"
+
+      - name: Pytest with coverage
+        run: |
+          uv run pytest \
+            --cov="${CULTIVARS_SRC}" \
+            --cov-report=term-missing \
+            --cov-report=xml:"${REPORT_DIR}/coverage.xml"
+
+      - name: Ruff
+        run: |
+          uv run ruff check "${CULTIVARS_SRC}" "${CULTIVARS_TESTS}" \
+            --output-format=concise \
+            > "${REPORT_DIR}/ruff.txt" || true
+
+      - name: MyPy
+        run: |
+          uv run mypy "${CULTIVARS_SRC}" "${CULTIVARS_TESTS}" \
+            --no-pretty \
+            --show-column-numbers \
+            --show-error-codes \
+            > "${REPORT_DIR}/mypy.txt" || true
+
+      - name: Bandit
+        run: |
+          uv run bandit -r "${CULTIVARS_SRC}" \
+            -f json \
+            -o "${REPORT_DIR}/bandit.json" || true
