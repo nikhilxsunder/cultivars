@@ -59,8 +59,8 @@ import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
 
-from cultivars.exceptions import DimensionError, NumericalError
-from cultivars.state_space.base import FilterResult, SmootherResult, StateSpaceModel
+from ..exceptions import DimensionError, NumericalError
+from ..state_space.base import FilterResult, SmootherResult, StateSpaceModel
 
 _LOG_2PI = float(np.log(2.0 * np.pi))
 
