@@ -62,8 +62,6 @@ import scipy.linalg as sla
 from ..exceptions import DimensionError, NumericalError
 from ..state_space.base import FilterResult, SmootherResult, StateSpaceModel
 
-_LOG_2PI = float(np.log(2.0 * np.pi))
-
 
 class _ForwardPass(NamedTuple):
     predicted_state: npt.NDArray[np.float64]

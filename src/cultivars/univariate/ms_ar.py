@@ -74,10 +74,6 @@ from ..state_space.regime_switching import (
 )
 from ._base import InformationCriteria, information_criteria
 
-_SCHEMA_VERSION = 1
-_LOG_2PI = float(np.log(2.0 * np.pi))
-
-
 # --------------------------------------------------------------------------
 # Internal EM machinery
 # --------------------------------------------------------------------------

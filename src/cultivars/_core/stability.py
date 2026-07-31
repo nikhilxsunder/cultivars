@@ -36,7 +36,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from cultivars.core.companion import companion_matrix
+from cultivars._core.companion import companion_matrix
 from cultivars.exceptions import NumericalError
 
 

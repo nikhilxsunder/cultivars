@@ -222,3 +222,77 @@ def undifference(
         prefix = np.asarray(anchor, dtype=np.float64)[np.newaxis, ...]
         cur = np.concatenate([prefix, anchor + cumulative], axis=0)
     return cur
+
+
+def fractional_difference_weights(d: float, length: int) -> npt.NDArray[np.float64]:
+    """Return the first ``length`` coefficients of the operator ``(1 - L)**d``.
+
+    The coefficients ``b_k`` satisfy the recursion ``b_0 = 1`` and
+    ``b_k = b_{k-1} * (k - 1 - d) / k``, i.e. ``b_k = Gamma(k - d) /
+    (Gamma(-d) Gamma(k + 1))``. For ``d > 0`` they are negative for ``k >= 1``
+    and decay like ``k**(-d-1)`` — the slow decay that encodes long memory.
+
+    Args:
+        d: The fractional differencing order.
+        length: Number of coefficients to return (>= 1).
+
+    Returns:
+        The coefficients ``[b_0, ..., b_{length-1}]``.
+
+    Raises:
+        SpecificationError: If ``length < 1``.
+
+    Example:
+        >>> np.round(fractional_difference_weights(0.5, 4), 4)
+        array([ 1.    , -0.5   , -0.125 , -0.0625])
+    """
+    if length < 1:
+        raise SpecificationError(f"length must be >= 1; got {length}.")
+    weights = np.empty(length, dtype=np.float64)
+    weights[0] = 1.0
+    for k in range(1, length):
+        weights[k] = weights[k - 1] * (k - 1 - d) / k
+    return weights
+
+
+def fractional_difference(
+    y: npt.ArrayLike, d: float, *, truncation: int | None = None
+) -> npt.NDArray[np.float64]:
+    """Apply the truncated fractional difference ``(1 - L)**d`` to a series.
+
+    Computes ``w_t = sum_{k=0}^{min(t, truncation-1)} b_k(d) y_{t-k}``, using all
+    available history at each ``t`` (the series is not shortened). At the sample
+    start the filter is necessarily truncated, which induces a transient that is
+    conditioned on in the same way conditional-sum-of-squares ARMA conditions on
+    its first observations.
+
+    Args:
+        y: Input series (1-D array-like).
+        d: Fractional differencing order.
+        truncation: Maximum filter length; defaults to the series length.
+
+    Returns:
+        The fractionally differenced series, same length as ``y``.
+
+    Raises:
+        DimensionError: If ``y`` is not one-dimensional.
+        NumericalError: If ``y`` contains non-finite values.
+        SpecificationError: If ``truncation < 1``.
+
+    Example:
+        >>> y = np.array([1.0, 2.0, 3.0, 4.0])
+        >>> np.round(fractional_difference(y, 1.0), 4)   # integer diff of a ramp
+        array([1., 1., 1., 1.])
+    """
+    arr = np.asarray(y, dtype=np.float64)
+    if arr.ndim != 1:
+        raise DimensionError(f"y must be one-dimensional; got shape {arr.shape}.")
+    if not np.all(np.isfinite(arr)):
+        raise NumericalError("y contains non-finite values.")
+    n = arr.shape[0]
+    m = n if truncation is None else int(truncation)
+    if m < 1:
+        raise SpecificationError(f"truncation must be >= 1; got {m}.")
+    weights = fractional_difference_weights(d, min(m, n))
+    # Full linear convolution; the first n entries are the causal filter output.
+    return np.convolve(arr, weights)[:n]

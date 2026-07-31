@@ -52,15 +52,14 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
 
-from ..core.lag import LagPolynomial
-from ..core.stability import StabilityResult, assess_stability
-from ..core.transforms import difference, seasonal_difference
+from .._core.lag import LagPolynomial
+from .._core.stability import StabilityResult, assess_stability
+from .._core._transforms import difference, seasonal_difference
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ..state_space.linear_gaussian import LinearGaussianStateSpace
 from .. univariate._base import (
@@ -69,10 +68,6 @@ from .. univariate._base import (
     information_criteria,
     pacf_to_coeffs,
 )
-
-_SCHEMA_VERSION = 1
-Trend = Literal["n", "c", "ct"]
-
 
 # --------------------------------------------------------------------------
 # Polynomial expansion (multiplicative seasonal <-> expanded coefficients)

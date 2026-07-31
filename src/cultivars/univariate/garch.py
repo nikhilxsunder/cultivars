@@ -31,11 +31,6 @@ from scipy.optimize import minimize
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ..univariate._base import InformationCriteria, information_criteria
 
-_SCHEMA_VERSION = 1
-_LOG_2PI = float(np.log(2.0 * np.pi))
-_SQRT_2_PI = float(np.sqrt(2.0 / np.pi))
-Vol = Literal["GARCH", "GJR", "EGARCH", "FIGARCH"]
-
 
 def _backcast(resid: npt.NDArray[np.float64]) -> float:
     tau = min(75, resid.shape[0])

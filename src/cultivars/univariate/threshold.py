@@ -42,7 +42,6 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
@@ -50,10 +49,6 @@ from scipy.optimize import minimize
 
 from cultivars.exceptions import DimensionError, NumericalError, SpecificationError
 from cultivars.univariate._base import InformationCriteria, information_criteria
-
-_SCHEMA_VERSION = 1
-_LOG_2PI = float(np.log(2.0 * np.pi))
-Transition = Literal["logistic", "exponential"]
 
 
 def _ols(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> tuple[npt.NDArray[np.float64], float]:

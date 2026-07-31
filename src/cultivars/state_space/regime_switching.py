@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 """Discrete Markov-switching inference: the Hamilton filter and Kim smoother.
 
 Regime-switching models in cultivars separate two concerns:
@@ -68,10 +67,6 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
-
-_ROW_SUM_ATOL = 1e-6
-_TINY = 1e-300
-
 
 # --------------------------------------------------------------------------
 # Transition-matrix utilities

@@ -47,59 +47,15 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
 
-from ..core.companion import companion_matrix
-from ..core.stability import StabilityResult, assess_stability
+from .._core.companion import companion_matrix
+from .._core.stability import StabilityResult, assess_stability
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ..state_space.linear_gaussian import LinearGaussianStateSpace
-
-_SCHEMA_VERSION = 1
-_LOG_2PI = float(np.log(2.0 * np.pi))
-
-Method = Literal["css", "exact"]
-Trend = Literal["n", "c", "ct"]
-
-
-# --------------------------------------------------------------------------
-# Stationarity-preserving reparameterization (Monahan 1984 / Durbin-Levinson)
-# --------------------------------------------------------------------------
-
-def _pacf_to_ar(pacf: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-    """Map partial autocorrelations in (-1, 1) to stationary AR coefficients."""
-    p = pacf.shape[0]
-    phi = np.zeros(p, dtype=np.float64)
-    for k in range(p):
-        rk = pacf[k]
-        new = phi.copy()
-        new[k] = rk
-        for j in range(k):
-            new[j] = phi[j] - rk * phi[k - 1 - j]
-        phi = new
-    return phi
-
-
-def _ar_to_pacf(phi: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-    """Inverse of :func:`_pacf_to_ar` (reverse Durbin-Levinson)."""
-    p = phi.shape[0]
-    work = phi.astype(np.float64).copy()
-    pacf = np.zeros(p, dtype=np.float64)
-    for k in range(p - 1, -1, -1):
-        rk = work[k]
-        pacf[k] = rk
-        if k > 0:
-            denom = 1.0 - rk * rk
-            if abs(denom) < 1e-12:
-                denom = 1e-12
-            prev = np.empty(k, dtype=np.float64)
-            for j in range(k):
-                prev[j] = (work[j] + rk * work[k - 1 - j]) / denom
-            work[:k] = prev
-    return pacf
 
 
 # --------------------------------------------------------------------------
