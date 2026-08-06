@@ -252,3 +252,53 @@ class LagPolynomial:
                 "polynomials use companion eigenvalues (cultivars.core.stability)."
             )
         return np.roots(self._c[::-1]).astype(np.complex128)
+
+def _expand_ar(phi: npt.NDArray[np.float64], sphi: npt.NDArray[np.float64], s: int) -> npt.NDArray[np.float64]:
+    """Expanded AR coefficients of phi(L) * Phi(L**s)."""
+    poly = LagPolynomial.from_ar_coeffs(phi) if phi.size else LagPolynomial([1.0])
+    if sphi.size:
+        scoef = np.zeros(s * sphi.size + 1)
+        scoef[0] = 1.0
+        for k in range(sphi.size):
+            scoef[(k + 1) * s] = -sphi[k]
+        poly = poly * LagPolynomial(scoef)
+    return poly.ar_coeffs()
+
+def _expand_ma(theta: npt.NDArray[np.float64], stheta: npt.NDArray[np.float64], s: int) -> npt.NDArray[np.float64]:
+    """Expanded MA coefficients of theta(L) * Theta(L**s) (plus-sign convention)."""
+    base = np.concatenate([[1.0], theta]) if theta.size else np.array([1.0])
+    poly = LagPolynomial(base)
+    if stheta.size:
+        scoef = np.zeros(s * stheta.size + 1)
+        scoef[0] = 1.0
+        for k in range(stheta.size):
+            scoef[(k + 1) * s] = stheta[k]
+        poly = poly * LagPolynomial(scoef)
+    return poly.coefficients[1:]
+
+def _ar_infinity(
+    d: float,
+    ar_params: npt.NDArray[np.float64],
+    ma_params: npt.NDArray[np.float64],
+    truncation: int,
+) -> npt.NDArray[np.float64]:
+    """Coefficients ``c_1..c_M`` of ``Pi(L) = phi(L)(1-L)**d / theta(L)`` (monic).
+
+    The model is ``Pi(L)(y_t - mu) = eps_t`` with ``Pi(L) = 1 - c_1 L - ...``, so
+    the one-step recursion is ``(y_t - mu) = sum_j c_j (y_{t-j} - mu) + eps_t``.
+    """
+    frac = fractional_difference_weights(d, truncation + 1)
+    phi_poly = np.concatenate([[1.0], -ar_params]) if ar_params.size else np.array([1.0])
+    numerator = np.convolve(phi_poly, frac)[: truncation + 1]
+    theta_poly = np.concatenate([[1.0], ma_params]) if ma_params.size else np.array([1.0])
+    # Series division numerator / theta_poly (theta_poly monic).
+    pi = np.zeros(truncation + 1, dtype=np.float64)
+    q = ma_params.size
+    for i in range(truncation + 1):
+        acc = numerator[i]
+        for j in range(1, min(i, q) + 1):
+            acc -= theta_poly[j] * pi[i - j]
+        pi[i] = acc
+    return -pi[1:]                       # c_j = -pi_j for the AR(inf) recursion
+
+

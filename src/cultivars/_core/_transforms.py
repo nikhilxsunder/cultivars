@@ -296,3 +296,14 @@ def fractional_difference(
     weights = fractional_difference_weights(d, min(m, n))
     # Full linear convolution; the first n entries are the causal filter output.
     return np.convolve(arr, weights)[:n]
+
+
+def _difference_series(
+    y: npt.NDArray[np.float64], d: int, capital_d: int, s: int
+) -> npt.NDArray[np.float64]:
+    w = y
+    if d > 0:
+        w = difference(w, d)
+    if capital_d > 0:
+        w = seasonal_difference(w, s, capital_d)
+    return w

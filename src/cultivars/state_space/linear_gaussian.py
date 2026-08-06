@@ -53,33 +53,12 @@ References:
 
 from __future__ import annotations
 
-from typing import NamedTuple
-
 import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
 
 from ..exceptions import DimensionError, NumericalError
 from ..state_space.base import FilterResult, SmootherResult, StateSpaceModel
-
-
-class _ForwardPass(NamedTuple):
-    predicted_state: npt.NDArray[np.float64]
-    predicted_state_cov: npt.NDArray[np.float64]
-    filtered_state: npt.NDArray[np.float64]
-    filtered_state_cov: npt.NDArray[np.float64]
-    loglik_contrib: npt.NDArray[np.float64]
-    obs_index: list[npt.NDArray[np.intp]]
-    innovation: list[npt.NDArray[np.float64]]
-    innovation_precision: list[npt.NDArray[np.float64]]
-    obs_design: list[npt.NDArray[np.float64]]
-
-
-def _psd_sqrt(matrix: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-    """A matrix square root valid for symmetric positive-semidefinite input."""
-    eigvals, eigvecs = np.linalg.eigh(matrix)
-    eigvals = np.clip(eigvals, 0.0, None)
-    return eigvecs @ np.diag(np.sqrt(eigvals))
 
 
 class LinearGaussianStateSpace(StateSpaceModel):

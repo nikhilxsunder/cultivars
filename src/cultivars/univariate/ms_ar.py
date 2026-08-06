@@ -123,100 +123,6 @@ class _EMFit:
     converged: bool
 
 
-def _lag_matrix(y: npt.NDArray[np.float64], order: int) -> npt.NDArray[np.float64]:
-    """Column ``i`` is ``y_{t-(i+1)}`` for the effective sample ``t = p .. n-1``."""
-    n = y.shape[0]
-    if order == 0:
-        return np.zeros((n, 0), dtype=np.float64)
-    return np.column_stack([y[order - 1 - i : n - 1 - i] for i in range(order)])
-
-
-def _regime_means(
-    intercepts: npt.NDArray[np.float64],
-    ar_params: npt.NDArray[np.float64],
-    lags: npt.NDArray[np.float64],
-) -> npt.NDArray[np.float64]:
-    """Per-regime conditional means ``mu[t, j]`` of shape ``(T_eff, K)``."""
-    if lags.shape[1] == 0:
-        return np.broadcast_to(intercepts, (lags.shape[0], intercepts.shape[0])).copy()
-    return intercepts[None, :] + lags @ ar_params.T
-
-
-def _log_densities(
-    target: npt.NDArray[np.float64],
-    means: npt.NDArray[np.float64],
-    sigma2: npt.NDArray[np.float64],
-) -> npt.NDArray[np.float64]:
-    resid = target[:, None] - means
-    return -0.5 * (_LOG_2PI + np.log(sigma2)[None, :] + resid ** 2 / sigma2[None, :])
-
-
-def _update_transition(
-    smoothed: npt.NDArray[np.float64],
-    joint: npt.NDArray[np.float64],
-    floor: float,
-) -> npt.NDArray[np.float64]:
-    k = smoothed.shape[1]
-    if joint.shape[0] == 0:
-        return np.full((k, k), 1.0 / k)
-    numer = joint.sum(axis=0)                       # (K, K) expected i->j counts
-    denom = smoothed[:-1].sum(axis=0)               # (K,) expected time in i
-    p = numer / np.clip(denom[:, None], floor, None)
-    p = np.clip(p, floor, None)
-    return p / p.sum(axis=1, keepdims=True)
-
-
-def _update_coefficients(
-    target: npt.NDArray[np.float64],
-    lags: npt.NDArray[np.float64],
-    smoothed: npt.NDArray[np.float64],
-    sigma2: npt.NDArray[np.float64],
-    layout: _Layout,
-) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """Responsibility-weighted GLS update; returns (intercepts (K,), ar (K, p))."""
-    n_eff = target.shape[0]
-    k, p = layout.n_regimes, layout.order
-    d = layout.width
-    a = np.zeros((d, d), dtype=np.float64)
-    b = np.zeros(d, dtype=np.float64)
-    for j in range(k):
-        design = np.zeros((n_eff, d), dtype=np.float64)
-        design[:, layout.intercept_col(j)] = 1.0
-        if p:
-            design[:, layout.ar_slice(j)] = lags
-        weight = smoothed[:, j] / sigma2[j]
-        a += design.T @ (design * weight[:, None])
-        b += design.T @ (weight * target)
-    beta, *_ = np.linalg.lstsq(a, b, rcond=None)
-
-    intercepts = np.empty(k, dtype=np.float64)
-    ar_params = np.zeros((k, p), dtype=np.float64)
-    for j in range(k):
-        intercepts[j] = beta[layout.intercept_col(j)]
-        if p:
-            ar_params[j] = beta[layout.ar_slice(j)]
-    return intercepts, ar_params
-
-
-def _update_variance(
-    target: npt.NDArray[np.float64],
-    means: npt.NDArray[np.float64],
-    smoothed: npt.NDArray[np.float64],
-    switching_variance: bool,
-    floor: float,
-) -> npt.NDArray[np.float64]:
-    k = smoothed.shape[1]
-    sq = (target[:, None] - means) ** 2
-    if switching_variance:
-        num = (smoothed * sq).sum(axis=0)
-        den = smoothed.sum(axis=0)
-        sigma2 = num / np.clip(den, 1e-12, None)
-    else:
-        shared = float((smoothed * sq).sum() / target.shape[0])
-        sigma2 = np.full(k, shared)
-    return np.clip(sigma2, floor, None)
-
-
 def _run_em(
     target: npt.NDArray[np.float64],
     lags: npt.NDArray[np.float64],
@@ -284,53 +190,12 @@ def _run_em(
     )
 
 
-def _initial_transition(
-    k: int, rng: np.random.Generator, diagonal: float
-) -> npt.NDArray[np.float64]:
-    off = (1.0 - diagonal) / (k - 1)
-    p = np.full((k, k), off) + (diagonal - off) * np.eye(k)
-    p = p * rng.uniform(0.9, 1.1, size=(k, k))
-    return p / p.sum(axis=1, keepdims=True)
-
-
 # --------------------------------------------------------------------------
 # Result
 # --------------------------------------------------------------------------
 
-@dataclass(frozen=True)
-class MSARResult:
-    """Fitted Markov-switching autoregression.
-
-    Regimes are ordered by ascending intercept, so regime ``0`` is the
-    lowest-intercept ("low") state. Probability arrays run over the effective
-    sample (the last ``nobs`` observations, after conditioning on ``order`` lags).
-
-    Attributes:
-        n_regimes: Number of regimes ``K``.
-        order: Autoregressive order ``p``.
-        switching_mean: Whether the intercept switches.
-        switching_ar: Whether the AR coefficients switch.
-        switching_variance: Whether the innovation variance switches.
-        transition: Row-stochastic ``(K, K)`` transition matrix.
-        intercepts: Regime intercepts ``c_j``, shape ``(K,)``.
-        ar_params: Regime AR coefficients, shape ``(K, p)`` (rows equal when the
-            AR block does not switch).
-        sigma2: Regime innovation variances, shape ``(K,)``.
-        filtered_prob: ``Pr(S_t = j | y_{1..t})``, shape ``(nobs, K)``.
-        predicted_prob: ``Pr(S_t = j | y_{1..t-1})``, shape ``(nobs, K)``.
-        smoothed_prob: ``Pr(S_t = j | y_{1..T})``, shape ``(nobs, K)``.
-        ergodic_prob: Stationary regime distribution implied by ``transition``.
-        expected_durations: Expected regime durations ``1 / (1 - P_jj)``.
-        llf: Maximized log-likelihood.
-        nobs: Effective observations used (``len(endog) - order``).
-        n_iter: EM iterations taken by the winning start.
-        converged: Whether the winning start met the convergence tolerance.
-        resid: Smoothed-probability-weighted one-step residuals, shape ``(nobs,)``.
-        fittedvalues: Smoothed-probability-weighted fitted values, shape ``(nobs,)``.
-        endog: The original series (kept for forecasting).
-        schema_version: Serialization schema version.
-    """
-
+@dataclass(frozen=True, kw_only=True, slots=True)
+class MSARResult(_MeanResult):
     n_regimes: int
     order: int
     switching_mean: bool
@@ -339,89 +204,13 @@ class MSARResult:
     transition: npt.NDArray[np.float64]
     intercepts: npt.NDArray[np.float64]
     ar_params: npt.NDArray[np.float64]
-    sigma2: npt.NDArray[np.float64]
     filtered_prob: npt.NDArray[np.float64]
     predicted_prob: npt.NDArray[np.float64]
     smoothed_prob: npt.NDArray[np.float64]
     ergodic_prob: npt.NDArray[np.float64]
     expected_durations: npt.NDArray[np.float64]
-    llf: float
-    nobs: int
     n_iter: int
     converged: bool
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    endog: npt.NDArray[np.float64] = field(repr=False)
-    _n_params: int = field(repr=False, default=0)
-    schema_version: int = _SCHEMA_VERSION
-
-    @property
-    def information_criteria(self) -> InformationCriteria:
-        """AIC/BIC/HQIC for this fit."""
-        return information_criteria(self.llf, self.nobs, self._n_params)
-
-    @property
-    def aic(self) -> float:
-        return self.information_criteria.aic
-
-    @property
-    def bic(self) -> float:
-        return self.information_criteria.bic
-
-    @property
-    def most_likely_regime(self) -> npt.NDArray[np.intp]:
-        """Smoothed maximum-a-posteriori regime path, shape ``(nobs,)``."""
-        return np.asarray(self.smoothed_prob.argmax(axis=1), dtype=np.intp)
-
-    def forecast(self, h: int) -> npt.NDArray[np.float64]:
-        """Return ``h``-step-ahead point forecasts ``E[y_{T+k} | y_{1..T}]``.
-
-        Future regimes are integrated out through the transition matrix, starting
-        from the final filtered regime distribution: the regime distribution
-        ``k`` steps ahead is ``xi_T @ P**k``. With a shared AR block this yields
-        the exact conditional expectation; when the AR block switches it uses the
-        regime-probability-weighted coefficients, which is exact for the intercept
-        and a first-order approximation for the autoregressive feedback.
-
-        Args:
-            h: Forecast horizon; a positive integer.
-
-        Returns:
-            Point forecasts of shape ``(h,)``.
-
-        Raises:
-            DimensionError: If ``h`` is not positive.
-        """
-        if h < 1:
-            raise DimensionError(f"forecast horizon h must be >= 1; got {h}.")
-        p = self.order
-        history = list(self.endog)
-        xi = self.filtered_prob[-1]
-        power = np.eye(self.n_regimes)
-        out = np.empty(h, dtype=np.float64)
-        for k in range(h):
-            power = power @ self.transition
-            weights = xi @ power
-            intercept = float(weights @ self.intercepts)
-            phi = weights @ self.ar_params            # (p,)
-            value = intercept + sum(
-                phi[i] * history[-1 - i] for i in range(p)
-            )
-            out[k] = value
-            history.append(value)
-        return out
-
-    def forecast_regime_prob(self, h: int) -> npt.NDArray[np.float64]:
-        """Return ``Pr(S_{T+k} = j | y_{1..T})`` for ``k = 1 .. h``, shape ``(h, K)``."""
-        if h < 1:
-            raise DimensionError(f"forecast horizon h must be >= 1; got {h}.")
-        xi = self.filtered_prob[-1]
-        power = np.eye(self.n_regimes)
-        out = np.empty((h, self.n_regimes), dtype=np.float64)
-        for k in range(h):
-            power = power @ self.transition
-            out[k] = xi @ power
-        return out
 
 
 # --------------------------------------------------------------------------

@@ -71,7 +71,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize, minimize_scalar
 
-from .._core.stability import StabilityResult, assess_stability
+from .._core._stability import StabilityResult, assess_stability
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._base import (
     InformationCriteria,
@@ -82,273 +82,26 @@ from .arma import _arma_state_space                   # keeps |d| strictly insid
 
 
 
-# --------------------------------------------------------------------------
-# Semiparametric d estimators (spectral)
-# --------------------------------------------------------------------------
 
-@dataclass(frozen=True)
-class LongMemoryEstimate:
-    """A semiparametric estimate of the memory parameter ``d``.
-
-    Attributes:
-        d: The estimated fractional differencing order.
-        se: Asymptotic standard error of ``d``.
-        n_freq: Number of Fourier frequencies (the bandwidth ``m``) used.
-        method: ``"gph"`` or ``"local_whittle"``.
-    """
-
-    d: float
-    se: float
-    n_freq: int
-    method: str
-
-
-def _periodogram(
-    y: npt.NDArray[np.float64],
-) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """Return positive Fourier frequencies and the periodogram (DC term dropped)."""
-    n = y.shape[0]
-    centered = y - y.mean()
-    transform = np.fft.rfft(centered)
-    periodogram = (np.abs(transform) ** 2) / n
-    freqs = 2.0 * np.pi * np.arange(transform.shape[0]) / n
-    return freqs[1:], periodogram[1:]
-
-
-def _bandwidth(n: int, m: int | None, exponent: float) -> int:
-    if m is not None:
-        if m < 2:
-            raise SpecificationError(f"bandwidth m must be >= 2; got {m}.")
-        return int(m)
-    return max(2, int(np.floor(n ** exponent)))
-
-
-def _validate_series(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
-    arr = np.asarray(endog, dtype=np.float64)
-    if arr.ndim != 1:
-        raise DimensionError(f"endog must be one-dimensional; got shape {arr.shape}.")
-    if not np.all(np.isfinite(arr)):
-        raise NumericalError("endog contains non-finite values.")
-    return arr
-
-
-def gph(
-    endog: npt.ArrayLike, *, m: int | None = None, bandwidth_exponent: float = 0.5
-) -> LongMemoryEstimate:
-    """Estimate ``d`` by the Geweke-Porter-Hudak log-periodogram regression.
-
-    Regresses ``log I(lambda_j)`` on ``log(4 sin^2(lambda_j / 2))`` over the
-    lowest ``m`` Fourier frequencies; ``d`` is minus the slope. The error
-    variance is asymptotically ``pi^2 / 6``, giving the reported standard error.
-
-    Args:
-        endog: The series (1-D array-like).
-        m: Number of frequencies (bandwidth). Defaults to ``floor(n**exponent)``.
-        bandwidth_exponent: Exponent for the default bandwidth (typically 0.5).
-
-    Returns:
-        A :class:`LongMemoryEstimate`.
-
-    Raises:
-        SpecificationError: If ``m`` is too small.
-        NumericalError: If the regression is degenerate.
-
-    Example:
-        >>> rng = np.random.default_rng(0)
-        >>> y = np.cumsum(rng.standard_normal(4096))     # d = 1 process
-        >>> est = gph(np.diff(y))                        # differenced -> d ~ 0
-        >>> abs(est.d) < 0.2
-        True
-    """
-    y = _validate_series(endog)
-    freqs, periodogram = _periodogram(y)
-    m_eff = min(_bandwidth(y.shape[0], m, bandwidth_exponent), freqs.shape[0])
-    lam = freqs[:m_eff]
-    power = periodogram[:m_eff]
-    if np.any(power <= 0.0):
-        raise NumericalError("periodogram has non-positive ordinates; cannot take logs.")
-    regressor = np.log(4.0 * np.sin(lam / 2.0) ** 2)
-    response = np.log(power)
-    centered = regressor - regressor.mean()
-    denom = float(centered @ centered)
-    if denom <= 0.0:
-        raise NumericalError("degenerate GPH regression (zero regressor variance).")
-    slope = float(centered @ (response - response.mean()) / denom)
-    d_hat = -slope
-    se = float(np.sqrt((np.pi ** 2 / 6.0) / denom))
-    return LongMemoryEstimate(d=d_hat, se=se, n_freq=m_eff, method="gph")
-
-
-def local_whittle(
-    endog: npt.ArrayLike, *, m: int | None = None, bandwidth_exponent: float = 0.65
-) -> LongMemoryEstimate:
-    """Estimate ``d`` by the Robinson (1995) Gaussian semiparametric estimator.
-
-    Minimizes the local Whittle objective
-    ``R(d) = log( m^{-1} sum_j lambda_j^{2d} I(lambda_j) )
-    - (2d / m) sum_j log lambda_j`` over ``|d| < 0.5``. The estimator is
-    ``sqrt(m)``-consistent with asymptotic variance ``1 / 4``.
-
-    Args:
-        endog: The series (1-D array-like).
-        m: Number of frequencies (bandwidth). Defaults to ``floor(n**exponent)``.
-        bandwidth_exponent: Exponent for the default bandwidth (typically ~0.65).
-
-    Returns:
-        A :class:`LongMemoryEstimate`.
-
-    Example:
-        >>> rng = np.random.default_rng(1)
-        >>> y = np.cumsum(rng.standard_normal(4096))
-        >>> est = local_whittle(np.diff(y))
-        >>> abs(est.d) < 0.2
-        True
-    """
-    y = _validate_series(endog)
-    freqs, periodogram = _periodogram(y)
-    m_eff = min(_bandwidth(y.shape[0], m, bandwidth_exponent), freqs.shape[0])
-    lam = freqs[:m_eff]
-    power = periodogram[:m_eff]
-    log_lam = np.log(lam)
-
-    def objective(d: float) -> float:
-        g = np.mean(lam ** (2.0 * d) * power)
-        if not np.isfinite(g) or g <= 0.0:
-            return 1e10
-        return float(np.log(g) - 2.0 * d * log_lam.mean())
-
-    result = minimize_scalar(objective, bounds=(-_D_MAX, _D_MAX), method="bounded")
-    d_hat = float(result.x)
-    se = float(1.0 / (2.0 * np.sqrt(m_eff)))
-    return LongMemoryEstimate(d=d_hat, se=se, n_freq=m_eff, method="local_whittle")
 
 
 # --------------------------------------------------------------------------
 # AR(infinity) weights (for forecasting)
 # --------------------------------------------------------------------------
 
-def _ar_infinity(
-    d: float,
-    ar_params: npt.NDArray[np.float64],
-    ma_params: npt.NDArray[np.float64],
-    truncation: int,
-) -> npt.NDArray[np.float64]:
-    """Coefficients ``c_1..c_M`` of ``Pi(L) = phi(L)(1-L)**d / theta(L)`` (monic).
-
-    The model is ``Pi(L)(y_t - mu) = eps_t`` with ``Pi(L) = 1 - c_1 L - ...``, so
-    the one-step recursion is ``(y_t - mu) = sum_j c_j (y_{t-j} - mu) + eps_t``.
-    """
-    frac = fractional_difference_weights(d, truncation + 1)
-    phi_poly = np.concatenate([[1.0], -ar_params]) if ar_params.size else np.array([1.0])
-    numerator = np.convolve(phi_poly, frac)[: truncation + 1]
-    theta_poly = np.concatenate([[1.0], ma_params]) if ma_params.size else np.array([1.0])
-    # Series division numerator / theta_poly (theta_poly monic).
-    pi = np.zeros(truncation + 1, dtype=np.float64)
-    q = ma_params.size
-    for i in range(truncation + 1):
-        acc = numerator[i]
-        for j in range(1, min(i, q) + 1):
-            acc -= theta_poly[j] * pi[i - j]
-        pi[i] = acc
-    return -pi[1:]                       # c_j = -pi_j for the AR(inf) recursion
-
 
 # --------------------------------------------------------------------------
 # Result
 # --------------------------------------------------------------------------
 
-@dataclass(frozen=True)
-class ARFIMAResult:
-    """Fitted ARFIMA(p, d, q) model.
-
-    Attributes:
-        order: ``(p, q)`` — the short-memory ARMA orders.
-        d: The fractional differencing parameter.
-        mean: The estimated series mean ``mu`` (``None`` when ``trend == "n"``).
-        ar_params: AR coefficients ``(phi_1, ..., phi_p)``.
-        ma_params: MA coefficients ``(theta_1, ..., theta_q)``.
-        sigma2: Innovation variance.
-        llf: Maximized log-likelihood (exact in the ARMA block, conditional in d).
-        nobs: Number of observations.
-        resid: One-step residuals on the fractionally differenced series.
-        fittedvalues: One-step fitted values on the fractionally differenced series.
-        endog: The original series (kept for forecasting).
-        schema_version: Serialization schema version.
-    """
-
+@dataclass(frozen=True, kw_only=True, slots=True)
+class ARFIMAResult(_MeanResult, _StationarityMixin):
     order: tuple[int, int]
     d: float
     mean: float | None
     ar_params: npt.NDArray[np.float64]
     ma_params: npt.NDArray[np.float64]
     sigma2: float
-    llf: float
-    nobs: int
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    endog: npt.NDArray[np.float64] = field(repr=False)
-    _n_params: int = field(repr=False, default=0)
-    schema_version: int = _SCHEMA_VERSION
-
-    @property
-    def information_criteria(self) -> InformationCriteria:
-        """AIC/BIC/HQIC for this fit."""
-        return information_criteria(self.llf, self.nobs, self._n_params)
-
-    @property
-    def aic(self) -> float:
-        return self.information_criteria.aic
-
-    @property
-    def bic(self) -> float:
-        return self.information_criteria.bic
-
-    @property
-    def stability(self) -> StabilityResult:
-        """Stationarity of the short-memory AR polynomial (long memory aside)."""
-        return assess_stability(self.ar_params)
-
-    @property
-    def is_stationary(self) -> bool:
-        """Whether the model is stationary: ``|d| < 0.5`` and AR roots outside."""
-        return abs(self.d) < 0.5 and self.stability.is_stable
-
-    @property
-    def is_long_memory(self) -> bool:
-        """Whether the process has positive long memory (``d > 0``)."""
-        return self.d > 0.0
-
-    def forecast(self, h: int, *, truncation: int = 500) -> npt.NDArray[np.float64]:
-        """Return ``h``-step-ahead point forecasts via the AR(infinity) form.
-
-        Args:
-            h: Forecast horizon; a positive integer.
-            truncation: Number of AR(infinity) weights retained. Long-memory
-                weights decay slowly (``~ j**(-d-1)``), so larger values improve
-                accuracy at long horizons.
-
-        Returns:
-            Point forecasts of shape ``(h,)``.
-
-        Raises:
-            DimensionError: If ``h`` is not positive.
-            SpecificationError: If ``truncation < 1``.
-        """
-        if h < 1:
-            raise DimensionError(f"forecast horizon h must be >= 1; got {h}.")
-        if truncation < 1:
-            raise SpecificationError(f"truncation must be >= 1; got {truncation}.")
-        mu = self.mean if self.mean is not None else 0.0
-        weights = _ar_infinity(self.d, self.ar_params, self.ma_params, truncation)
-        history = list(self.endog - mu)
-        out = np.empty(h, dtype=np.float64)
-        for k in range(h):
-            reach = min(len(weights), len(history))
-            value = float(sum(weights[j] * history[-1 - j] for j in range(reach)))
-            out[k] = value + mu
-            history.append(value)
-        return out
-
 
 # --------------------------------------------------------------------------
 # Engine

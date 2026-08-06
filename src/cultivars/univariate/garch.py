@@ -1,8 +1,4 @@
-# Copyright (c) 2026 Nikhil Sunder
-# SPDX-License-Identifier: MIT
-#
-# Part of the cultivars package: a research-grade Python SDK for
-# autoregressive time-series modeling.
+
 
 """Conditional-variance models: GARCH, GJR-GARCH, EGARCH.
 
@@ -32,95 +28,9 @@ from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ..univariate._base import InformationCriteria, information_criteria
 
 
-def _backcast(resid: npt.NDArray[np.float64]) -> float:
-    tau = min(75, resid.shape[0])
-    w = 0.94 ** np.arange(tau)
-    w /= w.sum()
-    return float(np.sum(w * resid[:tau] ** 2))
-
-
-def _softplus(x: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-    return np.logaddexp(0.0, x)
-
-
-def _inv_softplus(x: float) -> float:
-    return float(np.log(np.expm1(x)))
-
-
-def _garch_variance(
-    resid: npt.NDArray[np.float64],
-    omega: float,
-    alpha: npt.NDArray[np.float64],
-    gamma: npt.NDArray[np.float64],
-    beta: npt.NDArray[np.float64],
-    backcast: float,
-) -> npt.NDArray[np.float64]:
-    n, p, o, q = resid.shape[0], alpha.size, gamma.size, beta.size
-    sigma2 = np.empty(n)
-    r2 = resid ** 2
-    neg = (resid < 0.0).astype(np.float64)
-    for t in range(n):
-        s = omega
-        for i in range(p):
-            s += alpha[i] * (r2[t - 1 - i] if t - 1 - i >= 0 else backcast)
-        for k in range(o):
-            if t - 1 - k >= 0:
-                s += gamma[k] * r2[t - 1 - k] * neg[t - 1 - k]
-            else:
-                s += gamma[k] * backcast * 0.5
-        for j in range(q):
-            s += beta[j] * (sigma2[t - 1 - j] if t - 1 - j >= 0 else backcast)
-        sigma2[t] = s
-    return sigma2
-
-
-def _egarch_variance(
-    resid: npt.NDArray[np.float64],
-    omega: float,
-    alpha: npt.NDArray[np.float64],
-    gamma: npt.NDArray[np.float64],
-    beta: npt.NDArray[np.float64],
-    backcast: float,
-) -> npt.NDArray[np.float64]:
-    n, p, o, q = resid.shape[0], alpha.size, gamma.size, beta.size
-    ln_sigma2 = np.empty(n)
-    ln_bc = float(np.log(backcast))
-    e = np.zeros(n)
-    for t in range(n):
-        s = omega
-        for i in range(p):
-            s += alpha[i] * ((abs(e[t - 1 - i]) - _SQRT_2_PI) if t - 1 - i >= 0 else 0.0)
-        for k in range(o):
-            s += gamma[k] * (e[t - 1 - k] if t - 1 - k >= 0 else 0.0)
-        for j in range(q):
-            s += beta[j] * (ln_sigma2[t - 1 - j] if t - 1 - j >= 0 else ln_bc)
-        ln_sigma2[t] = s
-        sig = np.sqrt(np.exp(ln_sigma2[t]))
-        e[t] = resid[t] / sig if sig > 0 else 0.0
-    return np.exp(ln_sigma2)
-
-
-@dataclass(frozen=True)
-class GARCHResult:
-    """Fitted conditional-variance model.
-
-    Attributes:
-        vol: Variance family (``"GARCH"``, ``"GJR"``, ``"EGARCH"``).
-        order: ``(p, o, q)``.
-        const: Mean intercept (``None`` if not estimated).
-        ar_params: Mean AR coefficients (empty if ``ar_lags == 0``).
-        omega: Variance intercept.
-        alpha: ARCH coefficients.
-        gamma: Asymmetry coefficients.
-        beta: GARCH coefficients.
-        sigma2: Fitted conditional variances.
-        resid: Mean residuals.
-        llf: Gaussian log-likelihood.
-        nobs: Observations used.
-        schema_version: Serialization schema version.
-    """
-
-    vol: Vol
+@dataclass(frozen=True, kw_only=True, slots=True)
+class GARCHResult(_MeanResult, _StationarityMixin, _ConditionalVarianceMixin):
+    vol: str
     order: tuple[int, int, int]
     const: float | None
     ar_params: npt.NDArray[np.float64]
@@ -128,32 +38,8 @@ class GARCHResult:
     alpha: npt.NDArray[np.float64]
     gamma: npt.NDArray[np.float64]
     beta: npt.NDArray[np.float64]
-    sigma2: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    llf: float
-    nobs: int
-    _n_params: int = field(repr=False)
-    schema_version: int = _SCHEMA_VERSION
-    fractional_d: float | None = None
-
-    @property
-    def persistence(self) -> float:
-        """Variance persistence (sum of alpha + 0.5*gamma + beta, or sum beta for EGARCH)."""
-        if self.vol in ("EGARCH", "FIGARCH"):
-            return float(self.beta.sum())
-        return float(self.alpha.sum() + 0.5 * self.gamma.sum() + self.beta.sum())
-
-    @property
-    def information_criteria(self) -> InformationCriteria:
-        return information_criteria(self.llf, self.nobs, self._n_params)
-
-    @property
-    def aic(self) -> float:
-        return self.information_criteria.aic
-
-    @property
-    def bic(self) -> float:
-        return self.information_criteria.bic
+    fractional_d: float | None
+    conditional_variance: npt.NDArray[np.float64]
 
 
 def _fit_garch(
@@ -278,43 +164,6 @@ def _fit_garch(
     )
 
 
-def _figarch_weights(phi: float, d: float, beta: float, truncation: int) -> npt.NDArray[np.float64]:
-    """ARCH(inf) lambda weights for FIGARCH(1, d, 1) (Chung 1999 recursion)."""
-    lam = np.empty(truncation)
-    delta = np.empty(truncation)
-    lam[0] = phi - beta + d
-    delta[0] = d
-    for i in range(1, truncation):
-        delta[i] = (i - d) / (i + 1) * delta[i - 1]
-        lam[i] = beta * lam[i - 1] + (delta[i] - phi * delta[i - 1])
-    return lam
-
-
-def _figarch_variance(
-    resid: npt.NDArray[np.float64],
-    omega: float,
-    phi: float,
-    d: float,
-    beta: float,
-    backcast: float,
-    truncation: int = 1000,
-) -> npt.NDArray[np.float64]:
-    n = resid.shape[0]
-    lam = _figarch_weights(phi, d, beta, truncation)
-    r2 = resid ** 2
-    sigma2 = np.empty(n)
-    intercept = omega / (1.0 - beta)
-    for t in range(n):
-        m = min(t, truncation)
-        acc = intercept
-        if m > 0:
-            acc += float(np.dot(lam[:m], r2[t - 1 :: -1][:m]))
-        if truncation > m:
-            acc += backcast * float(lam[m:truncation].sum())
-        sigma2[t] = acc
-    return sigma2
-
-
 def _fit_figarch(
     endog: npt.NDArray[np.float64],
     include_const: bool,
@@ -384,17 +233,6 @@ def _fit_figarch(
     )
 
 
-def _validate(endog: npt.ArrayLike, p: int, o: int, q: int, ar_lags: int) -> npt.NDArray[np.float64]:
-    y = np.asarray(endog, dtype=np.float64)
-    if y.ndim != 1:
-        raise DimensionError(f"endog must be one-dimensional; got shape {y.shape}.")
-    if not np.all(np.isfinite(y)):
-        raise NumericalError("endog contains non-finite values.")
-    if min(p, o, q, ar_lags) < 0:
-        raise SpecificationError("orders and ar_lags must be non-negative.")
-    return y
-
-
 class GARCH:
     """GARCH(p, q) with a constant (and optional AR) mean.
 
@@ -409,7 +247,7 @@ class GARCH:
     __slots__ = ("_y", "_p", "_q", "_ar", "_const")
 
     def __init__(self, endog: npt.ArrayLike, p: int = 1, q: int = 1, mean: Literal["constant", "zero"] = "constant", ar_lags: int = 0) -> None:
-        self._y = _validate(endog, p, 0, q, ar_lags)
+        self._y = _validate_garch(endog, p, 0, q, ar_lags)
         self._p, self._q, self._ar, self._const = int(p), int(q), int(ar_lags), mean == "constant"
 
     def fit(self) -> GARCHResult:
@@ -422,7 +260,7 @@ class GJR:
     __slots__ = ("_y", "_p", "_o", "_q", "_ar", "_const")
 
     def __init__(self, endog: npt.ArrayLike, p: int = 1, o: int = 1, q: int = 1, mean: Literal["constant", "zero"] = "constant", ar_lags: int = 0) -> None:
-        self._y = _validate(endog, p, o, q, ar_lags)
+        self._y = _validate_garch(endog, p, o, q, ar_lags)
         self._p, self._o, self._q, self._ar, self._const = int(p), int(o), int(q), int(ar_lags), mean == "constant"
 
     def fit(self) -> GARCHResult:
@@ -439,7 +277,7 @@ class EGARCH:
     __slots__ = ("_y", "_p", "_o", "_q", "_ar", "_const")
 
     def __init__(self, endog: npt.ArrayLike, p: int = 1, o: int = 1, q: int = 1, mean: Literal["constant", "zero"] = "constant", ar_lags: int = 0) -> None:
-        self._y = _validate(endog, p, o, q, ar_lags)
+        self._y = _validate_garch(endog, p, o, q, ar_lags)
         self._p, self._o, self._q, self._ar, self._const = int(p), int(o), int(q), int(ar_lags), mean == "constant"
 
     def fit(self) -> GARCHResult:
@@ -458,7 +296,7 @@ class FIGARCH:
     __slots__ = ("_y", "_const", "_truncation")
 
     def __init__(self, endog: npt.ArrayLike, mean: Literal["constant", "zero"] = "constant", truncation: int = 1000) -> None:
-        self._y = _validate(endog, 1, 0, 1, 0)
+        self._y = _validate_garch(endog, 1, 0, 1, 0)
         if truncation < 1:
             raise SpecificationError(f"truncation must be >= 1; got {truncation}.")
         self._const = mean == "constant"

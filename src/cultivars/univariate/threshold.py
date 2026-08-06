@@ -51,71 +51,20 @@ from cultivars.exceptions import DimensionError, NumericalError, SpecificationEr
 from cultivars.univariate._base import InformationCriteria, information_criteria
 
 
-def _ols(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> tuple[npt.NDArray[np.float64], float]:
-    beta, _res, _rank, _sv = np.linalg.lstsq(x, y, rcond=None)
-    resid = y - x @ beta
-    return np.asarray(beta, dtype=np.float64), float(resid @ resid)
-
-
-def _ar_design(y: npt.NDArray[np.float64], order: int, start: int) -> npt.NDArray[np.float64]:
-    n = y.shape[0]
-    cols = [np.ones(n - start)] + [y[start - i : n - i] for i in range(1, order + 1)]
-    return np.column_stack(cols)
-
-
 # --------------------------------------------------------------------------
 # SETAR / TAR
 # --------------------------------------------------------------------------
 
-@dataclass(frozen=True)
-class SETARResult:
-    """Fitted 2-regime threshold AR.
-
-    Attributes:
-        order: AR order (per regime).
-        delay: Threshold delay ``d`` (regime set by threshold variable at ``t-d``).
-        threshold: Estimated threshold ``r``.
-        lower_params: Regime coefficients ``[const, phi_1, ...]`` for ``z <= r``.
-        upper_params: Regime coefficients for ``z > r``.
-        sigma2: Residual variance.
-        ssr: Total sum of squared residuals.
-        n_lower: Observations in the lower regime.
-        n_upper: Observations in the upper regime.
-        llf: Gaussian log-likelihood.
-        nobs: Observations used.
-        resid: Residuals.
-        fittedvalues: Fitted values.
-        schema_version: Serialization schema version.
-    """
-
+@dataclass(frozen=True, kw_only=True, slots=True)
+class SETARResult(_MeanResult):
     order: int
     delay: int
     threshold: float
     lower_params: npt.NDArray[np.float64]
     upper_params: npt.NDArray[np.float64]
-    sigma2: float
     ssr: float
     n_lower: int
     n_upper: int
-    llf: float
-    nobs: int
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    _n_params: int = field(repr=False)
-    schema_version: int = _SCHEMA_VERSION
-
-    @property
-    def information_criteria(self) -> InformationCriteria:
-        return information_criteria(self.llf, self.nobs, self._n_params)
-
-    @property
-    def aic(self) -> float:
-        return self.information_criteria.aic
-
-    @property
-    def bic(self) -> float:
-        return self.information_criteria.bic
-
 
 def _fit_setar(
     y: npt.NDArray[np.float64],
@@ -169,16 +118,6 @@ def _fit_setar(
         sigma2=sigma2, ssr=best_ssr, n_lower=n_lo, n_upper=n_hi,
         llf=llf, nobs=n_eff, resid=resid, fittedvalues=fitted, _n_params=n_params,
     )
-
-
-def _validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
-    y = np.asarray(endog, dtype=np.float64)
-    if y.ndim != 1:
-        raise DimensionError(f"endog must be one-dimensional; got shape {y.shape}.")
-    if not np.all(np.isfinite(y)):
-        raise NumericalError("endog contains non-finite values.")
-    return y
-
 
 class SETAR:
     """Self-exciting threshold AR (2 regimes); threshold variable is a lag of the series.
@@ -242,54 +181,16 @@ class TAR:
 # STAR (LSTAR / ESTAR)
 # --------------------------------------------------------------------------
 
-@dataclass(frozen=True)
-class STARResult:
-    """Fitted smooth-transition AR (2 regimes).
-
-    Attributes:
-        order: AR order.
-        delay: Transition-variable delay.
-        transition: ``"logistic"`` (LSTAR) or ``"exponential"`` (ESTAR).
-        lower_params: Coefficients weighted by ``1 - G`` (``[const, phi_1, ...]``).
-        upper_params: Coefficients weighted by ``G``.
-        gamma: Transition smoothness (standardized by the transition-variable SD).
-        threshold: Transition center ``c``.
-        sigma2: Residual variance.
-        ssr: Sum of squared residuals.
-        llf: Gaussian log-likelihood.
-        nobs: Observations used.
-        resid: Residuals.
-        fittedvalues: Fitted values.
-        schema_version: Serialization schema version.
-    """
-
+@dataclass(frozen=True, kw_only=True, slots=True)
+class STARResult(_MeanResult):
     order: int
     delay: int
-    transition: Transition
+    transition: str
     lower_params: npt.NDArray[np.float64]
     upper_params: npt.NDArray[np.float64]
     gamma: float
     threshold: float
-    sigma2: float
     ssr: float
-    llf: float
-    nobs: int
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    _n_params: int = field(repr=False)
-    schema_version: int = _SCHEMA_VERSION
-
-    @property
-    def information_criteria(self) -> InformationCriteria:
-        return information_criteria(self.llf, self.nobs, self._n_params)
-
-    @property
-    def aic(self) -> float:
-        return self.information_criteria.aic
-
-    @property
-    def bic(self) -> float:
-        return self.information_criteria.bic
 
 
 def _fit_star(y: npt.NDArray[np.float64], order: int, delay: int, transition: Transition) -> STARResult:
@@ -355,7 +256,6 @@ def _fit_star(y: npt.NDArray[np.float64], order: int, delay: int, transition: Tr
         sigma2=sigma2, ssr=ssr, llf=llf, nobs=n_eff,
         resid=resid, fittedvalues=fitted, _n_params=n_params,
     )
-
 
 class LSTAR:
     """Logistic smooth-transition AR (asymmetric regimes)."""

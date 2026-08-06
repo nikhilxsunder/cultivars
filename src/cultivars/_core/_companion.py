@@ -34,7 +34,7 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
-from cultivars._core.lag import LagPolynomial
+from cultivars._core._lag import LagPolynomial
 from cultivars.exceptions import DimensionError, NumericalError
 
 

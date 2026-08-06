@@ -57,8 +57,8 @@ import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
 
-from .._core.lag import LagPolynomial
-from .._core.stability import StabilityResult, assess_stability
+from .._core._lag import LagPolynomial
+from .._core._stability import StabilityResult, assess_stability
 from .._core._transforms import difference, seasonal_difference
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ..state_space.linear_gaussian import LinearGaussianStateSpace
@@ -68,34 +68,6 @@ from .. univariate._base import (
     information_criteria,
     pacf_to_coeffs,
 )
-
-# --------------------------------------------------------------------------
-# Polynomial expansion (multiplicative seasonal <-> expanded coefficients)
-# --------------------------------------------------------------------------
-
-def _expand_ar(phi: npt.NDArray[np.float64], sphi: npt.NDArray[np.float64], s: int) -> npt.NDArray[np.float64]:
-    """Expanded AR coefficients of phi(L) * Phi(L**s)."""
-    poly = LagPolynomial.from_ar_coeffs(phi) if phi.size else LagPolynomial([1.0])
-    if sphi.size:
-        scoef = np.zeros(s * sphi.size + 1)
-        scoef[0] = 1.0
-        for k in range(sphi.size):
-            scoef[(k + 1) * s] = -sphi[k]
-        poly = poly * LagPolynomial(scoef)
-    return poly.ar_coeffs()
-
-
-def _expand_ma(theta: npt.NDArray[np.float64], stheta: npt.NDArray[np.float64], s: int) -> npt.NDArray[np.float64]:
-    """Expanded MA coefficients of theta(L) * Theta(L**s) (plus-sign convention)."""
-    base = np.concatenate([[1.0], theta]) if theta.size else np.array([1.0])
-    poly = LagPolynomial(base)
-    if stheta.size:
-        scoef = np.zeros(s * stheta.size + 1)
-        scoef[0] = 1.0
-        for k in range(stheta.size):
-            scoef[(k + 1) * s] = stheta[k]
-        poly = poly * LagPolynomial(scoef)
-    return poly.coefficients[1:]
 
 
 def _arma_state_space(
@@ -125,103 +97,6 @@ def _arma_state_space(
         np.array([[sigma2]]),
         obs_intercept=obs_intercept.reshape(-1, 1),
     )
-
-
-# --------------------------------------------------------------------------
-# Deterministic design
-# --------------------------------------------------------------------------
-
-def _deterministic(trend: Trend, nobs: int) -> npt.NDArray[np.float64]:
-    cols: list[npt.NDArray[np.float64]] = []
-    if trend in ("c", "ct"):
-        cols.append(np.ones(nobs))
-    if trend == "ct":
-        cols.append(np.arange(1, nobs + 1, dtype=np.float64))
-    if not cols:
-        return np.zeros((nobs, 0))
-    return np.column_stack(cols)
-
-
-# --------------------------------------------------------------------------
-# Result
-# --------------------------------------------------------------------------
-
-@dataclass(frozen=True)
-class ARMAResult:
-    """Fitted (S)ARIMA(X) model.
-
-    Attributes:
-        order: ``(p, d, q)``.
-        seasonal_order: ``(P, D, Q, s)``.
-        trend: Deterministic specification.
-        ar_params: Non-seasonal AR coefficients ``(phi_1, ..., phi_p)``.
-        ma_params: Non-seasonal MA coefficients ``(theta_1, ..., theta_q)``.
-        seasonal_ar_params: Seasonal AR coefficients.
-        seasonal_ma_params: Seasonal MA coefficients.
-        beta: Deterministic + exogenous regression coefficients.
-        sigma2: Innovation variance.
-        llf: Exact log-likelihood on the (differenced) modeling series.
-        nobs: Effective observations after differencing.
-        resid: One-step residuals on the modeling series.
-        fittedvalues: One-step fitted values on the modeling series.
-        schema_version: Serialization schema version.
-    """
-
-    order: tuple[int, int, int]
-    seasonal_order: tuple[int, int, int, int]
-    trend: Trend
-    ar_params: npt.NDArray[np.float64]
-    ma_params: npt.NDArray[np.float64]
-    seasonal_ar_params: npt.NDArray[np.float64]
-    seasonal_ma_params: npt.NDArray[np.float64]
-    beta: npt.NDArray[np.float64]
-    sigma2: float
-    llf: float
-    nobs: int
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    _n_params: int = field(repr=False)
-    schema_version: int = _SCHEMA_VERSION
-
-    @property
-    def information_criteria(self) -> InformationCriteria:
-        """AIC/BIC/HQIC for this fit."""
-        return information_criteria(self.llf, self.nobs, self._n_params)
-
-    @property
-    def aic(self) -> float:
-        return self.information_criteria.aic
-
-    @property
-    def bic(self) -> float:
-        return self.information_criteria.bic
-
-    @property
-    def stability(self) -> StabilityResult:
-        """Stationarity of the expanded AR polynomial (None-safe for pure MA)."""
-        phi_star = _expand_ar(self.ar_params, self.seasonal_ar_params, self.seasonal_order[3])
-        if phi_star.size == 0:
-            return assess_stability(np.zeros(0))
-        return assess_stability(phi_star)
-
-    @property
-    def is_stationary(self) -> bool:
-        return self.stability.is_stable
-
-
-# --------------------------------------------------------------------------
-# Engine
-# --------------------------------------------------------------------------
-
-def _difference_series(
-    y: npt.NDArray[np.float64], d: int, capital_d: int, s: int
-) -> npt.NDArray[np.float64]:
-    w = y
-    if d > 0:
-        w = difference(w, d)
-    if capital_d > 0:
-        w = seasonal_difference(w, s, capital_d)
-    return w
 
 
 def _fit_sarimax(
@@ -331,25 +206,20 @@ def _fit_sarimax(
     )
 
 
-def _validate(endog: npt.ArrayLike, exog: npt.ArrayLike | None) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64] | None]:
-    y = np.asarray(endog, dtype=np.float64)
-    if y.ndim != 1:
-        raise DimensionError(f"endog must be one-dimensional; got shape {y.shape}.")
-    if not np.all(np.isfinite(y)):
-        raise NumericalError("endog contains non-finite values.")
-    x: npt.NDArray[np.float64] | None = None
-    if exog is not None:
-        x = np.asarray(exog, dtype=np.float64)
-        if x.ndim == 1:
-            x = x.reshape(-1, 1)
-        if x.ndim != 2 or x.shape[0] != y.shape[0]:
-            raise DimensionError(
-                f"exog must be (nobs, k) aligned with endog ({y.shape[0]}); got {x.shape}."
-            )
-        if not np.all(np.isfinite(x)):
-            raise NumericalError("exog contains non-finite values.")
-    return y, x
-
+@dataclass(frozen=True, kw_only=True, slots=True)
+class ARMAResult(_MeanResult, _StationarityMixin):
+    order: tuple[int, int, int]
+    seasonal_order: tuple[int, int, int, int]
+    trend: str
+    ar_params: npt.NDArray[np.float64]
+    ma_params: npt.NDArray[np.float64]
+    seasonal_ar_params: npt.NDArray[np.float64]
+    seasonal_ma_params: npt.NDArray[np.float64]
+    beta: npt.NDArray[np.float64]
+    sigma2: float
+    def _stationarity_ar(self) -> npt.NDArray[np.float64]:
+        return expand_ar(self.ar_params, self.seasonal_ar_params,
+                         self.seasonal_order[3])  
 
 class ARMA:
     """ARMA(p, q) specification.

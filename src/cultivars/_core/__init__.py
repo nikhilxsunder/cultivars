@@ -19,3 +19,55 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+"""Primitive layer: constants, value objects, contracts, and pure functions.
+
+Nothing in this subpackage knows what a model is. Every symbol here has more
+than one consumer -- that is the test for belonging in ``_core`` rather than
+in ``_internals``, which houses mono-consumer mechanism plumbing.
+"""
+
+from __future__ import annotations
+
+from ._companion import companion_from_polynomial, companion_matrix, selector_matrix
+from ._containers import InformationCriteria, information_criteria
+from ._defaults import (
+    _D_MAX, _DEFAULT_GRID, _DEFAULT_MAX_ITER, _DEFAULT_STARTS, _DEFAULT_TOL,
+    _DEFAULT_TRIM, _DEFAULT_TRUNCATION, _GPH_EXPONENT, _LOG_2PI, _PACF_CLIP,
+    _PERSISTENCE_MAX, _ROW_SUM_ATOL, _SCHEMA_VERSION, _SQRT_2_OVER_PI,
+    _STABILITY_TOL, _TINY, _WHITTLE_EXPONENT,
+)
+from ._design import (
+    css_design, deterministic_columns, expand_ar, expand_ma, lag_matrix, n_deterministic,
+)
+from ._lag import LagPolynomial
+from ._linalg import ergodic_distribution, ols, psd_sqrt
+from ._protocols import (
+    FittedResult, Forecaster, MeanModelResult, TimeSeriesModel, VolatilityResult,
+)
+from ._reparam import coeffs_to_pacf, pacf_to_coeffs, pack_stationary, unpack_stationary
+from ._spectral import bandwidth, periodogram
+from ._stability import (
+    STABLE_TRIVIAL, StabilityResult, assess_stability,
+    assess_stability_from_companion, is_invertible, is_stationary,
+)
+from ._transforms import (
+    Standardized, difference, log_difference, log_transform, seasonal_difference,
+    standardize, undifference,
+)
+from ._types import Activation, LongMemoryMethod, Mean, Method, Transition, Trend, Vol
+
+__all__ = [
+    "Activation", "FittedResult", "Forecaster", "InformationCriteria",
+    "LagPolynomial", "LongMemoryMethod", "Mean", "MeanModelResult", "Method",
+    "STABLE_TRIVIAL", "StabilityResult", "Standardized", "TimeSeriesModel",
+    "Transition", "Trend", "Vol", "VolatilityResult", "assess_stability",
+    "assess_stability_from_companion", "bandwidth", "coeffs_to_pacf",
+    "companion_from_polynomial", "companion_matrix", "css_design",
+    "deterministic_columns", "difference", "ergodic_distribution", "expand_ar",
+    "expand_ma", "information_criteria", "is_invertible", "is_stationary",
+    "lag_matrix", "log_difference", "log_transform", "n_deterministic", "ols",
+    "pacf_to_coeffs", "pack_stationary", "periodogram", "psd_sqrt",
+    "seasonal_difference", "selector_matrix", "standardize", "undifference",
+    "unpack_stationary",
+]
