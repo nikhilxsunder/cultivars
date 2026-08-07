@@ -65,6 +65,17 @@ class StabilityResult:
     tol: float
 
 
+STABLE_TRIVIAL = StabilityResult(
+    eigenvalues=np.empty(0, dtype=np.complex128),
+    max_modulus=0.0,
+    is_stable=True,
+    n_unit_roots=0,
+    n_explosive=0,
+    tol=0.0,
+)
+"""The verdict for a zero-lag polynomial: trivially stable, no eigenvalues."""
+
+
 def _assess(
     companion: npt.NDArray[np.float64], *, tol: float, allow_unit_roots: bool
 ) -> StabilityResult:
@@ -121,7 +132,10 @@ def assess_stability(
         >>> round(res.max_modulus, 4)
         0.5
     """
-    return _assess(companion_matrix(ar_coeffs), tol=tol, allow_unit_roots=allow_unit_roots)
+    ar = np.asarray(ar_coeffs, dtype=np.float64)
+    if ar.size == 0:
+        return STABLE_TRIVIAL
+    return _assess(companion_matrix(ar), tol=tol, allow_unit_roots=allow_unit_roots)
 
 
 def assess_stability_from_companion(
@@ -169,4 +183,7 @@ def is_invertible(ma_coeffs: npt.ArrayLike, *, tol: float = 1e-8) -> bool:
     Returns:
         ``True`` iff all companion eigenvalues lie strictly inside the unit circle.
     """
-    return _assess(companion_matrix(ma_coeffs), tol=tol, allow_unit_roots=False).is_stable
+    ma = np.asarray(ma_coeffs, dtype=np.float64)
+    if ma.size == 0:
+        return True
+    return _assess(companion_matrix(ma), tol=tol, allow_unit_roots=False).is_stable
