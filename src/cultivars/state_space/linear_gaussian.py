@@ -53,15 +53,47 @@ References:
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
 
-from .._internals._state_space import FilterResult, SmootherResult, StateSpaceModel
+from .._internals._state_space import _FilterResult, _SmootherResult, _StateSpaceModel
 from ..exceptions import DimensionError, NumericalError
 
 
-class LinearGaussianStateSpace(StateSpaceModel):
+@dataclass(frozen=True, kw_only=True)
+class KalmanFilterResult(_FilterResult):
+    """Output of a linear-Gaussian forward filtering pass.
+
+    Attributes:
+        predicted_state: One-step-ahead predicted states ``a_{t|t-1}``, ``(n, m)``.
+        predicted_state_cov: Predicted state covariances ``P_{t|t-1}``, ``(n, m, m)``.
+        filtered_state: Contemporaneously filtered states ``a_{t|t}``, ``(n, m)``.
+        filtered_state_cov: Filtered state covariances ``P_{t|t}``, ``(n, m, m)``.
+    """
+
+    predicted_state: npt.NDArray[np.float64]
+    predicted_state_cov: npt.NDArray[np.float64]
+    filtered_state: npt.NDArray[np.float64]
+    filtered_state_cov: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True)
+class DurbinKoopmanSmootherResult(_SmootherResult):
+    """Output of a linear-Gaussian backward smoothing pass.
+
+    Attributes:
+        smoothed_state: Smoothed states ``a_{t|n}``, shape ``(n, m)``.
+        smoothed_state_cov: Smoothed state covariances ``V_{t|n}``, ``(n, m, m)``.
+    """
+
+    smoothed_state: npt.NDArray[np.float64]
+    smoothed_state_cov: npt.NDArray[np.float64]
+
+
+class LinearGaussianStateSpace(_StateSpaceModel[KalmanFilterResult, DurbinKoopmanSmootherResult]):
     """A linear-Gaussian state-space model.
 
     Args:

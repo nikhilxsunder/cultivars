@@ -51,21 +51,17 @@ References:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
 
-from .._core._lag import LagPolynomial
-from .._core._stability import StabilityResult, assess_stability
-from .._core._transforms import difference, seasonal_difference
-from ..exceptions import DimensionError, NumericalError, SpecificationError
+from .._core._stability import assess_stability
+from ..exceptions import NumericalError, SpecificationError
 from ..state_space.linear_gaussian import LinearGaussianStateSpace
-from .. univariate._base import (
-    InformationCriteria,
+from ..univariate._base import (
     coeffs_to_pacf,
-    information_criteria,
     pacf_to_coeffs,
 )
 
@@ -144,20 +140,29 @@ def _fit_sarimax(
         pac = np.clip(coeffs_to_pacf(coeffs), -0.999, 0.999)
         return np.arctanh(pac)
 
-    psi = np.concatenate([
-        beta0,
-        pack_ar(ar0),
-        np.zeros(cap_p),
-        np.zeros(q),
-        np.zeros(cap_q),
-        [np.log(sigma2_0)],
-    ])
+    psi = np.concatenate(
+        [
+            beta0,
+            pack_ar(ar0),
+            np.zeros(cap_p),
+            np.zeros(q),
+            np.zeros(cap_q),
+            [np.log(sigma2_0)],
+        ]
+    )
 
     idx = np.cumsum([k_beta, p, cap_p, q, cap_q])
 
     def unpack(
         vec: npt.NDArray[np.float64],
-    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64], float]:
+    ) -> tuple[
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        float,
+    ]:
         beta = vec[: idx[0]]
         phi = pacf_to_coeffs(np.tanh(vec[idx[0] : idx[1]])) if p else np.zeros(0)
         sphi = pacf_to_coeffs(np.tanh(vec[idx[1] : idx[2]])) if cap_p else np.zeros(0)
@@ -217,9 +222,10 @@ class ARMAResult(_MeanResult, _StationarityMixin):
     seasonal_ma_params: npt.NDArray[np.float64]
     beta: npt.NDArray[np.float64]
     sigma2: float
+
     def _stationarity_ar(self) -> npt.NDArray[np.float64]:
-        return expand_ar(self.ar_params, self.seasonal_ar_params,
-                         self.seasonal_order[3])  
+        return expand_ar(self.ar_params, self.seasonal_ar_params, self.seasonal_order[3])
+
 
 class ARMA:
     """ARMA(p, q) specification.
@@ -233,7 +239,13 @@ class ARMA:
 
     __slots__ = ("_endog", "_exog", "_p", "_q", "_trend")
 
-    def __init__(self, endog: npt.ArrayLike, order: tuple[int, int], trend: Trend = "c", exog: npt.ArrayLike | None = None) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        order: tuple[int, int],
+        trend: Trend = "c",
+        exog: npt.ArrayLike | None = None,
+    ) -> None:
         self._endog, self._exog = _validate(endog, exog)
         p, q = order
         if p < 0 or q < 0:
@@ -244,7 +256,9 @@ class ARMA:
 
     def fit(self) -> ARMAResult:
         """Estimate by exact maximum likelihood."""
-        return _fit_sarimax(self._endog, self._exog, (self._p, 0, self._q), (0, 0, 0, 0), self._trend)
+        return _fit_sarimax(
+            self._endog, self._exog, (self._p, 0, self._q), (0, 0, 0, 0), self._trend
+        )
 
 
 class ARIMA:
@@ -256,7 +270,13 @@ class ARIMA:
 
     __slots__ = ("_endog", "_exog", "_order", "_trend")
 
-    def __init__(self, endog: npt.ArrayLike, order: tuple[int, int, int], trend: Trend = "c", exog: npt.ArrayLike | None = None) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        order: tuple[int, int, int],
+        trend: Trend = "c",
+        exog: npt.ArrayLike | None = None,
+    ) -> None:
         self._endog, self._exog = _validate(endog, exog)
         p, d, q = order
         if min(p, d, q) < 0:
@@ -291,7 +311,9 @@ class SARIMA:
         if min(cap_p, cap_d, cap_q) < 0:
             raise SpecificationError(f"seasonal order must be non-negative; got {seasonal_order}.")
         if (cap_p or cap_d or cap_q) and s < 2:
-            raise SpecificationError(f"seasonal period s must be >= 2 when seasonal terms are present; got s={s}.")
+            raise SpecificationError(
+                f"seasonal period s must be >= 2 when seasonal terms are present; got s={s}."
+            )
         if trend not in ("n", "c", "ct"):
             raise SpecificationError(f"trend must be 'n', 'c', 'ct'; got {trend!r}.")
         self._order = (int(order[0]), int(order[1]), int(order[2]))
