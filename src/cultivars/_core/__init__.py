@@ -98,7 +98,6 @@ from ._types import (
     Method,
     Transition,
     Trend,
-    VolatilityResult,
 )
 
 __all__ = [
@@ -117,7 +116,6 @@ __all__ = [
     "TimeSeriesModel",
     "Transition",
     "Trend",
-    "Vol",
     "VolatilityResult",
     "assess_stability",
     "assess_stability_from_companion",

@@ -83,3 +83,72 @@ def bandwidth(nobs: int, m: int | None, exponent: float) -> int:
     if not (0.0 < exponent < 1.0):
         raise SpecificationError(f"bandwidth_exponent must lie in (0, 1); got {exponent}.")
     return max(2, int(np.floor(nobs**exponent)))
+
+
+def local_whittle_d(
+    y: npt.NDArray[np.float64], m: int | None = None, exponent: float = 0.65
+) -> tuple[float, int]:
+    """Local Whittle estimate of the fractional differencing parameter.
+
+    Args:
+        y: The series.
+        m: Explicit bandwidth, or ``None`` for the default rule.
+        exponent: Exponent in the default bandwidth rule.
+
+    Returns:
+        A tuple ``(d_hat, m_eff)``.
+    """
+    from scipy.optimize import minimize_scalar
+
+    from ._defaults import _D_MAX
+
+    freqs, ordinates = periodogram(y)
+    m_eff = min(bandwidth(y.shape[0], m, exponent), freqs.shape[0])
+    lam = freqs[:m_eff]
+    power = ordinates[:m_eff]
+    log_lam_mean = float(np.log(lam).mean())
+
+    def objective(d: float) -> float:
+        g = float(np.mean(lam ** (2.0 * d) * power))
+        if not np.isfinite(g) or g <= 0.0:
+            return 1e10
+        return float(np.log(g) - 2.0 * d * log_lam_mean)
+
+    result = minimize_scalar(objective, bounds=(-_D_MAX, _D_MAX), method="bounded")
+    return float(result.x), m_eff
+
+
+def gph_d(
+    y: npt.NDArray[np.float64], m: int | None = None, exponent: float = 0.5
+) -> tuple[float, float, int]:
+    """Geweke-Porter-Hudak log-periodogram estimate of ``d``.
+
+    Args:
+        y: The series.
+        m: Explicit bandwidth, or ``None`` for the default rule.
+        exponent: Exponent in the default bandwidth rule.
+
+    Returns:
+        A tuple ``(d_hat, se, m_eff)``.
+
+    Raises:
+        NumericalError: If the periodogram has non-positive ordinates, or the
+            regressor has zero variance.
+    """
+    from ..exceptions import NumericalError
+
+    freqs, ordinates = periodogram(y)
+    m_eff = min(bandwidth(y.shape[0], m, exponent), freqs.shape[0])
+    lam = freqs[:m_eff]
+    power = ordinates[:m_eff]
+    if np.any(power <= 0.0):
+        raise NumericalError("periodogram has non-positive ordinates; cannot take logs.")
+    regressor = -2.0 * np.log(2.0 * np.sin(lam / 2.0))
+    centered = regressor - regressor.mean()
+    denom = float(centered @ centered)
+    if denom <= 0.0:
+        raise NumericalError("degenerate GPH regression (zero regressor variance).")
+    response = np.log(power)
+    d_hat = float(centered @ (response - response.mean()) / denom)
+    se = float(np.pi / np.sqrt(24.0 * denom))
+    return d_hat, se, m_eff

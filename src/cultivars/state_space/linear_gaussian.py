@@ -57,8 +57,8 @@ import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
 
+from .._internals._state_space import FilterResult, SmootherResult, StateSpaceModel
 from ..exceptions import DimensionError, NumericalError
-from ..state_space.base import FilterResult, SmootherResult, StateSpaceModel
 
 
 class LinearGaussianStateSpace(StateSpaceModel):
@@ -145,9 +145,7 @@ class LinearGaussianStateSpace(StateSpaceModel):
         else:
             a1 = np.asarray(initial_state, dtype=np.float64)
             if a1.shape != (m,):
-                raise DimensionError(
-                    f"initial_state must have shape ({m},); got {a1.shape}."
-                )
+                raise DimensionError(f"initial_state must have shape ({m},); got {a1.shape}.")
             self._a1 = a1
 
         if initial_state_cov is None:
@@ -184,8 +182,7 @@ class LinearGaussianStateSpace(StateSpaceModel):
         arr = np.asarray(value, dtype=np.float64)
         if arr.ndim not in (1, 2) or arr.shape[-1] != dim:
             raise DimensionError(
-                f"{name} must be rank 1 ({dim},) or rank 2 (n, {dim}); "
-                f"got shape {arr.shape}."
+                f"{name} must be rank 1 ({dim},) or rank 2 (n, {dim}); got shape {arr.shape}."
             )
         if not np.all(np.isfinite(arr)):
             raise NumericalError(f"{name} contains non-finite values.")
@@ -196,9 +193,7 @@ class LinearGaussianStateSpace(StateSpaceModel):
             eig = np.abs(np.linalg.eigvals(self._T))
             if float(eig.max(initial=0.0)) < 1.0 - 1e-10:
                 rqr = self._R @ self._Q @ self._R.T
-                return np.asarray(
-                    sla.solve_discrete_lyapunov(self._T, rqr), dtype=np.float64
-                )
+                return np.asarray(sla.solve_discrete_lyapunov(self._T, rqr), dtype=np.float64)
         return np.eye(self._m, dtype=np.float64) * 1e6
 
     # -- accessors ---------------------------------------------------------
@@ -228,9 +223,7 @@ class LinearGaussianStateSpace(StateSpaceModel):
         if arr.ndim == 1:
             arr = arr.reshape(-1, 1)
         if arr.ndim != 2 or arr.shape[1] != self._p:
-            raise DimensionError(
-                f"observations must have shape (n, {self._p}); got {arr.shape}."
-            )
+            raise DimensionError(f"observations must have shape (n, {self._p}); got {arr.shape}.")
         return arr
 
     # -- forward pass ------------------------------------------------------
@@ -299,8 +292,15 @@ class LinearGaussianStateSpace(StateSpaceModel):
             P = 0.5 * (P + P.T)
 
         return _ForwardPass(
-            pred_a, pred_P, filt_a, filt_P, llc,
-            obs_index, innovation, innovation_precision, obs_design,
+            pred_a,
+            pred_P,
+            filt_a,
+            filt_P,
+            llc,
+            obs_index,
+            innovation,
+            innovation_precision,
+            obs_design,
         )
 
     # -- public operations -------------------------------------------------
