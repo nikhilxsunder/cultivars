@@ -77,6 +77,7 @@ from ._base import InformationCriteria, information_criteria
 # Plug-in engine interface (Protocol only — no model lives here)
 # --------------------------------------------------------------------------
 
+
 @runtime_checkable
 class MeanPredictor(Protocol):
     """A fitted, callable conditional-mean map produced by an engine.
@@ -119,6 +120,7 @@ class MeanFunctionEngine(Protocol):
 # Reference engine: a single-hidden-layer MLP (numpy + scipy only)
 # --------------------------------------------------------------------------
 
+
 def _activation(z: npt.NDArray[np.float64], kind: Activation) -> npt.NDArray[np.float64]:
     if kind == "tanh":
         return np.tanh(z)
@@ -155,9 +157,7 @@ class _FittedMLP:
         """Conditional means for ``features`` of shape ``(n, k)``."""
         x = np.asarray(features, dtype=np.float64)
         if x.ndim != 2 or x.shape[1] != self.w1.shape[0]:
-            raise DimensionError(
-                f"features must be (n, {self.w1.shape[0]}); got shape {x.shape}."
-            )
+            raise DimensionError(f"features must be (n, {self.w1.shape[0]}); got shape {x.shape}.")
         xs = (x - self.x_mean) / self.x_scale
         hidden = _activation(xs @ self.w1 + self.b1, self.activation)
         out = hidden @ self.w2 + self.b2
@@ -232,7 +232,9 @@ class NumpyMLPEngine:
         n_w1, n_b1, n_w2 = k * h, h, h
         size = n_w1 + n_b1 + n_w2 + 1
 
-        def unpack(theta: npt.NDArray[np.float64]) -> tuple[
+        def unpack(
+            theta: npt.NDArray[np.float64],
+        ) -> tuple[
             npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64], float
         ]:
             w1 = theta[:n_w1].reshape(k, h)
@@ -243,21 +245,21 @@ class NumpyMLPEngine:
 
         def loss_and_grad(theta: npt.NDArray[np.float64]) -> tuple[float, npt.NDArray[np.float64]]:
             w1, b1, w2, b2 = unpack(theta)
-            z1 = xs @ w1 + b1                       # (n, h)
-            a1 = _activation(z1, self.activation)   # (n, h)
-            pred = a1 @ w2 + b2                      # (n,)
+            z1 = xs @ w1 + b1  # (n, h)
+            a1 = _activation(z1, self.activation)  # (n, h)
+            pred = a1 @ w2 + b2  # (n,)
             resid = pred - ys
             mse = 0.5 * float(resid @ resid) / n
             penalty = 0.5 * self.alpha * (float(w1.ravel() @ w1.ravel()) + float(w2 @ w2))
             loss = mse + penalty
 
-            d_pred = resid / n                       # (n,)
-            g_w2 = a1.T @ d_pred + self.alpha * w2   # (h,)
+            d_pred = resid / n  # (n,)
+            g_w2 = a1.T @ d_pred + self.alpha * w2  # (h,)
             g_b2 = float(d_pred.sum())
-            d_a1 = np.outer(d_pred, w2)              # (n, h)
+            d_a1 = np.outer(d_pred, w2)  # (n, h)
             d_z1 = d_a1 * _activation_grad(z1, self.activation)
-            g_w1 = xs.T @ d_z1 + self.alpha * w1     # (k, h)
-            g_b1 = d_z1.sum(axis=0)                  # (h,)
+            g_w1 = xs.T @ d_z1 + self.alpha * w1  # (k, h)
+            g_b1 = d_z1.sum(axis=0)  # (h,)
             grad = np.concatenate([g_w1.ravel(), g_b1, g_w2, [g_b2]])
             return loss, grad
 
@@ -266,14 +268,21 @@ class NumpyMLPEngine:
         best_loss = np.inf
         w1_scale = np.sqrt(1.0 / k)
         for _ in range(self.n_restarts):
-            theta0 = np.concatenate([
-                rng.normal(0.0, w1_scale, size=n_w1),
-                np.zeros(n_b1),
-                rng.normal(0.0, 0.5, size=n_w2),
-                [0.0],
-            ])
-            result = minimize(loss_and_grad, theta0, jac=True, method="L-BFGS-B",
-                              options={"maxiter": self.max_iter})
+            theta0 = np.concatenate(
+                [
+                    rng.normal(0.0, w1_scale, size=n_w1),
+                    np.zeros(n_b1),
+                    rng.normal(0.0, 0.5, size=n_w2),
+                    [0.0],
+                ]
+            )
+            result = minimize(
+                loss_and_grad,
+                theta0,
+                jac=True,
+                method="L-BFGS-B",
+                options={"maxiter": self.max_iter},
+            )
             if float(result.fun) < best_loss:
                 best_loss = float(result.fun)
                 best_theta = np.asarray(result.x, dtype=np.float64)
@@ -283,15 +292,23 @@ class NumpyMLPEngine:
 
         w1, b1, w2, b2 = unpack(best_theta)
         return _FittedMLP(
-            w1=w1.copy(), b1=b1.copy(), w2=w2.copy(), b2=b2,
-            x_mean=x_mean, x_scale=x_scale, y_mean=y_mean, y_scale=y_scale,
-            activation=self.activation, _n_parameters=size,
+            w1=w1.copy(),
+            b1=b1.copy(),
+            w2=w2.copy(),
+            b2=b2,
+            x_mean=x_mean,
+            x_scale=x_scale,
+            y_mean=y_mean,
+            y_scale=y_scale,
+            activation=self.activation,
+            _n_parameters=size,
         )
 
 
 # --------------------------------------------------------------------------
 # Shared helpers
 # --------------------------------------------------------------------------
+
 
 def _validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     y = np.asarray(endog, dtype=np.float64)
@@ -318,6 +335,7 @@ def _gaussian_llf(ssr: float, nobs: int) -> tuple[float, float]:
 # --------------------------------------------------------------------------
 # AR-NN
 # --------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class ARNNResult:
@@ -418,7 +436,7 @@ class ARNN:
         True
     """
 
-    __slots__ = ("_y", "_order", "_engine")
+    __slots__ = ("_engine", "_order", "_y")
 
     def __init__(
         self,
@@ -468,6 +486,7 @@ class ARNN:
 # --------------------------------------------------------------------------
 # TAR-NN
 # --------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class TARNNResult:
@@ -600,7 +619,7 @@ class TARNN:
         True
     """
 
-    __slots__ = ("_y", "_order", "_engine", "_z", "_delay", "_threshold")
+    __slots__ = ("_delay", "_engine", "_order", "_threshold", "_y", "_z")
 
     def __init__(
         self,
@@ -682,9 +701,7 @@ class TARNN:
         nobs = target.shape[0]
         ssr = float(resid @ resid)
         sigma2, llf = _gaussian_llf(ssr, nobs)
-        n_params = (
-            int(lower_predictor.n_parameters) + int(upper_predictor.n_parameters) + 1
-        )
+        n_params = int(lower_predictor.n_parameters) + int(upper_predictor.n_parameters) + 1
         return TARNNResult(
             order=p,
             delay=delay,

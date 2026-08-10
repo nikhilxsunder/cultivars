@@ -41,7 +41,7 @@ The cultivars maintainer takes security vulnerabilities seriously. We appreciate
 
 Instead, please report them via one of:
 
-- **GitHub Security Advisories**: use the "Report a vulnerability" button under the repository's *Security* tab (preferred — this opens a private advisory)
+- **GitHub Security Advisories**: use the "Report a vulnerability" button under the repository's _Security_ tab (preferred — this opens a private advisory)
 - **Email**: nsunder724@gmail.com
 
 Please include the following information in your report:
@@ -73,10 +73,10 @@ When you report a vulnerability, you can expect:
 
 cultivars is pre-1.0. Only the latest minor release receives security updates; there are no long-term support branches before 1.0, and the public API may change between minor releases (see `SemVer` policy in the architecture document).
 
-| Version            | Supported |
-| ------------------ | --------- |
-| Latest 0.x minor   | Yes       |
-| Older 0.x minors   | No        |
+| Version          | Supported |
+| ---------------- | --------- |
+| Latest 0.x minor | Yes       |
+| Older 0.x minors | No        |
 
 Once 1.0 ships, this table will be updated to track supported major lines.
 
@@ -112,7 +112,7 @@ The maintainer is familiar with the following vulnerability classes relevant to 
 
 5. **Sensitive or Excessive Data in Logs and Errors**
    - **Vulnerability**: Leaking input data values or environment details through logs or exception messages.
-   - **Mitigation**: Log messages and exceptions describe *shapes, types, and conditions* rather than echoing data payloads; custom exception types filter what they surface.
+   - **Mitigation**: Log messages and exceptions describe _shapes, types, and conditions_ rather than echoing data payloads; custom exception types filter what they surface.
 
 ### Optional Data-Loader Extra
 

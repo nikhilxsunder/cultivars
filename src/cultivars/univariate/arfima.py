@@ -65,25 +65,17 @@ References:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize, minimize_scalar
+from scipy.optimize import minimize
 
-from .._core._stability import StabilityResult, assess_stability
-from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ..exceptions import NumericalError, SpecificationError
 from ._base import (
-    InformationCriteria,
-    information_criteria,
     pacf_to_coeffs,
 )
-from .arma import _arma_state_space                   # keeps |d| strictly inside the stationary band
-
-
-
-
-
+from .arma import _arma_state_space  # keeps |d| strictly inside the stationary band
 
 # --------------------------------------------------------------------------
 # AR(infinity) weights (for forecasting)
@@ -94,6 +86,7 @@ from .arma import _arma_state_space                   # keeps |d| strictly insid
 # Result
 # --------------------------------------------------------------------------
 
+
 @dataclass(frozen=True, kw_only=True, slots=True)
 class ARFIMAResult(_MeanResult, _StationarityMixin):
     order: tuple[int, int]
@@ -103,9 +96,11 @@ class ARFIMAResult(_MeanResult, _StationarityMixin):
     ma_params: npt.NDArray[np.float64]
     sigma2: float
 
+
 # --------------------------------------------------------------------------
 # Engine
 # --------------------------------------------------------------------------
+
 
 def _fit_arfima(
     y: npt.NDArray[np.float64], p: int, q: int, estimate_mean: bool, truncation: int
@@ -181,6 +176,7 @@ def _fit_arfima(
 # Spec
 # --------------------------------------------------------------------------
 
+
 class ARFIMA:
     """ARFIMA(p, d, q) specification with jointly estimated fractional ``d``.
 
@@ -210,7 +206,7 @@ class ARFIMA:
         True
     """
 
-    __slots__ = ("_y", "_p", "_q", "_trend", "_truncation")
+    __slots__ = ("_p", "_q", "_trend", "_truncation", "_y")
 
     def __init__(
         self,
@@ -251,6 +247,4 @@ class ARFIMA:
         Returns:
             The fitted :class:`ARFIMAResult`.
         """
-        return _fit_arfima(
-            self._y, self._p, self._q, self._trend == "c", self._truncation
-        )
+        return _fit_arfima(self._y, self._p, self._q, self._trend == "c", self._truncation)

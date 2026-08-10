@@ -65,6 +65,7 @@ class ARResult(_MeanResult, _StationarityMixin):
     :class:`_MeanResult`, and stationarity assessment from
     :class:`_StationarityMixin`.
     """
+
     order: int
     trend: str
     method: str
@@ -77,12 +78,18 @@ class ARResult(_MeanResult, _StationarityMixin):
         if h < 1:
             raise ValueError(f"horizon must be >= 1; got {h}.")
         return _forecast_ar(
-            self.endog, self.ar_params, self.const, self.trend_coeff,
-            self.nobs + self.order, h,
+            self.endog,
+            self.ar_params,
+            self.const,
+            self.trend_coeff,
+            self.nobs + self.order,
+            h,
         )
+
 
 class AR(_UnivariateModel[ARResult]):
     """Autoregressive AR(p) specification fit by conditional least squares."""
+
     __slots__ = ("_order", "_trend")
 
     def __init__(self, endog: npt.ArrayLike, order: int, trend: str = "c") -> None:
@@ -96,6 +103,7 @@ class AR(_UnivariateModel[ARResult]):
     @property
     def order(self) -> int:
         return self._order
+
     @property
     def trend(self) -> str:
         return self._trend
@@ -105,10 +113,17 @@ class AR(_UnivariateModel[ARResult]):
             raise ValueError(f"unknown method {method!r}; expected 'css'.")
         fit = _fit_ar_css(self.endog, self._order, self._trend)
         return ARResult(
-            llf=fit.llf, nobs=fit.nobs,
+            llf=fit.llf,
+            nobs=fit.nobs,
             n_params=self._order + n_deterministic(self._trend) + 1,
-            endog=self.endog, resid=fit.resid, fittedvalues=fit.fittedvalues,
-            order=self._order, trend=self._trend, method=method,
-            const=fit.const, trend_coeff=fit.trend_coeff,
-            ar_params=fit.ar_params, sigma2=fit.sigma2,
+            endog=self.endog,
+            resid=fit.resid,
+            fittedvalues=fit.fittedvalues,
+            order=self._order,
+            trend=self._trend,
+            method=method,
+            const=fit.const,
+            trend_coeff=fit.trend_coeff,
+            ar_params=fit.ar_params,
+            sigma2=fit.sigma2,
         )

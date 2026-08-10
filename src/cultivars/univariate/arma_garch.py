@@ -55,7 +55,7 @@ References:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
@@ -63,26 +63,16 @@ from scipy.optimize import minimize
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._base import (
-    InformationCriteria,
-    coeffs_to_pacf,
-    information_criteria,
     pacf_to_coeffs,
 )
 from .garch import (
     Vol,
     _backcast,
-    _egarch_variance,
-    _figarch_variance,
-    _garch_variance,
-    _inv_softplus,
-    _softplus,
 )
 
 # --------------------------------------------------------------------------
 # ARMA conditional mean (conditional sum of squares)
 # --------------------------------------------------------------------------
-
-
 
 
 # --------------------------------------------------------------------------
@@ -92,6 +82,7 @@ from .garch import (
 # --------------------------------------------------------------------------
 # Result
 # --------------------------------------------------------------------------
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class ARMAGARCHResult(_MeanResult, _StationarityMixin, _ConditionalVarianceMixin):
@@ -108,9 +99,11 @@ class ARMAGARCHResult(_MeanResult, _StationarityMixin, _ConditionalVarianceMixin
     fractional_d: float | None
     conditional_variance: npt.NDArray[np.float64]
 
+
 # --------------------------------------------------------------------------
 # Engine
 # --------------------------------------------------------------------------
+
 
 def _fit_arma_garch(
     y: npt.NDArray[np.float64],
@@ -168,7 +161,7 @@ def _fit_arma_garch(
             return 1e10
         if not np.all(np.isfinite(sigma2)) or np.any(sigma2 <= 0.0):
             return 1e10
-        ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid ** 2 / sigma2)
+        ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2)
         return float(-ll) if np.isfinite(ll) else 1e10
 
     result = minimize(negloglik, theta_init, method="L-BFGS-B")
@@ -208,6 +201,7 @@ def _fit_arma_garch(
 # --------------------------------------------------------------------------
 # Spec
 # --------------------------------------------------------------------------
+
 
 class ARMAGARCH:
     """ARMA(p, q) mean with a GARCH-family conditional variance.
@@ -252,7 +246,7 @@ class ARMAGARCH:
         (3,)
     """
 
-    __slots__ = ("_y", "_p", "_q", "_vol", "_go", "_const", "_truncation")
+    __slots__ = ("_const", "_go", "_p", "_q", "_truncation", "_vol", "_y")
 
     def __init__(
         self,
@@ -316,6 +310,13 @@ class ARMAGARCH:
         """Estimate the mean and variance jointly by Gaussian maximum likelihood."""
         gp, go_, gq = self._go
         return _fit_arma_garch(
-            self._y, self._p, self._q, self._const, self._vol,
-            gp, go_, gq, self._truncation,
+            self._y,
+            self._p,
+            self._q,
+            self._const,
+            self._vol,
+            gp,
+            go_,
+            gq,
+            self._truncation,
         )

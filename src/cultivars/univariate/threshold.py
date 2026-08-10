@@ -41,19 +41,18 @@ References:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
 
 from cultivars.exceptions import DimensionError, NumericalError, SpecificationError
-from cultivars.univariate._base import InformationCriteria, information_criteria
-
 
 # --------------------------------------------------------------------------
 # SETAR / TAR
 # --------------------------------------------------------------------------
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class SETARResult(_MeanResult):
@@ -65,6 +64,7 @@ class SETARResult(_MeanResult):
     ssr: float
     n_lower: int
     n_upper: int
+
 
 def _fit_setar(
     y: npt.NDArray[np.float64],
@@ -84,7 +84,9 @@ def _fit_setar(
     min_regime = order + 2
 
     best_ssr = np.inf
-    best: tuple[int, float, npt.NDArray[np.float64], npt.NDArray[np.float64], int, int] | None = None
+    best: tuple[int, float, npt.NDArray[np.float64], npt.NDArray[np.float64], int, int] | None = (
+        None
+    )
     for d in delays:
         z = base[start - d : n - d]
         grid = np.quantile(z, np.linspace(trim, 1.0 - trim, n_grid))
@@ -102,7 +104,9 @@ def _fit_setar(
                 best = (d, float(r), b_lo, b_hi, n_lo, n_hi)
 
     if best is None:
-        raise NumericalError("SETAR grid search found no admissible threshold; relax trim or shorten order.")
+        raise NumericalError(
+            "SETAR grid search found no admissible threshold; relax trim or shorten order."
+        )
 
     d_star, r_star, b_lo, b_hi, n_lo, n_hi = best
     z = base[start - d_star : n - d_star]
@@ -113,11 +117,22 @@ def _fit_setar(
     llf = -0.5 * n_eff * (_LOG_2PI + np.log(sigma2) + 1.0)
     n_params = 2 * (order + 1) + 1
     return SETARResult(
-        order=order, delay=d_star, threshold=r_star,
-        lower_params=b_lo, upper_params=b_hi,
-        sigma2=sigma2, ssr=best_ssr, n_lower=n_lo, n_upper=n_hi,
-        llf=llf, nobs=n_eff, resid=resid, fittedvalues=fitted, _n_params=n_params,
+        order=order,
+        delay=d_star,
+        threshold=r_star,
+        lower_params=b_lo,
+        upper_params=b_hi,
+        sigma2=sigma2,
+        ssr=best_ssr,
+        n_lower=n_lo,
+        n_upper=n_hi,
+        llf=llf,
+        nobs=n_eff,
+        resid=resid,
+        fittedvalues=fitted,
+        _n_params=n_params,
     )
+
 
 class SETAR:
     """Self-exciting threshold AR (2 regimes); threshold variable is a lag of the series.
@@ -130,9 +145,16 @@ class SETAR:
         n_grid: Number of candidate thresholds per delay.
     """
 
-    __slots__ = ("_y", "_order", "_delays", "_trim", "_n_grid")
+    __slots__ = ("_delays", "_n_grid", "_order", "_trim", "_y")
 
-    def __init__(self, endog: npt.ArrayLike, order: int, delay: int | None = None, trim: float = 0.15, n_grid: int = 300) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        order: int,
+        delay: int | None = None,
+        trim: float = 0.15,
+        n_grid: int = 300,
+    ) -> None:
         self._y = _validate_endog(endog)
         if order < 1:
             raise SpecificationError(f"order must be >= 1; got {order}.")
@@ -159,13 +181,23 @@ class TAR:
         n_grid: Number of candidate thresholds.
     """
 
-    __slots__ = ("_y", "_order", "_z", "_delays", "_trim", "_n_grid")
+    __slots__ = ("_delays", "_n_grid", "_order", "_trim", "_y", "_z")
 
-    def __init__(self, endog: npt.ArrayLike, order: int, threshold_variable: npt.ArrayLike, delay: int = 1, trim: float = 0.15, n_grid: int = 300) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        order: int,
+        threshold_variable: npt.ArrayLike,
+        delay: int = 1,
+        trim: float = 0.15,
+        n_grid: int = 300,
+    ) -> None:
         self._y = _validate_endog(endog)
         z = np.asarray(threshold_variable, dtype=np.float64)
         if z.shape != self._y.shape:
-            raise DimensionError(f"threshold_variable must match endog shape {self._y.shape}; got {z.shape}.")
+            raise DimensionError(
+                f"threshold_variable must match endog shape {self._y.shape}; got {z.shape}."
+            )
         if not np.all(np.isfinite(z)):
             raise NumericalError("threshold_variable contains non-finite values.")
         if order < 1:
@@ -181,6 +213,7 @@ class TAR:
 # STAR (LSTAR / ESTAR)
 # --------------------------------------------------------------------------
 
+
 @dataclass(frozen=True, kw_only=True, slots=True)
 class STARResult(_MeanResult):
     order: int
@@ -193,7 +226,9 @@ class STARResult(_MeanResult):
     ssr: float
 
 
-def _fit_star(y: npt.NDArray[np.float64], order: int, delay: int, transition: Transition) -> STARResult:
+def _fit_star(
+    y: npt.NDArray[np.float64], order: int, delay: int, transition: Transition
+) -> STARResult:
     n = y.shape[0]
     start = max(order, delay)
     target = y[start:]
@@ -208,9 +243,11 @@ def _fit_star(y: npt.NDArray[np.float64], order: int, delay: int, transition: Tr
         u = (z - c) / sd
         if transition == "logistic":
             return 1.0 / (1.0 + np.exp(-np.clip(gamma * u, -50.0, 50.0)))
-        return 1.0 - np.exp(-np.clip(gamma * u ** 2, 0.0, 50.0))
+        return 1.0 - np.exp(-np.clip(gamma * u**2, 0.0, 50.0))
 
-    def concentrated(gamma: float, c: float) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    def concentrated(
+        gamma: float, c: float
+    ) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         g = transition_weights(gamma, c)
         regressors = np.column_stack([design * (1.0 - g)[:, None], design * g[:, None]])
         beta, ssr = _ols(regressors, target)
@@ -235,7 +272,9 @@ def _fit_star(y: npt.NDArray[np.float64], order: int, delay: int, transition: Tr
     for c0 in (c_seed, float(np.median(z))):
         for g0 in (2.0, 5.0, 10.0, 25.0):
             res = minimize(
-                objective, np.array([np.log(g0), c0]), method="Nelder-Mead",
+                objective,
+                np.array([np.log(g0), c0]),
+                method="Nelder-Mead",
                 options={"xatol": 1e-4, "fatol": 1e-7, "maxiter": 2000},
             )
             if float(res.fun) < best_ssr:
@@ -251,16 +290,27 @@ def _fit_star(y: npt.NDArray[np.float64], order: int, delay: int, transition: Tr
     llf = -0.5 * n_eff * (_LOG_2PI + np.log(sigma2) + 1.0)
     n_params = 2 * (order + 1) + 2
     return STARResult(
-        order=order, delay=delay, transition=transition,
-        lower_params=lower, upper_params=upper, gamma=gamma, threshold=c,
-        sigma2=sigma2, ssr=ssr, llf=llf, nobs=n_eff,
-        resid=resid, fittedvalues=fitted, _n_params=n_params,
+        order=order,
+        delay=delay,
+        transition=transition,
+        lower_params=lower,
+        upper_params=upper,
+        gamma=gamma,
+        threshold=c,
+        sigma2=sigma2,
+        ssr=ssr,
+        llf=llf,
+        nobs=n_eff,
+        resid=resid,
+        fittedvalues=fitted,
+        _n_params=n_params,
     )
+
 
 class LSTAR:
     """Logistic smooth-transition AR (asymmetric regimes)."""
 
-    __slots__ = ("_y", "_order", "_delay")
+    __slots__ = ("_delay", "_order", "_y")
 
     def __init__(self, endog: npt.ArrayLike, order: int, delay: int = 1) -> None:
         self._y = _validate_endog(endog)
@@ -277,7 +327,7 @@ class LSTAR:
 class ESTAR:
     """Exponential smooth-transition AR (symmetric regimes)."""
 
-    __slots__ = ("_y", "_order", "_delay")
+    __slots__ = ("_delay", "_order", "_y")
 
     def __init__(self, endog: npt.ArrayLike, order: int, delay: int = 1) -> None:
         self._y = _validate_endog(endog)

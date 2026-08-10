@@ -48,9 +48,21 @@ import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
 
-from ._layouts import _Layout
-
 from .._core import (
+    _DEFAULT_GRID,
+    _DEFAULT_MAX_ITER,
+    _DEFAULT_STARTS,
+    _DEFAULT_TOL,
+    _DEFAULT_TRIM,
+    _DEFAULT_TRUNCATION,
+    _LOG_2PI,
+    Mean,
+    Transition,
+    Trend,
+    Vol,
+    ergodic_distribution,
+    lag_matrix,
+    psd_sqrt,
     validate_aligned,
     validate_choice,
     validate_endog,
@@ -58,20 +70,6 @@ from .._core import (
     validate_open_interval,
     validate_order,
     validate_order_tuple,
-    _LOG_2PI,
-    psd_sqrt,
-    Trend,
-    Vol,
-    _DEFAULT_TRUNCATION,
-    _DEFAULT_TOL,
-    Mean,
-    _DEFAULT_MAX_ITER,
-    _DEFAULT_STARTS,
-    lag_matrix,
-    _DEFAULT_TRIM,
-    _DEFAULT_GRID,
-    Transition,
-    ergodic_distribution,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._engines import MeanFunctionEngine, NumpyMLPEngine
@@ -84,6 +82,7 @@ from ._fits import (
     _SmoothTransitionFit,
     _ThresholdFit,
 )
+from ._layouts import _Layout
 from ._results import (
     _DurbinKoopmanSmootherResult,
     _FilterResult,

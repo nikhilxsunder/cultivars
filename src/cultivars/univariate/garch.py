@@ -1,5 +1,3 @@
-
-
 """Conditional-variance models: GARCH, GJR-GARCH, EGARCH.
 
 These are NOT state-space models; the conditional variance follows a
@@ -17,15 +15,14 @@ References:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
 
-from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ..univariate._base import InformationCriteria, information_criteria
+from ..exceptions import SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -77,29 +74,37 @@ def _fit_garch(
 
     a_init, b_init, g_init = 0.05, 0.90, 0.05
     if vol == "GARCH":
-        var_raw0 = np.concatenate([
-            [np.log(var0 * (1 - a_init - b_init))],
-            [_inv_softplus(a_init)] * p,
-            [_inv_softplus(b_init)] * q,
-        ])
+        var_raw0 = np.concatenate(
+            [
+                [np.log(var0 * (1 - a_init - b_init))],
+                [_inv_softplus(a_init)] * p,
+                [_inv_softplus(b_init)] * q,
+            ]
+        )
     elif vol == "GJR":
-        var_raw0 = np.concatenate([
-            [np.log(var0 * (1 - a_init - b_init - 0.5 * g_init))],
-            [_inv_softplus(a_init)] * p,
-            [g_init] * o,
-            [_inv_softplus(b_init)] * q,
-        ])
+        var_raw0 = np.concatenate(
+            [
+                [np.log(var0 * (1 - a_init - b_init - 0.5 * g_init))],
+                [_inv_softplus(a_init)] * p,
+                [g_init] * o,
+                [_inv_softplus(b_init)] * q,
+            ]
+        )
     else:  # EGARCH
-        var_raw0 = np.concatenate([
-            [np.log(var0) * (1 - 0.95)],
-            [0.1] * p,
-            [-0.05] * o,
-            [0.95] * q,
-        ])
+        var_raw0 = np.concatenate(
+            [
+                [np.log(var0) * (1 - 0.95)],
+                [0.1] * p,
+                [-0.05] * o,
+                [0.95] * q,
+            ]
+        )
     theta0 = np.concatenate([mean0, var_raw0])
     m_idx = k_mean
 
-    def unpack_var(v: npt.NDArray[np.float64]) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    def unpack_var(
+        v: npt.NDArray[np.float64],
+    ) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         if vol == "GARCH":
             omega = float(np.exp(v[0]))
             alpha = _softplus(v[1 : 1 + p])
@@ -131,7 +136,7 @@ def _fit_garch(
             sigma2 = _garch_variance(resid, omega, alpha, gamma, beta, backcast)
         if not np.all(np.isfinite(sigma2)) or np.any(sigma2 <= 0.0):
             return 1e10
-        ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid ** 2 / sigma2)
+        ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2)
         return float(-ll) if np.isfinite(ll) else 1e10
 
     result = minimize(negloglik, theta0, method="L-BFGS-B")
@@ -183,19 +188,18 @@ def _fit_figarch(
     # unconstrained params: mean, log_omega, u_phi, u_d, u_beta (phi,d,beta in (0,1) via sigmoid)
     theta0 = np.concatenate([mean0, [np.log(var0 * 0.4), -1.0, -0.2, 0.4]])
 
-
     def sig(x: float) -> float:
         return float(1.0 / (1.0 + np.exp(-x)))
 
-
-    def unpack(theta: npt.NDArray[np.float64]) -> tuple[npt.NDArray[np.float64], float, float, float, float]:
+    def unpack(
+        theta: npt.NDArray[np.float64],
+    ) -> tuple[npt.NDArray[np.float64], float, float, float, float]:
         mean = theta[:k_mean]
         omega = float(np.exp(theta[k_mean]))
         phi = sig(float(theta[k_mean + 1]))
         d = sig(float(theta[k_mean + 2]))
         beta = sig(float(theta[k_mean + 3]))
         return mean, omega, phi, d, beta
-
 
     def negloglik(theta: npt.NDArray[np.float64]) -> float:
         mean, omega, phi, d, beta = unpack(theta)
@@ -206,7 +210,7 @@ def _fit_figarch(
         sigma2 = _figarch_variance(resid, omega, phi, d, beta, backcast, truncation)
         if not np.all(np.isfinite(sigma2)) or np.any(sigma2 <= 0.0):
             return 1e10
-        ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid ** 2 / sigma2)
+        ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2)
         return float(-ll) if np.isfinite(ll) else 1e10
 
     result = minimize(negloglik, theta0, method="L-BFGS-B")
@@ -244,9 +248,16 @@ class GARCH:
         ar_lags: Optional AR order for the conditional mean (AR-GARCH).
     """
 
-    __slots__ = ("_y", "_p", "_q", "_ar", "_const")
+    __slots__ = ("_ar", "_const", "_p", "_q", "_y")
 
-    def __init__(self, endog: npt.ArrayLike, p: int = 1, q: int = 1, mean: Literal["constant", "zero"] = "constant", ar_lags: int = 0) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        p: int = 1,
+        q: int = 1,
+        mean: Literal["constant", "zero"] = "constant",
+        ar_lags: int = 0,
+    ) -> None:
         self._y = _validate_garch(endog, p, 0, q, ar_lags)
         self._p, self._q, self._ar, self._const = int(p), int(q), int(ar_lags), mean == "constant"
 
@@ -257,11 +268,25 @@ class GARCH:
 class GJR:
     """GJR-GARCH(p, o, q) — asymmetric (leverage) GARCH."""
 
-    __slots__ = ("_y", "_p", "_o", "_q", "_ar", "_const")
+    __slots__ = ("_ar", "_const", "_o", "_p", "_q", "_y")
 
-    def __init__(self, endog: npt.ArrayLike, p: int = 1, o: int = 1, q: int = 1, mean: Literal["constant", "zero"] = "constant", ar_lags: int = 0) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        p: int = 1,
+        o: int = 1,
+        q: int = 1,
+        mean: Literal["constant", "zero"] = "constant",
+        ar_lags: int = 0,
+    ) -> None:
         self._y = _validate_garch(endog, p, o, q, ar_lags)
-        self._p, self._o, self._q, self._ar, self._const = int(p), int(o), int(q), int(ar_lags), mean == "constant"
+        self._p, self._o, self._q, self._ar, self._const = (
+            int(p),
+            int(o),
+            int(q),
+            int(ar_lags),
+            mean == "constant",
+        )
 
     def fit(self) -> GARCHResult:
         return _fit_garch(self._y, self._p, self._o, self._q, self._ar, self._const, "GJR")
@@ -274,11 +299,25 @@ class EGARCH:
     implementation; flagged for the validation pass.
     """
 
-    __slots__ = ("_y", "_p", "_o", "_q", "_ar", "_const")
+    __slots__ = ("_ar", "_const", "_o", "_p", "_q", "_y")
 
-    def __init__(self, endog: npt.ArrayLike, p: int = 1, o: int = 1, q: int = 1, mean: Literal["constant", "zero"] = "constant", ar_lags: int = 0) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        p: int = 1,
+        o: int = 1,
+        q: int = 1,
+        mean: Literal["constant", "zero"] = "constant",
+        ar_lags: int = 0,
+    ) -> None:
         self._y = _validate_garch(endog, p, o, q, ar_lags)
-        self._p, self._o, self._q, self._ar, self._const = int(p), int(o), int(q), int(ar_lags), mean == "constant"
+        self._p, self._o, self._q, self._ar, self._const = (
+            int(p),
+            int(o),
+            int(q),
+            int(ar_lags),
+            mean == "constant",
+        )
 
     def fit(self) -> GARCHResult:
         return _fit_garch(self._y, self._p, self._o, self._q, self._ar, self._const, "EGARCH")
@@ -293,9 +332,14 @@ class FIGARCH:
         truncation: ARCH(inf) truncation lag for the lambda weights.
     """
 
-    __slots__ = ("_y", "_const", "_truncation")
+    __slots__ = ("_const", "_truncation", "_y")
 
-    def __init__(self, endog: npt.ArrayLike, mean: Literal["constant", "zero"] = "constant", truncation: int = 1000) -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        mean: Literal["constant", "zero"] = "constant",
+        truncation: int = 1000,
+    ) -> None:
         self._y = _validate_garch(endog, 1, 0, 1, 0)
         if truncation < 1:
             raise SpecificationError(f"truncation must be >= 1; got {truncation}.")

@@ -61,7 +61,7 @@ References:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
@@ -72,11 +72,11 @@ from ..state_space.regime_switching import (
     hamilton_filter,
     kim_smoother,
 )
-from ._base import InformationCriteria, information_criteria
 
 # --------------------------------------------------------------------------
 # Internal EM machinery
 # --------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class _Layout:
@@ -112,9 +112,9 @@ class _Layout:
 @dataclass(frozen=True)
 class _EMFit:
     transition: npt.NDArray[np.float64]
-    intercepts: npt.NDArray[np.float64]      # (K,)
-    ar_params: npt.NDArray[np.float64]       # (K, p)
-    sigma2: npt.NDArray[np.float64]          # (K,)
+    intercepts: npt.NDArray[np.float64]  # (K,)
+    ar_params: npt.NDArray[np.float64]  # (K, p)
+    sigma2: npt.NDArray[np.float64]  # (K,)
     filtered_prob: npt.NDArray[np.float64]
     predicted_prob: npt.NDArray[np.float64]
     smoothed_prob: npt.NDArray[np.float64]
@@ -168,13 +168,9 @@ def _run_em(
 
         # M-step -----------------------------------------------------------
         transition = _update_transition(smoothed, smooth.smoothed_joint_prob, prob_floor)
-        intercepts, ar_params = _update_coefficients(
-            target, lags, smoothed, sigma2, layout
-        )
+        intercepts, ar_params = _update_coefficients(target, lags, smoothed, sigma2, layout)
         means = _regime_means(intercepts, ar_params, lags)
-        sigma2 = _update_variance(
-            target, means, smoothed, switching_variance, var_floor
-        )
+        sigma2 = _update_variance(target, means, smoothed, switching_variance, var_floor)
 
     return _EMFit(
         transition=transition,
@@ -193,6 +189,7 @@ def _run_em(
 # --------------------------------------------------------------------------
 # Result
 # --------------------------------------------------------------------------
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class MSARResult(_MeanResult):
@@ -216,6 +213,7 @@ class MSARResult(_MeanResult):
 # --------------------------------------------------------------------------
 # Spec
 # --------------------------------------------------------------------------
+
 
 class MSAR:
     """Markov-switching autoregression MS-AR(p) with ``K`` regimes.
@@ -249,7 +247,12 @@ class MSAR:
     """
 
     __slots__ = (
-        "_y", "_order", "_k", "_sw_mean", "_sw_var", "_sw_ar",
+        "_k",
+        "_order",
+        "_sw_ar",
+        "_sw_mean",
+        "_sw_var",
+        "_y",
     )
 
     def __init__(
@@ -350,8 +353,14 @@ class MSAR:
                 sig[:] = sig.mean()
             return np.clip(sig, var_floor, None)
 
-        def make_start(index: int) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64],
-                                             npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        def make_start(
+            index: int,
+        ) -> tuple[
+            npt.NDArray[np.float64],
+            npt.NDArray[np.float64],
+            npt.NDArray[np.float64],
+            npt.NDArray[np.float64],
+        ]:
             if index == 0:
                 intercepts = np.quantile(y, np.linspace(0.5 / k, 1.0 - 0.5 / k, k))
                 diagonal = 0.9
@@ -374,8 +383,18 @@ class MSAR:
             transition0, intercepts0, ar_start, sigma20 = make_start(index)
             try:
                 fit = _run_em(
-                    target, lags, layout, transition0, intercepts0, ar_start, sigma20,
-                    var_floor, prob_floor, screen_iter, tol, self._sw_var,
+                    target,
+                    lags,
+                    layout,
+                    transition0,
+                    intercepts0,
+                    ar_start,
+                    sigma20,
+                    var_floor,
+                    prob_floor,
+                    screen_iter,
+                    tol,
+                    self._sw_var,
                 )
             except NumericalError:
                 continue
@@ -387,8 +406,18 @@ class MSAR:
 
         # Refine the winning start to full convergence.
         refined = _run_em(
-            target, lags, layout, best.transition, best.intercepts, best.ar_params,
-            best.sigma2, var_floor, prob_floor, max_iter, tol, self._sw_var,
+            target,
+            lags,
+            layout,
+            best.transition,
+            best.intercepts,
+            best.ar_params,
+            best.sigma2,
+            var_floor,
+            prob_floor,
+            max_iter,
+            tol,
+            self._sw_var,
         )
         fit = refined if refined.llf >= best.llf else best
         return self._finalize(fit, layout, target, lags)
@@ -401,7 +430,7 @@ class MSAR:
         lags: npt.NDArray[np.float64],
     ) -> MSARResult:
         order, k = self._order, self._k
-        perm = np.argsort(fit.intercepts)             # order regimes by intercept
+        perm = np.argsort(fit.intercepts)  # order regimes by intercept
         transition = fit.transition[np.ix_(perm, perm)]
         intercepts = fit.intercepts[perm]
         ar_params = fit.ar_params[perm]
@@ -414,12 +443,7 @@ class MSAR:
         fitted = (smoothed * means).sum(axis=1)
         resid = target - fitted
 
-        n_params = (
-            k * (k - 1)
-            + layout.n_intercept
-            + layout.n_ar
-            + (k if self._sw_var else 1)
-        )
+        n_params = k * (k - 1) + layout.n_intercept + layout.n_ar + (k if self._sw_var else 1)
         return MSARResult(
             n_regimes=k,
             order=order,

@@ -29,12 +29,36 @@ in ``_internals``, which houses mono-consumer mechanism plumbing.
 
 from __future__ import annotations
 
-from ._defaults import _D_MAX, _DEFAULT_MAX_ITER, _LOG_2PI, _SQRT_2_OVER_PI, _DEFAULT_TRUNCATION, _DEFAULT_TOL, _DEFAULT_STARTS, _DEFAULT_TRIM, _DEFAULT_GRID
-from ._estimators import local_whittle_d, ols, ewma_mean_square, concentrated_gaussian, ergodic_distribution
-from ._matrices import companion_matrix, conditional_design, deterministic_columns, n_deterministic, lag_matrix, psd_sqrt
+from ._defaults import (
+    _D_MAX,
+    _DEFAULT_GRID,
+    _DEFAULT_MAX_ITER,
+    _DEFAULT_STARTS,
+    _DEFAULT_TOL,
+    _DEFAULT_TRIM,
+    _DEFAULT_TRUNCATION,
+    _LOG_2PI,
+    _SQRT_2_OVER_PI,
+)
+from ._estimators import (
+    concentrated_gaussian,
+    ergodic_distribution,
+    ewma_mean_square,
+    local_whittle_d,
+    ols,
+)
+from ._matrices import (
+    companion_matrix,
+    conditional_design,
+    deterministic_columns,
+    lag_matrix,
+    n_deterministic,
+    psd_sqrt,
+)
 from ._polynomials import expand_ar, expand_ma
-from ._reparam import pack_stationary, unpack_stationary, softplus, inv_softplus
+from ._reparam import inv_softplus, pack_stationary, softplus, unpack_stationary
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
+from ._types import Mean, Transition, Trend, Vol
 from ._validators import (
     validate_aligned,
     validate_choice,
@@ -44,7 +68,6 @@ from ._validators import (
     validate_order,
     validate_order_tuple,
 )
-from ._types import Trend, Vol, Mean, Transition
 
 __all__ = [
     "_DEFAULT_MAX_ITER",
