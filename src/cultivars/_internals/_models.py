@@ -46,9 +46,30 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import numpy.typing as npt
+import scipy.linalg as sla
 
-from .._core._validators import validate_endog
-from ..exceptions import DimensionError
+from cultivars._core._containers import _Layout
+
+from .._core._validators import (
+    validate_aligned,
+    validate_choice,
+    validate_endog,
+    validate_exog,
+    validate_open_interval,
+    validate_order,
+    validate_order_tuple,
+)
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._engines import MeanFunctionEngine, NumpyMLPEngine
+from ._fits import (
+    _BoxJenkinsFit,
+    _ConditionalVarianceFit,
+    _MarkovSwitchingFit,
+    _NeuralAutoregressionFit,
+    _NeuralThresholdFit,
+    _SmoothTransitionFit,
+    _ThresholdFit,
+)
 from ._results import (
     _DurbinKoopmanSmootherResult,
     _FilterResult,
@@ -384,7 +405,7 @@ class _LinearGaussianStateSpaceModel(
 
     # -- public operations -------------------------------------------------
 
-    def filter(self, y: npt.ArrayLike) -> FilterResult:
+    def filter(self, y: npt.ArrayLike) -> _KalmanFilterResult:
         """Run the Kalman filter. See :class:`~cultivars.state_space.base.FilterResult`.
 
         Example:
@@ -399,7 +420,7 @@ class _LinearGaussianStateSpaceModel(
         """
         data = self._prepare_data(y)
         fwd = self._forward(data)
-        return FilterResult(
+        return _KalmanFilterResult(
             predicted_state=fwd.predicted_state,
             predicted_state_cov=fwd.predicted_state_cov,
             filtered_state=fwd.filtered_state,
@@ -413,7 +434,7 @@ class _LinearGaussianStateSpaceModel(
         data = self._prepare_data(y)
         return float(self._forward(data).loglik_contrib.sum())
 
-    def smooth(self, y: npt.ArrayLike) -> SmootherResult:
+    def smooth(self, y: npt.ArrayLike) -> _DurbinKoopmanSmootherResult:
         """Run the Durbin-Koopman state smoother."""
         data = self._prepare_data(y)
         fwd = self._forward(data)
@@ -445,7 +466,9 @@ class _LinearGaussianStateSpaceModel(
             )
             smoothed_P[t] = 0.5 * (v_cov + v_cov.T)
 
-        return SmootherResult(smoothed_state=smoothed_a, smoothed_state_cov=smoothed_P)
+        return _DurbinKoopmanSmootherResult(
+            smoothed_state=smoothed_a, smoothed_state_cov=smoothed_P
+        )
 
     def _simulate_forward(
         self, n: int, rng: np.random.Generator
@@ -541,7 +564,7 @@ class _LinearGaussianStateSpaceModel(
         theta_star: npt.NDArray[np.float64],
         sigma2: float,
         obs_intercept: npt.NDArray[np.float64],
-    ) -> LinearGaussianStateSpace:
+    ) -> _LinearGaussianStateSpaceModel:
         """Build the Harvey state-space form of an ARMA process.
 
         The state dimension is ``max(p, q + 1)``, which is the minimal realization:
@@ -579,8 +602,6 @@ class _LinearGaussianStateSpaceModel(
         )
 
 
-# TODO: Consider whether to rename this to _BoxJenkinsModel, since it is not strictly ARMA.
-# But AR(p) is also a Box-Jenkins model so maybe use a Mixin.
 class _BoxJenkinsModel[R](_UnivariateModel[R]):
     """Shared specification surface for the ARMA/ARIMA/SARIMA family.
 
@@ -650,9 +671,11 @@ class _BoxJenkinsModel[R](_UnivariateModel[R]):
         """The validated exogenous regressors, or ``None``."""
         return self._exog
 
-    def _fit_family(self) -> _SARIMAXFit:
+    def _fit_family(self) -> _BoxJenkinsFit:
         """Run the shared state-space engine for this specification."""
-        return _fit_sarimax(self.endog, self._exog, self._order, self._seasonal, self._trend)
+        return _BoxJenkinsFit._fit_exact(
+            self.endog, self._exog, self._order, self._seasonal, self._trend
+        )
 
 
 class _ConditionalVarianceModel[R](_UnivariateModel[R]):
@@ -724,11 +747,13 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
         """The variance order ``(p, o, q)``."""
         return (self._p, self._o, self._q)
 
-    def _fit_family(self) -> _GARCHFit:
+    def _fit_family(self) -> _ConditionalVarianceFit:
         """Dispatch to the engine for this volatility family."""
         if self._vol == "FIGARCH":
-            return _fit_figarch(self.endog, self._const, self._truncation)
-        return _fit_garch(
+            return _ConditionalVarianceFit._fit_frac_int_exact(
+                self.endog, self._const, self._truncation
+            )
+        return _ConditionalVarianceFit._fit_exact(
             self.endog,
             self._p,
             self._o,
@@ -785,7 +810,14 @@ class _MeanFunctionModel[R](_UnivariateModel[R]):
         return self._engine
 
 
-class _ThresholdMeanFunctionModel[R](_MeanFunctionModel[R]):
+class _NeuralAutoregressionModel[R](_MeanFunctionModel[R]):
+    __slots__ = ()
+
+    def _fit_family(self) -> _NeuralAutoregressionFit:
+        return _NeuralAutoregressionFit._fit_exact(self.endog, self._order, self._engine)
+
+
+class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
     """Specification surface for two-regime neural threshold autoregressions.
 
     Args:
@@ -838,9 +870,9 @@ class _ThresholdMeanFunctionModel[R](_MeanFunctionModel[R]):
         """Whether the threshold variable is a lag of the series itself."""
         return self._threshold_variable is None
 
-    def _fit_family(self) -> _TARNNFit:
+    def _fit_family(self) -> _NeuralThresholdFit:
         """Run the two-regime neural engine for this specification."""
-        return _fit_tarnn(
+        return _NeuralThresholdFit._fit_exact(
             self.endog,
             self._order,
             self._engine,
@@ -910,6 +942,148 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         """The number of regimes."""
         return self._k
 
+    @staticmethod
+    def regime_means(
+        intercepts: npt.NDArray[np.float64],
+        ar_params: npt.NDArray[np.float64],
+        lags: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        """Per-regime conditional means of shape ``(T_eff, K)``."""
+        if lags.shape[1] == 0:
+            return np.broadcast_to(intercepts, (lags.shape[0], intercepts.shape[0])).copy()
+        return intercepts[None, :] + lags @ ar_params.T
+
+    @staticmethod
+    def log_densities(
+        target: npt.NDArray[np.float64],
+        means: npt.NDArray[np.float64],
+        sigma2: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        """Gaussian log conditional densities of shape ``(T_eff, K)``."""
+        resid = target[:, None] - means
+        return -0.5 * (_LOG_2PI + np.log(sigma2)[None, :] + resid**2 / sigma2[None, :])
+
+    @staticmethod
+    def update_transition(
+        smoothed: npt.NDArray[np.float64],
+        joint: npt.NDArray[np.float64],
+        floor: float,
+    ) -> npt.NDArray[np.float64]:
+        """M-step transition update from expected transition counts.
+
+        Probabilities are floored before renormalizing, so a regime that becomes
+        momentarily unvisited can still be re-entered instead of being absorbed.
+
+        Args:
+            smoothed: Smoothed regime probabilities.
+            joint: Smoothed joint probabilities ``Pr(S_t = i, S_{t+1} = j | y)``.
+            floor: Minimum admissible probability.
+
+        Returns:
+            The updated row-stochastic transition matrix.
+        """
+        k = smoothed.shape[1]
+        if joint.shape[0] == 0:
+            return np.full((k, k), 1.0 / k)
+        numer = joint.sum(axis=0)
+        denom = smoothed[:-1].sum(axis=0)
+        p = numer / np.clip(denom[:, None], floor, None)
+        p = np.clip(p, floor, None)
+        return p / p.sum(axis=1, keepdims=True)
+
+    @staticmethod
+    def update_coefficients(
+        target: npt.NDArray[np.float64],
+        lags: npt.NDArray[np.float64],
+        smoothed: npt.NDArray[np.float64],
+        sigma2: npt.NDArray[np.float64],
+        layout: _Layout,
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """M-step coefficient update by responsibility-weighted GLS.
+
+        All regimes are solved in one stacked system so that non-switching blocks
+        are estimated jointly across regimes rather than per regime.
+
+        Args:
+            target: The effective sample.
+            lags: Lagged levels.
+            smoothed: Smoothed regime probabilities.
+            sigma2: Current per-regime variances.
+            layout: Column bookkeeping.
+
+        Returns:
+            A tuple ``(intercepts, ar_params)`` of shapes ``(K,)`` and ``(K, p)``.
+        """
+        n_eff = target.shape[0]
+        k, p = layout.n_regimes, layout.order
+        d = layout.width
+        a = np.zeros((d, d), dtype=np.float64)
+        b = np.zeros(d, dtype=np.float64)
+        for j in range(k):
+            design = np.zeros((n_eff, d), dtype=np.float64)
+            design[:, layout.intercept_col(j)] = 1.0
+            if p:
+                design[:, layout.ar_slice(j)] = lags
+            weight = smoothed[:, j] / sigma2[j]
+            a += design.T @ (design * weight[:, None])
+            b += design.T @ (weight * target)
+        beta, *_ = np.linalg.lstsq(a, b, rcond=None)
+
+        intercepts = np.empty(k, dtype=np.float64)
+        ar_params = np.zeros((k, p), dtype=np.float64)
+        for j in range(k):
+            intercepts[j] = beta[layout.intercept_col(j)]
+            if p:
+                ar_params[j] = beta[layout.ar_slice(j)]
+        return intercepts, ar_params
+
+    @staticmethod
+    def update_variance(
+        target: npt.NDArray[np.float64],
+        means: npt.NDArray[np.float64],
+        smoothed: npt.NDArray[np.float64],
+        switching_variance: bool,
+        floor: float,
+    ) -> npt.NDArray[np.float64]:
+        """M-step variance update, per regime or pooled.
+
+        Args:
+            target: The effective sample.
+            means: Per-regime conditional means.
+            smoothed: Smoothed regime probabilities.
+            switching_variance: Whether the variance switches across regimes.
+            floor: Minimum admissible variance.
+
+        Returns:
+            Per-regime variances of shape ``(K,)``.
+        """
+        k = smoothed.shape[1]
+        sq = (target[:, None] - means) ** 2
+        if switching_variance:
+            sigma2 = (smoothed * sq).sum(axis=0) / np.clip(smoothed.sum(axis=0), 1e-12, None)
+        else:
+            sigma2 = np.full(k, float((smoothed * sq).sum() / target.shape[0]))
+        return np.clip(sigma2, floor, None)
+
+    @staticmethod
+    def initial_transition(
+        k: int, rng: np.random.Generator, diagonal: float
+    ) -> npt.NDArray[np.float64]:
+        """Randomized persistent transition matrix for a restart.
+
+        Args:
+            k: Number of regimes.
+            rng: Random generator.
+            diagonal: Target self-transition probability.
+
+        Returns:
+            A row-stochastic ``(K, K)`` matrix.
+        """
+        off = (1.0 - diagonal) / (k - 1)
+        p = np.full((k, k), off) + (diagonal - off) * np.eye(k)
+        p = p * rng.uniform(0.9, 1.1, size=(k, k))
+        return p / p.sum(axis=1, keepdims=True)
+
     def _fit_family(
         self,
         *,
@@ -918,7 +1092,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         n_init: int = _DEFAULT_STARTS,
         screen_iter: int = 15,
         seed: int | np.random.Generator | None = None,
-    ) -> _MSARFit:
+    ) -> _MarkovSwitchingFit:
         """Estimate by EM with multi-start screening.
 
         Args:
@@ -1026,7 +1200,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         smoothed = fit.smoothed_prob[:, perm]
         means = _regime_means(intercepts, ar_params, lags)
         fitted = (smoothed * means).sum(axis=1)
-        return _MSARFit(
+        return _MarkovSwitchingFit(
             transition=transition,
             intercepts=intercepts,
             ar_params=ar_params,
@@ -1106,7 +1280,7 @@ class _ThresholdModel[R](_UnivariateModel[R]):
 
     def _fit_family(self) -> _ThresholdFit:
         """Run the shared grid-search engine for this specification."""
-        return _fit_threshold(
+        return _ThresholdFit._fit_threshold(
             self.endog,
             self._order,
             self._delays,
@@ -1153,6 +1327,8 @@ class _SmoothTransitionModel[R](_UnivariateModel[R]):
         """The transition function family."""
         return self._transition
 
-    def _fit_family(self) -> _STARFit:
+    def _fit_family(self) -> _SmoothTransitionFit:
         """Run the smooth-transition engine for this specification."""
-        return _fit_star(self.endog, self._order, self._delay, self._transition)
+        return _SmoothTransitionFit._fit_exact(
+            self.endog, self._order, self._delay, self._transition
+        )

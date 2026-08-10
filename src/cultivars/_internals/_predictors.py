@@ -4,6 +4,8 @@ from typing import Protocol, runtime_checkable
 import numpy as np
 import numpy.typing as npt
 
+from ..exceptions import DimensionError
+
 
 @runtime_checkable
 class MeanPredictor(Protocol):

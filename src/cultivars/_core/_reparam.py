@@ -120,3 +120,13 @@ def unpack_stationary(psi: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     if psi.size == 0:
         return np.zeros(0, dtype=np.float64)
     return pacf_to_coeffs(np.tanh(psi))
+
+
+def softplus(x: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Map the real line to the positive half-line, overflow-safe."""
+    return np.logaddexp(0.0, x)
+
+
+def inv_softplus(x: float) -> float:
+    """Inverse of :func:`_softplus`, for constructing starting values."""
+    return float(np.log(np.expm1(x)))

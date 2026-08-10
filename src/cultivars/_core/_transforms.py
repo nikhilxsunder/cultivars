@@ -29,30 +29,11 @@ handling belongs to the state-space layer, not here.
 
 from __future__ import annotations
 
-from typing import NamedTuple
-
 import numpy as np
 import numpy.typing as npt
 
-from cultivars.exceptions import DimensionError, NumericalError, SpecificationError
-
-
-class Standardized(NamedTuple):
-    """A standardized series together with the parameters needed to invert it.
-
-    Attributes:
-        values: The standardized data, same shape as the input.
-        mean: The per-column mean that was subtracted.
-        scale: The per-column standard deviation that was divided out.
-    """
-
-    values: npt.NDArray[np.float64]
-    mean: npt.NDArray[np.float64]
-    scale: npt.NDArray[np.float64]
-
-    def inverse(self, values: npt.ArrayLike) -> npt.NDArray[np.float64]:
-        """Map standardized values back to the original scale."""
-        return np.asarray(values, dtype=np.float64) * self.scale + self.mean
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._containers import Standardized
 
 
 def _as_finite(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -118,9 +99,7 @@ def seasonal_difference(
     out = _as_finite(y)
     for _ in range(capital_d):
         if out.shape[axis] <= s:
-            raise DimensionError(
-                f"Series too short for seasonal differencing at period {s}."
-            )
+            raise DimensionError(f"Series too short for seasonal differencing at period {s}.")
         lead = np.take(out, indices=range(s, out.shape[axis]), axis=axis)
         lag = np.take(out, indices=range(0, out.shape[axis] - s), axis=axis)
         out = lead - lag
@@ -213,9 +192,7 @@ def undifference(
     cur = _as_finite(dx)
     anchors = _as_finite(initials)
     if anchors.shape[0] != d:
-        raise SpecificationError(
-            f"Expected {d} anchor value(s) for d={d}; got {anchors.shape[0]}."
-        )
+        raise SpecificationError(f"Expected {d} anchor value(s) for d={d}; got {anchors.shape[0]}.")
     for order in range(d):
         cumulative = np.cumsum(cur, axis=0)
         anchor = anchors[order]
@@ -258,13 +235,12 @@ def fractional_difference_weights(d: float, length: int) -> npt.NDArray[np.float
 def fractional_difference(
     y: npt.ArrayLike, d: float, *, truncation: int | None = None
 ) -> npt.NDArray[np.float64]:
-    """Apply the truncated fractional difference ``(1 - L)**d`` to a series.
+    """Apply the truncated fractional difference ``(1 - L)**d``.
 
-    Computes ``w_t = sum_{k=0}^{min(t, truncation-1)} b_k(d) y_{t-k}``, using all
-    available history at each ``t`` (the series is not shortened). At the sample
-    start the filter is necessarily truncated, which induces a transient that is
-    conditioned on in the same way conditional-sum-of-squares ARMA conditions on
-    its first observations.
+    Uses all available history at each ``t``, so the series is not shortened.
+    At the sample start the filter is necessarily truncated, inducing a
+    transient conditioned on the same way CSS conditions on its first
+    observations.
 
     Args:
         y: Input series (1-D array-like).
@@ -280,8 +256,7 @@ def fractional_difference(
         SpecificationError: If ``truncation < 1``.
 
     Example:
-        >>> y = np.array([1.0, 2.0, 3.0, 4.0])
-        >>> np.round(fractional_difference(y, 1.0), 4)   # integer diff of a ramp
+        >>> np.round(fractional_difference(np.array([1.0, 2.0, 3.0, 4.0]), 1.0), 4)
         array([1., 1., 1., 1.])
     """
     arr = np.asarray(y, dtype=np.float64)
@@ -294,8 +269,29 @@ def fractional_difference(
     if m < 1:
         raise SpecificationError(f"truncation must be >= 1; got {m}.")
     weights = fractional_difference_weights(d, min(m, n))
-    # Full linear convolution; the first n entries are the causal filter output.
     return np.convolve(arr, weights)[:n]
+
+
+def combined_difference(
+    y: npt.NDArray[np.float64], d: int, capital_d: int, s: int
+) -> npt.NDArray[np.float64]:
+    """Apply non-seasonal then seasonal differencing.
+
+    Args:
+        y: The series.
+        d: Non-seasonal differencing order.
+        capital_d: Seasonal differencing order.
+        s: Seasonal period.
+
+    Returns:
+        The differenced series, shorter by ``d + s * capital_d``.
+    """
+    w = y
+    if d > 0:
+        w = difference(w, d)
+    if capital_d > 0:
+        w = seasonal_difference(w, s, capital_d)
+    return w
 
 
 def _difference_series(

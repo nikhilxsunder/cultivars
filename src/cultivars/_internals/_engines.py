@@ -62,6 +62,20 @@ class NumpyMLPEngine:
                 f"activation must be 'tanh' or 'relu'; got {self.activation!r}."
             )
 
+    @staticmethod
+    def _activation(z: npt.NDArray[np.float64], kind: str) -> npt.NDArray[np.float64]:
+        """Hidden-layer activation."""
+        if kind == "tanh":
+            return np.tanh(z)
+        return np.maximum(z, 0.0)
+
+    @staticmethod
+    def _activation_grad(z: npt.NDArray[np.float64], kind: str) -> npt.NDArray[np.float64]:
+        """Derivative of :func:`_activation`."""
+        if kind == "tanh":
+            return 1.0 - np.tanh(z) ** 2
+        return (z > 0.0).astype(np.float64)
+
     def fit(self, features: npt.NDArray[np.float64], target: npt.NDArray[np.float64]) -> _FittedMLP:
         """Train the MLP and return a fitted predictor.
 
@@ -120,14 +134,14 @@ class NumpyMLPEngine:
         ) -> tuple[float, npt.NDArray[np.float64]]:
             w1, b1, w2, b2 = unpack(theta)
             z1 = xs @ w1 + b1
-            a1 = _activation(z1, self.activation)
+            a1 = self._activation(z1, self.activation)
             resid = (a1 @ w2 + b2) - ys
             mse = 0.5 * float(resid @ resid) / n
             penalty = 0.5 * self.alpha * (float(w1.ravel() @ w1.ravel()) + float(w2 @ w2))
             d_pred = resid / n
             g_w2 = a1.T @ d_pred + self.alpha * w2
             g_b2 = float(d_pred.sum())
-            d_z1 = np.outer(d_pred, w2) * _activation_grad(z1, self.activation)
+            d_z1 = np.outer(d_pred, w2) * self._activation_grad(z1, self.activation)
             g_w1 = xs.T @ d_z1 + self.alpha * w1
             g_b1 = d_z1.sum(axis=0)
             return mse + penalty, np.concatenate([g_w1.ravel(), g_b1, g_w2, [g_b2]])

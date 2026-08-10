@@ -147,26 +147,20 @@ def hamilton_filter(
     """
     logd = np.asarray(log_conditional_density, dtype=np.float64)
     if logd.ndim != 2:
-        raise DimensionError(
-            f"log_conditional_density must be 2-D (T, K); got shape {logd.shape}."
-        )
+        raise DimensionError(f"log_conditional_density must be 2-D (T, K); got shape {logd.shape}.")
     if np.isnan(logd).any():
         raise NumericalError("log_conditional_density contains NaN values.")
     p = validate_transition(transition)
     n, k = logd.shape
     if p.shape[0] != k:
-        raise DimensionError(
-            f"transition is {p.shape[0]}x{p.shape[0]} but densities imply K={k}."
-        )
+        raise DimensionError(f"transition is {p.shape[0]}x{p.shape[0]} but densities imply K={k}.")
 
     if initial_prob is None:
         xi0 = ergodic_distribution(p)
     else:
         xi0 = np.asarray(initial_prob, dtype=np.float64)
         if xi0.shape != (k,):
-            raise SpecificationError(
-                f"initial_prob must have length K={k}; got shape {xi0.shape}."
-            )
+            raise SpecificationError(f"initial_prob must have length K={k}; got shape {xi0.shape}.")
         if np.any(xi0 < 0.0) or not np.isclose(xi0.sum(), 1.0, atol=_ROW_SUM_ATOL):
             raise SpecificationError("initial_prob must be a probability vector.")
 
@@ -234,9 +228,7 @@ def kim_smoother(
     predicted = filter_result.predicted_prob
     n, k = filtered.shape
     if p.shape[0] != k:
-        raise DimensionError(
-            f"transition is {p.shape[0]}x{p.shape[0]} but filter implies K={k}."
-        )
+        raise DimensionError(f"transition is {p.shape[0]}x{p.shape[0]} but filter implies K={k}.")
 
     smoothed = np.empty((n, k), dtype=np.float64)
     smoothed[-1] = filtered[-1]
@@ -244,7 +236,7 @@ def kim_smoother(
 
     for t in range(n - 2, -1, -1):
         pred_next = np.clip(predicted[t + 1], _TINY, None)
-        ratio = smoothed[t + 1] / pred_next               # length K over j
+        ratio = smoothed[t + 1] / pred_next  # length K over j
         # Pr(S_t=i, S_{t+1}=j | Y_T) = filt[t, i] * P_ij * ratio_j.
         joint_t = filtered[t][:, None] * p * ratio[None, :]
         joint[t] = joint_t

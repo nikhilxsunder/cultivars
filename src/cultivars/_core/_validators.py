@@ -61,9 +61,7 @@ def validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return arr
 
 
-def validate_exog(
-    exog: npt.ArrayLike | None, nobs: int
-) -> npt.NDArray[np.float64] | None:
+def validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float64] | None:
     """Coerce optional exogenous regressors to a ``(nobs, k)`` matrix.
 
     A 1-D input is promoted to a single column.
@@ -91,9 +89,7 @@ def validate_exog(
     return x
 
 
-def validate_aligned(
-    values: npt.ArrayLike, nobs: int, label: str
-) -> npt.NDArray[np.float64]:
+def validate_aligned(values: npt.ArrayLike, nobs: int, label: str) -> npt.NDArray[np.float64]:
     """Coerce a covariate that must align one-to-one with the endogenous series.
 
     Args:
@@ -167,7 +163,9 @@ def validate_order_tuple(
         raise SpecificationError(
             f"order must have {len(labels)} elements {tuple(labels)}; got {tuple(order)}."
         )
-    return tuple(validate_order(v, lab, minimum=minimum) for v, lab in zip(order, labels))
+    return tuple(
+        validate_order(v, lab, minimum=minimum) for v, lab in zip(order, labels, strict=True)
+    )
 
 
 def validate_choice[T](value: T, allowed: Sequence[T], label: str) -> T:
@@ -189,9 +187,7 @@ def validate_choice[T](value: T, allowed: Sequence[T], label: str) -> T:
     return value
 
 
-def validate_open_interval(
-    value: float, label: str, *, low: float, high: float
-) -> float:
+def validate_open_interval(value: float, label: str, *, low: float, high: float) -> float:
     """Check that a float lies strictly inside ``(low, high)``.
 
     Args:
@@ -212,9 +208,7 @@ def validate_open_interval(
     return out
 
 
-def validate_transition(
-    transition: npt.ArrayLike, n_regimes: int
-) -> npt.NDArray[np.float64]:
+def validate_transition(transition: npt.ArrayLike, n_regimes: int) -> npt.NDArray[np.float64]:
     """Check a row-stochastic Markov transition matrix.
 
     Args:

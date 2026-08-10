@@ -81,3 +81,6 @@ _GPH_EXPONENT: float = 0.5
 
 _WHITTLE_EXPONENT: float = 0.65
 """Default bandwidth exponent for the local Whittle estimator."""
+
+_TREND_WIDTH: dict[str, int] = {"n": 0, "c": 1, "ct": 2}
+"""Number of deterministic columns implied by each trend specification."""

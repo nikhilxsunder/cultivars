@@ -6,8 +6,10 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from ._predictors import MeanPredictor
 
-@dataclass(frozen=True, slots=True)
+
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _BaseFit(ABC):
     """Root of every fitted-result object.
 
@@ -28,9 +30,8 @@ class _BaseFit(ABC):
     n_params: int
 
 
-
-@dataclass(frozen=True, slots=True)
-class _ARFit(_BaseFit):
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _AutoRegressionFit(_BaseFit):
     """Raw outputs of an autoregressive fit, before public result assembly.
 
     Attributes:
@@ -50,7 +51,7 @@ class _ARFit(_BaseFit):
     sigma2: float
 
     @classmethod
-    def _fit_css(cls, y: npt.NDArray[np.float64], order: int, trend: str) -> _ARFit:
+    def _fit_css(cls, y: npt.NDArray[np.float64], order: int, trend: str) -> _AutoRegressionFit:
         """Fit an AR(p) mean model by conditional least squares.
 
         Conditions on the first ``p`` observations, so the effective sample is
@@ -74,10 +75,20 @@ class _ARFit(_BaseFit):
         trend_coeff = float(beta[1]) if trend == "ct" else None
         ar_params = np.asarray(beta[n_det:], dtype=np.float64)
         llf = -0.5 * eff * (_LOG_2PI + np.log(sigma2) + 1.0)
-        return cls(const, trend_coeff, ar_params, sigma2, float(llf), eff, resid, fitted)
+        return cls(
+            fittedvalues=fitted,
+            resid=resid,
+            llf=float(llf),
+            nobs=eff,
+            n_params=order + n_det + 1,
+            const=const,
+            trend_coeff=trend_coeff,
+            ar_params=ar_params,
+            sigma2=sigma2,
+        )
 
     @classmethod
-    def _fit_exact(cls, y: npt.NDArray[np.float64], order: int, trend: str) -> _ARFit:
+    def _fit_exact(cls, y: npt.NDArray[np.float64], order: int, trend: str) -> _AutoRegressionFit:
         """Fit an AR(p) mean model by exact maximum likelihood.
 
         Builds the companion state-space form and maximizes the Kalman likelihood,
@@ -171,18 +182,19 @@ class _ARFit(_BaseFit):
         fitted = filtered.predicted_state[:, 0].copy()
         resid = y - fitted
         return cls(
-            const if has_const else None,
-            None,
-            phi,
-            sigma2,
-            -float(result.fun),
-            y.shape[0],
-            resid,
-            fitted,
+            fittedvalues=fitted,
+            resid=resid,
+            llf=-float(result.fun),
+            nobs=y.shape[0],
+            n_params=order + n_deterministic(trend) + 1,
+            const=const if has_const else None,
+            trend_coeff=None,
+            ar_params=phi,
+            sigma2=sigma2,
         )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _BoxJenkinsFit(_BaseFit):
     """Raw outputs of a seasonal ARIMA-with-regressors fit."""
 
@@ -201,7 +213,7 @@ class _BoxJenkinsFit(_BaseFit):
         order: tuple[int, int, int],
         seasonal_order: tuple[int, int, int, int],
         trend: str,
-    ) -> _SARIMAXFit:
+    ) -> _BoxJenkinsFit:
         """Fit a seasonal ARIMA with optional regressors by exact ML.
 
         Starting values come from a regression of the differenced series on the
@@ -315,8 +327,8 @@ class _BoxJenkinsFit(_BaseFit):
         )
 
 
-@dataclass(frozen=True, slots=True)
-class _ARFIMAFit(_BaseFit):
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _FractionalIntegrationFit(_BaseFit):
     """Raw outputs of a fractionally integrated ARMA fit."""
 
     d: float
@@ -325,16 +337,10 @@ class _ARFIMAFit(_BaseFit):
     ma_params: npt.NDArray[np.float64]
     sigma2: float
 
-
     @classmethod
     def _fit_exact(
-        cls,
-        y: npt.NDArray[np.float64],
-        p: int,
-        q: int,
-        estimate_mean: bool,
-        truncation: int
-    ) -> _ARFIMAFit:
+        cls, y: npt.NDArray[np.float64], p: int, q: int, estimate_mean: bool, truncation: int
+    ) -> _FractionalIntegrationFit:
         """Fit an ARFIMA(p, d, q) by joint maximum likelihood.
 
         Warm-starts ``d`` from a local Whittle estimate, falling back to zero if
@@ -410,8 +416,8 @@ class _ARFIMAFit(_BaseFit):
         )
 
 
-@dataclass(frozen=True, slots=True)
-class _GARCHFit(_BaseFit):
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _ConditionalVarianceFit(_BaseFit):
     """Raw outputs of a conditional-variance fit.
 
     Attributes:
@@ -439,6 +445,159 @@ class _GARCHFit(_BaseFit):
     fractional_d: float | None
     conditional_variance: npt.NDArray[np.float64]
 
+    @staticmethod
+    def _garch_variance(
+        resid: npt.NDArray[np.float64],
+        omega: float,
+        alpha: npt.NDArray[np.float64],
+        gamma: npt.NDArray[np.float64],
+        beta: npt.NDArray[np.float64],
+        backcast: float,
+    ) -> npt.NDArray[np.float64]:
+        """Variance recursion for the GARCH and GJR families.
+
+        Pre-sample squared residuals and variances are replaced by ``backcast``;
+        the asymmetry term uses half the backcast pre-sample, matching the
+        unconditional probability of a negative shock.
+
+        Args:
+            resid: Mean residuals.
+            omega: Variance intercept.
+            alpha: ARCH coefficients.
+            gamma: Asymmetry coefficients (empty for symmetric GARCH).
+            beta: GARCH coefficients.
+            backcast: Pre-sample variance.
+
+        Returns:
+            The conditional-variance path.
+        """
+        n, p, o, q = resid.shape[0], alpha.size, gamma.size, beta.size
+        sigma2 = np.empty(n)
+        r2 = resid**2
+        neg = (resid < 0.0).astype(np.float64)
+        for t in range(n):
+            s = omega
+            for i in range(p):
+                s += alpha[i] * (r2[t - 1 - i] if t - 1 - i >= 0 else backcast)
+            for k in range(o):
+                if t - 1 - k >= 0:
+                    s += gamma[k] * r2[t - 1 - k] * neg[t - 1 - k]
+                else:
+                    s += gamma[k] * backcast * 0.5
+            for j in range(q):
+                s += beta[j] * (sigma2[t - 1 - j] if t - 1 - j >= 0 else backcast)
+            sigma2[t] = s
+        return sigma2
+
+    @staticmethod
+    def _egarch_variance(
+        resid: npt.NDArray[np.float64],
+        omega: float,
+        alpha: npt.NDArray[np.float64],
+        gamma: npt.NDArray[np.float64],
+        beta: npt.NDArray[np.float64],
+        backcast: float,
+    ) -> npt.NDArray[np.float64]:
+        """Log-variance recursion for EGARCH.
+
+        The magnitude term is centered by ``E|z| = sqrt(2 / pi)`` so that a
+        standard-normal shock contributes zero drift to the log variance.
+
+        Args:
+            resid: Mean residuals.
+            omega: Log-variance intercept.
+            alpha: Magnitude coefficients.
+            gamma: Sign (leverage) coefficients.
+            beta: Log-variance persistence coefficients.
+            backcast: Pre-sample variance (used in logs).
+
+        Returns:
+            The conditional-variance path, exponentiated back to levels.
+        """
+        n, p, o, q = resid.shape[0], alpha.size, gamma.size, beta.size
+        ln_sigma2 = np.empty(n)
+        ln_bc = float(np.log(backcast))
+        e = np.zeros(n)
+        for t in range(n):
+            s = omega
+            for i in range(p):
+                s += alpha[i] * ((abs(e[t - 1 - i]) - _SQRT_2_OVER_PI) if t - 1 - i >= 0 else 0.0)
+            for k in range(o):
+                s += gamma[k] * (e[t - 1 - k] if t - 1 - k >= 0 else 0.0)
+            for j in range(q):
+                s += beta[j] * (ln_sigma2[t - 1 - j] if t - 1 - j >= 0 else ln_bc)
+            ln_sigma2[t] = s
+            sig = np.sqrt(np.exp(ln_sigma2[t]))
+            e[t] = resid[t] / sig if sig > 0 else 0.0
+        return np.exp(ln_sigma2)
+
+    @staticmethod
+    def _figarch_weights(
+        phi: float, d: float, beta: float, truncation: int
+    ) -> npt.NDArray[np.float64]:
+        """ARCH(infinity) lambda weights for FIGARCH(1, d, 1).
+
+        Uses the Chung (1999) recursion, which is numerically better behaved than
+        expanding the fractional operator and dividing polynomials.
+
+        Args:
+            phi: The ARCH weight.
+            d: Fractional integration order.
+            beta: The GARCH weight.
+            truncation: Number of weights to generate.
+
+        Returns:
+            The weights ``lambda_1, ..., lambda_truncation``.
+        """
+        delta = -fractional_difference_weights(d, truncation + 1)[1:]
+        lam = np.empty(truncation, dtype=np.float64)
+        lam[0] = phi - beta + d
+        for i in range(1, truncation):
+            lam[i] = beta * lam[i - 1] + (delta[i] - phi * delta[i - 1])
+        return lam
+
+    @staticmethod
+    def _figarch_variance(
+        resid: npt.NDArray[np.float64],
+        omega: float,
+        phi: float,
+        d: float,
+        beta: float,
+        backcast: float,
+        truncation: int = _DEFAULT_TRUNCATION,
+    ) -> npt.NDArray[np.float64]:
+        """Variance recursion for FIGARCH via its ARCH(infinity) representation.
+
+        Weights beyond the available history are applied to ``backcast``, so the
+        truncation tail contributes a constant rather than being silently dropped.
+
+        Args:
+            resid: Mean residuals.
+            omega: Variance intercept.
+            phi: The ARCH weight.
+            d: Fractional integration order.
+            beta: The GARCH weight.
+            backcast: Pre-sample variance.
+            truncation: ARCH(infinity) truncation lag.
+
+        Returns:
+            The conditional-variance path.
+        """
+        n = resid.shape[0]
+        lam = _figarch_weights(phi, d, beta, truncation)
+        r2 = resid**2
+        sigma2 = np.empty(n)
+        intercept = omega / (1.0 - beta)
+        for t in range(n):
+            m = min(t, truncation)
+            acc = intercept
+            if m > 0:
+                acc += float(np.dot(lam[:m], r2[t - 1 :: -1][:m]))
+            if truncation > m:
+                acc += backcast * float(lam[m:truncation].sum())
+            sigma2[t] = acc
+        return sigma2
+
     @classmethod
     def _fit_exact(
         cls,
@@ -449,7 +608,7 @@ class _GARCHFit(_BaseFit):
         ar_lags: int,
         include_const: bool,
         vol: str,
-    ) -> _GARCHFit:
+    ) -> _ConditionalVarianceFit:
         """Fit a GARCH, GJR, or EGARCH model by Gaussian maximum likelihood.
 
         Mean and variance parameters are estimated jointly rather than in two
@@ -521,7 +680,9 @@ class _GARCHFit(_BaseFit):
 
         def unpack_var(
             v: npt.NDArray[np.float64],
-        ) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        ) -> tuple[
+            float, npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]
+        ]:
             if vol == "GARCH":
                 return (
                     float(np.exp(v[0])),
@@ -551,8 +712,8 @@ class _GARCHFit(_BaseFit):
             beta: npt.NDArray[np.float64],
         ) -> npt.NDArray[np.float64]:
             if vol == "EGARCH":
-                return _egarch_variance(resid, omega, alpha, gamma, beta, backcast)
-            return _garch_variance(resid, omega, alpha, gamma, beta, backcast)
+                return self._egarch_variance(resid, omega, alpha, gamma, beta, backcast)
+            return self._garch_variance(resid, omega, alpha, gamma, beta, backcast)
 
         def negloglik(theta: npt.NDArray[np.float64]) -> float:
             mean = theta[:m_idx]
@@ -598,7 +759,7 @@ class _GARCHFit(_BaseFit):
         endog: npt.NDArray[np.float64],
         include_const: bool,
         truncation: int = _DEFAULT_TRUNCATION,
-    ) -> _GARCHFit:
+    ) -> _ConditionalVarianceFit:
         """Fit a FIGARCH(1, d, 1) model by Gaussian maximum likelihood.
 
         Admissibility is checked on a short prefix of the lambda weights each
@@ -612,7 +773,7 @@ class _GARCHFit(_BaseFit):
             truncation: ARCH(infinity) truncation lag.
 
         Returns:
-            The packed :class:`_GARCHFit`, with ``fractional_d`` populated.
+            The packed :class:`_ConditionalVarianceFit`, with ``fractional_d`` populated.
         """
         n = endog.shape[0]
         mean_x = np.ones((n, 1)) if include_const else np.zeros((n, 0))
@@ -644,10 +805,10 @@ class _GARCHFit(_BaseFit):
         def negloglik(theta: npt.NDArray[np.float64]) -> float:
             mean, omega, phi, d, beta = unpack(theta)
             resid = endog - mean_x @ mean if k_mean else endog
-            lam = _figarch_weights(phi, d, beta, min(truncation, 200))
+            lam = self._figarch_weights(phi, d, beta, min(truncation, 200))
             if np.any(lam < -1e-6):
                 return 1e10
-            sigma2 = _figarch_variance(resid, omega, phi, d, beta, backcast, truncation)
+            sigma2 = self._figarch_variance(resid, omega, phi, d, beta, backcast, truncation)
             if not np.all(np.isfinite(sigma2)) or np.any(sigma2 <= 0.0):
                 return 1e10
             ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2)
@@ -657,7 +818,7 @@ class _GARCHFit(_BaseFit):
         mean, omega, phi, d, beta = unpack(np.asarray(result.x, dtype=np.float64))
         fitted = mean_x @ mean if k_mean else np.zeros(n)
         resid = endog - fitted
-        sigma2 = _figarch_variance(resid, omega, phi, d, beta, backcast, truncation)
+        sigma2 = self._figarch_variance(resid, omega, phi, d, beta, backcast, truncation)
         return cls(
             const=float(mean[0]) if include_const else None,
             ar_params=np.zeros(0),
@@ -675,16 +836,23 @@ class _GARCHFit(_BaseFit):
         )
 
 
-@dataclass(frozen=True, slots=True)
-class _ARNNFit(_BaseFit):
-    """Raw outputs of an autoregressive neural mean-function fit."""
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _MeanFunctionFit(_BaseFit):
+    """Raw outputs of a neural mean-function fit."""
 
-    predictor: MeanPredictor
     sigma2: float
 
 
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _NeuralAutoregressionFit(_MeanFunctionFit):
+    """Raw outputs of an autoregressive neural mean-function fit."""
+
+    predictor: MeanPredictor
+
     @classmethod
-    def _fit_exact(cls, y: npt.NDArray[np.float64], order: int, engine: MeanFunctionEngine) -> _ARNNFit:
+    def _fit_exact(
+        cls, y: npt.NDArray[np.float64], order: int, engine: MeanFunctionEngine
+    ) -> _NeuralAutoregressionFit:
         """Fit a neural autoregression of the given order.
 
         The likelihood is Gaussian with the variance concentrated out, so
@@ -696,7 +864,7 @@ class _ARNNFit(_BaseFit):
             engine: The training backend.
 
         Returns:
-            The packed :class:`_ARNNFit`.
+            The packed :class:`_NeuralAutoregressionFit`.
         """
         target = y[order:]
         features = lag_matrix(y, order)
@@ -715,8 +883,8 @@ class _ARNNFit(_BaseFit):
         )
 
 
-@dataclass(frozen=True, slots=True)
-class _TARNNFit(_BaseFit):
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _NeuralThresholdFit(_MeanFunctionFit):
     """Raw outputs of a threshold neural mean-function fit."""
 
     delay: int
@@ -725,14 +893,12 @@ class _TARNNFit(_BaseFit):
     upper_predictor: MeanPredictor
     threshold_variable: npt.NDArray[np.float64] | None
     self_exciting: bool
-    sigma2: float
     ssr: float
     n_lower: int
     n_upper: int
 
-
     @classmethod
-    def _fit_tarnn(
+    def _fit_exact(
         cls,
         y: npt.NDArray[np.float64],
         order: int,
@@ -741,7 +907,7 @@ class _TARNNFit(_BaseFit):
         delay: int,
         threshold: float | None,
         trim: float,
-    ) -> _TARNNFit:
+    ) -> _NeuralThresholdFit:
         """Fit a two-regime neural threshold autoregression.
 
         The threshold defaults to the median of the transition variable rather
@@ -758,7 +924,7 @@ class _TARNNFit(_BaseFit):
             trim: Minimum regime share of the effective sample.
 
         Returns:
-            The packed :class:`_TARNNFit`.
+            The packed :class:`_NeuralThresholdFit`.
 
         Raises:
             NumericalError: If the split leaves a regime with too few observations.
@@ -805,8 +971,8 @@ class _TARNNFit(_BaseFit):
         )
 
 
-@dataclass(frozen=True, slots=True)
-class _MSARFit(_BaseFit):
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _MarkovSwitchingFit(_BaseFit):
     """Raw outputs of a Markov-switching autoregression fit."""
 
     transition: npt.NDArray[np.float64]
@@ -822,91 +988,7 @@ class _MSARFit(_BaseFit):
     converged: bool
 
 
-@dataclass(frozen=True, slots=True)
-class _EMFit:
-    """Internal state carried between EM restarts."""
-
-    transition: npt.NDArray[np.float64]
-    intercepts: npt.NDArray[np.float64]
-    ar_params: npt.NDArray[np.float64]
-    sigma2: npt.NDArray[np.float64]
-    filtered_prob: npt.NDArray[np.float64]
-    predicted_prob: npt.NDArray[np.float64]
-    smoothed_prob: npt.NDArray[np.float64]
-    llf: float
-    n_iter: int
-    converged: bool
-
-
-    @classmethod
-    def _fit_convergence(
-        cls,
-        target: npt.NDArray[np.float64],
-        lags: npt.NDArray[np.float64],
-        layout: _Layout,
-        transition0: npt.NDArray[np.float64],
-        intercepts0: npt.NDArray[np.float64],
-        ar0: npt.NDArray[np.float64],
-        sigma20: npt.NDArray[np.float64],
-        var_floor: float,
-        prob_floor: float,
-        max_iter: int,
-        tol: float,
-        switching_variance: bool,
-    ) -> _EMFit:
-        """Run EM to convergence or ``max_iter`` from one set of starting values.
-
-        Returns:
-            The :class:`_EMFit` reached.
-
-        Raises:
-            NumericalError: If the log-likelihood becomes non-finite.
-        """
-        transition = transition0.copy()
-        intercepts = intercepts0.copy()
-        ar_params = ar0.copy()
-        sigma2 = sigma20.copy()
-        prev_llf = -np.inf
-        filtered = predicted = smoothed = np.empty((0, layout.n_regimes))
-        n_iter = 0
-        converged = False
-
-        for n_iter in range(1, max_iter + 1):
-            means = _regime_means(intercepts, ar_params, lags)
-            logd = _log_densities(target, means, sigma2)
-            filt = hamilton_filter(logd, transition, initial_prob=ergodic_distribution(transition))
-            smooth = kim_smoother(filt, transition)
-            filtered = filt.filtered_prob
-            predicted = filt.predicted_prob
-            smoothed = smooth.smoothed_prob
-            llf = filt.loglikelihood
-            if not np.isfinite(llf):
-                raise NumericalError("MS-AR log-likelihood became non-finite during EM.")
-            if llf - prev_llf < tol and n_iter > 1:
-                converged = True
-                prev_llf = llf
-                break
-            prev_llf = llf
-            transition = _update_transition(smoothed, smooth.smoothed_joint_prob, prob_floor)
-            intercepts, ar_params = _update_coefficients(target, lags, smoothed, sigma2, layout)
-            means = _regime_means(intercepts, ar_params, lags)
-            sigma2 = _update_variance(target, means, smoothed, switching_variance, var_floor)
-
-        return cls(
-            transition=transition,
-            intercepts=intercepts,
-            ar_params=ar_params,
-            sigma2=sigma2,
-            filtered_prob=filtered,
-            predicted_prob=predicted,
-            smoothed_prob=smoothed,
-            llf=float(prev_llf),
-            n_iter=n_iter,
-            converged=converged,
-        )
-
-
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _ThresholdFit(_BaseFit):
     """Raw outputs of a two-regime threshold grid search."""
 
@@ -918,7 +1000,6 @@ class _ThresholdFit(_BaseFit):
     ssr: float
     n_lower: int
     n_upper: int
-
 
     @classmethod
     def _fit_threshold(
@@ -960,9 +1041,9 @@ class _ThresholdFit(_BaseFit):
         min_regime = order + 2
 
         best_ssr = np.inf
-        best: tuple[int, float, npt.NDArray[np.float64], npt.NDArray[np.float64], int, int] | None = (
-            None
-        )
+        best: (
+            tuple[int, float, npt.NDArray[np.float64], npt.NDArray[np.float64], int, int] | None
+        ) = None
         for d in delays:
             z = base[start - d : n - d]
             grid = np.quantile(z, np.linspace(trim, 1.0 - trim, n_grid))
@@ -1007,8 +1088,8 @@ class _ThresholdFit(_BaseFit):
         )
 
 
-@dataclass(frozen=True, slots=True)
-class _STARFit(_BaseFit):
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _SmoothTransitionFit(_BaseFit):
     """Raw outputs of a smooth-transition autoregression fit."""
 
     delay: int
@@ -1019,9 +1100,10 @@ class _STARFit(_BaseFit):
     sigma2: float
     ssr: float
 
-
     @classmethod
-    def _fit_star(cls, y: npt.NDArray[np.float64], order: int, delay: int, transition: str) -> _STARFit:
+    def _fit_exact(
+        cls, y: npt.NDArray[np.float64], order: int, delay: int, transition: str
+    ) -> _SmoothTransitionFit:
         """Fit a smooth-transition autoregression by concentrated least squares.
 
         The transition variable is standardized before entering the transition
