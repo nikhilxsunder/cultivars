@@ -3,6 +3,11 @@ from typing import Protocol, runtime_checkable
 
 import numpy as np
 import numpy.typing as npt
+from scipy.optimize import minimize
+
+from .._core import _DEFAULT_MAX_ITER
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._predictors import MeanPredictor, _FittedMLP
 
 
 @runtime_checkable

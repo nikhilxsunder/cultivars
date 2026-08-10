@@ -5,8 +5,36 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
+from scipy.optimize import minimize
 
+from .._core import (
+    _D_MAX,
+    _LOG_2PI,
+    _SQRT_2_OVER_PI,
+    combined_difference,
+    companion_matrix,
+    conditional_design,
+    deterministic_columns,
+    expand_ar,
+    expand_ma,
+    fractional_difference,
+    local_whittle_d,
+    n_deterministic,
+    ols,
+    pack_stationary,
+    unpack_stationary,
+    _DEFAULT_TRUNCATION,
+    fractional_difference_weights,
+    ewma_mean_square,
+    softplus,
+    inv_softplus,
+    lag_matrix,
+    concentrated_gaussian,
+)
+from ..exceptions import NumericalError, SpecificationError
+from ._engines import MeanFunctionEngine
 from ._predictors import MeanPredictor
+from ._results import _StabilityResult
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -65,7 +93,7 @@ class _AutoRegressionFit(_BaseFit):
         Returns:
             The packed :class:`_ARFit`.
         """
-        target, regressors, eff = css_design(y, order, trend)
+        target, regressors, eff = conditional_design(y, order, trend)
         beta = np.linalg.lstsq(regressors, target, rcond=None)[0]
         fitted = regressors @ beta
         resid = target - fitted
@@ -124,7 +152,7 @@ class _AutoRegressionFit(_BaseFit):
 
         warm = cls._fit_css(y, order, trend)
         phi0 = warm.ar_params
-        if not assess_stability(phi0).is_stable:
+        if not _StabilityResult.assess_stability(phi0).is_stable:
             phi0 = np.zeros(p, dtype=np.float64)
         psi0 = pack_stationary(phi0)
         log_sigma0 = np.log(warm.sigma2)
@@ -232,11 +260,11 @@ class _BoxJenkinsFit(_BaseFit):
         """
         p, d, q = order
         cap_p, cap_d, cap_q, s = seasonal_order
-        w = _difference_series(endog, d, cap_d, s)
+        w = combined_difference(endog, d, cap_d, s)
         n_eff = w.shape[0]
         det = deterministic_columns(trend, n_eff)
         if exog is not None:
-            exog_w = _difference_series(exog, d, cap_d, s) if (d or cap_d) else exog
+            exog_w = combined_difference(exog, d, cap_d, s) if (d or cap_d) else exog
             design_x = np.column_stack([det, exog_w]) if det.shape[1] else exog_w
         else:
             design_x = det
@@ -255,7 +283,7 @@ class _BoxJenkinsFit(_BaseFit):
             tgt = resid0[p:]
             try:
                 ar0 = np.asarray(np.linalg.lstsq(lag_mat, tgt, rcond=None)[0], dtype=np.float64)
-                if not assess_stability(ar0).is_stable:
+                if not _StabilityResult.assess_stability(ar0).is_stable:
                     ar0 = np.zeros(p)
             except np.linalg.LinAlgError:
                 ar0 = np.zeros(p)
@@ -556,8 +584,8 @@ class _ConditionalVarianceFit(_BaseFit):
             lam[i] = beta * lam[i - 1] + (delta[i] - phi * delta[i - 1])
         return lam
 
-    @staticmethod
     def _figarch_variance(
+        self,
         resid: npt.NDArray[np.float64],
         omega: float,
         phi: float,
@@ -584,7 +612,7 @@ class _ConditionalVarianceFit(_BaseFit):
             The conditional-variance path.
         """
         n = resid.shape[0]
-        lam = _figarch_weights(phi, d, beta, truncation)
+        lam = self._figarch_weights(phi, d, beta, truncation)
         r2 = resid**2
         sigma2 = np.empty(n)
         intercept = omega / (1.0 - beta)
@@ -646,24 +674,24 @@ class _ConditionalVarianceFit(_BaseFit):
             mean0 = np.zeros(0)
             resid0 = target.copy()
         var0 = max(float(np.var(resid0)), 1e-8)
-        backcast = _backcast(resid0)
+        backcast = ewma_mean_square(resid0)
 
         a_init, b_init, g_init = 0.05, 0.90, 0.05
         if vol == "GARCH":
             var_raw0 = np.concatenate(
                 [
                     [np.log(var0 * (1 - a_init - b_init))],
-                    [_inv_softplus(a_init)] * p,
-                    [_inv_softplus(b_init)] * q,
+                    [inv_softplus(a_init)] * p,
+                    [inv_softplus(b_init)] * q,
                 ]
             )
         elif vol == "GJR":
             var_raw0 = np.concatenate(
                 [
                     [np.log(var0 * (1 - a_init - b_init - 0.5 * g_init))],
-                    [_inv_softplus(a_init)] * p,
+                    [inv_softplus(a_init)] * p,
                     [g_init] * o,
-                    [_inv_softplus(b_init)] * q,
+                    [inv_softplus(b_init)] * q,
                 ]
             )
         else:
@@ -686,16 +714,16 @@ class _ConditionalVarianceFit(_BaseFit):
             if vol == "GARCH":
                 return (
                     float(np.exp(v[0])),
-                    _softplus(v[1 : 1 + p]),
+                    softplus(v[1 : 1 + p]),
                     np.zeros(0),
-                    _softplus(v[1 + p : 1 + p + q]),
+                    softplus(v[1 + p : 1 + p + q]),
                 )
             if vol == "GJR":
                 return (
                     float(np.exp(v[0])),
-                    _softplus(v[1 : 1 + p]),
+                    softplus(v[1 : 1 + p]),
                     v[1 + p : 1 + p + o],
-                    _softplus(v[1 + p + o : 1 + p + o + q]),
+                    softplus(v[1 + p + o : 1 + p + o + q]),
                 )
             return (
                 float(v[0]),
@@ -785,7 +813,7 @@ class _ConditionalVarianceFit(_BaseFit):
             mean0 = np.zeros(0)
             resid0 = endog.copy()
         var0 = max(float(np.var(resid0)), 1e-8)
-        backcast = _backcast(resid0)
+        backcast = ewma_mean_square(resid0)
         theta0 = np.concatenate([mean0, [np.log(var0 * 0.4), -1.0, -0.2, 0.4]])
 
         def sig(x: float) -> float:
@@ -871,7 +899,7 @@ class _NeuralAutoregressionFit(_MeanFunctionFit):
         predictor = engine.fit(features, target)
         fitted = predictor.predict(features)
         resid = target - fitted
-        sigma2, llf = _gaussian_llf(float(resid @ resid), target.shape[0])
+        sigma2, llf = concentrated_gaussian(float(resid @ resid), target.shape[0])
         return cls(
             predictor=predictor,
             sigma2=sigma2,
@@ -951,7 +979,7 @@ class _NeuralThresholdFit(_MeanFunctionFit):
         fitted[~lower] = upper_predictor.predict(features[~lower])
         resid = target - fitted
         ssr = float(resid @ resid)
-        sigma2, llf = _gaussian_llf(ssr, n_eff)
+        sigma2, llf = concentrated_gaussian(ssr, n_eff)
         return cls(
             delay=delay,
             threshold=r,

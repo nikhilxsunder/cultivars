@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 
-from .._core._stability import StabilityResult, assess_stability
+from ._results import _StabilityResult
 
 
 class _StationarityMixin:
@@ -26,9 +26,9 @@ class _StationarityMixin:
         return self.ar_params
 
     @property
-    def stability(self) -> StabilityResult:
+    def stability(self) -> _StabilityResult:
         """Full eigenvalue verdict for the autoregressive polynomial."""
-        return assess_stability(self._stationarity_ar())
+        return _StabilityResult.assess_stability(self._stationarity_ar())
 
     @property
     def is_stationary(self) -> bool:

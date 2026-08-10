@@ -48,9 +48,9 @@ import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
 
-from cultivars._core._containers import _Layout
+from ._layouts import _Layout
 
-from .._core._validators import (
+from .._core import (
     validate_aligned,
     validate_choice,
     validate_endog,
@@ -58,6 +58,20 @@ from .._core._validators import (
     validate_open_interval,
     validate_order,
     validate_order_tuple,
+    _LOG_2PI,
+    psd_sqrt,
+    Trend,
+    Vol,
+    _DEFAULT_TRUNCATION,
+    _DEFAULT_TOL,
+    Mean,
+    _DEFAULT_MAX_ITER,
+    _DEFAULT_STARTS,
+    lag_matrix,
+    _DEFAULT_TRIM,
+    _DEFAULT_GRID,
+    Transition,
+    ergodic_distribution,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._engines import MeanFunctionEngine, NumpyMLPEngine
@@ -76,6 +90,7 @@ from ._results import (
     _KalmanFilterResult,
     _SmootherResult,
 )
+from ._states import _ExpectationMaximizationState
 
 
 class _BaseModel[R](ABC):
@@ -475,19 +490,19 @@ class _LinearGaussianStateSpaceModel(
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         alpha = np.zeros((n, self._m))
         obs = np.zeros((n, self._p))
-        p1_sqrt = _psd_sqrt(self._P1)
+        p1_sqrt = psd_sqrt(self._P1)
         state = self._a1 + p1_sqrt @ rng.standard_normal(self._m)
         for t in range(n):
             z = self._at(self._Z, t, 2)
             d = self._at(self._d, t, 1)
             h = self._at(self._H, t, 2)
             alpha[t] = state
-            obs[t] = z @ state + d + _psd_sqrt(h) @ rng.standard_normal(self._p)
+            obs[t] = z @ state + d + psd_sqrt(h) @ rng.standard_normal(self._p)
             t_mat = self._at(self._T, t, 2)
             c = self._at(self._c, t, 1)
             r_mat = self._at(self._R, t, 2)
             q = self._at(self._Q, t, 2)
-            state = t_mat @ state + c + r_mat @ (_psd_sqrt(q) @ rng.standard_normal(self._r))
+            state = t_mat @ state + c + r_mat @ (psd_sqrt(q) @ rng.standard_normal(self._r))
         return alpha, obs
 
     def simulate(
@@ -644,7 +659,7 @@ class _BoxJenkinsModel[R](_UnivariateModel[R]):
             )
         self._order = (p, d, q)
         self._seasonal = (cap_p, cap_d, cap_q, s)
-        self._trend = validate_choice(trend, _TRENDS, "trend")
+        self._trend = validate_choice(trend, Trend, "trend")
         self._exog = validate_exog(exog, self.endog.shape[0])
         self._ensure_length(
             p + d + q + s * (cap_p + cap_d + cap_q) + 2,
@@ -721,12 +736,12 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
-        self._vol = validate_choice(vol, _VOL_FAMILIES, "vol")
+        self._vol = validate_choice(vol, Vol, "vol")
         self._p = validate_order(p, "p")
         self._o = validate_order(o, "o")
         self._q = validate_order(q, "q")
         self._ar_lags = validate_order(ar_lags, "ar_lags")
-        self._const = validate_choice(mean, _MEANS, "mean") == "constant"
+        self._const = validate_choice(mean, Mean, "mean") == "constant"
         self._truncation = validate_order(truncation, "truncation", minimum=1)
         if self._vol == "GARCH" and self._o != 0:
             raise SpecificationError("GARCH has no asymmetry term; set the asymmetry order o = 0.")
@@ -1113,7 +1128,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         order, k = self._order, self._k
         layout = _Layout(k, order, self._sw_mean, self._sw_ar)
         target = y[order:]
-        lags = _ms_lag_matrix(y, order)
+        lags = lag_matrix(y, order)
         total_var = float(np.var(y))
         var_floor = 1e-8 * total_var + 1e-12
         prob_floor = 1e-8
@@ -1151,11 +1166,11 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
                 cluster_sigma2(intercepts),
             )
 
-        best: _EMFit | None = None
+        best: _ExpectationMaximizationState | None = None
         for index in range(max(n_init, 1)):
             transition0, intercepts0, ar_start, sigma20 = make_start(index)
             try:
-                fit = _run_em(
+                fit = _ExpectationMaximizationState._run_em(
                     target,
                     lags,
                     layout,
@@ -1176,7 +1191,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         if best is None:
             raise NumericalError("MS-AR estimation failed for every start.")
 
-        refined = _run_em(
+        refined = _ExpectationMaximizationState._run_em(
             target,
             lags,
             layout,
@@ -1309,7 +1324,7 @@ class _SmoothTransitionModel[R](_UnivariateModel[R]):
         super().__init__(endog)
         self._order = validate_order(order, "order", minimum=1)
         self._delay = validate_order(delay, "delay", minimum=1)
-        self._transition = validate_choice(transition, _TRANSITIONS, "transition")
+        self._transition = validate_choice(transition, Transition, "transition")
         self._ensure_length(2 * (self._order + 2) + self._delay, f"STAR({self._order})")
 
     @property

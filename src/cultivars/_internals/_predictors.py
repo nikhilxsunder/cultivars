@@ -5,6 +5,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError
+from ._engines import NumpyMLPEngine
 
 
 @runtime_checkable
@@ -60,6 +61,6 @@ class _FittedMLP:
         if x.ndim != 2 or x.shape[1] != self.w1.shape[0]:
             raise DimensionError(f"features must be (n, {self.w1.shape[0]}); got shape {x.shape}.")
         xs = (x - self.x_mean) / self.x_scale
-        hidden = _activation(xs @ self.w1 + self.b1, self.activation)
+        hidden = NumpyMLPEngine._activation(xs @ self.w1 + self.b1, self.activation)
         out = hidden @ self.w2 + self.b2
         return np.asarray(out * self.y_scale + self.y_mean, dtype=np.float64)

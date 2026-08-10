@@ -1,6 +1,10 @@
 import numpy as np
 import numpy.typing as npt
 
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._containers import LagPolynomial
+from ._defaults import _TREND_WIDTH
+
 
 def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
     """Build the companion matrix from autoregressive coefficients.
@@ -28,7 +32,7 @@ def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
         >>> bool(C[1, 0] == 1.0)
         True
     """
-    ar = _normalize_ar(ar_coeffs)
+    ar = _as_coefficient_stack(ar_coeffs)
     p, k = ar.shape[0], ar.shape[1]
     if p < 1:
         raise DimensionError("companion_matrix requires at least one lag (p >= 1).")
