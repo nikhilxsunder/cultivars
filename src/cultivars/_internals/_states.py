@@ -5,6 +5,8 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from ._layouts import _ParameterLayout
+
 
 @dataclass(frozen=True, slots=True)
 class _ExpectationMaximizationState:
@@ -26,7 +28,7 @@ class _ExpectationMaximizationState:
         cls,
         target: npt.NDArray[np.float64],
         lags: npt.NDArray[np.float64],
-        layout: _Layout,
+        layout: _ParameterLayout,
         transition0: npt.NDArray[np.float64],
         intercepts0: npt.NDArray[np.float64],
         ar0: npt.NDArray[np.float64],

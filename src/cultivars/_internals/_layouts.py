@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
-class _Layout:
+class _ParameterLayout:
     """Column bookkeeping for the responsibility-weighted regression.
 
     Switching and non-switching blocks share one design matrix; this object
