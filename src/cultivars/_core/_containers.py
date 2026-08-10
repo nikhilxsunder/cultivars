@@ -45,37 +45,37 @@ class InformationCriteria(NamedTuple):
     bic: float
     hqic: float
 
+    @classmethod
+    def from_likelihood(cls, llf: float, nobs: int, n_params: int) -> InformationCriteria:
+        """Compute all three information criteria from a fit summary.
 
-def information_criteria(llf: float, nobs: int, n_params: int) -> InformationCriteria:
-    """Compute all three information criteria from a fit summary.
+        Args:
+            llf: Maximized log-likelihood.
+            nobs: Number of observations the likelihood was evaluated on.
+            n_params: Number of free parameters, including the innovation variance.
 
-    Args:
-        llf: Maximized log-likelihood.
-        nobs: Number of observations the likelihood was evaluated on.
-        n_params: Number of free parameters, including the innovation variance.
+        Returns:
+            The populated :class:`InformationCriteria`.
 
-    Returns:
-        The populated :class:`InformationCriteria`.
+        Raises:
+            SpecificationError: If ``nobs < 3`` (``log(log(n))`` is undefined or
+                negative below that) or ``n_params`` is negative.
 
-    Raises:
-        SpecificationError: If ``nobs < 3`` (``log(log(n))`` is undefined or
-            negative below that) or ``n_params`` is negative.
-
-    Example:
-        >>> ic = information_criteria(-100.0, 200, 3)
-        >>> round(ic.aic, 2)
-        206.0
-    """
-    if nobs < 3:
-        raise SpecificationError(f"nobs must be >= 3 to form criteria; got {nobs}.")
-    if n_params < 0:
-        raise SpecificationError(f"n_params must be non-negative; got {n_params}.")
-    penalty = 2.0 * n_params
-    return InformationCriteria(
-        aic=float(-2.0 * llf + penalty),
-        bic=float(-2.0 * llf + n_params * np.log(nobs)),
-        hqic=float(-2.0 * llf + penalty * np.log(np.log(nobs))),
-    )
+        Example:
+            >>> ic = InformationCriteria.from_likelihood(-100.0, 200, 3)
+            >>> round(ic.aic, 2)
+            206.0
+        """
+        if nobs < 3:
+            raise SpecificationError(f"nobs must be >= 3 to form criteria; got {nobs}.")
+        if n_params < 0:
+            raise SpecificationError(f"n_params must be non-negative; got {n_params}.")
+        penalty = 2.0 * n_params
+        return cls(
+            aic=float(-2.0 * llf + penalty),
+            bic=float(-2.0 * llf + n_params * np.log(nobs)),
+            hqic=float(-2.0 * llf + penalty * np.log(np.log(nobs))),
+        )
 
 
 @dataclass(frozen=True, slots=True)

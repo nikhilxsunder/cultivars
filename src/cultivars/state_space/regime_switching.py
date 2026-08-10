@@ -67,17 +67,11 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ..internals import _FilterResult, _SmootherResult
 
-# --------------------------------------------------------------------------
-# Transition-matrix utilities
-# --------------------------------------------------------------------------
-
-# --------------------------------------------------------------------------
-# Result containers
-# --------------------------------------------------------------------------
 
 @dataclass(frozen=True)
-class HamiltonFilterResult:
+class HamiltonFilterResult(_FilterResult):
     """Output of the Hamilton forward filter.
 
     Attributes:
@@ -91,12 +85,10 @@ class HamiltonFilterResult:
 
     filtered_prob: npt.NDArray[np.float64]
     predicted_prob: npt.NDArray[np.float64]
-    loglikelihood: float
-    loglikelihood_contributions: npt.NDArray[np.float64]
 
 
 @dataclass(frozen=True)
-class KimSmootherResult:
+class KimSmootherResult(_SmootherResult):
     """Output of the Kim backward smoother.
 
     Attributes:
@@ -111,10 +103,6 @@ class KimSmootherResult:
     smoothed_prob: npt.NDArray[np.float64]
     smoothed_joint_prob: npt.NDArray[np.float64]
 
-
-# --------------------------------------------------------------------------
-# Hamilton filter
-# --------------------------------------------------------------------------
 
 def hamilton_filter(
     log_conditional_density: npt.ArrayLike,
@@ -211,10 +199,6 @@ def hamilton_filter(
         loglikelihood_contributions=contributions,
     )
 
-
-# --------------------------------------------------------------------------
-# Kim smoother
-# --------------------------------------------------------------------------
 
 def kim_smoother(
     filter_result: HamiltonFilterResult, transition: npt.ArrayLike

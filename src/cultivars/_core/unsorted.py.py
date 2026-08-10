@@ -381,12 +381,10 @@ def figarch_weights(phi: float, d: float, beta: float, truncation: int) -> npt.N
     Returns:
         The weights ``lambda_1, ..., lambda_truncation``.
     """
-    lam = np.empty(truncation)
-    delta = np.empty(truncation)
+    delta = -fractional_difference_weights(d, truncation + 1)[1:]
+    lam = np.empty(truncation, dtype=np.float64)
     lam[0] = phi - beta + d
-    delta[0] = d
     for i in range(1, truncation):
-        delta[i] = (i - d) / (i + 1) * delta[i - 1]
         lam[i] = beta * lam[i - 1] + (delta[i] - phi * delta[i - 1])
     return lam
 
