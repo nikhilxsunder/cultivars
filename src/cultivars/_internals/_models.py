@@ -34,6 +34,13 @@ Model specifications inherit ``_ModelBase``, which owns ``endog`` validation
 and the length check. Every family base in this subpackage descends from it,
 so no public constructor re-implements either.
 
+A family base also owns its estimation: ``_build_objective`` assembles the
+optimizer surface from the validated specification, and ``_fit_family`` runs it
+and packs the raw outputs into a record from
+:mod:`cultivars._internals._fits`. The fit records carry no estimation logic of
+their own, so the specification is never destructured into a foreign call
+signature.
+
 These bases implement the structural contracts in
 :mod:`cultivars._core._protocols` without importing them: the protocols are
 duck-typed, so the relationship is checked by ``isinstance`` at runtime and by
@@ -49,6 +56,7 @@ import numpy.typing as npt
 import scipy.linalg as sla
 
 from .._core import (
+    _D_MAX,
     _DEFAULT_GRID,
     _DEFAULT_MAX_ITER,
     _DEFAULT_STARTS,
@@ -57,11 +65,24 @@ from .._core import (
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
     Mean,
+    Method,
     Transition,
     Trend,
     Vol,
+    _ForwardPass,
+    combined_difference,
+    concentrated_gaussian,
+    conditional_design,
+    deterministic_columns,
     ergodic_distribution,
+    ewma_mean_square,
+    fractional_difference,
+    inv_softplus,
     lag_matrix,
+    local_whittle_d,
+    n_deterministic,
+    ols,
+    pack_stationary,
     psd_sqrt,
     validate_aligned,
     validate_choice,
@@ -74,21 +95,34 @@ from .._core import (
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._engines import MeanFunctionEngine, NumpyMLPEngine
 from ._fits import (
+    _AutoRegressionFit,
     _BoxJenkinsFit,
-    _ConditionalVarianceFit,
+    _FractionalIntegrationFit,
+    _FractionalVarianceFit,
     _MarkovSwitchingFit,
     _NeuralAutoregressionFit,
     _NeuralThresholdFit,
+    _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
     _ThresholdFit,
 )
-from ._layouts import _Layout
+from ._layouts import _ParameterLayout
+from ._objectives import (
+    _AutoRegressionObjective,
+    _BoxJenkinsObjective,
+    _ConditionalVarianceObjective,
+    _FractionalIntegrationObjective,
+    _FractionalVarianceObjective,
+    _SmoothTransitionObjective,
+)
 from ._results import (
     _DurbinKoopmanSmootherResult,
     _FilterResult,
     _KalmanFilterResult,
     _SmootherResult,
+    _StabilityResult,
 )
+from ._solvers import _maximize_likelihood, _solve
 from ._states import _ExpectationMaximizationState
 
 
@@ -139,6 +173,12 @@ class _BaseModel[R](ABC):
         ...
 
 
+class _UnivariateModel[R](_BaseModel[R]):
+    """Base for single-series models. Reserved for univariate-only behavior."""
+
+    __slots__ = ()
+
+
 class _StateSpaceModel[F: _FilterResult, S: _SmootherResult](ABC):
     """The operations a state-space model must expose.
 
@@ -165,12 +205,6 @@ class _StateSpaceModel[F: _FilterResult, S: _SmootherResult](ABC):
     def smooth(self, y: npt.ArrayLike) -> S: ...
     @abstractmethod
     def loglikelihood(self, y: npt.ArrayLike) -> float: ...
-
-
-class _UnivariateModel[R](_BaseModel[R]):
-    """Base for single-series models. Reserved for univariate-only behavior."""
-
-    __slots__ = ()
 
 
 class _LinearGaussianStateSpaceModel(
@@ -420,17 +454,15 @@ class _LinearGaussianStateSpaceModel(
     # -- public operations -------------------------------------------------
 
     def filter(self, y: npt.ArrayLike) -> _KalmanFilterResult:
-        """Run the Kalman filter. See :class:`~cultivars.state_space.base.FilterResult`.
+        """Run the Kalman filter over the observation matrix.
 
-        Example:
-            >>> import numpy as np
-            >>> m = LinearGaussianStateSpace(
-            ...     design=[[1.0]], obs_cov=[[0.0]],
-            ...     transition=[[0.5]], selection=[[1.0]], state_cov=[[1.0]],
-            ... )
-            >>> res = m.filter(np.array([[0.1], [0.2], [-0.3]]))
-            >>> res.filtered_state.shape
-            (3, 1)
+        Args:
+            y: Observations, shape ``(n,)`` for a univariate model or
+                ``(n, p)``; ``numpy.nan`` marks a missing element.
+
+        Returns:
+            The :class:`_KalmanFilterResult` carrying predicted and filtered
+            states with their covariances and the per-period likelihood.
         """
         data = self._prepare_data(y)
         fwd = self._forward(data)
@@ -592,7 +624,7 @@ class _LinearGaussianStateSpaceModel(
             obs_intercept: Per-observation mean shift from the regression block.
 
         Returns:
-            The configured :class:`LinearGaussianStateSpace`.
+            The configured :class:`_LinearGaussianStateSpaceModel`.
         """
         r = max(phi_star.size, theta_star.size + 1)
         phi_full = np.zeros(r)
@@ -613,6 +645,265 @@ class _LinearGaussianStateSpaceModel(
             selection,
             np.array([[sigma2]]),
             obs_intercept=obs_intercept.reshape(-1, 1),
+        )
+
+
+class _AutoRegressionModel[R](_UnivariateModel[R]):
+    """Specification surface for the autoregressive family.
+
+    Args:
+        endog: The endogenous series.
+        order: Autoregressive order ``p``.
+        trend: Deterministic specification (``"n"``, ``"c"``, ``"ct"``).
+        method: ``"css"`` for conditional least squares, ``"exact"`` for exact
+            maximum likelihood through the companion state-space form.
+
+    Raises:
+        SpecificationError: If the order is negative, the trend or method is
+            unrecognized, or exact ML is requested with a linear trend.
+        DimensionError: If the series is too short for the specification.
+    """
+
+    __slots__ = ("_method", "_order", "_trend")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        trend: str = "c",
+        method: str = "css",
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog)
+        self._order = validate_order(order, "order")
+        self._trend = validate_choice(trend, Trend, "trend")
+        self._method = validate_choice(method, Method, "method")
+        if self._method == "exact" and self._trend == "ct":
+            raise SpecificationError(
+                "exact ML with trend='ct' is not supported in this release; "
+                "use method='css' for a linear trend."
+            )
+        self._ensure_length(self._order + 2, f"AR({self._order})")
+
+    @property
+    def order(self) -> int:
+        """The autoregressive order."""
+        return self._order
+
+    @property
+    def trend(self) -> str:
+        """The deterministic specification."""
+        return self._trend
+
+    @property
+    def method(self) -> str:
+        """The estimator."""
+        return self._method
+
+    def _fit_css(self) -> _AutoRegressionFit:
+        """Fit an AR(p) mean model by conditional least squares.
+
+        Conditions on the first ``p`` observations, so the effective sample is
+        ``n - p`` and the reported likelihood is the conditional one.
+
+        Returns:
+            The packed :class:`_AutoRegressionFit`.
+        """
+        y, order, trend = self.endog, self._order, self._trend
+        target, regressors, eff = conditional_design(y, order, trend)
+        beta = np.linalg.lstsq(regressors, target, rcond=None)[0]
+        fitted = regressors @ beta
+        resid = target - fitted
+        sigma2 = float(resid @ resid) / eff
+        n_det = n_deterministic(trend)
+        const = float(beta[0]) if trend in ("c", "ct") else None
+        trend_coeff = float(beta[1]) if trend == "ct" else None
+        ar_params = np.asarray(beta[n_det:], dtype=np.float64)
+        llf = -0.5 * eff * (_LOG_2PI + np.log(sigma2) + 1.0)
+        return _AutoRegressionFit(
+            fittedvalues=fitted,
+            resid=resid,
+            llf=float(llf),
+            nobs=eff,
+            n_params=order + n_det + 1,
+            const=const,
+            trend_coeff=trend_coeff,
+            ar_params=ar_params,
+            sigma2=sigma2,
+        )
+
+    def _build_objective(self) -> _AutoRegressionObjective:
+        """Assemble the exact-ML surface for an AR(p).
+
+        Warm-starts from the CSS fit. An explosive CSS estimate is discarded in
+        favour of a zero start, since it would put the optimizer outside the
+        stationary region the reparameterization assumes.
+
+        Returns:
+            The configured objective.
+        """
+        y, order, trend = self.endog, self._order, self._trend
+        has_const = trend == "c"
+        state_unit = np.zeros(order, dtype=np.float64)
+        state_unit[0] = 1.0
+
+        warm = self._fit_css()
+        phi0 = warm.ar_params
+        if not _StabilityResult.assess_stability(phi0).is_stable:
+            phi0 = np.zeros(order, dtype=np.float64)
+        psi0 = pack_stationary(phi0)
+        log_sigma0 = np.log(warm.sigma2)
+        theta0 = (
+            np.concatenate([[warm.const or 0.0], psi0, [log_sigma0]])
+            if has_const
+            else np.concatenate([psi0, [log_sigma0]])
+        )
+        return _AutoRegressionObjective(
+            y=y,
+            order=order,
+            has_const=has_const,
+            state_unit=state_unit,
+            identity=np.eye(order, dtype=np.float64),
+            theta0=theta0,
+        )
+
+    def _fit_exact(self) -> _AutoRegressionFit:
+        """Fit an AR(p) mean model by exact maximum likelihood.
+
+        Returns:
+            The packed fit, using the full sample.
+        """
+        y, order, trend = self.endog, self._order, self._trend
+        objective = self._build_objective()
+        parameters, llf = _maximize_likelihood(objective)
+        fitted = objective.state_space(parameters).filter(y).predicted_state[:, 0].copy()
+        return _AutoRegressionFit(
+            fittedvalues=fitted,
+            resid=y - fitted,
+            llf=llf,
+            nobs=y.shape[0],
+            n_params=order + n_deterministic(trend) + 1,
+            const=parameters.const if objective.has_const else None,
+            trend_coeff=None,
+            ar_params=parameters.ar_params,
+            sigma2=parameters.sigma2,
+        )
+
+    def _fit_family(self) -> _AutoRegressionFit:
+        """Dispatch to the estimator this specification selected."""
+        return self._fit_css() if self._method == "css" else self._fit_exact()
+
+
+class _FractionalIntegrationModel[R](_UnivariateModel[R]):
+    """Specification surface for the fractionally integrated ARMA family.
+
+    Args:
+        endog: The series.
+        order: Short-memory ``(p, q)``.
+        trend: ``"c"`` to estimate a mean, ``"n"`` to omit it.
+        truncation: Fractional-filter length; defaults to the sample size.
+
+    Raises:
+        SpecificationError: If an order is negative, the trend is unrecognized,
+            or ``truncation`` is not positive.
+        DimensionError: If the series is too short for the specification.
+    """
+
+    __slots__ = ("_const", "_p", "_q", "_truncation")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: tuple[int, int],
+        trend: str = "c",
+        truncation: int | None = None,
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog)
+        self._p, self._q = validate_order_tuple(order, ("p", "q"))
+        self._const = validate_choice(trend, Trend, "trend") == "c"
+        self._truncation = (
+            self.endog.shape[0]
+            if truncation is None
+            else validate_order(truncation, "truncation", minimum=1)
+        )
+        self._ensure_length(2 * (self._p + self._q) + 8, f"ARFIMA({self._p}, d, {self._q})")
+
+    @property
+    def order(self) -> tuple[int, int]:
+        """The short-memory orders ``(p, q)``."""
+        return (self._p, self._q)
+
+    @property
+    def truncation(self) -> int:
+        """The fractional-filter length."""
+        return self._truncation
+
+    def _build_objective(self) -> _FractionalIntegrationObjective:
+        """Assemble the joint-ML surface for an ARFIMA(p, d, q).
+
+        Warm-starts ``d`` from a local Whittle estimate, falling back to zero if
+        that estimator fails; the ARMA block starts at zero, since a
+        short-memory warm start fitted before ``d`` is known tends to absorb the
+        long memory.
+
+        Returns:
+            The configured objective.
+        """
+        y, p, q = self.endog, self._p, self._q
+        estimate_mean, truncation = self._const, self._truncation
+        try:
+            d0 = float(np.clip(local_whittle_d(y)[0], -_D_MAX + 1e-3, _D_MAX - 1e-3))
+        except (NumericalError, SpecificationError):
+            d0 = 0.0
+        mu0 = float(y.mean()) if estimate_mean else 0.0
+        w0 = fractional_difference(y - mu0, d0, truncation=truncation)
+        log_sigma0 = float(np.log(max(float(np.var(w0)), 1e-8)))
+
+        parts: list[npt.NDArray[np.float64]] = []
+        if estimate_mean:
+            parts.append(np.array([mu0]))
+        parts.extend(
+            [
+                np.array([float(np.arctanh(d0 / _D_MAX))]),
+                np.zeros(p),
+                np.zeros(q),
+                np.array([log_sigma0]),
+            ]
+        )
+        return _FractionalIntegrationObjective(
+            y=y,
+            p=p,
+            q=q,
+            estimate_mean=estimate_mean,
+            truncation=truncation,
+            theta0=np.concatenate(parts),
+        )
+
+    def _fit_family(self) -> _FractionalIntegrationFit:
+        """Fit an ARFIMA(p, d, q) by joint maximum likelihood.
+
+        Returns:
+            The packed fit, on the fractionally differenced series.
+        """
+        y, p, q, estimate_mean = self.endog, self._p, self._q, self._const
+        objective = self._build_objective()
+        parameters, llf = _maximize_likelihood(objective)
+        w = objective.differenced(parameters)
+        fitted = objective.state_space(parameters).filter(w).predicted_state[:, 0]
+        return _FractionalIntegrationFit(
+            d=parameters.d,
+            mean=parameters.mean if estimate_mean else None,
+            ar_params=parameters.ar_params,
+            ma_params=parameters.ma_params,
+            sigma2=parameters.sigma2,
+            resid=w - fitted,
+            fittedvalues=fitted,
+            llf=llf,
+            nobs=y.shape[0],
+            n_params=objective.offset + 1 + p + q + 1,
         )
 
 
@@ -685,25 +976,137 @@ class _BoxJenkinsModel[R](_UnivariateModel[R]):
         """The validated exogenous regressors, or ``None``."""
         return self._exog
 
+    def _build_objective(self) -> _BoxJenkinsObjective:
+        """Assemble the exact-ML surface for a seasonal ARIMA with regressors.
+
+        Starting values come from a regression of the differenced series on the
+        deterministic and exogenous block, then a short AR fit to those
+        residuals; an explosive AR start is replaced by zeros.
+
+        Returns:
+            The configured objective, defined on the differenced series.
+        """
+        endog, exog = self.endog, self._exog
+        order, seasonal_order, trend = self._order, self._seasonal, self._trend
+        p, d, q = order
+        cap_p, cap_d, cap_q, s = seasonal_order
+        w = combined_difference(endog, d, cap_d, s)
+        n_eff = w.shape[0]
+        det = deterministic_columns(trend, n_eff)
+        if exog is not None:
+            exog_w = combined_difference(exog, d, cap_d, s) if (d or cap_d) else exog
+            design_x = np.column_stack([det, exog_w]) if det.shape[1] else exog_w
+        else:
+            design_x = det
+        k_beta = design_x.shape[1]
+
+        if k_beta:
+            beta0 = np.linalg.lstsq(design_x, w, rcond=None)[0]
+            resid0 = w - design_x @ beta0
+        else:
+            beta0 = np.zeros(0)
+            resid0 = w - w.mean()
+        sigma2_0 = max(float(resid0 @ resid0) / n_eff, 1e-8)
+
+        ar0 = np.zeros(p)
+        if p:
+            lag_mat = np.column_stack([resid0[p - i - 1 : n_eff - i - 1] for i in range(p)])
+            try:
+                ar0 = np.asarray(
+                    np.linalg.lstsq(lag_mat, resid0[p:], rcond=None)[0], dtype=np.float64
+                )
+                if not _StabilityResult.assess_stability(ar0).is_stable:
+                    ar0 = np.zeros(p)
+            except np.linalg.LinAlgError:
+                ar0 = np.zeros(p)
+
+        theta0 = np.concatenate(
+            [
+                beta0,
+                pack_stationary(ar0),
+                np.zeros(cap_p),
+                np.zeros(q),
+                np.zeros(cap_q),
+                [np.log(sigma2_0)],
+            ]
+        )
+        return _BoxJenkinsObjective(
+            w=w,
+            design_x=design_x,
+            order=order,
+            seasonal_order=seasonal_order,
+            theta0=theta0,
+        )
+
     def _fit_family(self) -> _BoxJenkinsFit:
-        """Run the shared state-space engine for this specification."""
-        return _BoxJenkinsFit._fit_exact(
-            self.endog, self._exog, self._order, self._seasonal, self._trend
+        """Fit a seasonal ARIMA with optional regressors by exact ML.
+
+        Returns:
+            The packed fit, on the differenced modeling series.
+        """
+        order, seasonal_order = self._order, self._seasonal
+        objective = self._build_objective()
+        parameters, llf = _maximize_likelihood(objective)
+        intercept = objective.obs_intercept(parameters)
+        state_space = objective.state_space(parameters)
+        fitted = state_space.filter(objective.w).predicted_state[:, 0] + intercept
+        p, _d, q = order
+        cap_p, _cap_d, cap_q, _s = seasonal_order
+        return _BoxJenkinsFit(
+            ar_params=parameters.ar_params,
+            ma_params=parameters.ma_params,
+            seasonal_ar_params=parameters.seasonal_ar_params,
+            seasonal_ma_params=parameters.seasonal_ma_params,
+            beta=parameters.beta,
+            sigma2=parameters.sigma2,
+            resid=objective.w - fitted,
+            fittedvalues=fitted,
+            llf=llf,
+            nobs=objective.w.shape[0],
+            n_params=objective.k_beta + p + cap_p + q + cap_q + 1,
         )
 
 
 class _ConditionalVarianceModel[R](_UnivariateModel[R]):
-    """Shared specification surface for the conditional-variance family.
+    """Specification surface shared by the conditional-variance group.
+
+    Abstract in intent: it owns only the conditional-mean specification, which
+    is the one choice every family in the group makes the same way. Variance
+    orders, the family key, and the truncation lag belong to the subclasses
+    that actually honour them.
 
     Args:
         endog: The series, typically returns or residuals.
-        vol: Volatility family.
-        p: ARCH order.
-        o: Asymmetry order.
-        q: GARCH order.
+        mean: ``"constant"`` or ``"zero"``.
+
+    Raises:
+        SpecificationError: If ``mean`` is not a recognized choice.
+    """
+
+    __slots__ = ("_const",)
+
+    def __init__(self, endog: npt.ArrayLike, *, mean: str = "constant") -> None:
+        """Validate the conditional-mean specification and the data."""
+        super().__init__(endog)
+        self._const = validate_choice(mean, Mean, "mean") == "constant"
+
+    @property
+    def has_constant_mean(self) -> bool:
+        """Whether a mean intercept is estimated."""
+        return self._const
+
+
+class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
+    """Specification surface for the finite-order variance families.
+
+    Args:
+        endog: The series, typically returns or residuals.
+        vol: Volatility family: ``"GARCH"``, ``"GJR"``, or ``"EGARCH"``.
+        p: Order of the shock-magnitude block.
+        o: Order of the asymmetry block.
+        q: Order of the persistence block.
         ar_lags: Conditional-mean AR order.
         mean: ``"constant"`` or ``"zero"``.
-        truncation: ARCH(infinity) truncation lag (FIGARCH only).
 
     Raises:
         SpecificationError: If an order is negative, ``GARCH`` is given a
@@ -711,15 +1114,7 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
         DimensionError: If the series is too short for the specification.
     """
 
-    __slots__ = (
-        "_ar_lags",
-        "_const",
-        "_o",
-        "_p",
-        "_q",
-        "_truncation",
-        "_vol",
-    )
+    __slots__ = ("_ar_lags", "_o", "_p", "_q", "_vol")
 
     def __init__(
         self,
@@ -731,17 +1126,14 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
         q: int,
         ar_lags: int = 0,
         mean: str = "constant",
-        truncation: int = _DEFAULT_TRUNCATION,
     ) -> None:
         """Validate the specification and the data."""
-        super().__init__(endog)
+        super().__init__(endog, mean=mean)
         self._vol = validate_choice(vol, Vol, "vol")
         self._p = validate_order(p, "p")
         self._o = validate_order(o, "o")
         self._q = validate_order(q, "q")
         self._ar_lags = validate_order(ar_lags, "ar_lags")
-        self._const = validate_choice(mean, Mean, "mean") == "constant"
-        self._truncation = validate_order(truncation, "truncation", minimum=1)
         if self._vol == "GARCH" and self._o != 0:
             raise SpecificationError("GARCH has no asymmetry term; set the asymmetry order o = 0.")
         if self._vol in ("GJR", "EGARCH") and self._o < 1:
@@ -761,20 +1153,188 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
         """The variance order ``(p, o, q)``."""
         return (self._p, self._o, self._q)
 
-    def _fit_family(self) -> _ConditionalVarianceFit:
-        """Dispatch to the engine for this volatility family."""
-        if self._vol == "FIGARCH":
-            return _ConditionalVarianceFit._fit_frac_int_exact(
-                self.endog, self._const, self._truncation
+    @property
+    def ar_lags(self) -> int:
+        """The conditional-mean autoregressive order."""
+        return self._ar_lags
+
+    def _build_objective(self) -> _ConditionalVarianceObjective:
+        """Assemble the joint mean-and-variance surface.
+
+        Returns:
+            The configured objective.
+        """
+        endog, ar_lags, include_const = self.endog, self._ar_lags, self._const
+        p, o, q, vol = self._p, self._o, self._q, self._vol
+        n_full = endog.shape[0]
+        target = endog[ar_lags:]
+        n = target.shape[0]
+        mean_cols: list[npt.NDArray[np.float64]] = []
+        if include_const:
+            mean_cols.append(np.ones(n))
+        for i in range(1, ar_lags + 1):
+            mean_cols.append(endog[ar_lags - i : n_full - i])
+        mean_x = np.column_stack(mean_cols) if mean_cols else np.zeros((n, 0))
+
+        if mean_x.shape[1]:
+            mean0 = np.linalg.lstsq(mean_x, target, rcond=None)[0]
+            resid0 = target - mean_x @ mean0
+        else:
+            mean0 = np.zeros(0)
+            resid0 = target.copy()
+        var0 = max(float(np.var(resid0)), 1e-8)
+
+        a_init, b_init, g_init = 0.05, 0.90, 0.05
+        if vol == "GARCH":
+            var_raw0 = np.concatenate(
+                [
+                    [np.log(var0 * (1 - a_init - b_init))],
+                    [inv_softplus(a_init)] * p,
+                    [inv_softplus(b_init)] * q,
+                ]
             )
-        return _ConditionalVarianceFit._fit_exact(
-            self.endog,
-            self._p,
-            self._o,
-            self._q,
-            self._ar_lags,
-            self._const,
-            self._vol,
+        elif vol == "GJR":
+            var_raw0 = np.concatenate(
+                [
+                    [np.log(var0 * (1 - a_init - b_init - 0.5 * g_init))],
+                    [inv_softplus(a_init)] * p,
+                    [g_init] * o,
+                    [inv_softplus(b_init)] * q,
+                ]
+            )
+        else:
+            var_raw0 = np.concatenate(
+                [[np.log(var0) * (1 - 0.95)], [0.1] * p, [-0.05] * o, [0.95] * q]
+            )
+
+        return _ConditionalVarianceObjective(
+            target=target,
+            mean_x=mean_x,
+            backcast=ewma_mean_square(resid0),
+            vol=vol,
+            p=p,
+            o=o,
+            q=q,
+            theta0=np.concatenate([mean0, var_raw0]),
+        )
+
+    def _fit_family(self) -> _ShortMemoryVarianceFit:
+        """Fit a GARCH, GJR, or EGARCH model by Gaussian maximum likelihood.
+
+        Mean and variance parameters are estimated jointly rather than in two
+        steps, so the reported likelihood is the true joint one.
+
+        Returns:
+            The packed fit.
+        """
+        include_const, vol = self._const, self._vol
+        p, o, q = self._p, self._o, self._q
+        objective = self._build_objective()
+        parameters, llf = _maximize_likelihood(objective)
+        fitted = objective.fitted(parameters)
+        resid = objective.target - fitted
+        return _ShortMemoryVarianceFit(
+            const=float(parameters.mean[0]) if include_const else None,
+            omega=parameters.omega,
+            vol=vol,
+            ar_params=np.asarray(
+                parameters.mean[1:] if include_const else parameters.mean, dtype=np.float64
+            ),
+            alpha=parameters.alpha,
+            gamma=parameters.gamma,
+            beta=parameters.beta,
+            conditional_variance=objective.variance_path(resid, parameters),
+            resid=resid,
+            fittedvalues=fitted,
+            llf=llf,
+            nobs=objective.target.shape[0],
+            n_params=objective.k_mean + 1 + p + o + q,
+        )
+
+
+class _FractionalVarianceModel[R](_ConditionalVarianceModel[R]):
+    """Specification surface for the fractionally integrated variance family.
+
+    The variance order is fixed at ``(1, d, 1)``, so the only structural choice
+    beyond the mean is how far the infinite-order representation is truncated.
+
+    Args:
+        endog: The series, typically returns or residuals.
+        mean: ``"constant"`` or ``"zero"``.
+        truncation: Infinite-order truncation lag.
+
+    Raises:
+        SpecificationError: If ``truncation`` is not positive.
+        DimensionError: If the series is too short for the specification.
+    """
+
+    __slots__ = ("_truncation",)
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        mean: str = "constant",
+        truncation: int = _DEFAULT_TRUNCATION,
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog, mean=mean)
+        self._truncation = validate_order(truncation, "truncation", minimum=1)
+        self._ensure_length(int(self._const) + 4, "FIGARCH(1, d, 1)")
+
+    @property
+    def truncation(self) -> int:
+        """The infinite-order truncation lag."""
+        return self._truncation
+
+    def _build_objective(self) -> _FractionalVarianceObjective:
+        """Assemble the surface for a fractionally integrated variance.
+
+        Returns:
+            The configured objective.
+        """
+        endog, include_const = self.endog, self._const
+        truncation = self._truncation
+        n = endog.shape[0]
+        mean_x = np.ones((n, 1)) if include_const else np.zeros((n, 0))
+        if mean_x.shape[1]:
+            mean0 = np.linalg.lstsq(mean_x, endog, rcond=None)[0]
+            resid0 = endog - mean_x @ mean0
+        else:
+            mean0 = np.zeros(0)
+            resid0 = endog.copy()
+        var0 = max(float(np.var(resid0)), 1e-8)
+        return _FractionalVarianceObjective(
+            target=endog,
+            mean_x=mean_x,
+            backcast=ewma_mean_square(resid0),
+            truncation=truncation,
+            theta0=np.concatenate([mean0, [np.log(var0 * 0.4), -1.0, -0.2, 0.4]]),
+        )
+
+    def _fit_family(self) -> _FractionalVarianceFit:
+        """Fit a FIGARCH(1, d, 1) model by Gaussian maximum likelihood.
+
+        Returns:
+            The packed fit.
+        """
+        include_const = self._const
+        objective = self._build_objective()
+        parameters, llf = _maximize_likelihood(objective)
+        fitted = objective.fitted(parameters)
+        resid = objective.target - fitted
+        return _FractionalVarianceFit(
+            const=float(parameters.mean[0]) if include_const else None,
+            omega=parameters.omega,
+            phi=parameters.phi,
+            d=parameters.d,
+            beta=parameters.beta,
+            conditional_variance=objective.variance_path(resid, parameters),
+            resid=resid,
+            fittedvalues=fitted,
+            llf=llf,
+            nobs=objective.target.shape[0],
+            n_params=objective.k_mean + 3,
         )
 
 
@@ -828,7 +1388,30 @@ class _NeuralAutoregressionModel[R](_MeanFunctionModel[R]):
     __slots__ = ()
 
     def _fit_family(self) -> _NeuralAutoregressionFit:
-        return _NeuralAutoregressionFit._fit_exact(self.endog, self._order, self._engine)
+        """Fit a neural autoregression of the given order.
+
+        The likelihood is Gaussian with the variance concentrated out, so
+        ``n_params`` counts the learner's parameters plus that variance.
+
+        Returns:
+            The packed :class:`_NeuralAutoregressionFit`.
+        """
+        y, order, engine = self.endog, self._order, self._engine
+        target = y[order:]
+        features = lag_matrix(y, order)
+        predictor = engine.fit(features, target)
+        fitted = predictor.predict(features)
+        resid = target - fitted
+        sigma2, llf = concentrated_gaussian(float(resid @ resid), target.shape[0])
+        return _NeuralAutoregressionFit(
+            predictor=predictor,
+            sigma2=sigma2,
+            resid=resid,
+            fittedvalues=fitted,
+            llf=float(llf),
+            nobs=target.shape[0],
+            n_params=predictor.n_parameters + 1,
+        )
 
 
 class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
@@ -885,15 +1468,61 @@ class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
         return self._threshold_variable is None
 
     def _fit_family(self) -> _NeuralThresholdFit:
-        """Run the two-regime neural engine for this specification."""
-        return _NeuralThresholdFit._fit_exact(
-            self.endog,
-            self._order,
-            self._engine,
-            self._threshold_variable,
-            self._delay,
-            self._threshold,
-            self._trim,
+        """Fit a two-regime neural threshold autoregression.
+
+        The threshold defaults to the median of the transition variable rather
+        than being searched: with a nonlinear learner per regime, a grid search
+        would retrain the network at every candidate split.
+
+        Returns:
+            The packed :class:`_NeuralThresholdFit`.
+
+        Raises:
+            NumericalError: If the split leaves a regime with too few observations.
+        """
+        y, order, engine = self.endog, self._order, self._engine
+        threshold_variable, delay = self._threshold_variable, self._delay
+        threshold, trim = self._threshold, self._trim
+        n = y.shape[0]
+        start = max(order, delay)
+        target = y[start:]
+        n_eff = target.shape[0]
+        features = lag_matrix(y, order, start=start)
+        base = threshold_variable if threshold_variable is not None else y
+        z = base[start - delay : n - delay]
+        r = float(np.median(z)) if threshold is None else float(threshold)
+        lower = z <= r
+        n_lo = int(lower.sum())
+        n_hi = n_eff - n_lo
+        if min(n_lo, n_hi) < max(2, int(trim * n_eff)):
+            raise NumericalError(
+                f"threshold {r} leaves a regime with too few observations "
+                f"({n_lo} lower, {n_hi} upper)."
+            )
+        lower_predictor = engine.fit(features[lower], target[lower])
+        upper_predictor = engine.fit(features[~lower], target[~lower])
+        fitted = np.empty(n_eff, dtype=np.float64)
+        fitted[lower] = lower_predictor.predict(features[lower])
+        fitted[~lower] = upper_predictor.predict(features[~lower])
+        resid = target - fitted
+        ssr = float(resid @ resid)
+        sigma2, llf = concentrated_gaussian(ssr, n_eff)
+        return _NeuralThresholdFit(
+            delay=delay,
+            threshold=r,
+            lower_predictor=lower_predictor,
+            upper_predictor=upper_predictor,
+            threshold_variable=threshold_variable,
+            self_exciting=threshold_variable is None,
+            sigma2=sigma2,
+            ssr=ssr,
+            n_lower=n_lo,
+            n_upper=n_hi,
+            resid=resid,
+            fittedvalues=fitted,
+            llf=float(llf),
+            nobs=n_eff,
+            n_params=lower_predictor.n_parameters + upper_predictor.n_parameters + 2,
         )
 
 
@@ -1011,7 +1640,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         lags: npt.NDArray[np.float64],
         smoothed: npt.NDArray[np.float64],
         sigma2: npt.NDArray[np.float64],
-        layout: _Layout,
+        layout: _ParameterLayout,
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         """M-step coefficient update by responsibility-weighted GLS.
 
@@ -1117,7 +1746,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
             seed: Seed or generator for the random starts.
 
         Returns:
-            The packed :class:`_MSARFit`, regimes ordered by intercept.
+            The packed :class:`_MarkovSwitchingFit`, regimes ordered by intercept.
 
         Raises:
             NumericalError: If every start fails to produce a finite likelihood.
@@ -1125,7 +1754,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         y = self.endog
         order, k = self._order, self._k
-        layout = _Layout(k, order, self._sw_mean, self._sw_ar)
+        layout = _ParameterLayout(k, order, self._sw_mean, self._sw_ar)
         target = y[order:]
         lags = lag_matrix(y, order)
         total_var = float(np.var(y))
@@ -1159,7 +1788,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
                 intercepts = np.sort(rng.choice(target, size=k, replace=False))
                 diagonal = float(rng.uniform(0.8, 0.95))
             return (
-                _initial_transition(k, rng, diagonal),
+                self.initial_transition(k, rng, diagonal),
                 intercepts,
                 np.zeros((k, order), dtype=np.float64),
                 cluster_sigma2(intercepts),
@@ -1212,7 +1841,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         ar_params = fit.ar_params[perm]
         variances = fit.sigma2[perm]
         smoothed = fit.smoothed_prob[:, perm]
-        means = _regime_means(intercepts, ar_params, lags)
+        means = self.regime_means(intercepts, ar_params, lags)
         fitted = (smoothed * means).sum(axis=1)
         return _MarkovSwitchingFit(
             transition=transition,
@@ -1293,14 +1922,77 @@ class _ThresholdModel[R](_UnivariateModel[R]):
         return self._threshold_variable is None
 
     def _fit_family(self) -> _ThresholdFit:
-        """Run the shared grid-search engine for this specification."""
-        return _ThresholdFit._fit_threshold(
-            self.endog,
-            self._order,
-            self._delays,
-            self._trim,
-            self._n_grid,
-            self._threshold_variable,
+        """Fit a two-regime threshold autoregression by grid search.
+
+        Searches every ``(delay, threshold)`` pair on a trimmed quantile grid and
+        keeps the pair minimizing total SSR. Splits that leave either regime with
+        fewer than ``order + 2`` observations are skipped, since those coefficients
+        would not be identified.
+
+        Returns:
+            The packed :class:`_ThresholdFit`.
+
+        Raises:
+            NumericalError: If no admissible split exists.
+        """
+        y, order, delays = self.endog, self._order, self._delays
+        trim, n_grid = self._trim, self._n_grid
+        threshold_var = self._threshold_variable
+        n = y.shape[0]
+        start = max(order, max(delays))
+        target = y[start:]
+        n_eff = target.shape[0]
+        design = np.column_stack(
+            [deterministic_columns("c", y.shape[0] - start), lag_matrix(y, order, start=start)]
+        )
+        base = threshold_var if threshold_var is not None else y
+        min_regime = order + 2
+
+        best_ssr = np.inf
+        best: (
+            tuple[int, float, npt.NDArray[np.float64], npt.NDArray[np.float64], int, int] | None
+        ) = None
+        for d in delays:
+            z = base[start - d : n - d]
+            grid = np.quantile(z, np.linspace(trim, 1.0 - trim, n_grid))
+            for r in np.unique(grid):
+                lower = z <= r
+                n_lo = int(lower.sum())
+                n_hi = n_eff - n_lo
+                if n_lo < min_regime or n_hi < min_regime:
+                    continue
+                b_lo, ssr_lo = ols(design[lower], target[lower])
+                b_hi, ssr_hi = ols(design[~lower], target[~lower])
+                ssr = ssr_lo + ssr_hi
+                if ssr < best_ssr:
+                    best_ssr = ssr
+                    best = (d, float(r), b_lo, b_hi, n_lo, n_hi)
+
+        if best is None:
+            raise NumericalError(
+                "threshold grid search found no admissible split; relax trim or shorten order."
+            )
+        d_star, r_star, b_lo, b_hi, n_lo, n_hi = best
+        z = base[start - d_star : n - d_star]
+        lower = z <= r_star
+        fitted = np.where(lower, design @ b_lo, design @ b_hi)
+        resid = target - fitted
+        sigma2 = best_ssr / n_eff
+        llf = -0.5 * n_eff * (_LOG_2PI + np.log(sigma2) + 1.0)
+        return _ThresholdFit(
+            delay=d_star,
+            threshold=r_star,
+            lower_params=b_lo,
+            upper_params=b_hi,
+            sigma2=sigma2,
+            ssr=float(best_ssr),
+            n_lower=n_lo,
+            n_upper=n_hi,
+            resid=resid,
+            fittedvalues=fitted,
+            llf=float(llf),
+            nobs=n_eff,
+            n_params=2 * (order + 1) + 1,
         )
 
 
@@ -1341,8 +2033,84 @@ class _SmoothTransitionModel[R](_UnivariateModel[R]):
         """The transition function family."""
         return self._transition
 
+    def _build_objective(self) -> _SmoothTransitionObjective:
+        """Assemble the concentrated least-squares surface.
+
+        The threshold seed comes from the best hard split over a grid of
+        interior quantiles, which is a cheap approximation to the smooth
+        problem and lands the multi-start near the right basin.
+
+        Returns:
+            The configured objective.
+
+        Raises:
+            NumericalError: If the transition variable has zero variance.
+        """
+        y, order = self.endog, self._order
+        delay, transition = self._delay, self._transition
+        n = y.shape[0]
+        start = max(order, delay)
+        target = y[start:]
+        n_eff = target.shape[0]
+        design = np.column_stack(
+            [deterministic_columns("c", n_eff), lag_matrix(y, order, start=start)]
+        )
+        z = y[start - delay : n - delay]
+        scale = float(np.std(z))
+        if scale == 0.0:
+            raise NumericalError("transition variable has zero variance.")
+
+        c_seed = float(np.median(z))
+        best_hard = np.inf
+        for candidate in np.quantile(z, np.linspace(0.15, 0.85, 50)):
+            lower = z <= candidate
+            n_lo = int(lower.sum())
+            if n_lo < order + 2 or n_eff - n_lo < order + 2:
+                continue
+            ssr_hard = ols(design[lower], target[lower])[1] + ols(design[~lower], target[~lower])[1]
+            if ssr_hard < best_hard:
+                best_hard, c_seed = ssr_hard, float(candidate)
+
+        seeds = tuple(
+            np.array([np.log(gamma0), c0])
+            for c0 in (c_seed, float(np.median(z)))
+            for gamma0 in (2.0, 5.0, 10.0, 25.0)
+        )
+        return _SmoothTransitionObjective(
+            target=target,
+            design=design,
+            z=z,
+            scale=scale,
+            transition=transition,
+            seeds=seeds,
+        )
+
     def _fit_family(self) -> _SmoothTransitionFit:
-        """Run the smooth-transition engine for this specification."""
-        return _SmoothTransitionFit._fit_exact(
-            self.endog, self._order, self._delay, self._transition
+        """Fit a smooth-transition autoregression by concentrated least squares.
+
+        Returns:
+            The packed fit.
+
+        Raises:
+            NumericalError: If the transition variable has zero variance.
+        """
+        order, delay = self._order, self._delay
+        objective = self._build_objective()
+        parameters, ssr = _solve(objective)
+        _ssr, beta, resid = objective.least_squares(parameters)
+        n_eff = objective.target.shape[0]
+        sigma2 = ssr / n_eff
+        return _SmoothTransitionFit(
+            delay=delay,
+            threshold=parameters.threshold,
+            gamma=parameters.gamma,
+            lower_params=beta[: order + 1],
+            upper_params=beta[order + 1 :],
+            sigma2=sigma2,
+            ssr=ssr,
+            resid=resid,
+            fittedvalues=objective.target - resid,
+            llf=float(-0.5 * n_eff * (_LOG_2PI + np.log(sigma2) + 1.0)),
+            nobs=n_eff,
+            n_params=2 * (order + 1) + 2,
         )

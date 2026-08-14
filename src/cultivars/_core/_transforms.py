@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/core/transforms.py
+# filepath: /src/cultivars/_core/_transforms.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #

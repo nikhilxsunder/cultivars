@@ -33,6 +33,7 @@ shape regardless of which model raised it.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import TypeAliasType, get_args
 
 import numpy as np
 import numpy.typing as npt
@@ -168,22 +169,31 @@ def validate_order_tuple(
     )
 
 
-def validate_choice[T](value: T, allowed: Sequence[T], label: str) -> T:
+def validate_choice[T](value: T, allowed: object, label: str) -> T:
     """Check a categorical specification against its permitted values.
+
+    Accepts either a sequence of options or a PEP 695 ``Literal`` alias, since
+    every call site names the alias from :mod:`cultivars._core._types` rather
+    than repeating the option tuple.
 
     Args:
         value: The candidate option.
-        allowed: The permitted options.
+        allowed: The permitted options, as a sequence or a ``Literal`` alias.
         label: Argument name, used in error messages.
 
     Returns:
         The value unchanged.
 
     Raises:
-        SpecificationError: If ``value`` is not in ``allowed``.
+        SpecificationError: If ``value`` is not among the permitted options.
+
+    Example:
+        >>> validate_choice("c", Trend, "trend")
+        'c'
     """
-    if value not in allowed:
-        raise SpecificationError(f"{label} must be one of {tuple(allowed)}; got {value!r}.")
+    options = get_args(allowed.__value__) if isinstance(allowed, TypeAliasType) else tuple(allowed)
+    if value not in options:
+        raise SpecificationError(f"{label} must be one of {options}; got {value!r}.")
     return value
 
 

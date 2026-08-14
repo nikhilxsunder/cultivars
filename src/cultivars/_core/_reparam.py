@@ -130,3 +130,19 @@ def softplus(x: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 def inv_softplus(x: float) -> float:
     """Inverse of :func:`_softplus`, for constructing starting values."""
     return float(np.log(np.expm1(x)))
+
+
+def sigmoid(x: float) -> float:
+    """Map the real line to the unit interval.
+
+    Args:
+        x: An unconstrained real value.
+
+    Returns:
+        The value in ``(0, 1)``.
+
+    Example:
+        >>> sigmoid(0.0)
+        0.5
+    """
+    return float(1.0 / (1.0 + np.exp(-x)))

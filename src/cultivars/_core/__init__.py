@@ -29,6 +29,7 @@ in ``_internals``, which houses mono-consumer mechanism plumbing.
 
 from __future__ import annotations
 
+from ._containers import InformationCriteria, _ForwardPass
 from ._defaults import (
     _D_MAX,
     _DEFAULT_GRID,
@@ -38,6 +39,8 @@ from ._defaults import (
     _DEFAULT_TRIM,
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
+    _PENALTY,
+    _SCHEMA_VERSION,
     _SQRT_2_OVER_PI,
 )
 from ._estimators import (
@@ -56,9 +59,17 @@ from ._matrices import (
     psd_sqrt,
 )
 from ._polynomials import expand_ar, expand_ma
-from ._reparam import inv_softplus, pack_stationary, softplus, unpack_stationary
+from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
-from ._types import Mean, Transition, Trend, Vol
+from ._types import (
+    Mean,
+    Method,
+    OptimizerMethod,
+    OptimizerOptions,
+    Transition,
+    Trend,
+    Vol,
+)
 from ._validators import (
     validate_aligned,
     validate_choice,
@@ -67,6 +78,13 @@ from ._validators import (
     validate_open_interval,
     validate_order,
     validate_order_tuple,
+)
+from .unsorted import (
+    _arch_infinity_variance,
+    _arch_infinity_weights,
+    _gaussian_negloglik,
+    _linear_variance_recursion,
+    _log_variance_recursion,
 )
 
 __all__ = [
@@ -78,12 +96,23 @@ __all__ = [
     "_DEFAULT_TRUNCATION",
     "_D_MAX",
     "_LOG_2PI",
+    "_PENALTY",
+    "_SCHEMA_VERSION",
     "_SQRT_2_OVER_PI",
     "InformationCriteria",
     "Mean",
+    "Method",
+    "OptimizerMethod",
+    "OptimizerOptions",
     "Transition",
     "Trend",
     "Vol",
+    "_ForwardPass",
+    "_arch_infinity_variance",
+    "_arch_infinity_weights",
+    "_gaussian_negloglik",
+    "_linear_variance_recursion",
+    "_log_variance_recursion",
     "combined_difference",
     "companion_matrix",
     "concentrated_gaussian",
@@ -102,6 +131,7 @@ __all__ = [
     "ols",
     "pack_stationary",
     "psd_sqrt",
+    "sigmoid",
     "softplus",
     "unpack_stationary",
     "validate_aligned",

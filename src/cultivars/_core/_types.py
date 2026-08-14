@@ -30,7 +30,27 @@ what lets ``mypy`` reject a misspelled option at the call site.
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
+
+if TYPE_CHECKING:
+    from scipy.optimize._minimize import _MinimizeOptions as OptimizerOptions
+else:
+    OptimizerOptions = dict
+"""Keyword options accepted by :func:`scipy.optimize.minimize`.
+
+Aliased from the ``scipy-stubs`` ``TypedDict`` so that a mistyped option key or
+value is a type error rather than a silently ignored dictionary entry. The name
+is private to the stubs and does not exist at runtime, hence the guard; the
+runtime fallback keeps ``typing.get_type_hints`` working for Sphinx autodoc.
+"""
+
+type OptimizerMethod = Literal["L-BFGS-B", "Nelder-Mead"]
+"""Numerical minimizer an objective surface asks :func:`scipy.optimize.minimize` for.
+
+Deliberately narrower than the full scipy list: an objective that needs a third
+algorithm adds it here, which keeps the set of minimizers the package actually
+exercises visible in one place.
+"""
 
 type Method = Literal["css", "exact"]
 """Estimator for a conditional-mean model: conditional sum of squares or exact ML."""
@@ -41,8 +61,14 @@ type Trend = Literal["n", "c", "ct"]
 type Mean = Literal["constant", "zero"]
 """Conditional-mean specification for a volatility model."""
 
-type Vol = Literal["GARCH", "GJR", "EGARCH", "FIGARCH"]
-"""Conditional-variance family."""
+type Vol = Literal["GARCH", "GJR", "EGARCH"]
+"""Finite-order conditional-variance family.
+
+The fractionally integrated family is deliberately absent: its order is fixed
+at ``(1, d, 1)`` and it takes a truncation lag instead of ``p``, ``o``, ``q``,
+so it is a different specification surface rather than another value of this
+option.
+"""
 
 type Transition = Literal["logistic", "exponential"]
 """Smooth-transition function: logistic (LSTAR) or exponential (ESTAR)."""

@@ -29,6 +29,8 @@ detail: changing one changes fitted output, so they are not public API.
 
 from __future__ import annotations
 
+from typing import Final
+
 import numpy as np
 
 _SCHEMA_VERSION: int = 1
@@ -84,3 +86,10 @@ _WHITTLE_EXPONENT: float = 0.65
 
 _TREND_WIDTH: dict[str, int] = {"n": 0, "c": 1, "ct": 2}
 """Number of deterministic columns implied by each trend specification."""
+
+_PENALTY: Final[float] = 1e10
+"""Criterion value returned for an inadmissible or numerically failed draw.
+
+Large enough that no admissible parameter vector competes with it, finite so
+that a gradient-based optimizer can still step away from it.
+"""
