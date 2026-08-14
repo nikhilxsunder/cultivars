@@ -70,10 +70,10 @@ from .._internals import (
     _ConditionalVarianceResult,
     _FractionalVarianceFit,
     _FractionalVarianceModel,
+    _InvertibilityMixin,
     _ShortMemoryVarianceFit,
     _ShortMemoryVarianceModel,
     _StationarityMixin,
-    _InvertibilityMixin,
 )
 
 
