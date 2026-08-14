@@ -1,7 +1,10 @@
+from importlib import import_module
+from types import ModuleType
+
 import numpy as np
 import numpy.typing as npt
 
-from ._defaults import _LOG_2PI, _PENALTY, _SQRT_2_OVER_PI
+from ._defaults import _EXTRA, _LOG_2PI, _PENALTY, _SQRT_2_OVER_PI
 from ._transforms import fractional_difference_weights
 
 
@@ -181,3 +184,51 @@ def _arch_infinity_variance(
             acc += backcast * float(lam[m:truncation].sum())
         sigma2[t] = acc
     return sigma2
+
+
+def require_optional(module: str) -> ModuleType:
+    """Import an optional frame backend, or explain how to install it.
+
+    Args:
+        module: Top-level module name, ``"pandas"`` or ``"polars"``.
+
+    Returns:
+        The imported module.
+
+    Raises:
+        ImportError: If the module is not installed, naming the extra that
+            provides it.
+
+    Example:
+        >>> require_optional("numpy").__name__
+        'numpy'
+    """
+    try:
+        return import_module(module)
+    except ModuleNotFoundError as exc:  # pragma: no cover - depends on env
+        extra = _EXTRA.get(module, module)
+        raise ImportError(
+            f"{module} is required for this conversion but is not installed; "
+            f"install it with `pip install cultivars[{extra}]`."
+        ) from exc
+
+
+def _mean_label(mean_order: tuple[int, int], *, has_const: bool) -> str:
+    """Name the conditional mean the way a reader expects to see it.
+
+    Args:
+        mean_order: The pair ``(ar_lags, ma_lags)``.
+        has_const: Whether an intercept was estimated.
+
+    Returns:
+        ``"ARMA(p, q)"``, ``"AR(p)"``, ``"MA(q)"``, ``"const"``, or ``"zero"``,
+        so a pure autoregression is not labelled as an ARMA with an empty block.
+    """
+    ar, ma = mean_order
+    if ar and ma:
+        return f"ARMA({ar}, {ma})"
+    if ar:
+        return f"AR({ar})"
+    if ma:
+        return f"MA({ma})"
+    return "const" if has_const else "zero"

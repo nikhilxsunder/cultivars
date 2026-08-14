@@ -24,12 +24,19 @@
 
 from __future__ import annotations
 
-from typing import NamedTuple
+import textwrap
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar, NamedTuple
 
 import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, SpecificationError
+from .unsorted import require_optional
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    import pandas as pd
+    import polars as pl
 
 
 class Standardized(NamedTuple):
@@ -314,3 +321,217 @@ class _ForwardPass(NamedTuple):
     innovation: list[npt.NDArray[np.float64]]
     innovation_precision: list[npt.NDArray[np.float64]]
     obs_design: list[npt.NDArray[np.float64]]
+
+
+@dataclass(frozen=True, slots=True)
+class SummaryTable:
+    """A rendered-on-demand estimation summary.
+
+    Holds the *structure* of a summary rather than a formatted string, so the
+    same object can render as fixed-width text in a terminal, as HTML in a
+    notebook, or as a dataframe for further analysis. Nothing is formatted
+    until a renderer is called, and no optional dependency is imported unless
+    one of the frame renderers is.
+
+    The shape is deliberately narrow: a title, a block of scalar metadata
+    rendered two pairs per line, one coefficient table, and a block of closing
+    notes. That is what an estimation summary is; anything richer belongs in a
+    purpose-built object rather than a general table.
+
+    Attributes:
+        title: Headline, typically the model specification.
+        metadata: Label/value pairs describing the fit -- sample size, method,
+            information criteria.
+        columns: Column headers for the coefficient table.
+        rows: Coefficient table rows. The first entry of each row is the
+            parameter name; the rest align with ``columns[1:]``.
+        notes: Closing lines, typically diagnostics or warnings.
+    """
+
+    title: str
+    metadata: tuple[tuple[str, str], ...] = ()
+    columns: tuple[str, ...] = ()
+    rows: tuple[tuple[str, ...], ...] = ()
+    notes: tuple[str, ...] = ()
+
+    _WIDTH: ClassVar[int] = 80
+    """Minimum character width.
+
+    The rules widen to fit the metadata block and the coefficient table, but
+    never to fit a note: a long closing remark wraps to the established width
+    instead of stretching the whole summary around itself.
+    """
+
+    def __str__(self) -> str:
+        """Render as fixed-width text."""
+        return self.to_text()
+
+    def __repr__(self) -> str:
+        """Render as fixed-width text, so a bare expression shows the summary."""
+        return self.to_text()
+
+    def to_text(self) -> str:
+        """Render the summary as fixed-width text.
+
+        Returns:
+            A multi-line string with a rule-delimited header, the metadata
+            block in two columns, the coefficient table, and the notes wrapped
+            to the table width.
+        """
+        meta = self._metadata_lines(self._WIDTH)
+        table = self._table_lines(self._WIDTH) if self.rows else []
+        width = max([len(line) for line in (*meta, *table)] + [len(self.title), self._WIDTH])
+        rule = "=" * width
+        lines: list[str] = [self.title.center(width).rstrip(), rule, *meta]
+        if table:
+            lines.extend(["-" * width, *table])
+        lines.append(rule)
+        for note in self.notes:
+            lines.extend(textwrap.wrap(note, width=width) or [""])
+        return "\n".join(lines)
+
+    def _metadata_lines(self, width: int) -> list[str]:
+        """Lay the metadata pairs out two per line.
+
+        Cell widths come from the content rather than from a fixed fraction of
+        ``width``, so a long specification label pushes the whole block wider
+        instead of overflowing its own cell and shifting the second column.
+
+        Args:
+            width: Minimum total line width.
+
+        Returns:
+            One string per rendered line.
+        """
+        if not self.metadata:
+            return []
+        label_width = max(len(label) for label, _ in self.metadata) + 2
+        value_width = max(len(value) for _, value in self.metadata) + 2
+        cell = max(label_width + value_width, width // 2)
+        lines: list[str] = []
+        for i in range(0, len(self.metadata), 2):
+            cells = [
+                f"{label + ':':<{cell - value_width}}{value:>{value_width - 2}}  "
+                for label, value in self.metadata[i : i + 2]
+            ]
+            lines.append("".join(cells).rstrip())
+        return lines
+
+    def _table_lines(self, width: int) -> list[str]:
+        """Lay the coefficient table out with right-aligned numeric columns.
+
+        Args:
+            width: Total line width.
+
+        Returns:
+            One string per rendered line, header first.
+        """
+        name_width = max([len(self.columns[0])] + [len(row[0]) for row in self.rows]) + 2
+        widths = [
+            max([len(self.columns[j])] + [len(row[j]) for row in self.rows]) + 3
+            for j in range(1, len(self.columns))
+        ]
+        header = self.columns[0].ljust(name_width) + "".join(
+            head.rjust(w) for head, w in zip(self.columns[1:], widths, strict=True)
+        )
+        body = [
+            row[0].ljust(name_width)
+            + "".join(value.rjust(w) for value, w in zip(row[1:], widths, strict=True))
+            for row in self.rows
+        ]
+        return [header.rstrip(), *(line.rstrip() for line in body)]
+
+    def _repr_html_(self) -> str:
+        """Render the summary as HTML for Jupyter.
+
+        Returns:
+            A self-contained ``<div>``; no stylesheet or JavaScript is emitted,
+            so the output survives nbconvert and static HTML docs unchanged.
+        """
+        border = "border-bottom:1px solid #999;"
+        parts = [
+            '<div style="font-family:ui-monospace,Menlo,monospace;font-size:0.85em">',
+            f'<div style="font-weight:600;padding:2px 0;{border}">{self._escape(self.title)}</div>',
+        ]
+        if self.metadata:
+            cells = "".join(
+                f'<tr><td style="padding:1px 12px 1px 0;color:#555">{self._escape(label)}</td>'
+                f'<td style="padding:1px 24px 1px 0;text-align:right">{self._escape(value)}</td></tr>'
+                for label, value in self.metadata
+            )
+            parts.append(f'<table style="border-collapse:collapse">{cells}</table>')
+        if self.rows:
+            head = "".join(
+                f'<th style="padding:2px 10px;text-align:right;{border}">{self._escape(col)}</th>'
+                for col in self.columns
+            )
+            body = "".join(
+                "<tr>"
+                + "".join(
+                    f'<td style="padding:1px 10px;text-align:{"left" if i == 0 else "right"}">'
+                    f"{self._escape(value)}</td>"
+                    for i, value in enumerate(row)
+                )
+                + "</tr>"
+                for row in self.rows
+            )
+            parts.append(
+                f'<table style="border-collapse:collapse;margin-top:4px">'
+                f"<thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>"
+            )
+        for note in self.notes:
+            parts.append(f'<div style="color:#555;padding-top:3px">{self._escape(note)}</div>')
+        parts.append("</div>")
+        return "".join(parts)
+
+    def to_pandas(self) -> pd.DataFrame:
+        """Return the coefficient table as a :class:`pandas.DataFrame`.
+
+        The parameter names become the index and the metadata is attached to
+        ``DataFrame.attrs``, so nothing in the summary is lost in translation.
+
+        Returns:
+            The coefficient table.
+
+        Raises:
+            ImportError: If pandas is not installed.
+        """
+        pd = require_optional("pandas")
+        frame = pd.DataFrame(
+            [row[1:] for row in self.rows],
+            index=[row[0] for row in self.rows],
+            columns=list(self.columns[1:]),
+        )
+        frame.index.name = self.columns[0] if self.columns else None
+        frame.attrs["title"] = self.title
+        frame.attrs["metadata"] = dict(self.metadata)
+        frame.attrs["notes"] = list(self.notes)
+        return frame
+
+    def to_polars(self) -> pl.DataFrame:
+        """Return the coefficient table as a :class:`polars.DataFrame`.
+
+        Polars carries no index, so the parameter name is emitted as the first
+        column rather than being promoted out of the table.
+
+        Returns:
+            The coefficient table.
+
+        Raises:
+            ImportError: If polars is not installed.
+        """
+        pl = require_optional("polars")
+        columns = {name: [row[i] for row in self.rows] for i, name in enumerate(self.columns)}
+        return pl.DataFrame(columns)
+
+    @staticmethod
+    def _escape(text: str) -> str:
+        """Escape the three characters that can break emitted HTML.
+
+        Args:
+            text: Raw cell text.
+
+        Returns:
+            The escaped text.
+        """
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")

@@ -156,6 +156,44 @@ def deterministic_columns(trend: str, nobs: int, *, start: int = 1) -> npt.NDArr
     return out
 
 
+def trailing_lag(
+    series: npt.NDArray[np.float64], *, delay: int, length: int
+) -> npt.NDArray[np.float64]:
+    """Take the last ``length`` values of ``series`` shifted back by ``delay``.
+
+    The slice a regime-indexed model needs to line its transition variable up
+    with an already-trimmed effective sample. Deriving the trim from ``length``
+    rather than recomputing it from an order and a delay keeps the result
+    correct when the delay was *searched*: the selected delay can be shorter
+    than the one that set the trim.
+
+    Args:
+        series: The full-length variable to slice.
+        delay: Periods to shift back.
+        length: Length of the effective sample to align with.
+
+    Returns:
+        An array of length ``length``.
+
+    Raises:
+        DimensionError: If the requested window runs off the front of the
+            series, which means the caller trimmed by less than ``delay``.
+
+    Example:
+        >>> import numpy as np
+        >>> trailing_lag(np.arange(6.0), delay=2, length=3)
+        array([1., 2., 3.])
+    """
+    n = series.shape[0]
+    start = n - length
+    if start - delay < 0:
+        raise DimensionError(
+            f"a lag of {delay} needs at least {delay} observations ahead of an "
+            f"effective sample of {length}; the series has {n}."
+        )
+    return series[start - delay : n - delay]
+
+
 def lag_matrix(
     y: npt.NDArray[np.float64], order: int, *, start: int | None = None
 ) -> npt.NDArray[np.float64]:

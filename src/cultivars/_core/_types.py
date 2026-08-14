@@ -78,3 +78,6 @@ type Activation = Literal["tanh", "relu"]
 
 type LongMemoryMethod = Literal["gph", "local_whittle"]
 """Semiparametric estimator for the fractional differencing parameter."""
+
+type ProbabilityType = Literal["smoothed", "filtered", "predicted"]
+"""The three posteriors a Hamilton filter and Kim smoother produce."""

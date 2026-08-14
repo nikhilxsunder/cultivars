@@ -93,3 +93,9 @@ _PENALTY: Final[float] = 1e10
 Large enough that no admissible parameter vector competes with it, finite so
 that a gradient-based optimizer can still step away from it.
 """
+
+_EXTRA: dict[str, str] = {"pandas": "pandas", "polars": "polars"}
+"""Distribution name for each optional frame backend, keyed by module name."""
+
+_CAPACITY_WARNING: float = 0.1
+"""Learner parameters per observation above which the summary flags capacity."""

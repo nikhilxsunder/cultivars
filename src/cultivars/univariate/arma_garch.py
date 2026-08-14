@@ -20,37 +20,64 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""ARMA-mean conditional-variance models: ARMA-{GARCH, GJR, EGARCH, FIGARCH}.
+"""Dynamic means with dynamic variances: AR-GARCH and the ARMA-{GARCH} family.
 
-The GARCH-family estimators in :mod:`cultivars.univariate.garch` model the
-conditional mean as a constant plus optional pure-AR terms. This module supplies
-the remaining piece of the univariate surface: a full **ARMA(p, q) conditional
-mean** estimated *jointly* with any of the four volatility processes, so
-ARMA-GARCH, ARMA-GJR, ARMA-EGARCH, and ARMA-FIGARCH are all reachable — and
-FIGARCH gains a mean beyond a constant for the first time.
+:mod:`cultivars.univariate.garch` fits a conditional variance under a mean that
+is a constant plus optional autoregressive lags. This module completes the
+surface with a full ARMA conditional mean estimated *jointly* with any of the
+four volatility processes -- so ARMA-GARCH, ARMA-GJR, ARMA-EGARCH, and
+ARMA-FIGARCH are all reachable, and the fractional variance family gains a mean
+beyond a constant for the first time.
 
-One mean, four backends
---------------------------------------------------------------------------
-Rather than a class per (mean x variance) pair — the combinatorial explosion the
-architecture forbids — a single :class:`ARMAGARCH` estimator carries the ARMA
-mean and takes the volatility family as a ``vol`` strategy. The four variance
-recursions are reused verbatim from :mod:`cultivars.univariate.garch`; only the
-mean layer is new. The mean is computed by the conditional-sum-of-squares (CSS)
-ARMA recursion rather than the exact-ML state-space form used by
-:mod:`cultivars.univariate.arma`, because under GARCH innovations are
-heteroskedastic and the constant-variance Kalman likelihood no longer applies;
-the joint Gaussian likelihood
-``-0.5 sum_t [ log(2 pi) + log(sigma2_t) + eps_t^2 / sigma2_t ]``
-is maximized over the mean and variance parameters together.
+Nothing here is a new estimator. The variance recursions are the same objects
+:mod:`cultivars.univariate.garch` uses; what changed is one level down, where
+the variance objective stopped holding a design matrix and started holding a
+*mean layer* -- an object that answers how many parameters the mean consumes
+and what residuals a draw implies. A regression on lagged levels is one such
+layer; an ARMA recursion is another. Because the criterion never knew which it
+had, four public classes appear here for the price of one abstraction rather
+than a class per mean-by-variance pair.
 
-Stationarity (AR) and invertibility (MA) of the mean are imposed structurally by
-the partial-autocorrelation reparameterization in
-:mod:`cultivars.univariate._base`, so the CSS residual recursion can never
-explode and the optimizer searches an unconstrained space.
+The mean is conditional sum of squares, not exact maximum likelihood. That is
+forced, not a shortcut: the exact-ML route for an ARMA mean runs the Kalman
+filter over the companion state-space form, and that filter assumes a constant
+innovation variance -- which is exactly what the surrounding model denies. What
+is maximized instead is the true joint Gaussian likelihood,
+``-0.5 sum_t [log(2 pi) + log(sigma2_t) + eps_t^2 / sigma2_t]``, over mean and
+variance parameters together. A two-step fit -- ARMA first, GARCH on its
+residuals -- would be consistent but inefficient, and its standard errors would
+ignore that the first step's residuals are estimated.
+
+One asymmetry in the surface is worth knowing about, because it shows up in
+what :attr:`ARMAGARCHResult.is_stationary` means.
+
+With a moving-average block, the residual recursion is fed by its own past
+output, so an explosive autoregressive draw does not merely score badly, it
+overflows before it can be scored. Both blocks are therefore searched through
+the partial autocorrelations, and stationarity and invertibility hold by
+construction. :attr:`ARMAGARCHResult.is_stationary` then verifies the transform
+rather than describing the data -- a ``False`` means the reparameterization is
+broken.
+
+Without one -- :class:`ARGARCH`, or any of these with ``ma_lags=0`` -- the mean
+is a plain regression on lagged levels, one matrix product with nothing to
+diverge, so the lag weights are estimated unconstrained. There
+:attr:`ARMAGARCHResult.is_stationary` is a genuine statement about the fitted
+mean, and a ``False`` is worth acting on.
 
 References:
-    Bollerslev (1986); Glosten, Jagannathan, Runkle (1993); Nelson (1991);
-    Baillie, Bollerslev & Mikkelsen (1996); Hannan & Rissanen (1982).
+    Bollerslev, T. (1986). Generalized autoregressive conditional
+    heteroskedasticity. *Journal of Econometrics*, 31(3).
+    Glosten, L., Jagannathan, R. & Runkle, D. (1993). On the relation between
+    the expected value and the volatility of the nominal excess return on
+    stocks. *Journal of Finance*, 48(5).
+    Nelson, D. B. (1991). Conditional heteroskedasticity in asset returns.
+    *Econometrica*, 59(2).
+    Baillie, R., Bollerslev, T. & Mikkelsen, H. (1996). Fractionally integrated
+    generalized autoregressive conditional heteroskedasticity. *Journal of
+    Econometrics*, 74(1).
+    Monahan, J. F. (1984). A note on enforcing stationarity in ARMA models.
+    *Biometrika*, 71(2).
 """
 
 from __future__ import annotations
@@ -59,264 +86,493 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize
 
-from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ._base import (
-    pacf_to_coeffs,
+from .._core import InformationCriteria, SummaryTable, _mean_label
+from .._internals import (
+    _FractionalVarianceFit,
+    _FractionalVarianceModel,
+    _InvertibilityMixin,
+    _ShortMemoryVarianceFit,
+    _ShortMemoryVarianceModel,
+    _StationarityMixin,
 )
-from .garch import (
-    Vol,
-    _backcast,
-)
-
-# --------------------------------------------------------------------------
-# ARMA conditional mean (conditional sum of squares)
-# --------------------------------------------------------------------------
+from .garch import FIGARCHResult, GARCHResult
 
 
-# --------------------------------------------------------------------------
-# Variance-block bookkeeping (reuses garch.py recursions)
-# --------------------------------------------------------------------------
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class ARMAGARCHResult(GARCHResult, _StationarityMixin, _InvertibilityMixin):
+    """A finite-order variance model under an ARMA conditional mean.
 
-# --------------------------------------------------------------------------
-# Result
-# --------------------------------------------------------------------------
+    Subclasses :class:`~cultivars.univariate.garch.GARCHResult` rather than
+    reimplementing it: every variance property it exposes -- persistence, the
+    unconditional variance, the leverage flag -- is a functional of the
+    variance block alone and stays exactly as true when the mean grows a
+    moving-average term. What is added is the mean side of the story.
 
-
-@dataclass(frozen=True, kw_only=True, slots=True)
-class ARMAGARCHResult(_MeanResult, _StationarityMixin, _ConditionalVarianceMixin):
-    vol: str
-    order: tuple[int, int]
-    garch_order: tuple[int, int, int]
-    const: float | None
-    ar_params: npt.NDArray[np.float64]
-    ma_params: npt.NDArray[np.float64]
-    omega: float
-    alpha: npt.NDArray[np.float64]
-    gamma: npt.NDArray[np.float64]
-    beta: npt.NDArray[np.float64]
-    fractional_d: float | None
-    conditional_variance: npt.NDArray[np.float64]
-
-
-# --------------------------------------------------------------------------
-# Engine
-# --------------------------------------------------------------------------
-
-
-def _fit_arma_garch(
-    y: npt.NDArray[np.float64],
-    mean_p: int,
-    mean_q: int,
-    include_const: bool,
-    vol: Vol,
-    p: int,
-    o: int,
-    q: int,
-    truncation: int,
-) -> ARMAGARCHResult:
-    burn = max(mean_p, mean_q)
-
-    # Warm start: mean via Hannan-Rissanen on the demeaned series.
-    c0 = float(y.mean()) if include_const else 0.0
-    w0 = y - c0
-    phi0, theta0_ma = _hannan_rissanen(w0, mean_p, mean_q)
-    resid0 = _arma_residuals(w0, phi0, theta0_ma)[burn:]
-    var0 = max(float(np.var(resid0)), 1e-8)
-    backcast = _backcast(resid0)
-
-    mean_start: list[npt.NDArray[np.float64]] = []
-    if include_const:
-        mean_start.append(np.array([c0]))
-    mean_start.append(_pack_pacf(phi0))
-    mean_start.append(_pack_pacf(theta0_ma))
-    var_start = _variance_init(vol, var0, p, o, q)
-    theta_init = np.concatenate([*mean_start, var_start])
-
-    i_const = 1 if include_const else 0
-    i_ar = i_const
-    i_ma = i_ar + mean_p
-    i_var = i_ma + mean_q
-
-    def unpack_mean(
-        theta: npt.NDArray[np.float64],
-    ) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        c = float(theta[0]) if include_const else 0.0
-        phi = pacf_to_coeffs(np.tanh(theta[i_ar:i_ma])) if mean_p else np.zeros(0)
-        theta_ma = pacf_to_coeffs(np.tanh(theta[i_ma:i_var])) if mean_q else np.zeros(0)
-        return c, phi, theta_ma
-
-    def negloglik(theta: npt.NDArray[np.float64]) -> float:
-        c, phi, theta_ma = unpack_mean(theta)
-        resid = _arma_residuals(y - c, phi, theta_ma)[burn:]
-        omega, alpha, gamma, beta, frac_d = _unpack_variance(theta[i_var:], vol, p, o, q)
-        if not _persistence_ok(vol, alpha, gamma, beta, frac_d, truncation):
-            return 1e10
-        try:
-            sigma2 = _conditional_variance(
-                resid, vol, omega, alpha, gamma, beta, frac_d, backcast, truncation
-            )
-        except (ValueError, FloatingPointError):
-            return 1e10
-        if not np.all(np.isfinite(sigma2)) or np.any(sigma2 <= 0.0):
-            return 1e10
-        ll = -0.5 * np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2)
-        return float(-ll) if np.isfinite(ll) else 1e10
-
-    result = minimize(negloglik, theta_init, method="L-BFGS-B")
-    theta = np.asarray(result.x, dtype=np.float64)
-    c, phi, theta_ma = unpack_mean(theta)
-    eps_full = _arma_residuals(y - c, phi, theta_ma)
-    resid = eps_full[burn:]
-    omega, alpha, gamma, beta, frac_d = _unpack_variance(theta[i_var:], vol, p, o, q)
-    sigma2 = _conditional_variance(
-        resid, vol, omega, alpha, gamma, beta, frac_d, backcast, truncation
-    )
-    fitted = y[burn:] - resid
-    n_params = i_const + mean_p + mean_q + _variance_block_size(vol, p, o, q)
-    return ARMAGARCHResult(
-        vol=vol,
-        order=(mean_p, mean_q),
-        garch_order=(p, o, q),
-        const=c if include_const else None,
-        ar_params=phi,
-        ma_params=theta_ma,
-        omega=omega,
-        alpha=alpha,
-        gamma=gamma,
-        beta=beta,
-        fractional_d=frac_d if vol == "FIGARCH" else None,
-        sigma2=sigma2,
-        resid=resid,
-        fittedvalues=fitted,
-        llf=-float(result.fun),
-        nobs=resid.shape[0],
-        endog=y,
-        _burn=burn,
-        _n_params=n_params,
-    )
-
-
-# --------------------------------------------------------------------------
-# Spec
-# --------------------------------------------------------------------------
-
-
-class ARMAGARCH:
-    """ARMA(p, q) mean with a GARCH-family conditional variance.
-
-    A single estimator spanning ARMA-GARCH, ARMA-GJR, ARMA-EGARCH, and
-    ARMA-FIGARCH: the volatility family is selected by ``vol`` and the four
-    variance recursions are shared with :mod:`cultivars.univariate.garch`.
-
-    Args:
-        endog: Univariate series (1-D array-like), typically a return series.
-        order: Mean ARMA order ``(p, q)``. Defaults to ``(1, 0)``.
-        vol: Volatility family — ``"GARCH"`` (default), ``"GJR"``, ``"EGARCH"``,
-            or ``"FIGARCH"``.
-        garch_order: Variance order ``(p, o, q)`` (ARCH, asymmetry, GARCH lags).
-            Defaults to a sensible value per family; ignored for FIGARCH, which is
-            fixed at ``(1, d, 1)``.
-        mean: ``"constant"`` (default) or ``"zero"``.
-        truncation: ARCH(inf) truncation lag (FIGARCH only).
-
-    Raises:
-        SpecificationError: If the orders/flags are invalid or the series is too
-            short.
-        DimensionError: If ``endog`` is not one-dimensional.
-        NumericalError: If ``endog`` contains non-finite values.
-
-    Example:
-        >>> import numpy as np
-        >>> rng = np.random.default_rng(0)
-        >>> # AR(1) mean + GARCH(1,1) volatility.
-        >>> n = 3000
-        >>> eps = np.zeros(n); s2 = np.zeros(n); s2[0] = 1.0
-        >>> for t in range(1, n):
-        ...     s2[t] = 0.02 + 0.08 * eps[t - 1] ** 2 + 0.90 * s2[t - 1]
-        ...     eps[t] = np.sqrt(s2[t]) * rng.standard_normal()
-        >>> y = np.zeros(n)
-        >>> for t in range(1, n):
-        ...     y[t] = 0.05 + 0.5 * y[t - 1] + eps[t]
-        >>> res = ARMAGARCH(y, order=(1, 0), vol="GARCH").fit()
-        >>> bool(0.3 < res.ar_params[0] < 0.7)
-        True
-        >>> res.forecast(3).shape
-        (3,)
+    Attributes:
+        mean_order: The conditional-mean order ``(ar_lags, ma_lags)``.
+        ma_params: Moving-average coefficients of ``1 + theta_1 L + ...``;
+            empty when ``ma_lags == 0``.
     """
 
-    __slots__ = ("_const", "_go", "_p", "_q", "_truncation", "_vol", "_y")
+    mean_order: tuple[int, int]
+    ma_params: npt.NDArray[np.float64]
+
+    @classmethod
+    def _from_fit(
+        cls,
+        fit: _ShortMemoryVarianceFit,
+        model: _ShortMemoryVarianceModel[GARCHResult],
+    ) -> ARMAGARCHResult:
+        """Assemble the public result from a raw fit and its specification.
+
+        The model is annotated at the parent's result binding rather than this
+        class's. Nothing read here depends on which result the model produces
+        -- ``mean_order`` and ``has_constant_mean`` live on the shared
+        specification base -- so narrowing the binding would break the override
+        contract to express a dependency that does not exist.
+        """
+        return cls(
+            endog=model.endog,
+            fittedvalues=fit.fittedvalues,
+            resid=fit.resid,
+            llf=fit.llf,
+            nobs=fit.nobs,
+            n_params=fit.n_params,
+            mean="constant" if model.has_constant_mean else "zero",
+            const=fit.const,
+            omega=fit.omega,
+            conditional_variance=fit.conditional_variance,
+            vol=fit.vol,
+            ar_params=fit.ar_params,
+            alpha=fit.alpha,
+            gamma=fit.gamma,
+            beta=fit.beta,
+            mean_order=model.mean_order,
+            ma_params=fit.ma_params,
+        )
+
+    @property
+    def is_structurally_constrained(self) -> bool:
+        """Whether the mean was searched inside the stationary-invertible region.
+
+        ``True`` exactly when a moving-average block is present, because only
+        then does the residual recursion feed on its own output and need the
+        constraint to stay finite. When ``False``, the autoregressive lag
+        weights were estimated unconstrained and :attr:`is_stationary` carries
+        information about the data instead of about the transform.
+        """
+        return self.mean_order[1] > 0
+
+    @property
+    def params(self) -> dict[str, float]:
+        """Estimated parameters keyed by display name, in table order."""
+        out: dict[str, float] = {}
+        if self.const is not None:
+            out["const"] = self.const
+        for i, value in enumerate(self.ar_params, start=1):
+            out[f"ar.L{i}"] = float(value)
+        for i, value in enumerate(self.ma_params, start=1):
+            out[f"ma.L{i}"] = float(value)
+        out["omega"] = self.omega
+        for i, value in enumerate(self.alpha, start=1):
+            out[f"alpha[{i}]"] = float(value)
+        for i, value in enumerate(self.gamma, start=1):
+            out[f"gamma[{i}]"] = float(value)
+        for i, value in enumerate(self.beta, start=1):
+            out[f"beta[{i}]"] = float(value)
+        return out
+
+    def _variance_label(self) -> str:
+        """Name the variance family and its order."""
+        p, o, q = self.order
+        return f"{self.vol}({p}, {o}, {q})" if o else f"{self.vol}({p}, {q})"
+
+    def _comparison_label(self) -> str:
+        """Specification label used when this result appears in a ranking."""
+        mean = _mean_label(self.mean_order, has_const=self.const is not None)
+        return f"{mean}-{self._variance_label()}"
+
+    def _mean_notes(self) -> list[str]:
+        """Diagnostics for the conditional-mean block."""
+        notes = [
+            f"Mean: stationary {self.is_stationary} "
+            f"(max |AR root| = {self.stability.max_modulus:.4f})"
+            + (
+                f", invertible {self.is_invertible} "
+                f"(max |MA root| = {self.invertibility.max_modulus:.4f})"
+                if self.ma_params.size
+                else ""
+            )
+            + "."
+        ]
+        if self.is_structurally_constrained:
+            notes.append(
+                "Both mean blocks were searched through the partial autocorrelations, "
+                "so stationarity and invertibility hold by construction; the line above "
+                "verifies the transform rather than describing the data."
+            )
+        elif self.ar_params.size:
+            notes.append(
+                "The mean is a regression on lagged levels with unconstrained weights, "
+                "so the stationarity verdict above is a statement about the fit."
+            )
+        return notes
+
+    def _summary_table(self) -> SummaryTable:
+        """Structured summary rendered by every display path."""
+        ic: InformationCriteria = self.information_criteria
+        notes = self._mean_notes()
+        notes.append(
+            f"Variance: persistence {self.persistence:.4f}, covariance stationary "
+            f"{self.is_covariance_stationary}"
+            + (f", half-life {self.half_life:.2f} periods." if self.half_life else ".")
+        )
+        if self.unconditional_variance is not None:
+            notes.append(f"Unconditional variance: {self.unconditional_variance:.6f}.")
+        elif self.vol == "EGARCH":
+            notes.append(
+                "No unconditional variance is reported: the log-variance family's "
+                "stationary level is the mean of a lognormal."
+            )
+        notes.append(
+            "Mean and variance are estimated jointly, so the log-likelihood is the "
+            "true joint one; the mean uses conditional sum of squares because the "
+            "exact-ML filter assumes a constant innovation variance."
+        )
+        notes.append("Standard errors are not yet available for this estimator.")
+        return SummaryTable(
+            title=f"{self._comparison_label()} Results",
+            metadata=(
+                ("Model", self._comparison_label()),
+                ("Log-likelihood", f"{self.llf:.3f}"),
+                ("Mean", _mean_label(self.mean_order, has_const=self.const is not None)),
+                ("AIC", f"{ic.aic:.3f}"),
+                ("Variance", self._variance_label()),
+                ("BIC", f"{ic.bic:.3f}"),
+                ("Observations", f"{self.nobs}"),
+                ("HQIC", f"{ic.hqic:.3f}"),
+                ("Persistence", f"{self.persistence:.4f}"),
+                ("Parameters", f"{self.n_params}"),
+            ),
+            columns=("", "coef"),
+            rows=tuple((name, f"{value:.4f}") for name, value in self.params.items()),
+            notes=tuple(notes),
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class ARMAFIGARCHResult(FIGARCHResult, _StationarityMixin, _InvertibilityMixin):
+    """A fractionally integrated variance model under an ARMA conditional mean.
+
+    Two long-memory-adjacent objects live in one model here and they are not
+    the same object. The *mean* has an ARMA structure whose shocks decay
+    geometrically; the *variance* is fractionally integrated and its shocks
+    decay hyperbolically. :attr:`is_stationary` speaks only to the first,
+    :attr:`is_covariance_stationary` only to the second, and the latter is
+    ``False`` by construction for any ``d > 0``.
+
+    Attributes:
+        mean_order: The conditional-mean order ``(ar_lags, ma_lags)``.
+        ar_params: Autoregressive coefficients of the mean; empty when
+            ``ar_lags == 0``.
+        ma_params: Moving-average coefficients of ``1 + theta_1 L + ...``;
+            empty when ``ma_lags == 0``.
+    """
+
+    mean_order: tuple[int, int]
+    ar_params: npt.NDArray[np.float64]
+    ma_params: npt.NDArray[np.float64]
+
+    @classmethod
+    def _from_fit(
+        cls,
+        fit: _FractionalVarianceFit,
+        model: _FractionalVarianceModel[FIGARCHResult],
+    ) -> ARMAFIGARCHResult:
+        """Assemble the public result from a raw fit and its specification."""
+        return cls(
+            endog=model.endog,
+            fittedvalues=fit.fittedvalues,
+            resid=fit.resid,
+            llf=fit.llf,
+            nobs=fit.nobs,
+            n_params=fit.n_params,
+            mean="constant" if model.has_constant_mean else "zero",
+            const=fit.const,
+            omega=fit.omega,
+            conditional_variance=fit.conditional_variance,
+            truncation=model.truncation,
+            phi=fit.phi,
+            d=fit.d,
+            beta=fit.beta,
+            mean_order=model.mean_order,
+            ar_params=fit.ar_params,
+            ma_params=fit.ma_params,
+        )
+
+    @property
+    def is_structurally_constrained(self) -> bool:
+        """Whether the mean was searched inside the stationary-invertible region."""
+        return self.mean_order[1] > 0
+
+    @property
+    def params(self) -> dict[str, float]:
+        """Estimated parameters keyed by display name, in table order."""
+        out: dict[str, float] = {}
+        if self.const is not None:
+            out["const"] = self.const
+        for i, value in enumerate(self.ar_params, start=1):
+            out[f"ar.L{i}"] = float(value)
+        for i, value in enumerate(self.ma_params, start=1):
+            out[f"ma.L{i}"] = float(value)
+        out["omega"] = self.omega
+        out["phi"] = self.phi
+        out["d"] = self.d
+        out["beta"] = self.beta
+        return out
+
+    def _comparison_label(self) -> str:
+        """Specification label used when this result appears in a ranking."""
+        mean = _mean_label(self.mean_order, has_const=self.const is not None)
+        return f"{mean}-FIGARCH(1, d, 1)"
+
+    def _summary_table(self) -> SummaryTable:
+        """Structured summary rendered by every display path."""
+        ic: InformationCriteria = self.information_criteria
+        notes = [
+            f"Mean: stationary {self.is_stationary} "
+            f"(max |AR root| = {self.stability.max_modulus:.4f})"
+            + (
+                f", invertible {self.is_invertible} "
+                f"(max |MA root| = {self.invertibility.max_modulus:.4f})"
+                if self.ma_params.size
+                else ""
+            )
+            + ". The mean's shocks decay geometrically; the variance's do not.",
+        ]
+        if self.is_structurally_constrained:
+            notes.append(
+                "Both mean blocks were searched through the partial autocorrelations, "
+                "so the verdict above verifies the transform rather than the data."
+            )
+        notes.extend(
+            (
+                f"Variance: long memory {self.has_long_memory}, d = {self.d:.4f}. Not "
+                f"covariance stationary for any d > 0, so no half-life is defined and "
+                f"persistence is reported as 1 by construction.",
+                "Mean and variance are estimated jointly, so the log-likelihood is the "
+                "true joint one; the mean uses conditional sum of squares because the "
+                "exact-ML filter assumes a constant innovation variance.",
+                "Standard errors are not yet available for this estimator.",
+            )
+        )
+        return SummaryTable(
+            title=f"{self._comparison_label()} Results",
+            metadata=(
+                ("Model", self._comparison_label()),
+                ("Log-likelihood", f"{self.llf:.3f}"),
+                ("Mean", _mean_label(self.mean_order, has_const=self.const is not None)),
+                ("AIC", f"{ic.aic:.3f}"),
+                ("Truncation", f"{self.truncation}"),
+                ("BIC", f"{ic.bic:.3f}"),
+                ("Observations", f"{self.nobs}"),
+                ("HQIC", f"{ic.hqic:.3f}"),
+                ("d", f"{self.d:.4f}"),
+                ("Parameters", f"{self.n_params}"),
+            ),
+            columns=("", "coef"),
+            rows=tuple((name, f"{value:.4f}") for name, value in self.params.items()),
+            notes=tuple(notes),
+        )
+
+
+class ARGARCH(_ShortMemoryVarianceModel[ARMAGARCHResult]):
+    """Autoregressive mean with a symmetric GARCH variance, estimated jointly.
+
+    The same estimator as ``GARCH(y, ar_lags=...)``, under the name a reader
+    expects when the mean is the point of the specification rather than an
+    afterthought. The mean is a regression on lagged levels, so its weights are
+    unconstrained and :attr:`ARMAGARCHResult.is_stationary` is informative.
+
+    Args:
+        endog: The series.
+        ar_lags: Conditional-mean autoregressive order.
+        p: Order of the shock-magnitude block.
+        q: Order of the variance persistence block.
+        mean: ``"constant"`` or ``"zero"``.
+    """
+
+    __slots__ = ()
 
     def __init__(
         self,
         endog: npt.ArrayLike,
-        order: tuple[int, int] = (1, 0),
-        vol: Vol = "GARCH",
         *,
-        garch_order: tuple[int, int, int] | None = None,
+        ar_lags: int = 1,
+        p: int = 1,
+        q: int = 1,
+        mean: str = "constant",
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog, vol="GARCH", p=p, o=0, q=q, ar_lags=ar_lags, ma_lags=0, mean=mean)
+
+    def fit(self) -> ARMAGARCHResult:
+        """Estimate mean and variance jointly by Gaussian maximum likelihood."""
+        return ARMAGARCHResult._from_fit(self._fit_family(), self)
+
+
+class ARMAGARCH(_ShortMemoryVarianceModel[ARMAGARCHResult]):
+    """ARMA mean with a symmetric GARCH variance, estimated jointly.
+
+    Args:
+        endog: The series.
+        ar_lags: Conditional-mean autoregressive order.
+        ma_lags: Conditional-mean moving-average order.
+        p: Order of the shock-magnitude block.
+        q: Order of the variance persistence block.
+        mean: ``"constant"`` or ``"zero"``.
+
+    Example:
+        >>> import numpy as np
+        >>> rng = np.random.default_rng(0)
+        >>> n = 2000
+        >>> s2 = np.ones(n)
+        >>> e = np.zeros(n)
+        >>> y = np.zeros(n)
+        >>> for t in range(1, n):
+        ...     s2[t] = 0.05 + 0.10 * e[t - 1] ** 2 + 0.85 * s2[t - 1]
+        ...     e[t] = np.sqrt(s2[t]) * rng.standard_normal()
+        ...     y[t] = 0.5 * y[t - 1] + e[t] + 0.4 * e[t - 1]
+        >>> res = ARMAGARCH(y, ar_lags=1, ma_lags=1).fit()
+        >>> bool(res.is_stationary and res.is_invertible)
+        True
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        ar_lags: int = 1,
+        ma_lags: int = 1,
+        p: int = 1,
+        q: int = 1,
+        mean: str = "constant",
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(
+            endog, vol="GARCH", p=p, o=0, q=q, ar_lags=ar_lags, ma_lags=ma_lags, mean=mean
+        )
+
+    def fit(self) -> ARMAGARCHResult:
+        """Estimate mean and variance jointly by Gaussian maximum likelihood."""
+        return ARMAGARCHResult._from_fit(self._fit_family(), self)
+
+
+class ARMAGJR(_ShortMemoryVarianceModel[ARMAGARCHResult]):
+    """ARMA mean with a sign-asymmetric GJR variance, estimated jointly.
+
+    Args:
+        endog: The series.
+        ar_lags: Conditional-mean autoregressive order.
+        ma_lags: Conditional-mean moving-average order.
+        p: Order of the shock-magnitude block.
+        o: Order of the asymmetry block, at least one.
+        q: Order of the variance persistence block.
+        mean: ``"constant"`` or ``"zero"``.
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        ar_lags: int = 1,
+        ma_lags: int = 1,
+        p: int = 1,
+        o: int = 1,
+        q: int = 1,
+        mean: str = "constant",
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(
+            endog, vol="GJR", p=p, o=o, q=q, ar_lags=ar_lags, ma_lags=ma_lags, mean=mean
+        )
+
+    def fit(self) -> ARMAGARCHResult:
+        """Estimate mean and variance jointly by Gaussian maximum likelihood."""
+        return ARMAGARCHResult._from_fit(self._fit_family(), self)
+
+
+class ARMAEGARCH(_ShortMemoryVarianceModel[ARMAGARCHResult]):
+    """ARMA mean with a log-variance EGARCH process, estimated jointly.
+
+    Args:
+        endog: The series.
+        ar_lags: Conditional-mean autoregressive order.
+        ma_lags: Conditional-mean moving-average order.
+        p: Order of the shock-magnitude block.
+        o: Order of the asymmetry block, at least one.
+        q: Order of the variance persistence block.
+        mean: ``"constant"`` or ``"zero"``.
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        ar_lags: int = 1,
+        ma_lags: int = 1,
+        p: int = 1,
+        o: int = 1,
+        q: int = 1,
+        mean: str = "constant",
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(
+            endog, vol="EGARCH", p=p, o=o, q=q, ar_lags=ar_lags, ma_lags=ma_lags, mean=mean
+        )
+
+    def fit(self) -> ARMAGARCHResult:
+        """Estimate mean and variance jointly by Gaussian maximum likelihood."""
+        return ARMAGARCHResult._from_fit(self._fit_family(), self)
+
+
+class ARMAFIGARCH(_FractionalVarianceModel[ARMAFIGARCHResult]):
+    """ARMA mean with a fractionally integrated variance, estimated jointly.
+
+    The combination the constant-mean :class:`~cultivars.univariate.garch.FIGARCH`
+    could not express: short-memory dynamics in the level alongside long-memory
+    dynamics in the volatility, which is the usual empirical picture for a
+    return series sampled finely enough to show mean reversion.
+
+    Args:
+        endog: The series.
+        ar_lags: Conditional-mean autoregressive order.
+        ma_lags: Conditional-mean moving-average order.
+        mean: ``"constant"`` or ``"zero"``.
+        truncation: Infinite-order truncation lag for the fractional filter.
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        ar_lags: int = 1,
+        ma_lags: int = 1,
         mean: str = "constant",
         truncation: int = 1000,
     ) -> None:
-        """Initialize the ARMA-GARCH specification."""
-        y = np.asarray(endog, dtype=np.float64)
-        if y.ndim != 1:
-            raise DimensionError(f"endog must be one-dimensional; got shape {y.shape}.")
-        if not np.all(np.isfinite(y)):
-            raise NumericalError("endog contains non-finite values.")
-        p_mean, q_mean = order
-        if min(p_mean, q_mean) < 0:
-            raise SpecificationError(f"mean order (p, q) must be non-negative; got {order}.")
-        if vol not in ("GARCH", "GJR", "EGARCH", "FIGARCH"):
-            raise SpecificationError(
-                f"vol must be one of 'GARCH', 'GJR', 'EGARCH', 'FIGARCH'; got {vol!r}."
-            )
-        if mean not in ("constant", "zero"):
-            raise SpecificationError(f"mean must be 'constant' or 'zero'; got {mean!r}.")
-        go = garch_order if garch_order is not None else _DEFAULT_GARCH_ORDER[vol]
-        gp, go_, gq = go
-        if min(gp, go_, gq) < 0:
-            raise SpecificationError(f"garch_order must be non-negative; got {go}.")
-        if vol == "GARCH" and go_ != 0:
-            raise SpecificationError("GARCH has no asymmetry term; set garch_order o = 0.")
-        if vol in ("GJR", "EGARCH") and go_ < 1:
-            raise SpecificationError(f"{vol} requires an asymmetry order o >= 1.")
-        if truncation < 1:
-            raise SpecificationError(f"truncation must be >= 1; got {truncation}.")
-        min_len = 4 * (max(p_mean, q_mean) + max(gp, gq) + 1)
-        if y.shape[0] < min_len:
-            raise SpecificationError(
-                f"series of length {y.shape[0]} is too short for ARMA{order}-{vol} "
-                f"(need at least {min_len})."
-            )
-        self._y = y
-        self._p, self._q = int(p_mean), int(q_mean)
-        self._vol: Vol = vol
-        self._go = (int(gp), int(go_), int(gq))
-        self._const = mean == "constant"
-        self._truncation = int(truncation)
+        """Validate the specification and the data."""
+        super().__init__(endog, mean=mean, ar_lags=ar_lags, ma_lags=ma_lags, truncation=truncation)
 
-    @property
-    def order(self) -> tuple[int, int]:
-        """The mean ARMA order ``(p, q)``."""
-        return (self._p, self._q)
-
-    @property
-    def vol(self) -> Vol:
-        """The volatility family."""
-        return self._vol
-
-    def fit(self) -> ARMAGARCHResult:
-        """Estimate the mean and variance jointly by Gaussian maximum likelihood."""
-        gp, go_, gq = self._go
-        return _fit_arma_garch(
-            self._y,
-            self._p,
-            self._q,
-            self._const,
-            self._vol,
-            gp,
-            go_,
-            gq,
-            self._truncation,
-        )
+    def fit(self) -> ARMAFIGARCHResult:
+        """Estimate mean and variance jointly by Gaussian maximum likelihood."""
+        return ARMAFIGARCHResult._from_fit(self._fit_family(), self)

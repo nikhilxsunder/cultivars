@@ -32,19 +32,16 @@ classifiers = [
 dependencies = [
     "numpy",
     "scipy",
-    "fedfred",
 ]
 
 [project.optional-dependencies]
-cuda-12 = [
-    "cupy-cuda12x",
-]
-cuda-13 = [
-    "cupy-cuda13x",
-]
-rocm = [
-    "cupy-rocm-7-0",
-]
+pandas = ["pandas", "pandas-stubs"]
+polars = ["polars"]
+fedfred = ["fedfred"]
+frames = ["pandas", "polars"]
+cuda-12 = ["cupy-cuda12x"]
+cuda-13 = ["cupy-cuda13x"]
+rocm = ["cupy-rocm-7-0"]
 
 [project.urls]
 Repository    = "https://github.com/nikhilxsunder/cultivars"
@@ -56,7 +53,8 @@ Documentation = "https://nikhilxsunder.github.io/cultivars/"
 
 [dependency-groups]
 types = [
-    "scipy-stubs"
+    "scipy-stubs",
+    "pandas-stubs",
 ]
 test = [
     "pytest",
@@ -85,11 +83,22 @@ docs = [
     "matplotlib",
 ]
 notebooks = [
+    "jupyterlab",
     "ipykernel",
+    "ipympl",
+    "ipywidgets",
+    "jupyterlab-lsp",
+    "nbdime",
     "notebook",
+    "matplotlib",
 ]
-extras = []
+extras = [
+    "pandas",
+    "polars",
+    "fedfred",
+]
 dev = [
+    { include-group = "types" },
     { include-group = "test" },
     { include-group = "lint" },
     { include-group = "docs" },

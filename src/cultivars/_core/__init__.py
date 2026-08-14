@@ -29,8 +29,13 @@ in ``_internals``, which houses mono-consumer mechanism plumbing.
 
 from __future__ import annotations
 
-from ._containers import InformationCriteria, _ForwardPass
+from ._containers import InformationCriteria, SummaryTable, _ForwardPass
+from ._converters import (
+    to_pandas_frame,
+    to_polars_frame,
+)
 from ._defaults import (
+    _CAPACITY_WARNING,
     _D_MAX,
     _DEFAULT_GRID,
     _DEFAULT_MAX_ITER,
@@ -59,6 +64,7 @@ from ._matrices import (
     lag_matrix,
     n_deterministic,
     psd_sqrt,
+    trailing_lag,
 )
 from ._polynomials import expand_ar, expand_ma
 from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
@@ -68,6 +74,7 @@ from ._types import (
     Method,
     OptimizerMethod,
     OptimizerOptions,
+    ProbabilityType,
     Transition,
     Trend,
     Vol,
@@ -88,9 +95,11 @@ from .unsorted import (
     _gaussian_negloglik,
     _linear_variance_recursion,
     _log_variance_recursion,
+    _mean_label,
 )
 
 __all__ = [
+    "_CAPACITY_WARNING",
     "_DEFAULT_GRID",
     "_DEFAULT_MAX_ITER",
     "_DEFAULT_STARTS",
@@ -109,6 +118,8 @@ __all__ = [
     "Method",
     "OptimizerMethod",
     "OptimizerOptions",
+    "ProbabilityType",
+    "SummaryTable",
     "Transition",
     "Trend",
     "Vol",
@@ -118,6 +129,7 @@ __all__ = [
     "_gaussian_negloglik",
     "_linear_variance_recursion",
     "_log_variance_recursion",
+    "_mean_label",
     "combined_difference",
     "companion_matrix",
     "concentrated_gaussian",
@@ -138,6 +150,9 @@ __all__ = [
     "psd_sqrt",
     "sigmoid",
     "softplus",
+    "to_pandas_frame",
+    "to_polars_frame",
+    "trailing_lag",
     "unpack_stationary",
     "validate_aligned",
     "validate_choice",

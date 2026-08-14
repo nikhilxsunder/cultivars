@@ -100,13 +100,14 @@ from ._fits import (
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
     _MarkovSwitchingFit,
-    _NeuralAutoregressionFit,
+    _NeuralAutoRegressionFit,
     _NeuralThresholdFit,
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
     _ThresholdFit,
 )
 from ._layouts import _ParameterLayout
+from ._means import _ARMAMean, _LinearMean, _MeanLayer
 from ._objectives import (
     _AutoRegressionObjective,
     _BoxJenkinsObjective,
@@ -1078,22 +1079,81 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
     Args:
         endog: The series, typically returns or residuals.
         mean: ``"constant"`` or ``"zero"``.
+        ar_lags: Conditional-mean autoregressive order.
+        ma_lags: Conditional-mean moving-average order.
 
     Raises:
-        SpecificationError: If ``mean`` is not a recognized choice.
+        SpecificationError: If ``mean`` is not a recognized choice or an order
+            is negative.
     """
 
-    __slots__ = ("_const",)
+    __slots__ = ("_ar_lags", "_const", "_ma_lags")
 
-    def __init__(self, endog: npt.ArrayLike, *, mean: str = "constant") -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        mean: str = "constant",
+        ar_lags: int = 0,
+        ma_lags: int = 0,
+    ) -> None:
         """Validate the conditional-mean specification and the data."""
         super().__init__(endog)
         self._const = validate_choice(mean, Mean, "mean") == "constant"
+        self._ar_lags = validate_order(ar_lags, "ar_lags")
+        self._ma_lags = validate_order(ma_lags, "ma_lags")
 
     @property
     def has_constant_mean(self) -> bool:
         """Whether a mean intercept is estimated."""
         return self._const
+
+    @property
+    def ar_lags(self) -> int:
+        """The conditional-mean autoregressive order."""
+        return self._ar_lags
+
+    @property
+    def ma_lags(self) -> int:
+        """The conditional-mean moving-average order."""
+        return self._ma_lags
+
+    @property
+    def mean_order(self) -> tuple[int, int]:
+        """The conditional-mean order ``(ar_lags, ma_lags)``."""
+        return (self._ar_lags, self._ma_lags)
+
+    def _mean_layer(self) -> _MeanLayer:
+        """Build the layer that turns a mean draw into residuals.
+
+        A pure autoregressive mean stays on the regression layer rather than
+        being routed through the ARMA recursion with a zero moving-average
+        block. The two describe the same model, but the regression estimates
+        the lag weights unconstrained while the recursion confines them to the
+        stationary region, and switching an existing specification onto a
+        constrained parameterization would change its answers for no gain --
+        the recursion needs that constraint only because it feeds on its own
+        output, which a matrix product does not.
+
+        Returns:
+            A :class:`_LinearMean` when ``ma_lags == 0``, else an
+            :class:`_ARMAMean`.
+        """
+        endog, ar_lags = self.endog, self._ar_lags
+        if self._ma_lags:
+            return _ARMAMean(endog=endog, p=ar_lags, q=self._ma_lags, include_const=self._const)
+        n_full = endog.shape[0]
+        target = endog[ar_lags:]
+        columns: list[npt.NDArray[np.float64]] = []
+        if self._const:
+            columns.append(np.ones(target.shape[0]))
+        columns.extend(endog[ar_lags - i : n_full - i] for i in range(1, ar_lags + 1))
+        design = (
+            np.column_stack(columns)
+            if columns
+            else np.zeros((target.shape[0], 0), dtype=np.float64)
+        )
+        return _LinearMean(endog_target=target, design=design, include_const=self._const)
 
 
 class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
@@ -1105,7 +1165,10 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
         p: Order of the shock-magnitude block.
         o: Order of the asymmetry block.
         q: Order of the persistence block.
-        ar_lags: Conditional-mean AR order.
+        ar_lags: Conditional-mean autoregressive order.
+        ma_lags: Conditional-mean moving-average order. A non-zero value routes
+            the mean through the ARMA recursion rather than the lag regression;
+            see :meth:`_ConditionalVarianceModel._mean_layer`.
         mean: ``"constant"`` or ``"zero"``.
 
     Raises:
@@ -1114,7 +1177,7 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
         DimensionError: If the series is too short for the specification.
     """
 
-    __slots__ = ("_ar_lags", "_o", "_p", "_q", "_vol")
+    __slots__ = ("_o", "_p", "_q", "_vol")
 
     def __init__(
         self,
@@ -1125,21 +1188,21 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
         o: int,
         q: int,
         ar_lags: int = 0,
+        ma_lags: int = 0,
         mean: str = "constant",
     ) -> None:
         """Validate the specification and the data."""
-        super().__init__(endog, mean=mean)
+        super().__init__(endog, mean=mean, ar_lags=ar_lags, ma_lags=ma_lags)
         self._vol = validate_choice(vol, Vol, "vol")
         self._p = validate_order(p, "p")
         self._o = validate_order(o, "o")
         self._q = validate_order(q, "q")
-        self._ar_lags = validate_order(ar_lags, "ar_lags")
         if self._vol == "GARCH" and self._o != 0:
             raise SpecificationError("GARCH has no asymmetry term; set the asymmetry order o = 0.")
         if self._vol in ("GJR", "EGARCH") and self._o < 1:
             raise SpecificationError(f"{self._vol} requires an asymmetry order o >= 1.")
         self._ensure_length(
-            max(self._p, self._o, self._q) + self._ar_lags + 2,
+            max(self._p, self._o, self._q) + max(self._ar_lags, self._ma_lags) + 2,
             f"{self._vol}({self._p}, {self._o}, {self._q})",
         )
 
@@ -1153,35 +1216,16 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
         """The variance order ``(p, o, q)``."""
         return (self._p, self._o, self._q)
 
-    @property
-    def ar_lags(self) -> int:
-        """The conditional-mean autoregressive order."""
-        return self._ar_lags
-
     def _build_objective(self) -> _ConditionalVarianceObjective:
         """Assemble the joint mean-and-variance surface.
 
         Returns:
             The configured objective.
         """
-        endog, ar_lags, include_const = self.endog, self._ar_lags, self._const
         p, o, q, vol = self._p, self._o, self._q, self._vol
-        n_full = endog.shape[0]
-        target = endog[ar_lags:]
-        n = target.shape[0]
-        mean_cols: list[npt.NDArray[np.float64]] = []
-        if include_const:
-            mean_cols.append(np.ones(n))
-        for i in range(1, ar_lags + 1):
-            mean_cols.append(endog[ar_lags - i : n_full - i])
-        mean_x = np.column_stack(mean_cols) if mean_cols else np.zeros((n, 0))
-
-        if mean_x.shape[1]:
-            mean0 = np.linalg.lstsq(mean_x, target, rcond=None)[0]
-            resid0 = target - mean_x @ mean0
-        else:
-            mean0 = np.zeros(0)
-            resid0 = target.copy()
+        mean = self._mean_layer()
+        mean0 = mean.start()
+        resid0 = mean.residuals(mean0)
         var0 = max(float(np.var(resid0)), 1e-8)
 
         a_init, b_init, g_init = 0.05, 0.90, 0.05
@@ -1208,8 +1252,7 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
             )
 
         return _ConditionalVarianceObjective(
-            target=target,
-            mean_x=mean_x,
+            mean=mean,
             backcast=ewma_mean_square(resid0),
             vol=vol,
             p=p,
@@ -1227,19 +1270,19 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
         Returns:
             The packed fit.
         """
-        include_const, vol = self._const, self._vol
+        vol = self._vol
         p, o, q = self._p, self._o, self._q
         objective = self._build_objective()
         parameters, llf = _maximize_likelihood(objective)
         fitted = objective.fitted(parameters)
-        resid = objective.target - fitted
+        resid = objective.residuals(parameters)
+        coefficients = objective.mean.unpack(parameters.mean)
         return _ShortMemoryVarianceFit(
-            const=float(parameters.mean[0]) if include_const else None,
+            const=coefficients.const,
             omega=parameters.omega,
             vol=vol,
-            ar_params=np.asarray(
-                parameters.mean[1:] if include_const else parameters.mean, dtype=np.float64
-            ),
+            ar_params=coefficients.ar,
+            ma_params=coefficients.ma,
             alpha=parameters.alpha,
             gamma=parameters.gamma,
             beta=parameters.beta,
@@ -1261,6 +1304,10 @@ class _FractionalVarianceModel[R](_ConditionalVarianceModel[R]):
     Args:
         endog: The series, typically returns or residuals.
         mean: ``"constant"`` or ``"zero"``.
+        ar_lags: Conditional-mean autoregressive order.
+        ma_lags: Conditional-mean moving-average order. A non-zero value routes
+            the mean through the ARMA recursion rather than the lag regression;
+            see :meth:`_ConditionalVarianceModel._mean_layer`.
         truncation: Infinite-order truncation lag.
 
     Raises:
@@ -1275,12 +1322,16 @@ class _FractionalVarianceModel[R](_ConditionalVarianceModel[R]):
         endog: npt.ArrayLike,
         *,
         mean: str = "constant",
+        ar_lags: int = 0,
+        ma_lags: int = 0,
         truncation: int = _DEFAULT_TRUNCATION,
     ) -> None:
         """Validate the specification and the data."""
-        super().__init__(endog, mean=mean)
+        super().__init__(endog, mean=mean, ar_lags=ar_lags, ma_lags=ma_lags)
         self._truncation = validate_order(truncation, "truncation", minimum=1)
-        self._ensure_length(int(self._const) + 4, "FIGARCH(1, d, 1)")
+        self._ensure_length(
+            int(self._const) + max(self._ar_lags, self._ma_lags) + 4, "FIGARCH(1, d, 1)"
+        )
 
     @property
     def truncation(self) -> int:
@@ -1293,20 +1344,13 @@ class _FractionalVarianceModel[R](_ConditionalVarianceModel[R]):
         Returns:
             The configured objective.
         """
-        endog, include_const = self.endog, self._const
         truncation = self._truncation
-        n = endog.shape[0]
-        mean_x = np.ones((n, 1)) if include_const else np.zeros((n, 0))
-        if mean_x.shape[1]:
-            mean0 = np.linalg.lstsq(mean_x, endog, rcond=None)[0]
-            resid0 = endog - mean_x @ mean0
-        else:
-            mean0 = np.zeros(0)
-            resid0 = endog.copy()
+        mean = self._mean_layer()
+        mean0 = mean.start()
+        resid0 = mean.residuals(mean0)
         var0 = max(float(np.var(resid0)), 1e-8)
         return _FractionalVarianceObjective(
-            target=endog,
-            mean_x=mean_x,
+            mean=mean,
             backcast=ewma_mean_square(resid0),
             truncation=truncation,
             theta0=np.concatenate([mean0, [np.log(var0 * 0.4), -1.0, -0.2, 0.4]]),
@@ -1318,13 +1362,15 @@ class _FractionalVarianceModel[R](_ConditionalVarianceModel[R]):
         Returns:
             The packed fit.
         """
-        include_const = self._const
         objective = self._build_objective()
         parameters, llf = _maximize_likelihood(objective)
         fitted = objective.fitted(parameters)
-        resid = objective.target - fitted
+        resid = objective.residuals(parameters)
+        coefficients = objective.mean.unpack(parameters.mean)
         return _FractionalVarianceFit(
-            const=float(parameters.mean[0]) if include_const else None,
+            const=coefficients.const,
+            ar_params=coefficients.ar,
+            ma_params=coefficients.ma,
             omega=parameters.omega,
             phi=parameters.phi,
             d=parameters.d,
@@ -1384,17 +1430,17 @@ class _MeanFunctionModel[R](_UnivariateModel[R]):
         return self._engine
 
 
-class _NeuralAutoregressionModel[R](_MeanFunctionModel[R]):
+class _NeuralAutoRegressionModel[R](_MeanFunctionModel[R]):
     __slots__ = ()
 
-    def _fit_family(self) -> _NeuralAutoregressionFit:
+    def _fit_family(self) -> _NeuralAutoRegressionFit:
         """Fit a neural autoregression of the given order.
 
         The likelihood is Gaussian with the variance concentrated out, so
         ``n_params`` counts the learner's parameters plus that variance.
 
         Returns:
-            The packed :class:`_NeuralAutoregressionFit`.
+            The packed :class:`_NeuralAutoRegressionFit`.
         """
         y, order, engine = self.endog, self._order, self._engine
         target = y[order:]
@@ -1403,7 +1449,7 @@ class _NeuralAutoregressionModel[R](_MeanFunctionModel[R]):
         fitted = predictor.predict(features)
         resid = target - fitted
         sigma2, llf = concentrated_gaussian(float(resid @ resid), target.shape[0])
-        return _NeuralAutoregressionFit(
+        return _NeuralAutoRegressionFit(
             predictor=predictor,
             sigma2=sigma2,
             resid=resid,

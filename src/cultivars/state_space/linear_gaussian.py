@@ -53,13 +53,13 @@ References:
 
 from __future__ import annotations
 
-from ._internals import (
+from .._internals import (
     _DurbinKoopmanSmootherResult as DurbinKoopmanSmootherResult,
 )
-from ._internals import (
+from .._internals import (
     _KalmanFilterResult as KalmanFilterResult,
 )
-from ._internals import (
+from .._internals import (
     _LinearGaussianStateSpaceModel as LinearGaussianStateSpaceModel,
 )
 

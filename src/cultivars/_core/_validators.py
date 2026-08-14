@@ -32,8 +32,8 @@ shape regardless of which model raised it.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import TypeAliasType, get_args
+from collections.abc import Iterable, Sequence
+from typing import TypeAliasType, cast, get_args
 
 import numpy as np
 import numpy.typing as npt
@@ -172,26 +172,36 @@ def validate_order_tuple(
 def validate_choice[T](value: T, allowed: object, label: str) -> T:
     """Check a categorical specification against its permitted values.
 
-    Accepts either a sequence of options or a PEP 695 ``Literal`` alias, since
-    every call site names the alias from :mod:`cultivars._core._types` rather
-    than repeating the option tuple.
+    Accepts either a plain sequence of options or a PEP 695 ``type`` alias over
+    a :data:`~typing.Literal`, which is how every categorical option in this
+    package is declared. A ``TypeAliasType`` is not iterable, so passing one to
+    a naive ``value not in allowed`` raises ``TypeError`` rather than
+    validating anything; the alias is unwrapped through ``__value__`` first.
 
     Args:
         value: The candidate option.
-        allowed: The permitted options, as a sequence or a ``Literal`` alias.
+        allowed: A ``type`` alias over a ``Literal``, or any iterable of the
+            permitted options.
         label: Argument name, used in error messages.
 
     Returns:
-        The value unchanged.
+        The value unchanged, so the call can sit inside an assignment.
 
     Raises:
         SpecificationError: If ``value`` is not among the permitted options.
 
     Example:
+        >>> from typing import Literal
+        >>> type Trend = Literal["n", "c", "ct"]
         >>> validate_choice("c", Trend, "trend")
         'c'
+        >>> validate_choice("c", ("n", "c", "ct"), "trend")
+        'c'
     """
-    options = get_args(allowed.__value__) if isinstance(allowed, TypeAliasType) else tuple(allowed)
+    if isinstance(allowed, TypeAliasType):
+        options: tuple[object, ...] = get_args(allowed.__value__)
+    else:
+        options = tuple(cast("Iterable[object]", allowed))
     if value not in options:
         raise SpecificationError(f"{label} must be one of {options}; got {value!r}.")
     return value

@@ -34,6 +34,32 @@ from .._core import (
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _LikelihoodRatioResult:
+    """Verdict of a likelihood-ratio test between two nested fits.
+
+    Attributes:
+        statistic: ``2 * (llf_unrestricted - llf_restricted)``.
+        df: Degrees of freedom, the difference in free parameter counts.
+        pvalue: Upper-tail probability under a chi-squared null.
+    """
+
+    statistic: float
+    df: int
+    pvalue: float
+
+    def reject(self, *, alpha: float = 0.05) -> bool:
+        """Whether the restriction is rejected at level ``alpha``."""
+        return self.pvalue < alpha
+
+    def __repr__(self) -> str:
+        """One-line verdict."""
+        return (
+            f"LikelihoodRatioResult(statistic={self.statistic:.4f}, df={self.df}, "
+            f"pvalue={self.pvalue:.4g})"
+        )
+
+
 @dataclass(frozen=True)
 class _StabilityResult:
     """The outcome of a stability (or invertibility) assessment.

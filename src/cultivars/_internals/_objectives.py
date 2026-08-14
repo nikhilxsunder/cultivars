@@ -49,6 +49,7 @@ from .._core import (
     unpack_stationary,
 )
 from ..exceptions import NumericalError
+from ._means import _MeanLayer
 from ._models import _LinearGaussianStateSpaceModel
 from ._parameters import (
     _AutoRegressionParameters,
@@ -427,37 +428,39 @@ class _VarianceObjective[P: _VarianceParameters](_Objective[P]):
     admissible, and those are the two abstract hooks.
 
     Attributes:
-        target: The series the mean model explains.
-        mean_x: The conditional-mean design block; may have zero columns.
+        mean: The conditional-mean layer, which owns its own data and turns a
+            parameter block into residuals. Delegating rather than holding a
+            design matrix is what lets one criterion serve a regression mean
+            and a moving-average recursion alike.
         backcast: Pre-sample variance, an exponentially weighted mean square.
         theta0: The warm start.
     """
 
-    target: npt.NDArray[np.float64]
-    mean_x: npt.NDArray[np.float64]
+    mean: _MeanLayer
     backcast: float
     theta0: npt.NDArray[np.float64]
 
     @property
+    def target(self) -> npt.NDArray[np.float64]:
+        """The series the mean model explains, as the layer trimmed it."""
+        return self.mean.target
+
+    @property
     def k_mean(self) -> int:
-        """Width of the conditional-mean design block."""
-        return self.mean_x.shape[1]
+        """Width of the conditional-mean parameter block."""
+        return self.mean.n_parameters
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """Return the single warm start."""
         return (self.theta0,)
 
-    def fitted(self, parameters: P) -> npt.NDArray[np.float64]:
-        """Conditional means implied by the mean block."""
-        if not self.k_mean:
-            return np.zeros(self.target.shape[0], dtype=np.float64)
-        return self.mean_x @ parameters.mean
-
     def residuals(self, parameters: P) -> npt.NDArray[np.float64]:
         """Mean residuals the variance recursion is driven by."""
-        if not self.k_mean:
-            return self.target
-        return self.target - self.fitted(parameters)
+        return self.mean.residuals(parameters.mean)
+
+    def fitted(self, parameters: P) -> npt.NDArray[np.float64]:
+        """Conditional means implied by the mean block."""
+        return self.mean.fitted(parameters.mean)
 
     @abstractmethod
     def variance_path(

@@ -19,27 +19,30 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Univariate autoregressive model AR(p).
 
-Implements ``y_t = c + delta*t + phi_1 y_{t-1} + ... + phi_p y_{t-p} + eps_t``,
-``eps_t ~ N(0, sigma2)``, following cultivars' three-object discipline:
+"""Autoregressive model AR(p) -- the public specification and result.
 
-- :class:`AR` is the immutable specification (data, order, trend). It validates
-  at construction and exposes ``fit``.
-- Estimation is dispatched to two closed-form / optimizer routines. ``"css"``
-  (conditional sum of squares) is the fast ordinary-least-squares path;
-  ``"exact"`` maximizes the exact Gaussian likelihood through the linear-Gaussian
-  state-space substrate (the AR(p) -> companion embedding), keeping the parameter
-  search in the stationary region via a partial-autocorrelation reparameterization.
-- :class:`ARResult` is the frozen, serializable result consumed by downstream
-  forecasting and diagnostics.
+Implements ``y_t = c + delta*t + phi_1 y_{t-1} + ... + phi_p y_{t-p} + eps_t``
+with ``eps_t ~ N(0, sigma2)``, under the package's three-object discipline:
+:class:`AR` is the immutable specification, estimation belongs to the family
+base it inherits, and :class:`ARResult` is the frozen result the user actually
+handles.
 
-The two estimators differ in finite samples: CSS conditions on the first ``p``
-observations, exact ML models their (stationary) density too; they converge as
-the sample grows.
+Two estimators are reachable through ``method``. ``"css"`` conditions on the
+first ``p`` observations and solves by ordinary least squares; ``"exact"``
+maximizes the exact Gaussian likelihood through the companion state-space
+embedding, keeping the search inside the stationary region via a
+partial-autocorrelation reparameterization. They differ in finite samples --
+CSS drops ``p`` observations, exact ML models their stationary density too --
+and converge as the sample grows.
+
+Because CSS and exact ML report different effective sample sizes, information
+criteria are only comparable across orders when every model uses ``"exact"``;
+:meth:`ARResult.compare` enforces that rather than silently ranking
+incomparable numbers.
 
 References:
-    Hamilton, J. D. (1994). *Time Series Analysis*, ch. 5 & 13.
+    Hamilton, J. D. (1994). *Time Series Analysis*, ch. 5 and 13.
     Monahan, J. F. (1984). A note on enforcing stationarity in ARMA models.
     *Biometrika*, 71(2).
 """
@@ -51,79 +54,154 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core._design import n_deterministic
-from .._internals._models import _MeanResult, _StationarityMixin, _UnivariateModel
-from .._internals._univariate import _fit_ar_css, _forecast_ar
+from .._core import InformationCriteria, SummaryTable
+from .._internals import (
+    _AutoRegressionFit,
+    _AutoRegressionModel,
+    _ComparisonMixin,
+    _SeriesMixin,
+    _StationarityMixin,
+    _SummaryMixin,
+)
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class ARResult(_MeanResult, _StationarityMixin):
-    """Fitted autoregressive model result.
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class ARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin, _StationarityMixin):
+    """A fitted autoregression.
 
-    Inherits ``llf``/``nobs``/``n_params`` and the information-criteria
-    surface from :class:`_Result`, the endog/residual/fitted surface from
-    :class:`_MeanResult`, and stationarity assessment from
-    :class:`_StationarityMixin`.
+    Composes four capabilities: rendering, frame interop, criterion-named
+    comparison, and stationarity assessment. ``repr=False`` is required -- see
+    :class:`_SummaryMixin` -- so the summary is what a bare result prints.
+
+    Attributes:
+        endog: The full observed series, retained so residual and fitted paths
+            can be aligned against it.
+        fittedvalues: One-step fitted values over the effective sample.
+        resid: One-step residuals over the effective sample.
+        llf: Maximized log-likelihood, conditional for CSS and exact otherwise.
+        nobs: Observations the likelihood was evaluated on.
+        n_params: Free parameter count, including the innovation variance.
+        order: Autoregressive order ``p``.
+        trend: Deterministic specification.
+        method: Estimator that produced the fit.
+        const: Intercept, or ``None`` when ``trend == "n"``.
+        trend_coeff: Linear-trend slope, or ``None`` unless ``trend == "ct"``.
+        ar_params: Autoregressive coefficients.
+        sigma2: Innovation variance.
     """
 
+    endog: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    llf: float
+    nobs: int
+    n_params: int
     order: int
     trend: str
     method: str
-    const: float
-    trend_coeff: float
+    const: float | None
+    trend_coeff: float | None
     ar_params: npt.NDArray[np.float64]
     sigma2: float
 
-    def forecast(self, h: int) -> npt.NDArray[np.float64]:
-        if h < 1:
-            raise ValueError(f"horizon must be >= 1; got {h}.")
-        return _forecast_ar(
-            self.endog,
-            self.ar_params,
-            self.const,
-            self.trend_coeff,
-            self.nobs + self.order,
-            h,
-        )
+    @classmethod
+    def _from_fit(cls, fit: _AutoRegressionFit, model: _AutoRegressionModel[ARResult]) -> ARResult:
+        """Assemble the public result from a raw fit and its specification.
 
+        Args:
+            fit: The raw estimator output.
+            model: The specification that produced it, read for the fields the
+                fit record deliberately does not carry.
 
-class AR(_UnivariateModel[ARResult]):
-    """Autoregressive AR(p) specification fit by conditional least squares."""
-
-    __slots__ = ("_order", "_trend")
-
-    def __init__(self, endog: npt.ArrayLike, order: int, trend: str = "c") -> None:
-        super().__init__(endog)
-        if trend not in ("n", "c", "ct"):
-            raise ValueError(f"trend must be one of 'n', 'c', 'ct'; got {trend!r}.")
-        self._order = int(order)
-        self._trend = trend
-        self._ensure_length(order + 2, f"AR({order})")
-
-    @property
-    def order(self) -> int:
-        return self._order
-
-    @property
-    def trend(self) -> str:
-        return self._trend
-
-    def fit(self, method: str = "css") -> ARResult:
-        if method != "css":
-            raise ValueError(f"unknown method {method!r}; expected 'css'.")
-        fit = _fit_ar_css(self.endog, self._order, self._trend)
-        return ARResult(
+        Returns:
+            The assembled result.
+        """
+        return cls(
+            endog=model.endog,
+            fittedvalues=fit.fittedvalues,
+            resid=fit.resid,
             llf=fit.llf,
             nobs=fit.nobs,
-            n_params=self._order + n_deterministic(self._trend) + 1,
-            endog=self.endog,
-            resid=fit.resid,
-            fittedvalues=fit.fittedvalues,
-            order=self._order,
-            trend=self._trend,
-            method=method,
+            n_params=fit.n_params,
+            order=model.order,
+            trend=model.trend,
+            method=model.method,
             const=fit.const,
             trend_coeff=fit.trend_coeff,
             ar_params=fit.ar_params,
             sigma2=fit.sigma2,
         )
+
+    @property
+    def params(self) -> dict[str, float]:
+        """Estimated parameters keyed by display name, in table order."""
+        out: dict[str, float] = {}
+        if self.const is not None:
+            out["const"] = self.const
+        if self.trend_coeff is not None:
+            out["trend"] = self.trend_coeff
+        for i, value in enumerate(self.ar_params, start=1):
+            out[f"ar.L{i}"] = float(value)
+        out["sigma2"] = self.sigma2
+        return out
+
+    def _comparison_label(self) -> str:
+        """Specification label used when this result appears in a ranking."""
+        return f"AR({self.order}){'' if self.trend == 'c' else f' trend={self.trend}'}"
+
+    def _summary_table(self) -> SummaryTable:
+        """Structured summary rendered by every display path."""
+        ic: InformationCriteria = self.information_criteria
+        stability = self.stability
+        return SummaryTable(
+            title=f"AR({self.order}) Results",
+            metadata=(
+                ("Model", f"AR({self.order})"),
+                ("Log-likelihood", f"{self.llf:.3f}"),
+                ("Method", self.method),
+                ("AIC", f"{ic.aic:.3f}"),
+                ("Trend", self.trend),
+                ("BIC", f"{ic.bic:.3f}"),
+                ("Observations", f"{self.nobs}"),
+                ("HQIC", f"{ic.hqic:.3f}"),
+            ),
+            columns=("", "coef"),
+            rows=tuple((name, f"{value:.4f}") for name, value in self.params.items()),
+            notes=(
+                f"Stationary: {self.is_stationary}   "
+                f"max |companion root| = {stability.max_modulus:.4f}",
+                "Standard errors are not yet available for this estimator.",
+            ),
+        )
+
+
+class AR(_AutoRegressionModel[ARResult]):
+    """Autoregressive AR(p) specification.
+
+    Args:
+        endog: The endogenous series.
+        order: Autoregressive order ``p``.
+        trend: Deterministic specification (``"n"``, ``"c"``, ``"ct"``).
+        method: ``"css"`` or ``"exact"``.
+
+    Example:
+        >>> import numpy as np
+        >>> rng = np.random.default_rng(0)
+        >>> e = rng.standard_normal(500)
+        >>> y = np.zeros(500)
+        >>> for t in range(1, 500):
+        ...     y[t] = 0.5 * y[t - 1] + e[t]
+        >>> res = AR(y, order=1, trend="c").fit()
+        >>> bool(0.3 < res.ar_params[0] < 0.7)
+        True
+    """
+
+    __slots__ = ()
+
+    def fit(self) -> ARResult:
+        """Estimate the model by the selected method.
+
+        Returns:
+            The fitted :class:`ARResult`.
+        """
+        return ARResult._from_fit(self._fit_family(), self)

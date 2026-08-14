@@ -128,11 +128,19 @@ class _ConditionalVarianceFit(_BaseFit):
 
     Attributes:
         const: Mean intercept, or ``None`` when ``mean == "zero"``.
+        ar_params: Conditional-mean autoregressive coefficients; empty when the
+            order is zero.
+        ma_params: Conditional-mean moving-average coefficients; empty when the
+            order is zero. Present on the shared base rather than on one
+            subclass because the mean layer is orthogonal to the variance
+            family -- every member of the group can carry an ARMA mean.
         omega: Variance intercept.
         conditional_variance: The fitted variance path.
     """
 
     const: float | None
+    ar_params: npt.NDArray[np.float64]
+    ma_params: npt.NDArray[np.float64]
     omega: float
     conditional_variance: npt.NDArray[np.float64]
 
@@ -154,14 +162,12 @@ class _ShortMemoryVarianceFit(_ConditionalVarianceFit):
     Attributes:
         vol: The family that produced the fit, needed because persistence is
             not the same functional of the coefficients across the three.
-        ar_params: Conditional-mean AR coefficients; empty when ``ar_lags == 0``.
         alpha: Coefficients on the shock magnitude.
         gamma: Asymmetry coefficients; empty for the symmetric family.
         beta: Persistence coefficients.
     """
 
     vol: str
-    ar_params: npt.NDArray[np.float64]
     alpha: npt.NDArray[np.float64]
     gamma: npt.NDArray[np.float64]
     beta: npt.NDArray[np.float64]
@@ -204,7 +210,7 @@ class _MeanFunctionFit(_BaseFit):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
-class _NeuralAutoregressionFit(_MeanFunctionFit):
+class _NeuralAutoRegressionFit(_MeanFunctionFit):
     """Raw outputs of an autoregressive neural mean-function fit."""
 
     predictor: MeanPredictor
