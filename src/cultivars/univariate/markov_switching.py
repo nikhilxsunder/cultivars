@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/univariate/ms_ar.py
+# filepath: /src/cultivars/univariate/markov_switching.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #

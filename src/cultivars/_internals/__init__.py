@@ -55,9 +55,12 @@ from ._models import (
 )
 from ._predictors import MeanPredictor
 from ._results import (
+    _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
     _KalmanFilterResult,
     _LikelihoodRatioResult,
+    _MeanFunctionResult,
+    _ObservedRegimeResult,
     _StabilityResult,
 )
 
@@ -69,6 +72,7 @@ __all__ = [
     "_BoxJenkinsModel",
     "_ComparisonMixin",
     "_ConditionalVarianceMixin",
+    "_ConditionalVarianceResult",
     "_DurbinKoopmanSmootherResult",
     "_FractionalIntegrationFit",
     "_FractionalIntegrationModel",
@@ -80,10 +84,12 @@ __all__ = [
     "_LinearGaussianStateSpaceModel",
     "_MarkovSwitchingFit",
     "_MarkovSwitchingModel",
+    "_MeanFunctionResult",
     "_NeuralAutoRegressionFit",
     "_NeuralAutoRegressionModel",
     "_NeuralThresholdFit",
     "_NeuralThresholdModel",
+    "_ObservedRegimeResult",
     "_SeriesMixin",
     "_ShortMemoryVarianceFit",
     "_ShortMemoryVarianceModel",

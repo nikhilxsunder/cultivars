@@ -95,184 +95,20 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import _CAPACITY_WARNING, InformationCriteria, SummaryTable, trailing_lag
+from .._core import SummaryTable, trailing_lag
 from .._internals import (
     MeanPredictor,
-    _ComparisonMixin,
+    _MeanFunctionResult,
     _NeuralAutoRegressionFit,
     _NeuralAutoRegressionModel,
     _NeuralThresholdFit,
     _NeuralThresholdModel,
-    _SeriesMixin,
-    _SummaryMixin,
 )
 from ..exceptions import DimensionError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class MeanFunctionResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
-    """What every fitted learned-mean model reports.
-
-    Deliberately declares no ``params`` mapping and no ``predict``. There is no
-    parameter vector to report, and the two members route features to learners
-    differently enough that a shared ``predict`` signature would have to take
-    an argument one of them ignores -- so each concrete result declares the
-    signature its own routing requires.
-
-    Attributes:
-        endog: The full input series.
-        fittedvalues: In-sample conditional means over the effective sample.
-        resid: Residuals against those means.
-        llf: Concentrated Gaussian log-likelihood at the fitted mean. A
-            goodness-of-fit summary, not a maximized likelihood: the learner is
-            penalized, so the fit does not maximize this.
-        nobs: Effective sample size after trimming for lags and delay.
-        n_params: Learner parameters plus the concentrated variance, and the
-            threshold where one is estimated.
-        order: Number of lagged levels fed to the learner.
-        sigma2: Concentrated innovation variance, ``ssr / nobs``.
-        engine: Class name of the training backend.
-        engine_config: Full repr of the backend, so the fit is reproducible.
-    """
-
-    endog: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    llf: float
-    nobs: int
-    n_params: int
-    order: int
-    sigma2: float
-    engine: str
-    engine_config: str
-
-    @property
-    def n_learner_parameters(self) -> int:
-        """Weights and biases the backend fitted, excluding the variance.
-
-        Returns:
-            The nominal count.
-
-        Raises:
-            NotImplementedError: If the concrete result does not supply one.
-        """
-        raise NotImplementedError(
-            f"{type(self).__name__} must report how many parameters its learners hold."
-        )
-
-    @property
-    def ssr(self) -> float:
-        """Sum of squared residuals over the effective sample."""
-        return float(self.resid @ self.resid)
-
-    @property
-    def r_squared(self) -> float:
-        """Share of the effective sample's variance the fitted mean explains.
-
-        The headline number for this family, since there is no coefficient
-        table and the log-likelihood is not a maximized one. Computed against
-        the effective sample's own total sum of squares, so it is comparable
-        across specifications only when they trim the same number of leading
-        observations -- which is why :meth:`compare` refuses mismatched
-        samples.
-
-        Note this is an *in-sample* figure for a flexible learner, so it
-        rewards capacity: a network with enough hidden units will drive it
-        toward one without having learned anything that generalizes. Read it
-        next to :attr:`parameters_per_observation`.
-        """
-        target = self.endog[self.endog.shape[0] - self.nobs :]
-        centered = target - target.mean()
-        total = float(centered @ centered)
-        if total <= 0.0:
-            return 0.0
-        return 1.0 - self.ssr / total
-
-    @property
-    def parameters_per_observation(self) -> float:
-        """Nominal learner parameters divided by the effective sample size.
-
-        The capacity canary. Weight decay means the *effective* count is lower
-        than this, by an amount no closed form recovers, so treat it as an
-        upper bound on how hard the learner could overfit rather than as a
-        measurement of how hard it did.
-        """
-        return self.n_learner_parameters / self.nobs
-
-    def _capacity_note(self) -> str:
-        """One line on nominal capacity relative to the sample."""
-        ratio = self.parameters_per_observation
-        verdict = (
-            "high -- the in-sample R-squared above is optimistic"
-            if ratio > _CAPACITY_WARNING
-            else "modest"
-        )
-        return (
-            f"Capacity: {self.n_learner_parameters} learner parameters over "
-            f"{self.nobs} observations ({ratio:.3f} per observation, {verdict}). "
-            f"Weight decay lowers the effective count below the nominal one, so "
-            f"this is an upper bound."
-        )
-
-    def _criteria_note(self) -> str:
-        """One line on why the information criteria here are not comparable."""
-        return (
-            "AIC/BIC/HQIC penalize the nominal parameter count, which overstates "
-            "a regularized learner's effective degrees of freedom. Use them to "
-            "choose hidden units within one engine configuration, not to rank "
-            "this model against a linear one."
-        )
-
-    def _engine_note(self) -> str:
-        """One line recording the backend, since it is part of the specification."""
-        return f"Trained by {self.engine_config}."
-
-    def _summary_metadata(self) -> tuple[tuple[str, str], ...]:
-        """Left/right metadata pairs shared by both members."""
-        ic: InformationCriteria = self.information_criteria
-        return (
-            ("Model", self._comparison_label()),
-            ("Log-likelihood", f"{self.llf:.3f}"),
-            ("Engine", self.engine),
-            ("AIC", f"{ic.aic:.3f}"),
-            ("Lags", f"{self.order}"),
-            ("BIC", f"{ic.bic:.3f}"),
-            ("Observations", f"{self.nobs}"),
-            ("HQIC", f"{ic.hqic:.3f}"),
-            ("R-squared", f"{self.r_squared:.4f}"),
-            ("sigma2", f"{self.sigma2:.4f}"),
-        )
-
-    def _likelihood_ratio_obstacle(self, counterpart: _ComparisonMixin) -> str | None:
-        """Block every chi-squared likelihood-ratio test involving this result.
-
-        Under the null that the learned mean is linear, a hidden unit's
-        input weights do not appear in the likelihood at all -- the unit's
-        output weight is zero, so nothing multiplies them -- and that output
-        weight itself sits on the boundary of the parameter space. Both
-        conditions independently break the chi-squared limit. The Terasvirta
-        LM test exists precisely because of this, and it is what to reach for.
-
-        The reported log-likelihood is also penalized rather than maximized, so
-        a ratio of two of them is not a likelihood ratio in the first place.
-
-        Args:
-            counterpart: Ignored; the obstacle is a property of this family.
-
-        Returns:
-            The explanatory message, always.
-        """
-        return (
-            "a chi-squared likelihood-ratio test is not valid for a learned mean "
-            "function: under linearity the hidden-layer input weights are "
-            "unidentified and the output weights lie on the boundary at zero, and "
-            "the reported log-likelihood is penalized rather than maximized. Use "
-            "the Terasvirta neural-network linearity test, or a bootstrap."
-        )
-
-
-@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class ARNNResult(MeanFunctionResult):
+class ARNNResult(_MeanFunctionResult):
     """A fitted neural autoregression.
 
     Attributes:
@@ -357,7 +193,7 @@ class ARNNResult(MeanFunctionResult):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class TARNNResult(MeanFunctionResult):
+class TARNNResult(_MeanFunctionResult):
     """A fitted two-regime neural threshold autoregression.
 
     Shares vocabulary with :class:`~cultivars.univariate.threshold.SETARResult`
