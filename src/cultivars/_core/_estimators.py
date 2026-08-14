@@ -26,7 +26,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ._defaults import _LOG_2PI
+from ._defaults import _LOG_2PI, _PENALTY
 
 
 def ols(
@@ -240,3 +240,20 @@ def ergodic_distribution(
     if not np.isfinite(total) or total <= 0.0:
         raise NumericalError("transition matrix admits no valid ergodic distribution.")
     return np.asarray(pi / total, dtype=np.float64)
+
+
+def _gaussian_negloglik(resid: npt.NDArray[np.float64], sigma2: npt.NDArray[np.float64]) -> float:
+    """Negative Gaussian log-likelihood given a conditional-variance path.
+
+    Args:
+        resid: Mean residuals.
+        sigma2: The conditional-variance path, same length as ``resid``.
+
+    Returns:
+        The negative log-likelihood, or :data:`_PENALTY` if the variance path
+        is non-positive or non-finite anywhere, or the sum overflows.
+    """
+    if not np.all(np.isfinite(sigma2)) or np.any(sigma2 <= 0.0):
+        return _PENALTY
+    value = 0.5 * float(np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2))
+    return value if np.isfinite(value) else _PENALTY

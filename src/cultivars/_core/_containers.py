@@ -32,7 +32,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, SpecificationError
-from .unsorted import require_optional
+from ._loaders import require_optional
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import pandas as pd
@@ -449,26 +449,29 @@ class SummaryTable:
             so the output survives nbconvert and static HTML docs unchanged.
         """
         border = "border-bottom:1px solid #999;"
+        label_style = "padding:1px 12px 1px 0;color:#555"
+        value_style = "padding:1px 24px 1px 0;text-align:right"
+        head_style = f"padding:2px 10px;text-align:right;{border}"
+        cell_pad = "padding:1px 10px;text-align:"
         parts = [
             '<div style="font-family:ui-monospace,Menlo,monospace;font-size:0.85em">',
             f'<div style="font-weight:600;padding:2px 0;{border}">{self._escape(self.title)}</div>',
         ]
         if self.metadata:
             cells = "".join(
-                f'<tr><td style="padding:1px 12px 1px 0;color:#555">{self._escape(label)}</td>'
-                f'<td style="padding:1px 24px 1px 0;text-align:right">{self._escape(value)}</td></tr>'
+                f'<tr><td style="{label_style}">{self._escape(label)}</td>'
+                f'<td style="{value_style}">{self._escape(value)}</td></tr>'
                 for label, value in self.metadata
             )
             parts.append(f'<table style="border-collapse:collapse">{cells}</table>')
         if self.rows:
             head = "".join(
-                f'<th style="padding:2px 10px;text-align:right;{border}">{self._escape(col)}</th>'
-                for col in self.columns
+                f'<th style="{head_style}">{self._escape(col)}</th>' for col in self.columns
             )
             body = "".join(
                 "<tr>"
                 + "".join(
-                    f'<td style="padding:1px 10px;text-align:{"left" if i == 0 else "right"}">'
+                    f'<td style="{cell_pad}{"left" if i == 0 else "right"}">'
                     f"{self._escape(value)}</td>"
                     for i, value in enumerate(row)
                 )

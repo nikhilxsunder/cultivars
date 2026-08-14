@@ -83,4 +83,3 @@ def kim_smoother(
             smoothed[t] /= total
 
     return _KimSmootherResult(smoothed_prob=smoothed, smoothed_joint_prob=joint)
-

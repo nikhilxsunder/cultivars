@@ -40,13 +40,34 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import numpy.typing as npt
 
-from .unsorted import require_optional
+from ._loaders import require_optional
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from collections.abc import Mapping, Sequence
 
     import pandas as pd
     import polars as pl
+
+
+def _mean_label(mean_order: tuple[int, int], *, has_const: bool) -> str:
+    """Name the conditional mean the way a reader expects to see it.
+
+    Args:
+        mean_order: The pair ``(ar_lags, ma_lags)``.
+        has_const: Whether an intercept was estimated.
+
+    Returns:
+        ``"ARMA(p, q)"``, ``"AR(p)"``, ``"MA(q)"``, ``"const"``, or ``"zero"``,
+        so a pure autoregression is not labelled as an ARMA with an empty block.
+    """
+    ar, ma = mean_order
+    if ar and ma:
+        return f"ARMA({ar}, {ma})"
+    if ar:
+        return f"AR({ar})"
+    if ma:
+        return f"MA({ma})"
+    return "const" if has_const else "zero"
 
 
 def to_pandas_frame(

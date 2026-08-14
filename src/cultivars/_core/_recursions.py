@@ -1,28 +1,30 @@
-from importlib import import_module
-from types import ModuleType
+# filepath: /src/cultivars/_core/_recursions.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 import numpy as np
 import numpy.typing as npt
 
-from ._defaults import _EXTRA, _LOG_2PI, _PENALTY, _SQRT_2_OVER_PI
+from ._defaults import _SQRT_2_OVER_PI
 from ._transforms import fractional_difference_weights
-
-
-def _gaussian_negloglik(resid: npt.NDArray[np.float64], sigma2: npt.NDArray[np.float64]) -> float:
-    """Negative Gaussian log-likelihood given a conditional-variance path.
-
-    Args:
-        resid: Mean residuals.
-        sigma2: The conditional-variance path, same length as ``resid``.
-
-    Returns:
-        The negative log-likelihood, or :data:`_PENALTY` if the variance path
-        is non-positive or non-finite anywhere, or the sum overflows.
-    """
-    if not np.all(np.isfinite(sigma2)) or np.any(sigma2 <= 0.0):
-        return _PENALTY
-    value = 0.5 * float(np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2))
-    return value if np.isfinite(value) else _PENALTY
 
 
 def _linear_variance_recursion(
@@ -184,51 +186,3 @@ def _arch_infinity_variance(
             acc += backcast * float(lam[m:truncation].sum())
         sigma2[t] = acc
     return sigma2
-
-
-def require_optional(module: str) -> ModuleType:
-    """Import an optional frame backend, or explain how to install it.
-
-    Args:
-        module: Top-level module name, ``"pandas"`` or ``"polars"``.
-
-    Returns:
-        The imported module.
-
-    Raises:
-        ImportError: If the module is not installed, naming the extra that
-            provides it.
-
-    Example:
-        >>> require_optional("numpy").__name__
-        'numpy'
-    """
-    try:
-        return import_module(module)
-    except ModuleNotFoundError as exc:  # pragma: no cover - depends on env
-        extra = _EXTRA.get(module, module)
-        raise ImportError(
-            f"{module} is required for this conversion but is not installed; "
-            f"install it with `pip install cultivars[{extra}]`."
-        ) from exc
-
-
-def _mean_label(mean_order: tuple[int, int], *, has_const: bool) -> str:
-    """Name the conditional mean the way a reader expects to see it.
-
-    Args:
-        mean_order: The pair ``(ar_lags, ma_lags)``.
-        has_const: Whether an intercept was estimated.
-
-    Returns:
-        ``"ARMA(p, q)"``, ``"AR(p)"``, ``"MA(q)"``, ``"const"``, or ``"zero"``,
-        so a pure autoregression is not labelled as an ARMA with an empty block.
-    """
-    ar, ma = mean_order
-    if ar and ma:
-        return f"ARMA({ar}, {ma})"
-    if ar:
-        return f"AR({ar})"
-    if ma:
-        return f"MA({ma})"
-    return "const" if has_const else "zero"

@@ -31,6 +31,7 @@ from __future__ import annotations
 
 from ._containers import InformationCriteria, SummaryTable, _ForwardPass
 from ._converters import (
+    _mean_label,
     to_pandas_frame,
     to_polars_frame,
 )
@@ -51,6 +52,7 @@ from ._defaults import (
     _TINY,
 )
 from ._estimators import (
+    _gaussian_negloglik,
     concentrated_gaussian,
     ergodic_distribution,
     ewma_mean_square,
@@ -67,6 +69,12 @@ from ._matrices import (
     trailing_lag,
 )
 from ._polynomials import expand_ar, expand_ma
+from ._recursions import (
+    _arch_infinity_variance,
+    _arch_infinity_weights,
+    _linear_variance_recursion,
+    _log_variance_recursion,
+)
 from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
@@ -88,14 +96,6 @@ from ._validators import (
     validate_order,
     validate_order_tuple,
     validate_transition,
-)
-from .unsorted import (
-    _arch_infinity_variance,
-    _arch_infinity_weights,
-    _gaussian_negloglik,
-    _linear_variance_recursion,
-    _log_variance_recursion,
-    _mean_label,
 )
 
 __all__ = [
