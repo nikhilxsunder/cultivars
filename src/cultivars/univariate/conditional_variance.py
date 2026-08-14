@@ -890,7 +890,6 @@ class ARMAEGARCH(_ShortMemoryVarianceModel[ARMAGARCHResult]):
         return ARMAGARCHResult._from_fit(self._fit_family(), self)
 
 
-
 class FIGARCH(_FractionalVarianceModel[FIGARCHResult]):
     """FIGARCH(1, d, 1): long-memory volatility through a fractional filter.
 

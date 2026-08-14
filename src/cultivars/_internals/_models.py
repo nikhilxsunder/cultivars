@@ -64,6 +64,7 @@ from .._core import (
     _DEFAULT_TRIM,
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
+    _ROW_SUM_ATOL,
     Mean,
     Method,
     Transition,
@@ -91,9 +92,11 @@ from .._core import (
     validate_open_interval,
     validate_order,
     validate_order_tuple,
+    validate_transition,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._engines import MeanFunctionEngine, NumpyMLPEngine
+from ._filters import hamilton_filter
 from ._fits import (
     _AutoRegressionFit,
     _BoxJenkinsFit,
@@ -119,11 +122,14 @@ from ._objectives import (
 from ._results import (
     _DurbinKoopmanSmootherResult,
     _FilterResult,
+    _HamiltonFilterResult,
     _KalmanFilterResult,
+    _KimSmootherResult,
     _SmootherResult,
     _StabilityResult,
 )
-from ._solvers import _maximize_likelihood, _solve, hamilton_filter, kim_smoother
+from ._smoothers import kim_smoother
+from ._solvers import _maximize_likelihood, _solve
 from ._states import _ExpectationMaximizationState
 
 
@@ -1572,6 +1578,243 @@ class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
         )
 
 
+class _MarkovSwitchingStateSpaceModel(_StateSpaceModel[_HamiltonFilterResult, _KimSmootherResult]):
+    """A parameterized Markov-switching observation model over a latent chain.
+
+    The discrete counterpart of :class:`_LinearGaussianStateSpaceModel`, and its
+    peer in every structural respect: both hold a fully specified system, both
+    filter and smooth data handed to them, and neither estimates anything. What
+    differs is the state space. A linear-Gaussian model carries a continuous
+    state and propagates a mean and a covariance; this one carries a state drawn
+    from ``{0, ..., K-1}`` and propagates a probability vector.
+
+    That difference is why the filter is Hamilton's rather than Kalman's, and
+    why the likelihood is *exact*. Conditional on the observed lags, the density
+    ``Pr(y_t | S_t, y_{1..t-1})`` depends on ``S_t`` alone -- the regime enters
+    contemporaneously through the intercept, not through the lags -- so the
+    K-vector of filtered regime probabilities is a sufficient statistic and the
+    sum over all ``K**T`` regime paths is carried out implicitly. Nothing here
+    is approximated. That is a property of the intercept-switching form
+    specifically: under Hamilton's original *mean*-switching parameterization
+    the density at ``t`` depends on ``(S_t, ..., S_{t-p})``, and exact filtering
+    then needs an augmented chain of ``K**(p+1)`` states.
+
+    Holding this as an object rather than as a pair of loose recursions is what
+    lets a fitted model be re-applied: the same instance that produced an
+    estimate can filter a *different* series, which the free functions in
+    :mod:`cultivars.state_space.regime_switching` cannot do because they never
+    see the data. They take a density matrix; this class owns the map that
+    produces one.
+
+    Args:
+        transition: Row-stochastic ``(K, K)`` matrix,
+            ``transition[i, j] = Pr(S_t = j | S_{t-1} = i)``.
+        intercepts: Per-regime intercepts, shape ``(K,)``.
+        ar_params: Per-regime autoregressive coefficients, shape ``(K, p)``.
+            A width of zero is a switching-mean model with no dynamics.
+        variances: Per-regime innovation variances, shape ``(K,)``, all strictly
+            positive.
+        initial_prob: Distribution of ``S_1``, length ``K``. Defaults to the
+            ergodic distribution of ``transition``.
+
+    Raises:
+        DimensionError: If the blocks do not agree on ``K``, or a block has the
+            wrong rank.
+        SpecificationError: If ``transition`` is not row-stochastic, a variance
+            is not strictly positive, or ``initial_prob`` is not a distribution.
+        NumericalError: If any block contains non-finite values.
+    """
+
+    __slots__ = ("_ar", "_c", "_k", "_p", "_pi0", "_sigma2", "_transition")
+
+    def __init__(
+        self,
+        transition: npt.ArrayLike,
+        intercepts: npt.ArrayLike,
+        ar_params: npt.ArrayLike,
+        variances: npt.ArrayLike,
+        *,
+        initial_prob: npt.ArrayLike | None = None,
+    ) -> None:
+        """Validate the switching system."""
+        c = np.asarray(intercepts, dtype=np.float64)
+        if c.ndim != 1:
+            raise DimensionError(f"intercepts must be 1-D (K,); got shape {c.shape}.")
+        k = int(c.shape[0])
+        self._transition = validate_transition(transition, k)
+        ar = np.asarray(ar_params, dtype=np.float64)
+        if ar.ndim != 2 or ar.shape[0] != k:
+            raise DimensionError(f"ar_params must be ({k}, p); got shape {ar.shape}.")
+        sigma2 = np.asarray(variances, dtype=np.float64)
+        if sigma2.shape != (k,):
+            raise DimensionError(f"variances must have shape ({k},); got {sigma2.shape}.")
+        for name, block in (("intercepts", c), ("ar_params", ar), ("variances", sigma2)):
+            if not np.all(np.isfinite(block)):
+                raise NumericalError(f"{name} contains non-finite values.")
+        if np.any(sigma2 <= 0.0):
+            raise SpecificationError(f"variances must be strictly positive; got {sigma2}.")
+
+        if initial_prob is None:
+            pi0 = ergodic_distribution(self._transition)
+        else:
+            pi0 = np.asarray(initial_prob, dtype=np.float64)
+            if pi0.shape != (k,):
+                raise DimensionError(f"initial_prob must have shape ({k},); got {pi0.shape}.")
+            if np.any(pi0 < 0.0) or not np.isclose(pi0.sum(), 1.0, atol=_ROW_SUM_ATOL):
+                raise SpecificationError("initial_prob must be a probability vector.")
+
+        self._c = c
+        self._ar = ar
+        self._sigma2 = sigma2
+        self._pi0 = pi0
+        self._k = k
+        self._p = int(ar.shape[1])
+
+    @property
+    def k_endog(self) -> int:
+        """Observed dimension; one, since the chain drives a scalar series."""
+        return 1
+
+    @property
+    def k_states(self) -> int:
+        """Size of the state space: the number of regimes."""
+        return self._k
+
+    @property
+    def n_regimes(self) -> int:
+        """The number of regimes, named as the chain rather than as a dimension."""
+        return self._k
+
+    @property
+    def order(self) -> int:
+        """Autoregressive order of the per-regime observation equation."""
+        return self._p
+
+    @property
+    def transition(self) -> npt.NDArray[np.float64]:
+        """The row-stochastic regime transition matrix."""
+        return self._transition
+
+    @property
+    def intercepts(self) -> npt.NDArray[np.float64]:
+        """Per-regime intercepts."""
+        return self._c
+
+    @property
+    def ar_params(self) -> npt.NDArray[np.float64]:
+        """Per-regime autoregressive coefficients, shape ``(K, p)``."""
+        return self._ar
+
+    @property
+    def variances(self) -> npt.NDArray[np.float64]:
+        """Per-regime innovation variances."""
+        return self._sigma2
+
+    @property
+    def initial_prob(self) -> npt.NDArray[np.float64]:
+        """Distribution of the regime at the first modelled observation."""
+        return self._pi0
+
+    def effective_sample(
+        self, y: npt.ArrayLike
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Split a series into the modelled target and its lag block.
+
+        Args:
+            y: The untrimmed series.
+
+        Returns:
+            A tuple ``(target, lags)``; ``target`` drops the first ``order``
+            observations and ``lags`` is the ``(T_eff, p)`` matrix the
+            conditional means are built from.
+
+        Raises:
+            DimensionError: If the series is not 1-D or is shorter than the
+                autoregressive order.
+        """
+        series = np.asarray(y, dtype=np.float64)
+        if series.ndim != 1:
+            raise DimensionError(f"y must be one-dimensional; got shape {series.shape}.")
+        if series.shape[0] <= self._p:
+            raise DimensionError(
+                f"a series of length {series.shape[0]} leaves no observations after "
+                f"trimming {self._p} lags."
+            )
+        return series[self._p :], lag_matrix(series, self._p)
+
+    def conditional_means(self, lags: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Per-regime conditional means ``E[y_t | S_t = j, lags]``.
+
+        Args:
+            lags: The ``(T_eff, p)`` lag block.
+
+        Returns:
+            An array of shape ``(T_eff, K)``, one column per regime.
+        """
+        if self._p == 0:
+            return np.broadcast_to(self._c, (lags.shape[0], self._k)).copy()
+        return self._c[None, :] + lags @ self._ar.T
+
+    def log_densities(
+        self, target: npt.NDArray[np.float64], means: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
+        """Gaussian log conditional densities, one column per regime.
+
+        Args:
+            target: The modelled observations, length ``T_eff``.
+            means: Per-regime conditional means, shape ``(T_eff, K)``.
+
+        Returns:
+            An array of shape ``(T_eff, K)``. Logarithms rather than levels, so
+            a regime that assigns a tiny density to an outlier underflows to a
+            large negative number instead of to zero.
+        """
+        resid = target[:, None] - means
+        return -0.5 * (_LOG_2PI + np.log(self._sigma2)[None, :] + resid**2 / self._sigma2[None, :])
+
+    def density_matrix(
+        self, target: npt.NDArray[np.float64], lags: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
+        """The ``(T_eff, K)`` log-density matrix the recursions consume.
+
+        Exposed alongside :meth:`filter` so a caller that already holds the
+        trimmed target and lag block -- an EM loop, which rebuilds them once and
+        reuses them across every iteration -- can skip re-deriving them from the
+        raw series on each pass.
+        """
+        return self.log_densities(target, self.conditional_means(lags))
+
+    def filter_densities(self, log_density: npt.NDArray[np.float64]) -> _HamiltonFilterResult:
+        """Run the Hamilton filter over an already-built density matrix."""
+        return hamilton_filter(log_density, self._transition, initial_prob=self._pi0)
+
+    def smooth_densities(self, filtered: _HamiltonFilterResult) -> _KimSmootherResult:
+        """Run the Kim smoother over a completed forward pass."""
+        return kim_smoother(filtered, self._transition)
+
+    def filter(self, y: npt.ArrayLike) -> _HamiltonFilterResult:
+        """Filter a series, returning regime probabilities and the likelihood.
+
+        Args:
+            y: The untrimmed series; the first ``order`` observations are
+                conditioned on rather than modelled.
+
+        Returns:
+            A :class:`_HamiltonFilterResult` whose probability arrays have
+            ``len(y) - order`` rows.
+        """
+        target, lags = self.effective_sample(y)
+        return self.filter_densities(self.density_matrix(target, lags))
+
+    def smooth(self, y: npt.ArrayLike) -> _KimSmootherResult:
+        """Filter, then smooth, returning full-sample regime probabilities."""
+        return self.smooth_densities(self.filter(y))
+
+    def loglikelihood(self, y: npt.ArrayLike) -> float:
+        """The exact log-likelihood of a series under this system."""
+        return self.filter(y).loglikelihood
+
+
 class _MarkovSwitchingModel[R](_UnivariateModel[R]):
     """Specification surface for Markov-switching autoregressions.
 
@@ -1630,27 +1873,6 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
     def n_regimes(self) -> int:
         """The number of regimes."""
         return self._k
-
-    @staticmethod
-    def regime_means(
-        intercepts: npt.NDArray[np.float64],
-        ar_params: npt.NDArray[np.float64],
-        lags: npt.NDArray[np.float64],
-    ) -> npt.NDArray[np.float64]:
-        """Per-regime conditional means of shape ``(T_eff, K)``."""
-        if lags.shape[1] == 0:
-            return np.broadcast_to(intercepts, (lags.shape[0], intercepts.shape[0])).copy()
-        return intercepts[None, :] + lags @ ar_params.T
-
-    @staticmethod
-    def log_densities(
-        target: npt.NDArray[np.float64],
-        means: npt.NDArray[np.float64],
-        sigma2: npt.NDArray[np.float64],
-    ) -> npt.NDArray[np.float64]:
-        """Gaussian log conditional densities of shape ``(T_eff, K)``."""
-        resid = target[:, None] - means
-        return -0.5 * (_LOG_2PI + np.log(sigma2)[None, :] + resid**2 / sigma2[None, :])
 
     @staticmethod
     def update_transition(
@@ -1813,10 +2035,20 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
     ) -> _ExpectationMaximizationState:
         """Run EM to convergence or ``max_iter`` from one set of starting values.
 
-        The E-step is a Hamilton filter followed by a Kim smoother; the M-step
-        updates the transition matrix, the coefficients, and the variances in
-        that order, and the conditional means are recomputed between the
-        coefficient and variance updates so the variance sees the new means.
+        The E-step assembles the current draw into a
+        :class:`_MarkovSwitchingStateSpace` and asks it to filter and smooth;
+        the M-step updates the transition matrix, the coefficients, and the
+        variances in that order, and the conditional means are recomputed
+        between the coefficient and variance updates so the variance sees the
+        new means.
+
+        The state space is rebuilt each iteration rather than mutated, because
+        it is frozen and validating -- so the E-step can only ever run on a
+        system whose transition matrix is row-stochastic and whose variances
+        are positive, which is exactly the invariant an EM loop can lose. It is
+        handed the precomputed target and lag block through
+        :meth:`_MarkovSwitchingStateSpace.density_matrix` rather than the raw
+        series, so the trim is paid once for the whole run.
 
         Args:
             transition0: Starting transition matrix.
@@ -1846,10 +2078,9 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         converged = False
 
         for n_iter in range(1, max_iter + 1):
-            means = self.regime_means(intercepts, ar_params, lags)
-            logd = self.log_densities(target, means, sigma2)
-            filt = hamilton_filter(logd, transition, initial_prob=ergodic_distribution(transition))
-            smooth = kim_smoother(filt, transition)
+            space = _MarkovSwitchingStateSpaceModel(transition, intercepts, ar_params, sigma2)
+            filt = space.filter_densities(space.density_matrix(target, lags))
+            smooth = space.smooth_densities(filt)
             filtered = filt.filtered_prob
             predicted = filt.predicted_prob
             smoothed = smooth.smoothed_prob
@@ -1863,7 +2094,9 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
             prev_llf = llf
             transition = self.update_transition(smoothed, smooth.smoothed_joint_prob, prob_floor)
             intercepts, ar_params = self.update_coefficients(target, lags, smoothed, sigma2, layout)
-            means = self.regime_means(intercepts, ar_params, lags)
+            means = _MarkovSwitchingStateSpaceModel(
+                transition, intercepts, ar_params, sigma2
+            ).conditional_means(lags)
             sigma2 = self.update_variance(target, means, smoothed, self._sw_var, var_floor)
 
         return _ExpectationMaximizationState(
@@ -1979,8 +2212,8 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         ar_params = fit.ar_params[perm]
         variances = fit.sigma2[perm]
         smoothed = fit.smoothed_prob[:, perm]
-        means = self.regime_means(intercepts, ar_params, lags)
-        fitted = (smoothed * means).sum(axis=1)
+        space = _MarkovSwitchingStateSpaceModel(transition, intercepts, ar_params, variances)
+        fitted = (smoothed * space.conditional_means(lags)).sum(axis=1)
         return _MarkovSwitchingFit(
             transition=transition,
             intercepts=intercepts,

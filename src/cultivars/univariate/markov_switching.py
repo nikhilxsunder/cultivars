@@ -93,6 +93,7 @@ from .._internals import (
     _ComparisonMixin,
     _MarkovSwitchingFit,
     _MarkovSwitchingModel,
+    _MarkovSwitchingStateSpaceModel,
     _SeriesMixin,
     _StabilityResult,
     _SummaryMixin,
@@ -526,6 +527,18 @@ class MSARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             f"the boundary, so the statistic has no chi-squared limit. Use the "
             f"Hansen (1992) bound or a parametric bootstrap instead. Tests that "
             f"hold the number of regimes fixed are still available."
+        )
+
+    @property
+    def state_space(self) -> _MarkovSwitchingStateSpaceModel:
+        """The fitted system, re-applicable to data it was not estimated on.
+
+        Filtering a new series through this reports what the estimated regimes
+        say about observations the fit never saw -- the natural out-of-sample
+        check for a regime model, and one the fitted arrays alone cannot give.
+        """
+        return _MarkovSwitchingStateSpaceModel(
+            self.transition, self.intercepts, self.ar_params, self.variances
         )
 
 

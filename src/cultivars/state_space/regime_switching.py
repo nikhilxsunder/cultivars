@@ -60,3 +60,15 @@ References:
 """
 
 from __future__ import annotations
+
+from .._internals import (
+    _HamiltonFilterResult as HamiltonFilterResult,
+)
+from .._internals import (
+    _KimSmootherResult as KimSmootherResult,
+)
+from .._internals import (
+    _MarkovSwitchingStateSpaceModel as MarkovSwitchingStateSpaceModel,
+)
+
+__all__ = ["HamiltonFilterResult", "KimSmootherResult", "MarkovSwitchingStateSpaceModel"]
