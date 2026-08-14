@@ -32,6 +32,8 @@ import numpy.typing as npt
 from .._core import (
     _D_MAX,
     _PENALTY,
+    OptimizerMethod,
+    OptimizerOptions,
     _arch_infinity_variance,
     _arch_infinity_weights,
     _gaussian_negloglik,
@@ -45,8 +47,6 @@ from .._core import (
     sigmoid,
     softplus,
     unpack_stationary,
-    OptimizerMethod,
-    OptimizerOptions,
 )
 from ..exceptions import NumericalError
 from ._models import _LinearGaussianStateSpaceModel

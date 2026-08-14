@@ -294,3 +294,37 @@ class _DurbinKoopmanSmootherResult(_SmootherResult):
 
     smoothed_state: npt.NDArray[np.float64]
     smoothed_state_cov: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True)
+class _HamiltonFilterResult(_FilterResult):
+    """Output of the Hamilton forward filter.
+
+    Attributes:
+        filtered_prob: Contemporaneous regime probabilities
+            ``Pr(S_t = j | y_{1..t})``, shape ``(T, K)``.
+        predicted_prob: One-step-ahead regime probabilities
+            ``Pr(S_t = j | y_{1..t-1})``, shape ``(T, K)``.
+        loglikelihood: Total log-likelihood ``sum_t log Pr(y_t | y_{1..t-1})``.
+        loglikelihood_contributions: Per-period contributions, shape ``(T,)``.
+    """
+
+    filtered_prob: npt.NDArray[np.float64]
+    predicted_prob: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True)
+class _KimSmootherResult(_SmootherResult):
+    """Output of the Kim backward smoother.
+
+    Attributes:
+        smoothed_prob: Full-sample regime probabilities
+            ``Pr(S_t = j | y_{1..T})``, shape ``(T, K)``.
+        smoothed_joint_prob: Consecutive-pair probabilities
+            ``Pr(S_t = i, S_{t+1} = j | y_{1..T})``, shape ``(T - 1, K, K)``;
+            entry ``[t]`` links period ``t`` to ``t + 1``. Empty when ``T == 1``.
+            These are the expected-transition weights of the EM M-step.
+    """
+
+    smoothed_prob: npt.NDArray[np.float64]
+    smoothed_joint_prob: npt.NDArray[np.float64]

@@ -122,7 +122,7 @@ from ._results import (
     _SmootherResult,
     _StabilityResult,
 )
-from ._solvers import _maximize_likelihood, _solve
+from ._solvers import _maximize_likelihood, _solve, hamilton_filter, kim_smoother
 from ._states import _ExpectationMaximizationState
 
 
@@ -1727,6 +1727,112 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         p = p * rng.uniform(0.9, 1.1, size=(k, k))
         return p / p.sum(axis=1, keepdims=True)
 
+    def _effective_sample(
+        self,
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """The target and lag block the EM recursions run on.
+
+        Returns:
+            A tuple ``(target, lags)``, where ``target`` drops the first
+            ``order`` observations and ``lags`` is the aligned lag matrix.
+        """
+        return self.endog[self._order :], lag_matrix(self.endog, self._order)
+
+    def _parameter_layout(self) -> _ParameterLayout:
+        """Column bookkeeping for the stacked coefficient system."""
+        return _ParameterLayout(self._k, self._order, self._sw_mean, self._sw_ar)
+
+    def _numerical_floors(self) -> tuple[float, float]:
+        """Lower bounds on the variance and on any transition probability.
+
+        The variance floor is scaled by the sample variance so that it means the
+        same thing regardless of the units the series is measured in; the
+        probability floor keeps a momentarily unvisited regime re-enterable
+        instead of absorbing.
+
+        Returns:
+            A tuple ``(var_floor, prob_floor)``.
+        """
+        return 1e-8 * float(np.var(self.endog)) + 1e-12, 1e-8
+
+    def _run_em(
+        self,
+        transition0: npt.NDArray[np.float64],
+        intercepts0: npt.NDArray[np.float64],
+        ar0: npt.NDArray[np.float64],
+        sigma20: npt.NDArray[np.float64],
+        *,
+        max_iter: int,
+        tol: float,
+    ) -> _ExpectationMaximizationState:
+        """Run EM to convergence or ``max_iter`` from one set of starting values.
+
+        The E-step is a Hamilton filter followed by a Kim smoother; the M-step
+        updates the transition matrix, the coefficients, and the variances in
+        that order, and the conditional means are recomputed between the
+        coefficient and variance updates so the variance sees the new means.
+
+        Args:
+            transition0: Starting transition matrix.
+            intercepts0: Starting per-regime intercepts.
+            ar0: Starting per-regime AR coefficients.
+            sigma20: Starting per-regime variances.
+            max_iter: Iteration cap.
+            tol: Convergence tolerance on the log-likelihood increment.
+
+        Returns:
+            The :class:`_ExpectationMaximizationState` reached.
+
+        Raises:
+            NumericalError: If the log-likelihood becomes non-finite.
+        """
+        target, lags = self._effective_sample()
+        layout = self._parameter_layout()
+        var_floor, prob_floor = self._numerical_floors()
+
+        transition = transition0.copy()
+        intercepts = intercepts0.copy()
+        ar_params = ar0.copy()
+        sigma2 = sigma20.copy()
+        prev_llf = -np.inf
+        filtered = predicted = smoothed = np.empty((0, layout.n_regimes))
+        n_iter = 0
+        converged = False
+
+        for n_iter in range(1, max_iter + 1):
+            means = self.regime_means(intercepts, ar_params, lags)
+            logd = self.log_densities(target, means, sigma2)
+            filt = hamilton_filter(logd, transition, initial_prob=ergodic_distribution(transition))
+            smooth = kim_smoother(filt, transition)
+            filtered = filt.filtered_prob
+            predicted = filt.predicted_prob
+            smoothed = smooth.smoothed_prob
+            llf = filt.loglikelihood
+            if not np.isfinite(llf):
+                raise NumericalError("MS-AR log-likelihood became non-finite during EM.")
+            if llf - prev_llf < tol and n_iter > 1:
+                converged = True
+                prev_llf = llf
+                break
+            prev_llf = llf
+            transition = self.update_transition(smoothed, smooth.smoothed_joint_prob, prob_floor)
+            intercepts, ar_params = self.update_coefficients(target, lags, smoothed, sigma2, layout)
+            means = self.regime_means(intercepts, ar_params, lags)
+            sigma2 = self.update_variance(target, means, smoothed, self._sw_var, var_floor)
+
+        return _ExpectationMaximizationState(
+            transition=transition,
+            intercepts=intercepts,
+            ar_params=ar_params,
+            sigma2=sigma2,
+            filtered_prob=filtered,
+            predicted_prob=predicted,
+            smoothed_prob=smoothed,
+            llf=float(prev_llf),
+            n_iter=n_iter,
+            converged=converged,
+        )
+
     def _fit_family(
         self,
         *,
@@ -1754,12 +1860,10 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         y = self.endog
         order, k = self._order, self._k
-        layout = _ParameterLayout(k, order, self._sw_mean, self._sw_ar)
-        target = y[order:]
-        lags = lag_matrix(y, order)
+        layout = self._parameter_layout()
+        target, lags = self._effective_sample()
+        var_floor, _prob_floor = self._numerical_floors()
         total_var = float(np.var(y))
-        var_floor = 1e-8 * total_var + 1e-12
-        prob_floor = 1e-8
 
         def cluster_sigma2(
             intercepts: npt.NDArray[np.float64],
@@ -1798,19 +1902,13 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         for index in range(max(n_init, 1)):
             transition0, intercepts0, ar_start, sigma20 = make_start(index)
             try:
-                fit = _ExpectationMaximizationState._run_em(
-                    target,
-                    lags,
-                    layout,
+                fit = self._run_em(
                     transition0,
                     intercepts0,
                     ar_start,
                     sigma20,
-                    var_floor,
-                    prob_floor,
-                    screen_iter,
-                    tol,
-                    self._sw_var,
+                    max_iter=screen_iter,
+                    tol=tol,
                 )
             except NumericalError:
                 continue
@@ -1819,19 +1917,13 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         if best is None:
             raise NumericalError("MS-AR estimation failed for every start.")
 
-        refined = _ExpectationMaximizationState._run_em(
-            target,
-            lags,
-            layout,
+        refined = self._run_em(
             best.transition,
             best.intercepts,
             best.ar_params,
             best.sigma2,
-            var_floor,
-            prob_floor,
-            max_iter,
-            tol,
-            self._sw_var,
+            max_iter=max_iter,
+            tol=tol,
         )
         fit = refined if refined.llf >= best.llf else best
 

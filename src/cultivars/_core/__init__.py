@@ -40,8 +40,10 @@ from ._defaults import (
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
     _PENALTY,
+    _ROW_SUM_ATOL,
     _SCHEMA_VERSION,
     _SQRT_2_OVER_PI,
+    _TINY,
 )
 from ._estimators import (
     concentrated_gaussian,
@@ -78,6 +80,7 @@ from ._validators import (
     validate_open_interval,
     validate_order,
     validate_order_tuple,
+    validate_transition,
 )
 from .unsorted import (
     _arch_infinity_variance,
@@ -97,8 +100,10 @@ __all__ = [
     "_D_MAX",
     "_LOG_2PI",
     "_PENALTY",
+    "_ROW_SUM_ATOL",
     "_SCHEMA_VERSION",
     "_SQRT_2_OVER_PI",
+    "_TINY",
     "InformationCriteria",
     "Mean",
     "Method",
@@ -141,4 +146,5 @@ __all__ = [
     "validate_open_interval",
     "validate_order",
     "validate_order_tuple",
+    "validate_transition",
 ]
