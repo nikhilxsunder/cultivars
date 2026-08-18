@@ -20,9 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# filepath: /src/cultivars/_core/_validators.py
-# ... MIT header ...
-
 """Input validation primitives.
 
 Every public constructor routes its argument checking through this module,
@@ -257,3 +254,49 @@ def validate_transition(transition: npt.ArrayLike, n_regimes: int) -> npt.NDArra
     if not np.allclose(mat.sum(axis=1), 1.0, atol=_ROW_SUM_ATOL):
         raise SpecificationError("transition rows must each sum to 1.")
     return mat
+
+
+def validate_endog_matrix(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
+    """Coerce and check an endogenous panel for a vector model.
+
+    The counterpart to :func:`validate_endog` for models whose observation is a
+    vector rather than a scalar. A one-dimensional input is promoted to a
+    single column rather than rejected, so a one-variable VAR is reachable
+    without a reshape and behaves like the autoregression it is.
+
+    Args:
+        endog: The observed panel, shape ``(nobs, k)``, or a 1-D series.
+
+    Returns:
+        A 2-D float array with time down the rows.
+
+    Raises:
+        DimensionError: If the input is not two-dimensional after promotion,
+            has no columns, or has no more rows than columns.
+        NumericalError: If the panel contains non-finite values.
+
+    Example:
+        >>> validate_endog_matrix(np.arange(6.0)).shape
+        (6, 1)
+        >>> validate_endog_matrix([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]).shape
+        (3, 2)
+    """
+    arr = np.asarray(endog, dtype=np.float64)
+    if arr.ndim == 1:
+        arr = arr[:, None]
+    if arr.ndim != 2:
+        raise DimensionError(
+            f"endog must be two-dimensional (nobs, k); got a {arr.ndim}-dimensional "
+            f"array of shape {arr.shape}."
+        )
+    nobs, k = arr.shape
+    if k < 1:
+        raise DimensionError("endog must have at least one column.")
+    if nobs <= k:
+        raise DimensionError(
+            f"endog has {nobs} observations for {k} variables; a vector model reads "
+            f"time down the rows, so this is almost certainly transposed."
+        )
+    if not np.all(np.isfinite(arr)):
+        raise NumericalError("endog contains non-finite values.")
+    return arr

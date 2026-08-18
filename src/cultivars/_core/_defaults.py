@@ -99,3 +99,6 @@ _EXTRA: dict[str, str] = {"pandas": "pandas", "polars": "polars"}
 
 _CAPACITY_WARNING: float = 0.1
 """Learner parameters per observation above which the summary flags capacity."""
+
+_DEFAULT_ALPHA: Final[float] = 0.05
+"""Significance level assumed by a bare ``reject()`` call and by the repr."""

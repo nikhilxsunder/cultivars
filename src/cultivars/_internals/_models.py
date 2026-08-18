@@ -50,6 +50,7 @@ duck-typed, so the relationship is checked by ``isinstance`` at runtime and by
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 
 import numpy as np
 import numpy.typing as npt
@@ -88,6 +89,7 @@ from .._core import (
     validate_aligned,
     validate_choice,
     validate_endog,
+    validate_endog_matrix,
     validate_exog,
     validate_open_interval,
     validate_order,
@@ -108,6 +110,7 @@ from ._fits import (
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
     _ThresholdFit,
+    _VectorAutoregressionFit,
 )
 from ._layouts import _ParameterLayout
 from ._means import _ARMAMean, _LinearMean, _MeanLayer
@@ -128,6 +131,7 @@ from ._results import (
     _SmootherResult,
     _StabilityResult,
 )
+from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
 from ._solvers import _maximize_likelihood, _solve
 from ._states import _ExpectationMaximizationState
@@ -2484,4 +2488,296 @@ class _SmoothTransitionModel[R](_UnivariateModel[R]):
             llf=float(-0.5 * n_eff * (_LOG_2PI + np.log(sigma2) + 1.0)),
             nobs=n_eff,
             n_params=2 * (order + 1) + 2,
+        )
+
+
+class _MultivariateModel[R](_BaseModel[R]):
+    """Base for models over a panel of series observed on a common index.
+
+    Differs from :class:`_UnivariateModel` only in what ``endog`` is allowed to
+    be, which is enough to need its own root: :meth:`_BaseModel.__init__`
+    validates a one-dimensional series, and every vector model needs a
+    ``(nobs, k)`` matrix instead. Everything else the base offers -- the stored
+    series, the length guard, the abstract ``fit`` -- carries over untouched,
+    because the time axis is axis zero in both cases.
+
+    Args:
+        endog: The observed panel, shape ``(nobs, k)``. A 1-D input is promoted
+            to a single column, so a one-variable VAR is reachable without a
+            reshape.
+
+    Raises:
+        DimensionError: If ``endog`` is not two-dimensional after promotion, or
+            has no more observations than variables.
+        NumericalError: If ``endog`` contains non-finite values.
+    """
+
+    __slots__ = ()
+
+    def __init__(self, endog: npt.ArrayLike) -> None:
+        """Validate and store the endogenous panel."""
+        self._endog = validate_endog_matrix(endog)
+
+    @property
+    def k_endog(self) -> int:
+        """Number of endogenous variables."""
+        return int(self._endog.shape[1])
+
+
+class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
+    """Specification surface for the reduced-form vector autoregression.
+
+    Estimates ``y_t = D d_t + A_1 y_{t-1} + ... + A_p y_{t-p} + u_t`` by least
+    squares. Every equation shares the same regressors, so the seemingly
+    unrelated regressions estimator collapses to equation-by-equation OLS and
+    the whole system solves in one ``lstsq`` -- which is why this model has no
+    objective, no optimizer, and no starting values, unlike everything in
+    :mod:`cultivars.univariate` that needs them.
+
+    The root of the reduced-form family rather than a leaf. :meth:`_design` is
+    the seam the rest of tier one turns on: a VARX widens the regressor block
+    with exogenous columns, a panel VAR stacks units and adds fixed effects,
+    and neither touches the estimator, the likelihood, or the coefficient
+    unpacking below. Restricted members -- VECM and its exogenous variant --
+    replace the solve rather than the design, but still land on the same fit
+    record, so they inherit the whole inference surface too.
+
+    Args:
+        endog: The observed panel, shape ``(nobs, k)``.
+        order: Autoregressive order ``p``. Zero is admissible and describes
+            deterministic terms plus white noise; it exists so the value chosen
+            by :meth:`lag_order_selection` can always be constructed.
+        trend: Deterministic specification, ``"n"``, ``"c"`` or ``"ct"``.
+        names: Variable names in column order. Every reported quantity is
+            keyed by these rather than by integer position, because a
+            three-index impulse-response tensor is unreadable otherwise.
+            Defaults to ``("y1", ..., "yk")``.
+
+    Raises:
+        SpecificationError: If the order is negative, the trend is
+            unrecognized, or ``names`` has the wrong length or a duplicate.
+        DimensionError: If the panel is malformed or too short to identify the
+            specification.
+        NumericalError: If the panel contains non-finite values.
+    """
+
+    __slots__ = ("_names", "_order", "_trend")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        trend: str = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog)
+        k = self.k_endog
+        self._order = validate_order(order, "order", minimum=0)
+        self._trend = validate_choice(trend, Trend, "trend")
+        if names is None:
+            self._names = tuple(f"y{i + 1}" for i in range(k))
+        else:
+            supplied = tuple(str(name) for name in names)
+            if len(supplied) != k:
+                raise SpecificationError(
+                    f"names must have one entry per variable ({k}); got {len(supplied)}."
+                )
+            if len(set(supplied)) != k:
+                raise SpecificationError(f"names must be unique; got {supplied}.")
+            self._names = supplied
+        self._ensure_length(
+            self._order + self.n_regressors + 1,
+            f"VAR({self._order}) on {k} variables with trend {self._trend!r}",
+        )
+
+    @property
+    def order(self) -> int:
+        """The autoregressive order."""
+        return self._order
+
+    @property
+    def trend(self) -> str:
+        """The deterministic specification."""
+        return self._trend
+
+    @property
+    def names(self) -> tuple[str, ...]:
+        """Variable names in column order."""
+        return self._names
+
+    @property
+    def n_regressors(self) -> int:
+        """Regressors per equation: the deterministic block plus every lag."""
+        return n_deterministic(self._trend) + self.k_endog * self._order
+
+    def _design(
+        self, order: int | None = None, *, endog: npt.NDArray[np.float64] | None = None
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
+        """Assemble the target and the regressor block.
+
+        The extension point for the rest of tier one. Both arguments exist for
+        :meth:`lag_order_selection`, which must build designs at orders other
+        than the constructed one and over a trimmed panel; ordinary fitting
+        passes neither.
+
+        Args:
+            order: Autoregressive order to build for; defaults to the
+                constructed order.
+            endog: Panel to build from; defaults to the stored one.
+
+        Returns:
+            A tuple ``(target, design, nobs)``. ``design`` places the
+            deterministic columns ahead of the lag block, which fixes the
+            coefficient layout every consumer below depends on.
+
+        Raises:
+            DimensionError: If the panel is not longer than the order.
+        """
+        panel = self._endog if endog is None else endog
+        lags = self._order if order is None else order
+        n = panel.shape[0]
+        if n <= lags:
+            raise DimensionError(f"{n} observations is too few for a design of order {lags}.")
+        effective = n - lags
+        deterministic = deterministic_columns(self._trend, effective, start=lags + 1)
+        return panel[lags:], np.column_stack([deterministic, lag_matrix(panel, lags)]), effective
+
+    @staticmethod
+    def _least_squares(
+        target: npt.NDArray[np.float64], design: npt.NDArray[np.float64]
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Solve the multivariate regression, returning coefficients and residuals.
+
+        Not :func:`~cultivars._core.ols`, which reduces its residuals to a
+        scalar sum of squares and so is univariate by construction. Here the
+        residual is a ``(nobs, k)`` matrix whose cross-product is the
+        innovation covariance, and collapsing it would throw away the object
+        the whole model is about.
+        """
+        coefficients = np.linalg.lstsq(design, target, rcond=None)[0]
+        return coefficients, target - design @ coefficients
+
+    def _fit_family(self) -> _VectorAutoregressionFit:
+        """Estimate the system by least squares.
+
+        Returns:
+            The packed :class:`_VectorAutoregressionFit`. Both covariance
+            estimators are stored: the maximum-likelihood one drives the
+            likelihood and the information criteria, the degrees-of-freedom
+            adjusted one drives Wald tests and the impact matrix.
+
+        Raises:
+            DimensionError: If the effective sample cannot identify the
+                coefficients.
+            NumericalError: If the residual covariance is singular, which means
+                one variable is an exact linear combination of the others.
+        """
+        k, p = self.k_endog, self._order
+        d = n_deterministic(self._trend)
+        target, design, nobs = self._design()
+        width = design.shape[1]
+        if nobs <= width:
+            raise DimensionError(
+                f"{nobs} observations cannot identify {width} coefficients per equation; "
+                f"shorten the order or the deterministic block."
+            )
+        coefficients, resid = self._least_squares(target, design)
+        cross = resid.T @ resid
+        sigma_ml = cross / nobs
+        sign, logdet = np.linalg.slogdet(sigma_ml)
+        if sign <= 0:
+            raise NumericalError(
+                "the residual covariance is singular, so the system has no likelihood; "
+                "one endogenous variable is an exact linear combination of the others."
+            )
+        llf = -0.5 * nobs * k * _LOG_2PI - 0.5 * nobs * logdet - 0.5 * nobs * k
+        blocks = (
+            np.stack([coefficients[d + i * k : d + (i + 1) * k, :].T for i in range(p)])
+            if p
+            else np.zeros((0, k, k), dtype=np.float64)
+        )
+        return _VectorAutoregressionFit(
+            coefficients=blocks,
+            deterministic=coefficients[:d],
+            sigma_u=cross / (nobs - width),
+            sigma_ml=sigma_ml,
+            design=design,
+            resid=resid,
+            fittedvalues=design @ coefficients,
+            llf=float(llf),
+            nobs=nobs,
+            n_params=k * width + k * (k + 1) // 2,
+        )
+
+    def lag_order_selection(self, max_lags: int | None = None) -> _LagOrderSelection:
+        """Score every order from zero to ``max_lags`` by four criteria.
+
+        Ignores the constructed order deliberately: this answers "what order
+        should this panel have", which is a question about the data, and
+        forcing a caller to build a model at the order they are trying to
+        choose would be circular.
+
+        Every candidate is scored on the **same** effective sample, trimmed at
+        ``max_lags`` rather than at each candidate's own order. Selecting on
+        each order's natural sample is the standard way to get this wrong: a
+        VAR(1) fitted to one more observation than a VAR(2) produces criteria
+        that are not comparable, and the bias runs toward short lags because a
+        larger sample lowers the log-determinant. It is the same defect
+        :meth:`_ComparisonMixin.compare` refuses across estimators, arriving
+        here through the back door.
+
+        Args:
+            max_lags: Longest order to consider. Defaults to the largest order
+                the sample can support with at least one degree of freedom.
+
+        Returns:
+            The :class:`_LagOrderSelection`, carrying the full criterion curves
+            alongside the four selected orders. The curves matter: the criteria
+            routinely disagree -- Bayesian and Hannan-Quinn penalize harder
+            than Akaike and pick shorter -- and a caller shown only the winners
+            cannot see whether the choice was close.
+
+        Raises:
+            SpecificationError: If ``max_lags`` is negative or exceeds what the
+                sample supports.
+            NumericalError: If the common-sample construction fails, which
+                would silently invalidate every comparison.
+        """
+        k, n = self.k_endog, self._endog.shape[0]
+        d = n_deterministic(self._trend)
+        supported = (n - d - 1) // (k + 1)
+        top = supported if max_lags is None else validate_order(max_lags, "max_lags", minimum=0)
+        if top > supported:
+            raise SpecificationError(
+                f"max_lags {top} exceeds what {n} observations support for {k} "
+                f"variables (maximum {supported})."
+            )
+        effective = n - top
+        curves: dict[str, list[float]] = {name: [] for name in ("aic", "bic", "hqic", "fpe")}
+        for candidate in range(top + 1):
+            target, design, nobs = self._design(candidate, endog=self._endog[top - candidate :])
+            if nobs != effective:
+                raise NumericalError(
+                    f"order {candidate} produced {nobs} observations against a common "
+                    f"sample of {effective}; the criteria would not be comparable."
+                )
+            width = design.shape[1]
+            _, resid = self._least_squares(target, design)
+            sigma = resid.T @ resid / effective
+            logdet = float(np.linalg.slogdet(sigma)[1])
+            free = k * width
+            curves["aic"].append(logdet + 2.0 * free / effective)
+            curves["bic"].append(logdet + np.log(effective) * free / effective)
+            curves["hqic"].append(logdet + 2.0 * np.log(np.log(effective)) * free / effective)
+            curves["fpe"].append(
+                float(np.linalg.det(sigma) * ((effective + width) / (effective - width)) ** k)
+            )
+        criteria = {name: np.asarray(values, dtype=np.float64) for name, values in curves.items()}
+        return _LagOrderSelection(
+            max_lags=top,
+            nobs=effective,
+            criteria=criteria,
+            selected={name: int(np.argmin(values)) for name, values in criteria.items()},
         )

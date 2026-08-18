@@ -44,9 +44,16 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
-from .._core import InformationCriteria, SummaryTable, to_pandas_frame, to_polars_frame
-from ..exceptions import DimensionError, SpecificationError
-from ._results import _LikelihoodRatioResult, _StabilityResult
+from .._core import (
+    InformationCriteria,
+    SummaryTable,
+    companion_matrix,
+    deterministic_columns,
+    to_pandas_frame,
+    to_polars_frame,
+)
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._results import _LikelihoodRatioResult, _StabilityResult, _WaldTestResult
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -372,3 +379,479 @@ class _InvertibilityMixin:
     def is_invertible(self) -> bool:
         """Whether every companion eigenvalue of the MA block is inside the unit circle."""
         return self.invertibility.is_stable
+
+
+class _VectorInferenceMixin:
+    """Post-estimation inference shared by every reduced-form vector model.
+
+    Seven of the nine operations a usable VAR must expose -- forecasting,
+    impulse responses, forecast-error variance decomposition, historical
+    decomposition, Granger causality, stability, and residual diagnostics --
+    are functions of the fitted coefficient stack, the innovation covariance,
+    and the residuals. Not one of them asks how those were produced. A VARX
+    differs from a VAR only in its regressor block, a VECM only in how the
+    coefficients are restricted, a panel VAR only in how observations are
+    pooled; all three land on the same three arrays and want the same seven
+    answers. Writing them here once is what keeps the rest of the family from
+    being seven reimplementations of Lutkepohl chapter 2.
+
+    Concrete results declare the attributes below. ``deterministic`` and
+    ``design`` are needed because two of the seven -- forecasting and Granger
+    causality -- reach past the coefficient stack: a forecast must extrapolate
+    the deterministic terms, and a Wald test needs the regressor cross-product.
+
+    Attributes:
+        endog: The full observed panel, shape ``(n, k)``.
+        names: Variable names in column order; every method that reports per
+            variable takes and returns these rather than integer positions.
+        order: Autoregressive order ``p``.
+        trend: Deterministic specification, ``"n"``, ``"c"`` or ``"ct"``.
+        coefficients: Autoregressive matrices ``A_1, ..., A_p``, shape
+            ``(p, k, k)``.
+        deterministic: Coefficients on the deterministic block, shape
+            ``(d, k)``; zero rows when ``trend == "n"``.
+        sigma_u: Degrees-of-freedom-adjusted innovation covariance. Used for
+            every *inferential* quantity -- Wald tests, the impact matrix --
+            because the maximum-likelihood estimator is biased downward by the
+            estimated coefficients.
+        sigma_ml: The ``1/T`` estimator. Used for the likelihood and the
+            information criteria, where the adjustment does not belong.
+            Both are stored deliberately: substituting one for the other
+            biases either the criteria or the standard errors, and nothing
+            raises when it happens.
+        resid: Residuals over the effective sample, shape ``(nobs, k)``.
+        design: The regressor matrix the fit solved against, shape
+            ``(nobs, d + k * p)``.
+        nobs: Effective sample size.
+    """
+
+    __slots__ = ()
+
+    endog: npt.NDArray[np.float64]
+    names: tuple[str, ...]
+    order: int
+    trend: str
+    coefficients: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    sigma_ml: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    design: npt.NDArray[np.float64]
+    nobs: int
+
+    # -- structure ---------------------------------------------------------
+
+    @property
+    def k_endog(self) -> int:
+        """Number of endogenous variables."""
+        return len(self.names)
+
+    @property
+    def companion(self) -> npt.NDArray[np.float64]:
+        """The ``(kp, kp)`` companion matrix of the autoregressive block."""
+        return companion_matrix(self.coefficients)
+
+    def stability_check(self) -> _StabilityResult:
+        """Eigenvalue verdict for the companion matrix.
+
+        Returns:
+            The :class:`_StabilityResult`; the process is stable, and so has a
+            convergent moving-average representation, exactly when every
+            companion eigenvalue lies inside the unit circle. Every other
+            method here presumes that: an impulse response computed from an
+            explosive companion diverges rather than decays, and a forecast
+            from one is meaningless at any horizon.
+        """
+        return _StabilityResult.assess_stability(self.coefficients)
+
+    @property
+    def is_stable(self) -> bool:
+        """Whether every companion eigenvalue lies inside the unit circle."""
+        return self.stability_check().is_stable
+
+    def _impact(self) -> npt.NDArray[np.float64]:
+        """Lower-triangular Cholesky factor of the innovation covariance.
+
+        Returns:
+            The matrix ``P`` with ``P P' = sigma_u``, which is the *recursive*
+            structural impact matrix. Overridden by a structural result that
+            identifies the impact some other way.
+
+        Raises:
+            NumericalError: If the innovation covariance is not positive
+                definite, which happens when the system is singular -- a
+                variable that is an exact linear combination of the others.
+        """
+        try:
+            return np.linalg.cholesky(self.sigma_u)
+        except np.linalg.LinAlgError as exc:
+            raise NumericalError(
+                "the innovation covariance is not positive definite, so no impact "
+                "matrix exists; one endogenous variable is likely collinear with "
+                "the others."
+            ) from exc
+
+    # -- dynamics ----------------------------------------------------------
+
+    def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Moving-average matrices ``Psi_0, ..., Psi_horizon``.
+
+        Computed as ``J C^h J'`` from the companion rather than by the
+        recursion ``Psi_h = sum_i A_i Psi_{h-i}``. The two agree to machine
+        precision, and the companion form generalizes without change to any
+        member of the family that can produce a companion matrix.
+
+        Args:
+            horizon: Largest lead to return.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
+
+        Raises:
+            SpecificationError: If ``horizon`` is negative.
+        """
+        if horizon < 0:
+            raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
+        k, p = self.k_endog, self.order
+        out = np.empty((horizon + 1, k, k), dtype=np.float64)
+        if p == 0:
+            out[:] = 0.0
+            out[0] = np.eye(k)
+            return out
+        selector = np.zeros((k, k * p), dtype=np.float64)
+        selector[:, :k] = np.eye(k)
+        power = np.eye(k * p, dtype=np.float64)
+        companion = self.companion
+        for h in range(horizon + 1):
+            out[h] = selector @ power @ selector.T
+            power = power @ companion
+        return out
+
+    def irf(
+        self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
+    ) -> npt.NDArray[np.float64]:
+        """Impulse responses to a one-standard-deviation shock.
+
+        Args:
+            horizon: Largest lead to return.
+            orthogonalized: When ``True``, post-multiply by the Cholesky factor
+                of ``sigma_u`` so the shocks are mutually uncorrelated. **This
+                is a structural assumption, not a reduced-form fact.** The
+                Cholesky factor is lower-triangular, so it imposes a recursive
+                ordering: the first variable in ``names`` responds to no shock
+                but its own on impact, the second to the first and its own, and
+                so on. Permuting ``names`` changes the answer. An orthogonalized
+                impulse response reported from a reduced-form VAR is a recursive
+                SVAR whose identifying restriction happens to be undeclared;
+                :mod:`cultivars.var.structural` is where that restriction gets
+                stated rather than assumed. With ``False`` you get the raw
+                ``Psi_h``, whose columns are responses to correlated
+                innovations and are therefore not interpretable one at a time.
+            cumulative: Return running sums, which is what you want when the
+                data are differences and the question is about levels.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]`` is
+            the response of variable ``i`` at lead ``h`` to shock ``j``.
+        """
+        psi = self.ma_representation(horizon)
+        out = psi @ self._impact() if orthogonalized else psi
+        return np.cumsum(out, axis=0) if cumulative else out
+
+    def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Forecast-error variance decomposition.
+
+        Args:
+            horizon: Largest lead to return.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)`` whose entry ``[h, i, j]``
+            is the share of variable ``i``'s ``h + 1``-step forecast-error
+            variance attributable to shock ``j``. Rows sum to one by
+            construction, so a row that does not is a bug rather than a finding.
+
+        Note:
+            Inherits the ordering dependence of :meth:`irf` in full, and more
+            visibly: at ``h = 0`` the decomposition is exactly triangular, so
+            the first variable is always attributed 100% of its own impact
+            variance purely because of where it sits in ``names``.
+        """
+        theta = self.irf(horizon, orthogonalized=True)
+        contribution = np.cumsum(theta**2, axis=0)
+        return contribution / contribution.sum(axis=2, keepdims=True)
+
+    def forecast(self, steps: int = 1) -> npt.NDArray[np.float64]:
+        """Deterministic multi-step forecasts from the end of the sample.
+
+        Iterates the estimated system forward with future innovations set to
+        their zero mean, which is the conditional expectation. No interval is
+        returned: the coefficient uncertainty that should widen it is exactly
+        the standard-error machinery this package does not yet have, and a band
+        computed as though the coefficients were known would be too narrow in a
+        way nobody could see.
+
+        Args:
+            steps: Forecast horizon, at least one.
+
+        Returns:
+            An array of shape ``(steps, k)``.
+
+        Raises:
+            SpecificationError: If ``steps`` is less than one.
+        """
+        if steps < 1:
+            raise SpecificationError(f"steps must be at least 1; got {steps}.")
+        k, p, n = self.k_endog, self.order, self.endog.shape[0]
+        future = deterministic_columns(self.trend, steps, start=n + 1)
+        history = [self.endog[n - i - 1] for i in range(p)]
+        out = np.empty((steps, k), dtype=np.float64)
+        for h in range(steps):
+            point = (
+                future[h] @ self.deterministic
+                if self.deterministic.shape[0]
+                else np.zeros(k, dtype=np.float64)
+            )
+            for i in range(p):
+                point = point + self.coefficients[i] @ history[i]
+            out[h] = point
+            history = [point, *history[: p - 1]] if p else []
+        return out
+
+    # -- shock accounting --------------------------------------------------
+
+    def structural_shocks(self) -> npt.NDArray[np.float64]:
+        """Orthogonalized innovations ``P^{-1} u_t``, shape ``(nobs, k)``.
+
+        Unit variance and mutually uncorrelated by construction, under the same
+        recursive ordering :meth:`irf` documents.
+        """
+        return np.linalg.solve(self._impact(), self.resid.T).T
+
+    def historical_decomposition(self) -> npt.NDArray[np.float64]:
+        """Attribute each observation to the shocks that produced it.
+
+        Returns:
+            An array of shape ``(nobs, k, k)`` whose entry ``[t, i, j]`` is
+            shock ``j``'s cumulative contribution to variable ``i`` at time
+            ``t``. Summing over ``j`` recovers the *stochastic* component of
+            the path, not the observed series: the deterministic terms and the
+            influence of pre-sample initial conditions are excluded by
+            construction, since neither is attributable to any shock. Add the
+            deterministic path back before comparing against ``endog``.
+
+        Note:
+            Costs ``O(nobs^2)`` moving-average terms, because the contribution
+            at ``t`` sums over every shock up to ``t``. Fine for macro samples;
+            noticeable past a few thousand observations.
+        """
+        weights = self.structural_shocks()
+        theta = self.irf(self.nobs - 1, orthogonalized=True)
+        out = np.zeros((self.nobs, self.k_endog, self.k_endog), dtype=np.float64)
+        for t in range(self.nobs):
+            out[t] = np.einsum("lij,lj->ij", theta[: t + 1], weights[t::-1])
+        return out
+
+    # -- tests -------------------------------------------------------------
+
+    def _coefficient_stack(self) -> npt.NDArray[np.float64]:
+        """Coefficients laid out as the fit solved them: ``(d + kp, k)``."""
+        blocks: list[npt.NDArray[np.float64]] = []
+        if self.deterministic.shape[0]:
+            blocks.append(self.deterministic)
+        blocks.extend(self.coefficients[i].T for i in range(self.order))
+        return np.vstack(blocks) if blocks else np.zeros((0, self.k_endog), dtype=np.float64)
+
+    def granger_causality(self, cause: str, effect: str) -> _WaldTestResult:
+        """Wald test that one variable's lags are jointly zero in another's equation.
+
+        Args:
+            cause: Name of the variable whose lags are restricted.
+            effect: Name of the equation the restriction applies to.
+
+        Returns:
+            The :class:`_WaldTestResult`; ``df`` equals the autoregressive order.
+
+        Raises:
+            SpecificationError: If either name is unknown, the two coincide, or
+                the model has no lags to restrict.
+
+        Note:
+            Granger causality is predictive precedence, not causation. It is
+            also *conditional* on the variables in the system: omitting a
+            variable that drives both can manufacture an apparent causal link
+            between them, and the test cannot see what is not in ``names``.
+        """
+        names = self.names
+        for label, value in (("cause", cause), ("effect", effect)):
+            if value not in names:
+                raise SpecificationError(f"{label} {value!r} is not one of {names}.")
+        if cause == effect:
+            raise SpecificationError("a variable cannot Granger-cause itself.")
+        if self.order == 0:
+            raise SpecificationError("a model with no lags has no restriction to test.")
+        source, equation = names.index(cause), names.index(effect)
+        k, p, design = self.k_endog, self.order, self.design
+        width = design.shape[1]
+        n_deterministic = width - k * p
+        covariance = np.kron(self.sigma_u, np.linalg.inv(design.T @ design))
+        index = [equation * width + (n_deterministic + lag * k + source) for lag in range(p)]
+        block = self._coefficient_stack().flatten(order="F")[index]
+        statistic = float(block @ np.linalg.solve(covariance[np.ix_(index, index)], block))
+        return _WaldTestResult(
+            statistic=statistic,
+            df=p,
+            pvalue=float(chi2.sf(statistic, p)),
+            null=f"{cause} does not Granger-cause {effect}",
+        )
+
+    def portmanteau_test(self, lags: int = 10) -> _WaldTestResult:
+        """Multivariate Ljung-Box test for residual autocorrelation.
+
+        Args:
+            lags: Number of residual autocovariances to include. Must exceed
+                the fitted order comfortably, or the fitted parameters consume
+                every degree of freedom.
+
+        Returns:
+            The :class:`_WaldTestResult`. Rejection means the lag order is too
+            short, so every other quantity here -- impulse responses included
+            -- is computed from a misspecified system.
+
+        Raises:
+            SpecificationError: If ``lags`` is outside ``1..nobs-1``, or leaves
+                no degrees of freedom after the fitted parameters.
+        """
+        residuals = self.resid
+        n, k = residuals.shape
+        if not 1 <= lags < n:
+            raise SpecificationError(f"lags must be in 1..{n - 1}; got {lags}.")
+        gamma0 = residuals.T @ residuals / n
+        inverse = np.linalg.inv(gamma0)
+        statistic = 0.0
+        for i in range(1, lags + 1):
+            gamma = residuals[i:].T @ residuals[:-i] / n
+            statistic += float(np.trace(gamma.T @ inverse @ gamma @ inverse)) / (n - i)
+        statistic *= n * n
+        df = k * k * lags - k * self.design.shape[1]
+        if df <= 0:
+            raise SpecificationError(
+                f"{lags} lags leaves {df} degrees of freedom against "
+                f"{self.design.shape[1]} fitted parameters per equation; use more lags."
+            )
+        return _WaldTestResult(
+            statistic=statistic,
+            df=df,
+            pvalue=float(chi2.sf(statistic, df)),
+            null=f"residual autocorrelation is zero through lag {lags}",
+        )
+
+    def normality_test(self, variable: str) -> _WaldTestResult:
+        """Jarque-Bera test on one equation's residuals.
+
+        Args:
+            variable: Name of the equation to test.
+
+        Returns:
+            The :class:`_WaldTestResult` with two degrees of freedom.
+
+        Raises:
+            SpecificationError: If ``variable`` is not in ``names``.
+
+        Note:
+            Non-normality does not invalidate the coefficient estimates, which
+            are consistent regardless. It bites on anything that reads the
+            Gaussian likelihood at face value -- the information criteria, and
+            any bootstrap that resamples as though the innovations were
+            symmetric.
+        """
+        if variable not in self.names:
+            raise SpecificationError(
+                f"unknown variable {variable!r}; expected one of {self.names}."
+            )
+        column = self.resid[:, self.names.index(variable)]
+        n = column.shape[0]
+        standardized = (column - column.mean()) / column.std()
+        skew = float((standardized**3).mean())
+        kurtosis = float((standardized**4).mean())
+        statistic = n * (skew**2 / 6.0 + (kurtosis - 3.0) ** 2 / 24.0)
+        return _WaldTestResult(
+            statistic=float(statistic),
+            df=2,
+            pvalue=float(chi2.sf(statistic, 2)),
+            null=f"{variable} residuals are Gaussian",
+        )
+
+    def arch_test(self, variable: str, lags: int = 5) -> _WaldTestResult:
+        """Engle's LM test for conditional heteroskedasticity in one equation.
+
+        Args:
+            variable: Name of the equation to test.
+            lags: Number of squared-residual lags in the auxiliary regression.
+
+        Returns:
+            The :class:`_WaldTestResult` with ``lags`` degrees of freedom.
+
+        Raises:
+            SpecificationError: If ``variable`` is unknown or ``lags`` is
+                outside ``1..nobs-1``.
+
+        Note:
+            Rejection leaves the coefficients consistent but the reported
+            covariance wrong, so Granger tests become unreliable while impulse
+            responses stay interpretable as conditional means.
+        """
+        if variable not in self.names:
+            raise SpecificationError(
+                f"unknown variable {variable!r}; expected one of {self.names}."
+            )
+        squared = self.resid[:, self.names.index(variable)] ** 2
+        n = squared.shape[0]
+        if not 1 <= lags < n:
+            raise SpecificationError(f"lags must be in 1..{n - 1}; got {lags}.")
+        design = np.column_stack(
+            [np.ones(n - lags), *(squared[lags - i : n - i] for i in range(1, lags + 1))]
+        )
+        target = squared[lags:]
+        coefficients = np.linalg.lstsq(design, target, rcond=None)[0]
+        residual = target - design @ coefficients
+        centred = target - target.mean()
+        total = float(centred @ centred)
+        r_squared = 0.0 if total <= 0.0 else 1.0 - float(residual @ residual) / total
+        statistic = (n - lags) * r_squared
+        return _WaldTestResult(
+            statistic=float(statistic),
+            df=lags,
+            pvalue=float(chi2.sf(statistic, lags)),
+            null=f"no ARCH effect in {variable} residuals through lag {lags}",
+        )
+
+    def residual_diagnostics(
+        self, *, portmanteau_lags: int = 10, arch_lags: int = 5
+    ) -> SummaryTable:
+        """Run every residual test and collect them into one table.
+
+        Args:
+            portmanteau_lags: Lags for the multivariate autocorrelation test.
+            arch_lags: Lags for the per-equation ARCH test.
+
+        Returns:
+            A :class:`SummaryTable` with one row per test.
+        """
+        tests: list[tuple[str, _WaldTestResult]] = [
+            (f"portmanteau({portmanteau_lags})", self.portmanteau_test(portmanteau_lags)),
+            *((f"jarque-bera[{n}]", self.normality_test(n)) for n in self.names),
+            *((f"arch-lm({arch_lags})[{n}]", self.arch_test(n, arch_lags)) for n in self.names),
+        ]
+        return SummaryTable(
+            title="Residual diagnostics",
+            metadata=(("Observations", f"{self.nobs}"), ("Equations", f"{self.k_endog}")),
+            columns=("test", "statistic", "df", "p-value"),
+            rows=tuple(
+                (label, f"{t.statistic:.3f}", f"{t.df}", f"{t.pvalue:.4f}") for label, t in tests
+            ),
+            notes=(
+                "Small p-values reject the null named by each test. A rejected "
+                "portmanteau means the lag order is too short, which invalidates "
+                "every other quantity the result reports.",
+            ),
+        )

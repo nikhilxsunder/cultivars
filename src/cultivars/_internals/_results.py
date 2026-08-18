@@ -28,6 +28,7 @@ import numpy.typing as npt
 
 from .._core import (
     _CAPACITY_WARNING,
+    _DEFAULT_ALPHA,
     _SCHEMA_VERSION,
     InformationCriteria,
     companion_matrix,
@@ -64,6 +65,53 @@ class _LikelihoodRatioResult:
         return (
             f"LikelihoodRatioResult(statistic={self.statistic:.4f}, df={self.df}, "
             f"pvalue={self.pvalue:.4g})"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _WaldTestResult:
+    """Verdict of a chi-squared restriction test on a fitted model.
+
+    Carries the same three numbers as :class:`_LikelihoodRatioResult` and one
+    more, and that one is the reason they are separate classes. A
+    likelihood-ratio test is named by its construction: two nested fits, one
+    statistic, and the restriction is whatever distinguishes them, so the
+    object needs no label. A Wald statistic is a *form* rather than a
+    hypothesis -- the same quadratic in the same estimated covariance answers
+    Granger causality, residual autocorrelation, normality, and conditional
+    heteroskedasticity -- so a result that did not carry its own null would be
+    four unrelated verdicts wearing one type and no way to tell them apart in
+    a table.
+
+    The distribution is asymptotic in every case. Wald statistics are also
+    famously sensitive to how a nonlinear restriction is algebraically
+    arranged, but every use here restricts coefficients to zero, which is
+    linear and therefore invariant.
+
+    Attributes:
+        statistic: The chi-squared statistic.
+        df: Degrees of freedom, the number of restrictions imposed.
+        pvalue: Upper-tail probability under the chi-squared null.
+        null: The hypothesis being tested, phrased so it reads as a sentence
+            in a diagnostics table -- ``"gdp does not Granger-cause infl"``,
+            not ``"granger"``.
+    """
+
+    statistic: float
+    df: int
+    pvalue: float
+    null: str
+
+    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
+        """Whether the null is rejected at level ``alpha``."""
+        return self.pvalue < alpha
+
+    def __repr__(self) -> str:
+        """One-line verdict at the default level, which the text names."""
+        verdict = "reject" if self.reject() else "keep"
+        return (
+            f"WaldTestResult(statistic={self.statistic:.4f}, df={self.df}, "
+            f"pvalue={self.pvalue:.4g}, {verdict} at {_DEFAULT_ALPHA:.0%}: {self.null!r})"
         )
 
 

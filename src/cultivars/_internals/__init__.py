@@ -31,6 +31,7 @@ from ._fits import (
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
     _ThresholdFit,
+    _VectorAutoRegressionFit,
 )
 from ._mixins import (
     _ComparisonMixin,
@@ -39,6 +40,7 @@ from ._mixins import (
     _SeriesMixin,
     _StationarityMixin,
     _SummaryMixin,
+    _VectorInferenceMixin,
 )
 from ._models import (
     _AutoRegressionModel,
@@ -53,6 +55,7 @@ from ._models import (
     _ShortMemoryVarianceModel,
     _SmoothTransitionModel,
     _ThresholdModel,
+    _VectorAutoRegressionModel,
 )
 from ._predictors import MeanPredictor
 from ._results import (
@@ -106,4 +109,7 @@ __all__ = [
     "_SummaryMixin",
     "_ThresholdFit",
     "_ThresholdModel",
+    "_VectorAutoRegressionFit",
+    "_VectorAutoRegressionModel",
+    "_VectorInferenceMixin",
 ]

@@ -38,6 +38,7 @@ from ._converters import (
 from ._defaults import (
     _CAPACITY_WARNING,
     _D_MAX,
+    _DEFAULT_ALPHA,
     _DEFAULT_GRID,
     _DEFAULT_MAX_ITER,
     _DEFAULT_STARTS,
@@ -91,6 +92,7 @@ from ._validators import (
     validate_aligned,
     validate_choice,
     validate_endog,
+    validate_endog_matrix,
     validate_exog,
     validate_open_interval,
     validate_order,
@@ -100,6 +102,7 @@ from ._validators import (
 
 __all__ = [
     "_CAPACITY_WARNING",
+    "_DEFAULT_ALPHA",
     "_DEFAULT_GRID",
     "_DEFAULT_MAX_ITER",
     "_DEFAULT_STARTS",
@@ -157,6 +160,7 @@ __all__ = [
     "validate_aligned",
     "validate_choice",
     "validate_endog",
+    "validate_endog_matrix",
     "validate_exog",
     "validate_open_interval",
     "validate_order",
