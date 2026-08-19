@@ -109,6 +109,4 @@ _CHOLESKY_NOTE = (
     "assumption, not a reduced-form result."
 )
 
-_NO_STDERR_NOTE = "Standard errors are not yet available for this estimator."
-
 _UNSTABLE_NOTE = "NOT STABLE: impulse responses diverge and forecasts are meaningless."

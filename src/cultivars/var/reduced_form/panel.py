@@ -10,7 +10,6 @@ import numpy.typing as npt
 
 from ..._core import (
     _CHOLESKY_NOTE,
-    _NO_STDERR_NOTE,
     _UNSTABLE_NOTE,
     SummaryTable,
     deterministic_columns,
@@ -161,6 +160,14 @@ class PanelVARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
         lo, hi = self._sample_blocks[self._unit_index(unit)]
         return self.resid[lo:hi]
 
+    def _deterministic_labels(self) -> tuple[str, ...]:
+        """One intercept name per unit under fixed effects, otherwise the trend block."""
+        if self.effects != "unit":
+            return (("const",) if self.trend in ("c", "ct") else ()) + (
+                ("trend",) if self.trend == "ct" else ()
+            )
+        return tuple(f"const[{unit}]" for unit in self.unit_names)
+
     @property
     def unit_effects(self) -> dict[str, npt.NDArray[np.float64]]:
         """Each unit's intercept vector.
@@ -219,54 +226,14 @@ class PanelVARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
             history = [point, *history[: p - 1]] if p else []
         return out
 
-    def equation(self, name: str) -> dict[str, float]:
-        """The coefficients of one equation, keyed by regressor.
-
-        Args:
-            name: A variable label.
-
-        Returns:
-            Intercepts first -- one per unit under fixed effects -- then the
-            pooled lag coefficients.
-
-        Raises:
-            SpecificationError: If the variable is unknown.
-        """
-        if name not in self.names:
-            raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
-        row = self.names.index(name)
-        out: dict[str, float] = {}
-        if self.effects == "unit":
-            for j, unit in enumerate(self.unit_names):
-                out[f"const[{unit}]"] = float(self.deterministic[j, row])
-        else:
-            labels = (["const"] if self.trend in ("c", "ct") else []) + (
-                ["trend"] if self.trend == "ct" else []
-            )
-            for j, label in enumerate(labels):
-                out[label] = float(self.deterministic[j, row])
-        for lag in range(self.order):
-            for j, source in enumerate(self.names):
-                out[f"{source}.L{lag + 1}"] = float(self.coefficients[lag][row, j])
-        return out
-
-    @property
-    def params(self) -> dict[str, float]:
-        """Every coefficient, intercepts included, keyed ``"{equation}: {regressor}"``."""
-        return {
-            f"{equation}: {name}": value
-            for equation in self.names
-            for name, value in self.equation(equation).items()
-        }
-
     @property
     def slopes(self) -> dict[str, float]:
         """The pooled lag coefficients alone, without the unit intercepts."""
+        keep = set(self._lag_labels())
         return {
-            f"{equation}: {source}.L{lag + 1}": float(self.coefficients[lag][i, j])
-            for i, equation in enumerate(self.names)
-            for lag in range(self.order)
-            for j, source in enumerate(self.names)
+            name: value
+            for name, value in self.params.items()
+            if name.split(": ", 1)[1] in keep
         }
 
     def _comparison_label(self) -> str:
@@ -293,7 +260,6 @@ class PanelVARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
                 "first differences is the standard remedy and is not implemented here."
             )
         notes.append(_CHOLESKY_NOTE)
-        notes.append(_NO_STDERR_NOTE)
         if self.effects == "unit":
             notes.append(
                 f"The {self.n_units} unit intercepts are nuisance parameters and are not "
@@ -316,8 +282,8 @@ class PanelVARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
                 ("Observations", f"{self.nobs}"),
                 ("Shortest T", f"{self.min_time_dimension}"),
             ),
-            columns=("", "coef"),
-            rows=tuple((name, f"{value:.4f}") for name, value in shown.items()),
+            columns=self._coefficient_columns(),
+            rows=tuple(row for row in self._coefficient_rows() if row[0] in shown),
             notes=tuple(notes),
         )
 

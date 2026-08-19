@@ -47,7 +47,6 @@ from ._defaults import (
     _DEFAULT_TRIM,
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
-    _NO_STDERR_NOTE,
     _PENALTY,
     _ROW_SUM_ATOL,
     _SCHEMA_VERSION,

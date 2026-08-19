@@ -53,6 +53,7 @@ from .._core import (
     to_polars_frame,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._covariance import _CoefficientCovariance
 from ._results import _LikelihoodRatioResult, _StabilityResult, _WaldTestResult
 
 if TYPE_CHECKING:
@@ -469,6 +470,42 @@ class _VectorInferenceMixin:
         """Whether every companion eigenvalue lies inside the unit circle."""
         return self.stability_check().is_stable
 
+    @property
+    def _lag_offset(self) -> int:
+        """Design columns that sit ahead of the endogenous lag block.
+
+        The lag block always begins immediately after the deterministic block,
+        so the deterministic coefficient matrix already knows this number and
+        nothing needs to recount it. Any regressor a family appends -- an
+        exogenous distributed lag, an instrument set -- goes behind the lags
+        precisely so that this stays true and the unpacking offsets in
+        ``_fit_family`` keep working unchanged.
+        """
+        return int(self.deterministic.shape[0])
+
+    def _trailing_blocks(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Coefficient blocks a family appends after the endogenous lags.
+
+        Returned in design order and shaped ``(rows, k_endog)``, matching the
+        layout of :attr:`deterministic`. The default is empty, which is the
+        statement that this family's design is deterministic terms and lags and
+        nothing else.
+        """
+        return ()
+
+    @property
+    def _sample_blocks(self) -> tuple[tuple[int, int], ...]:
+        """Half-open row spans of :attr:`resid`, one per independent series.
+
+        A single vector autoregression has one span covering the whole residual
+        matrix, and every method that reads residual history reduces to its
+        previous form when that is so. A panel has one span per unit, and the
+        distinction is not cosmetic: a lagged cross-product taken across a unit
+        boundary multiplies one country's last observation by another country's
+        first, which is not an autocovariance of anything.
+        """
+        return ((0, self.nobs),)
+
     def _impact(self) -> npt.NDArray[np.float64]:
         """Lower-triangular Cholesky factor of the innovation covariance.
 
@@ -661,25 +698,169 @@ class _VectorInferenceMixin:
         blocks.extend(self.coefficients[i].T for i in range(self.order))
         return np.vstack(blocks) if blocks else np.zeros((0, self.k_endog), dtype=np.float64)
 
-    def granger_causality(self, cause: str, effect: str) -> _WaldTestResult:
-        """Wald test that one variable's lags are jointly zero in another's equation.
+    def _deterministic_labels(self) -> tuple[str, ...]:
+        """Names of the leading deterministic design columns, in design order."""
+        return (("const",) if self.trend in ("c", "ct") else ()) + (
+            ("trend",) if self.trend == "ct" else ()
+        )
+
+    def _lag_labels(self) -> tuple[str, ...]:
+        """Names of the endogenous lag columns, in design order."""
+        return tuple(f"{source}.L{lag + 1}" for lag in range(self.order) for source in self.names)
+
+    def _trailing_labels(self) -> tuple[str, ...]:
+        """Names of the columns a family appends after the endogenous lags."""
+        return ()
+
+    def _regressor_labels(self) -> tuple[str, ...]:
+        """Every design column name, in design order.
+
+        The label counterpart of :meth:`_coefficient_stack`, and the reason the
+        two must be built from the same three pieces: every coefficient the user
+        can name -- an estimate, a standard error, a p-value, a bound -- is
+        produced by zipping these labels against that stack. Deriving them
+        separately is how a table ends up with the right numbers under the wrong
+        headings, which is worse than having no table.
+        """
+        return self._deterministic_labels() + self._lag_labels() + self._trailing_labels()
+
+    @property
+    def coefficient_covariance(self) -> _CoefficientCovariance:
+        """Asymptotic covariance of the coefficient matrix."""
+        return _CoefficientCovariance(
+            coefficients=self._coefficient_stack(),
+            sigma_u=self.sigma_u,
+            xtx_inv=np.linalg.inv(self.design.T @ self.design),
+        )
+
+    def _labelled(self, values: npt.NDArray[np.float64]) -> dict[str, float]:
+        """Key a ``(width, k)`` array by ``"{equation}: {regressor}"``.
 
         Args:
-            cause: Name of the variable whose lags are restricted.
-            effect: Name of the equation the restriction applies to.
+            values: An array laid out like :meth:`_coefficient_stack`.
 
         Returns:
-            The :class:`_WaldTestResult`; ``df`` equals the autoregressive order.
+            One entry per coefficient, in equation-major order.
 
         Raises:
-            SpecificationError: If either name is unknown, the two coincide, or
-                the model has no lags to restrict.
+            DimensionError: If the array does not match the design.
+        """
+        labels = self._regressor_labels()
+        if values.shape != (len(labels), self.k_endog):
+            raise DimensionError(
+                f"expected an array of shape {(len(labels), self.k_endog)} to label; "
+                f"got {values.shape}."
+            )
+        return {
+            f"{equation}: {label}": float(values[j, i])
+            for i, equation in enumerate(self.names)
+            for j, label in enumerate(labels)
+        }
 
-        Note:
-            Granger causality is predictive precedence, not causation. It is
-            also *conditional* on the variables in the system: omitting a
-            variable that drives both can manufacture an apparent causal link
-            between them, and the test cannot see what is not in ``names``.
+    def equation(self, name: str) -> dict[str, float]:
+        """The coefficients of one equation, keyed by regressor.
+
+        Args:
+            name: One of :attr:`names`.
+
+        Returns:
+            Coefficients in design order: deterministic terms, then endogenous
+            lags, then whatever the family appends.
+
+        Raises:
+            SpecificationError: If the variable is unknown.
+        """
+        if name not in self.names:
+            raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
+        column = self.names.index(name)
+        stack = self._coefficient_stack()
+        return {label: float(stack[j, column]) for j, label in enumerate(self._regressor_labels())}
+
+    @property
+    def params(self) -> dict[str, float]:
+        """Every coefficient, keyed ``"{equation}: {regressor}"``."""
+        return self._labelled(self._coefficient_stack())
+
+    @property
+    def bse(self) -> dict[str, float]:
+        """Standard errors, keyed identically to :attr:`params`."""
+        return self._labelled(self.coefficient_covariance.stderr)
+
+    @property
+    def tvalues(self) -> dict[str, float]:
+        """Normal test statistics against zero, keyed identically to :attr:`params`."""
+        return self._labelled(self.coefficient_covariance.tstat)
+
+    @property
+    def pvalues(self) -> dict[str, float]:
+        """Two-sided p-values against zero, keyed identically to :attr:`params`."""
+        return self._labelled(self.coefficient_covariance.pvalue)
+
+    def conf_int(self, *, alpha: float = 0.05) -> dict[str, tuple[float, float]]:
+        """Confidence bounds for every coefficient.
+
+        Args:
+            alpha: Two-sided level; ``0.05`` gives a 95 percent interval.
+
+        Returns:
+            One ``(lower, upper)`` pair per coefficient, keyed identically to
+            :attr:`params`.
+        """
+        lower, upper = self.coefficient_covariance.conf_int(alpha=alpha)
+        low, high = self._labelled(lower), self._labelled(upper)
+        return {name: (value, high[name]) for name, value in low.items()}
+
+    def _coefficient_rows(self, *, alpha: float = 0.05) -> tuple[tuple[str, ...], ...]:
+        """Rows of the coefficient table: estimate, error, statistic, bounds."""
+        inference = self.coefficient_covariance
+        stack = self._coefficient_stack()
+        stderr, tstat, pvalue = inference.stderr, inference.tstat, inference.pvalue
+        lower, upper = inference.conf_int(alpha=alpha)
+        labels = self._regressor_labels()
+        return tuple(
+            (
+                f"{equation}: {label}",
+                f"{stack[j, i]:.4f}",
+                f"{stderr[j, i]:.4f}",
+                f"{tstat[j, i]:.3f}",
+                f"{pvalue[j, i]:.3f}",
+                f"{lower[j, i]:.4f}",
+                f"{upper[j, i]:.4f}",
+            )
+            for i, equation in enumerate(self.names)
+            for j, label in enumerate(labels)
+        )
+
+    @staticmethod
+    def _coefficient_columns(*, alpha: float = 0.05) -> tuple[str, ...]:
+        """Headings for the coefficient table, with the bounds named honestly.
+
+        The interval headings are derived from the same ``alpha`` that produced
+        the bounds rather than written down beside them. A heading that says
+        ``0.025`` above a 90 percent bound is not a cosmetic problem: it is the
+        table asserting something false about its own contents.
+
+        Args:
+            alpha: Two-sided level used for the interval.
+
+        Returns:
+            One heading per column of :meth:`_coefficient_rows`.
+        """
+        return ("", "coef", "std err", "z", "P>|z|", f"[{alpha / 2:g}", f"{1 - alpha / 2:g}]")
+
+    def granger_causality(self, cause: str, effect: str) -> _WaldTestResult:
+        """Wald test that one variable's lags are jointly zero in another equation.
+
+        Args:
+            cause: The variable whose lags are restricted.
+            effect: The equation the restriction is applied to.
+
+        Returns:
+            A :class:`_WaldTestResult` naming the non-causality null.
+
+        Raises:
+            SpecificationError: If either name is unknown, they are the same
+                variable, or the model has no lags to restrict.
         """
         names = self.names
         for label, value in (("cause", cause), ("effect", effect)):
@@ -688,20 +869,12 @@ class _VectorInferenceMixin:
         if cause == effect:
             raise SpecificationError("a variable cannot Granger-cause itself.")
         if self.order == 0:
-            raise SpecificationError("a model with no lags has no restriction to test.")
-        source, equation = names.index(cause), names.index(effect)
-        k, p, design = self.k_endog, self.order, self.design
-        width = design.shape[1]
-        n_deterministic = width - k * p
-        covariance = np.kron(self.sigma_u, np.linalg.inv(design.T @ design))
-        index = [equation * width + (n_deterministic + lag * k + source) for lag in range(p)]
-        block = self._coefficient_stack().flatten(order="F")[index]
-        statistic = float(block @ np.linalg.solve(covariance[np.ix_(index, index)], block))
-        return _WaldTestResult(
-            statistic=statistic,
-            df=p,
-            pvalue=float(chi2.sf(statistic, p)),
-            null=f"{cause} does not Granger-cause {effect}",
+            raise SpecificationError("a VAR(0) has no lags to test.")
+        source, target = names.index(cause), names.index(effect)
+        k, offset = self.k_endog, self._lag_offset
+        cells = [(target, offset + lag * k + source) for lag in range(self.order)]
+        return self.coefficient_covariance.wald(
+            cells, null=f"{cause} does not Granger-cause {effect}"
         )
 
     def portmanteau_test(self, lags: int = 10) -> _WaldTestResult:

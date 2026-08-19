@@ -36,9 +36,7 @@ import numpy.typing as npt
 
 from ..._core import (
     _CHOLESKY_NOTE,
-    _NO_STDERR_NOTE,
     _UNSTABLE_NOTE,
-    InformationCriteria,
     SummaryTable,
     deterministic_columns,
     validate_exog_matrix,
@@ -59,26 +57,21 @@ from ...exceptions import DimensionError, SpecificationError
 class VARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
     """A fitted reduced-form vector autoregression.
 
-    Declares the attributes :class:`_VectorInferenceMixin` reads and adds the
-    display surface. Every substantive post-estimation operation is inherited,
-    which is the point: this class is a record plus a summary, not an
-    implementation.
-
     Attributes:
-        endog: The full observed panel, shape ``(n, k)``.
-        names: Variable names in column order.
+        endog: The sample.
+        names: Variable labels, in Cholesky order.
         order: Autoregressive order.
         trend: Deterministic specification.
-        coefficients: ``A_1, ..., A_p``, shape ``(p, k, k)``.
-        deterministic: Deterministic coefficients, shape ``(d, k)``.
-        sigma_u: Degrees-of-freedom-adjusted innovation covariance.
-        sigma_ml: Maximum-likelihood innovation covariance.
-        resid: Residuals over the effective sample, shape ``(nobs, k)``.
-        fittedvalues: One-step fitted values, shape ``(nobs, k)``.
-        design: The regressor matrix, shape ``(nobs, d + k * p)``.
+        coefficients: ``(p, k, k)`` stack of ``A_1, ..., A_p``.
+        deterministic: Deterministic coefficients, one row per term.
+        sigma_u: Residual covariance with the degrees-of-freedom correction.
+        sigma_ml: Residual covariance divided by the effective sample.
+        resid: Residuals over the effective sample.
+        fittedvalues: One-step conditional means over the effective sample.
+        design: The regressor matrix as estimated.
         llf: Gaussian log-likelihood.
         nobs: Effective sample size.
-        n_params: Coefficients plus the distinct covariance elements.
+        n_params: Free parameters, covariance included.
     """
 
     endog: npt.NDArray[np.float64]
@@ -98,9 +91,9 @@ class VARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
 
     @classmethod
     def _from_fit(
-        cls, fit: _VectorAutoRegressionFit, model: _VectorAutoRegressionModel[VARResult]
-    ) -> VARResult:
-        """Assemble the public result from a raw fit and its specification."""
+        cls, fit: _VectorAutoRegressionFit, model: _VectorAutoRegressionModel[Self]
+    ) -> Self:
+        """Assemble the public result from the internal fit and its model."""
         return cls(
             endog=model.endog,
             names=model.names,
@@ -118,125 +111,54 @@ class VARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
             n_params=fit.n_params,
         )
 
-    def equation(self, name: str) -> dict[str, float]:
-        """One equation's coefficients, keyed by regressor.
-
-        The unit a reader actually thinks in. A ``(p, k, k)`` stack is the right
-        shape for the recursions and the wrong shape for a person: reading
-        ``coefficients[1][0, 2]`` as "the effect of the third variable's second
-        lag on the first equation" is a mistake waiting to happen, and this
-        spells it as ``rate.L2``.
-
-        Args:
-            name: Which equation, by variable name.
-
-        Returns:
-            Deterministic terms first, then lags in order, keyed
-            ``"{source}.L{lag}"``.
-
-        Raises:
-            SpecificationError: If ``name`` is not in ``names``.
-        """
-        if name not in self.names:
-            raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
-        equation = self.names.index(name)
-        out: dict[str, float] = {}
-        labels = ["const"] if self.trend in ("c", "ct") else []
-        if self.trend == "ct":
-            labels.append("trend")
-        for row, label in enumerate(labels):
-            out[label] = float(self.deterministic[row, equation])
-        for lag in range(self.order):
-            for column, source in enumerate(self.names):
-                out[f"{source}.L{lag + 1}"] = float(self.coefficients[lag][equation, column])
-        return out
-
-    @property
-    def params(self) -> dict[str, float]:
-        """Every coefficient, keyed ``"{equation}: {regressor}"``.
-
-        Flat rather than nested because :class:`SummaryTable` renders one
-        coefficient per row and the equation has to travel with the name; a
-        table of ``k`` blocks each headed ``const, y1.L1, ...`` is unreadable
-        once ``k`` exceeds two.
-        """
-        return {
-            f"{equation}: {regressor}": value
-            for equation in self.names
-            for regressor, value in self.equation(equation).items()
-        }
-
     def _comparison_label(self) -> str:
-        """Specification label used when this result appears in a ranking."""
-        suffix = "" if self.trend == "c" else f" trend={self.trend}"
-        return f"VAR({self.order}){suffix}"
+        """Short specification label for a ranking table."""
+        tail = "" if self.trend == "c" else f", trend={self.trend}"
+        return f"VAR({self.order}{tail})"
 
     def _summary_table(self) -> SummaryTable:
-        """Structured summary rendered by every display path."""
-        ic: InformationCriteria = self.information_criteria
+        """Build the structured summary."""
+        criteria = self.information_criteria
         stability = self.stability_check()
-        notes: list[str] = []
+        notes = [
+            f"Stable: {self.is_stable}   max |companion root| = {stability.max_modulus:.4f}",
+            _CHOLESKY_NOTE,
+        ]
         if not self.is_stable:
-            notes.append(
-                "NOT STABLE: a companion root lies on or outside the unit circle, so "
-                "impulse responses diverge rather than decay and forecasts have no "
-                "limit. Every dynamic quantity below is uninterpretable."
-            )
-        notes.extend(
-            (
-                f"Stable: {self.is_stable}   max |companion root| = {stability.max_modulus:.4f}",
-                "Orthogonalized impulse responses and the variance decomposition use a "
-                "Cholesky factor, which imposes the recursive ordering of the variable "
-                "names; that is a structural assumption, not a reduced-form result.",
-                "Standard errors are not yet available for this estimator.",
-            )
-        )
+            notes.insert(0, _UNSTABLE_NOTE)
         return SummaryTable(
-            title=f"{self._comparison_label()} Results",
+            title=f"VAR({self.order}) Results",
             metadata=(
-                ("Model", self._comparison_label()),
+                ("Model", f"VAR({self.order})"),
                 ("Log-likelihood", f"{self.llf:.3f}"),
                 ("Variables", f"{self.k_endog}"),
-                ("AIC", f"{ic.aic:.3f}"),
+                ("AIC", f"{criteria.aic:.3f}"),
                 ("Trend", self.trend),
-                ("BIC", f"{ic.bic:.3f}"),
+                ("BIC", f"{criteria.bic:.3f}"),
                 ("Observations", f"{self.nobs}"),
-                ("HQIC", f"{ic.hqic:.3f}"),
+                ("HQIC", f"{criteria.hqic:.3f}"),
             ),
-            columns=("", "coef"),
-            rows=tuple((name, f"{value:.4f}") for name, value in self.params.items()),
+            columns=self._coefficient_columns(),
+            rows=self._coefficient_rows(),
             notes=tuple(notes),
         )
 
 
 class VAR(_VectorAutoRegressionModel[VARResult]):
-    """Reduced-form vector autoregression of order ``p``.
-
-    Args:
-        endog: The observed panel, shape ``(nobs, k)``.
-        order: Autoregressive order. Choose it with
-            :meth:`lag_order_selection` rather than by eye.
-        trend: ``"n"``, ``"c"`` or ``"ct"``.
-        names: Variable names in column order; defaults to ``("y1", ...)``.
+    """Reduced-form vector autoregression, estimated by multivariate least squares.
 
     Example:
-        >>> import numpy as np
         >>> rng = np.random.default_rng(0)
-        >>> a = np.array([[0.5, 0.1], [0.0, 0.4]])
-        >>> y = np.zeros((500, 2))
-        >>> for t in range(1, 500):
-        ...     y[t] = a @ y[t - 1] + rng.standard_normal(2)
-        >>> res = VAR(y, order=1, names=("x", "z")).fit()
-        >>> res.is_stable
-        True
-        >>> res.irf(8).shape
-        (9, 2, 2)
+        >>> y = rng.standard_normal((200, 2))
+        >>> res = VAR(y, order=1).fit()
+        >>> res.forecast(3).shape
+        (3, 2)
     """
 
     __slots__ = ()
 
     def fit(self) -> VARResult:
-        """Estimate the system by least squares."""
+        """Estimate the system and return the fitted result."""
         return VARResult._from_fit(self._fit_family(), self)
 
 
@@ -329,6 +251,14 @@ class VARXResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
     def _trailing_blocks(self) -> tuple[npt.NDArray[np.float64], ...]:
         """The distributed-lag coefficients, in design order."""
         return tuple(self.exog_coefficients[j].T for j in range(self.exog_order + 1))
+
+    def _trailing_labels(self) -> tuple[str, ...]:
+        """Distributed-lag column names, contemporaneous term first."""
+        return tuple(
+            source if j == 0 else f"{source}.L{j}"
+            for j in range(self.exog_order + 1)
+            for source in self.exog_names
+        )
 
     def forecast(
         self, steps: int = 1, *, exog_future: npt.ArrayLike | None = None
@@ -437,7 +367,6 @@ class VARXResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
             "Forecasts are conditional: forecast() requires the future exogenous path and "
             "will not extrapolate it.",
             _CHOLESKY_NOTE,
-            _NO_STDERR_NOTE,
         ]
         if not self.is_stable:
             notes.insert(0, _UNSTABLE_NOTE)
@@ -454,8 +383,8 @@ class VARXResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
                 ("HQIC", f"{criteria.hqic:.3f}"),
                 ("Observations", f"{self.nobs}"),
             ),
-            columns=("", "coef"),
-            rows=tuple((name, f"{value:.4f}") for name, value in self.params.items()),
+            columns=self._coefficient_columns(),
+            rows=self._coefficient_rows(),
             notes=tuple(notes),
         )
 
