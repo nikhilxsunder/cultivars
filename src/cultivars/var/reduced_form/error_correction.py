@@ -1,3 +1,4 @@
+"""Vector error-correction model (VECM) results."""
 
 from __future__ import annotations
 
@@ -7,22 +8,22 @@ from typing import Self, cast
 import numpy as np
 import numpy.typing as npt
 
+from ..._core import (
+    _CHOLESKY_NOTE,
+    _LEVELS_TREND,
+    _UNSTABLE_NOTE,
+    CointegrationTrend,
+    SummaryTable,
+    deterministic_columns,
+)
 from ..._internals import (
+    _ComparisonMixin,
     _StabilityResult,
+    _SummaryMixin,
     _VectorErrorCorrectionFit,
     _VectorErrorCorrectionModel,
-    _SummaryMixin,
-    _ComparisonMixin,
     _VectorInferenceMixin,
     _WaldTestResult,
-)
-from ..._core import (
-    SummaryTable,
-    _LEVELS_TREND,
-    deterministic_columns,
-    _UNSTABLE_NOTE,
-    _CHOLESKY_NOTE,
-    CointegrationTrend,
 )
 from ...exceptions import SpecificationError
 
@@ -171,9 +172,7 @@ class VECMResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
                 would divide by nothing and another variable should carry it.
         """
         if not 0 <= on < self.k_endog:
-            raise SpecificationError(
-                f"on must index a variable, 0..{self.k_endog - 1}; got {on}."
-            )
+            raise SpecificationError(f"on must index a variable, 0..{self.k_endog - 1}; got {on}.")
         if not self.rank:
             return np.zeros((self.beta.shape[0], 0), dtype=np.float64)
         pivots: npt.NDArray[np.float64] = self.beta[on]
@@ -232,9 +231,7 @@ class VECMResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
     def _lag_labels(self) -> tuple[str, ...]:
         """Lagged-difference column names."""
         return tuple(
-            f"D.{source}.L{lag + 1}"
-            for lag in range(self.order - 1)
-            for source in self.names
+            f"D.{source}.L{lag + 1}" for lag in range(self.order - 1) for source in self.names
         )
 
     def _trailing_labels(self) -> tuple[str, ...]:
@@ -258,9 +255,7 @@ class VECMResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
         stack has to describe the regression that produced the standard errors,
         not the reparameterization of it.
         """
-        blocks = (
-            [self.short_run_deterministic] if self.short_run_deterministic.shape[0] else []
-        )
+        blocks = [self.short_run_deterministic] if self.short_run_deterministic.shape[0] else []
         blocks += [self.gamma[i].T for i in range(self.order - 1)]
         blocks += list(self._trailing_blocks())
         return np.vstack(blocks) if blocks else np.zeros((0, self.k_endog), dtype=np.float64)
