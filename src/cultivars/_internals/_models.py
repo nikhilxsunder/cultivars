@@ -68,6 +68,7 @@ from .._core import (
     _ROW_SUM_ATOL,
     Mean,
     Method,
+    PanelEffects,
     Transition,
     Trend,
     Vol,
@@ -94,6 +95,7 @@ from .._core import (
     validate_open_interval,
     validate_order,
     validate_order_tuple,
+    validate_panel,
     validate_transition,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
@@ -102,6 +104,7 @@ from ._filters import hamilton_filter
 from ._fits import (
     _AutoRegressionFit,
     _BoxJenkinsFit,
+    _ExogenousVectorAutoRegressionFit,
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
     _MarkovSwitchingFit,
@@ -110,10 +113,11 @@ from ._fits import (
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
     _ThresholdFit,
-    _VectorAutoregressionFit,
+    _VectorAutoRegressionFit,
 )
 from ._layouts import _ParameterLayout
 from ._means import _ARMAMean, _LinearMean, _MeanLayer
+from ._moments import _VectorMoments
 from ._objectives import (
     _AutoRegressionObjective,
     _BoxJenkinsObjective,
@@ -2525,41 +2529,7 @@ class _MultivariateModel[R](_BaseModel[R]):
 
 
 class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
-    """Specification surface for the reduced-form vector autoregression.
-
-    Estimates ``y_t = D d_t + A_1 y_{t-1} + ... + A_p y_{t-p} + u_t`` by least
-    squares. Every equation shares the same regressors, so the seemingly
-    unrelated regressions estimator collapses to equation-by-equation OLS and
-    the whole system solves in one ``lstsq`` -- which is why this model has no
-    objective, no optimizer, and no starting values, unlike everything in
-    :mod:`cultivars.univariate` that needs them.
-
-    The root of the reduced-form family rather than a leaf. :meth:`_design` is
-    the seam the rest of tier one turns on: a VARX widens the regressor block
-    with exogenous columns, a panel VAR stacks units and adds fixed effects,
-    and neither touches the estimator, the likelihood, or the coefficient
-    unpacking below. Restricted members -- VECM and its exogenous variant --
-    replace the solve rather than the design, but still land on the same fit
-    record, so they inherit the whole inference surface too.
-
-    Args:
-        endog: The observed panel, shape ``(nobs, k)``.
-        order: Autoregressive order ``p``. Zero is admissible and describes
-            deterministic terms plus white noise; it exists so the value chosen
-            by :meth:`lag_order_selection` can always be constructed.
-        trend: Deterministic specification, ``"n"``, ``"c"`` or ``"ct"``.
-        names: Variable names in column order. Every reported quantity is
-            keyed by these rather than by integer position, because a
-            three-index impulse-response tensor is unreadable otherwise.
-            Defaults to ``("y1", ..., "yk")``.
-
-    Raises:
-        SpecificationError: If the order is negative, the trend is
-            unrecognized, or ``names`` has the wrong length or a duplicate.
-        DimensionError: If the panel is malformed or too short to identify the
-            specification.
-        NumericalError: If the panel contains non-finite values.
-    """
+    """The specification space of a reduced-form vector autoregression."""
 
     __slots__ = ("_names", "_order", "_trend")
 
@@ -2568,200 +2538,281 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         endog: npt.ArrayLike,
         *,
         order: int,
-        trend: str = "c",
+        trend: Trend = "c",
         names: Sequence[str] | None = None,
     ) -> None:
-        """Validate the specification and the data."""
+        """Validate the sample and the specification.
+
+        Args:
+            endog: The ``(nobs, k)`` panel, time down the rows.
+            order: Autoregressive order.
+            trend: Deterministic terms: none, constant, or constant and trend.
+            names: One label per variable. Defaults to ``y1 ... yk``.
+
+        Raises:
+            SpecificationError: If the order, trend, or names are malformed.
+            DimensionError: If the sample cannot support the specification.
+        """
         super().__init__(endog)
-        k = self.k_endog
-        self._order = validate_order(order, "order", minimum=0)
-        self._trend = validate_choice(trend, Trend, "trend")
-        if names is None:
-            self._names = tuple(f"y{i + 1}" for i in range(k))
-        else:
-            supplied = tuple(str(name) for name in names)
-            if len(supplied) != k:
-                raise SpecificationError(
-                    f"names must have one entry per variable ({k}); got {len(supplied)}."
-                )
-            if len(set(supplied)) != k:
-                raise SpecificationError(f"names must be unique; got {supplied}.")
-            self._names = supplied
+        if int(order) != order or order < 0:
+            raise SpecificationError(f"order must be an integer >= 0; got {order!r}.")
+        self._order = int(order)
+        self._trend: str = validate_choice(trend, Trend, "trend")
+        self._names = self._resolve_names(names, self.k_endog, "names", "y")
         self._ensure_length(
-            self._order + self.n_regressors + 1,
-            f"VAR({self._order}) on {k} variables with trend {self._trend!r}",
+            self._rows_lost(self._order) + self.n_regressors + 1,
+            f"{type(self).__name__}({self._order})",
         )
+
+    @staticmethod
+    def _resolve_names(
+        names: Sequence[str] | None, count: int, label: str, prefix: str
+    ) -> tuple[str, ...]:
+        """Default or validate a label tuple.
+
+        Three call sites want the same three rules -- right count, no
+        duplicates, generated stems when omitted -- for variables, exogenous
+        regressors, and units. Static rather than bound because it reads nothing
+        from the instance, which is what lets a subclass call it before
+        ``super().__init__`` has populated any state.
+
+        Args:
+            names: Caller-supplied labels, or ``None``.
+            count: How many labels the specification requires.
+            label: Argument name, for error messages.
+            prefix: Stem for generated labels.
+
+        Returns:
+            One label per item.
+
+        Raises:
+            SpecificationError: If the count is wrong or the labels repeat.
+        """
+        if names is None:
+            return tuple(f"{prefix}{i + 1}" for i in range(count))
+        resolved = tuple(str(name) for name in names)
+        if len(resolved) != count:
+            raise SpecificationError(
+                f"{label} must have one entry per item ({count}); got {len(resolved)}."
+            )
+        if len(set(resolved)) != count:
+            raise SpecificationError(f"{label} must be unique; got {resolved}.")
+        return resolved
+
+    @property
+    def endog(self) -> npt.NDArray[np.float64]:
+        """The validated sample."""
+        return self._endog
 
     @property
     def order(self) -> int:
-        """The autoregressive order."""
+        """Autoregressive order."""
         return self._order
 
     @property
     def trend(self) -> str:
-        """The deterministic specification."""
+        """Deterministic specification."""
         return self._trend
 
     @property
     def names(self) -> tuple[str, ...]:
-        """Variable names in column order."""
+        """Variable labels."""
         return self._names
 
     @property
+    def k_endog(self) -> int:
+        """Number of endogenous variables."""
+        return int(self._endog.shape[1])
+
+    @property
+    def _n_deterministic_columns(self) -> int:
+        """Width of the leading deterministic block.
+
+        Split out from :func:`n_deterministic` because a fixed-effects panel
+        replaces the trend specification with one indicator per unit, and every
+        offset downstream is expressed against this number rather than against
+        the trend string.
+        """
+        return n_deterministic(self._trend)
+
+    @property
     def n_regressors(self) -> int:
-        """Regressors per equation: the deterministic block plus every lag."""
-        return n_deterministic(self._trend) + self.k_endog * self._order
+        """Regressors per equation."""
+        return self._n_deterministic_columns + self.k_endog * self._order
 
-    def _design(
-        self, order: int | None = None, *, endog: npt.NDArray[np.float64] | None = None
-    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
-        """Assemble the target and the regressor block.
-
-        The extension point for the rest of tier one. Both arguments exist for
-        :meth:`lag_order_selection`, which must build designs at orders other
-        than the constructed one and over a trimmed panel; ordinary fitting
-        passes neither.
+    def _burn_for(self, order: int) -> int:
+        """Leading observations each series loses at a candidate order.
 
         Args:
-            order: Autoregressive order to build for; defaults to the
-                constructed order.
-            endog: Panel to build from; defaults to the stored one.
+            order: Autoregressive order under consideration.
 
         Returns:
-            A tuple ``(target, design, nobs)``. ``design`` places the
-            deterministic columns ahead of the lag block, which fixes the
-            coefficient layout every consumer below depends on.
+            The number of leading observations no equation can be written for.
+        """
+        return order
+
+    def _rows_lost(self, order: int) -> int:
+        """Design rows the whole sample loses at a candidate order.
+
+        Distinct from :meth:`_burn_for` only when there is more than one series:
+        a panel of ``N`` units loses ``order`` observations from each of them.
+
+        Args:
+            order: Autoregressive order under consideration.
+
+        Returns:
+            Total rows dropped from the stacked sample.
+        """
+        return self._burn_for(order)
+
+    def _max_supported_lags(self) -> int:
+        """Largest order this sample can identify on a common effective sample."""
+        free = int(self._endog.shape[0]) - self._n_deterministic_columns - 1
+        return max(free // (self.k_endog + 1), 0)
+
+    def _design(
+        self, order: int | None = None, *, trim: int = 0
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
+        """Build the target and regressor matrix.
+
+        Args:
+            order: Autoregressive order; defaults to the fitted order.
+            trim: Leading observations to discard from each series before the
+                lags are formed. Lag-order selection uses this to hold the
+                effective sample fixed while the order varies, so that the
+                criteria are comparable rather than merely computed.
+
+        Returns:
+            The target block, the design, and the row count of both.
 
         Raises:
-            DimensionError: If the panel is not longer than the order.
+            DimensionError: If the trimmed sample is shorter than the order.
         """
-        panel = self._endog if endog is None else endog
         lags = self._order if order is None else order
-        n = panel.shape[0]
-        if n <= lags:
-            raise DimensionError(f"{n} observations is too few for a design of order {lags}.")
-        effective = n - lags
-        deterministic = deterministic_columns(self._trend, effective, start=lags + 1)
-        return panel[lags:], np.column_stack([deterministic, lag_matrix(panel, lags)]), effective
+        panel = self._endog[trim:]
+        nobs = panel.shape[0]
+        if nobs <= lags:
+            raise DimensionError(f"{nobs} observations is too few for a design of order {lags}.")
+        effective = nobs - lags
+        det = deterministic_columns(self._trend, effective, start=trim + lags + 1)
+        return panel[lags:], np.column_stack([det, lag_matrix(panel, lags)]), effective
 
     @staticmethod
     def _least_squares(
         target: npt.NDArray[np.float64], design: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Solve the multivariate regression, returning coefficients and residuals.
+        """Solve the multivariate regression and return coefficients and residuals."""
+        coef: npt.NDArray[np.float64] = np.linalg.lstsq(design, target, rcond=None)[0]
+        return coef, target - design @ coef
 
-        Not :func:`~cultivars._core.ols`, which reduces its residuals to a
-        scalar sum of squares and so is univariate by construction. Here the
-        residual is a ``(nobs, k)`` matrix whose cross-product is the
-        innovation covariance, and collapsing it would throw away the object
-        the whole model is about.
-        """
-        coefficients = np.linalg.lstsq(design, target, rcond=None)[0]
-        return coefficients, target - design @ coefficients
+    def _gaussian_moments(
+        self, target: npt.NDArray[np.float64], design: npt.NDArray[np.float64]
+    ) -> _VectorMoments:
+        """Least squares plus the concentrated Gaussian likelihood.
 
-    def _fit_family(self) -> _VectorAutoregressionFit:
-        """Estimate the system by least squares.
+        Args:
+            target: The ``(nobs, k)`` block being explained.
+            design: The ``(nobs, width)`` regressor matrix.
 
         Returns:
-            The packed :class:`_VectorAutoregressionFit`. Both covariance
-            estimators are stored: the maximum-likelihood one drives the
-            likelihood and the information criteria, the degrees-of-freedom
-            adjusted one drives Wald tests and the impact matrix.
+            A :class:`_VectorMoments` record.
 
         Raises:
-            DimensionError: If the effective sample cannot identify the
-                coefficients.
+            DimensionError: If the design is not overidentified.
             NumericalError: If the residual covariance is singular, which means
-                one variable is an exact linear combination of the others.
+                one equation is an exact linear combination of the others.
         """
-        k, p = self.k_endog, self._order
-        d = n_deterministic(self._trend)
-        target, design, nobs = self._design()
-        width = design.shape[1]
+        nobs, width = design.shape
+        k = target.shape[1]
         if nobs <= width:
             raise DimensionError(
-                f"{nobs} observations cannot identify {width} coefficients per equation; "
-                f"shorten the order or the deterministic block."
+                f"{nobs} observations cannot identify {width} coefficients per equation."
             )
-        coefficients, resid = self._least_squares(target, design)
+        coef, resid = self._least_squares(target, design)
         cross = resid.T @ resid
         sigma_ml = cross / nobs
         sign, logdet = np.linalg.slogdet(sigma_ml)
         if sign <= 0:
-            raise NumericalError(
-                "the residual covariance is singular, so the system has no likelihood; "
-                "one endogenous variable is an exact linear combination of the others."
-            )
-        llf = -0.5 * nobs * k * _LOG_2PI - 0.5 * nobs * logdet - 0.5 * nobs * k
-        blocks = (
-            np.stack([coefficients[d + i * k : d + (i + 1) * k, :].T for i in range(p)])
-            if p
-            else np.zeros((0, k, k), dtype=np.float64)
-        )
-        return _VectorAutoregressionFit(
-            coefficients=blocks,
-            deterministic=coefficients[:d],
+            raise NumericalError("the residual covariance is singular.")
+        llf = -0.5 * nobs * k * _LOG_2PI - 0.5 * nobs * float(logdet) - 0.5 * nobs * k
+        return _VectorMoments(
+            coef=coef,
+            resid=resid,
+            fittedvalues=design @ coef,
             sigma_u=cross / (nobs - width),
             sigma_ml=sigma_ml,
-            design=design,
-            resid=resid,
-            fittedvalues=design @ coefficients,
             llf=float(llf),
-            nobs=nobs,
-            n_params=k * width + k * (k + 1) // 2,
+            nobs=int(nobs),
+            width=int(width),
+        )
+
+    def _lag_blocks(self, coef: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Slice the endogenous lag coefficients out as ``A_1, ..., A_p``.
+
+        Args:
+            coef: The full ``(width, k)`` coefficient matrix.
+
+        Returns:
+            A ``(p, k, k)`` stack, empty when the order is zero.
+        """
+        offset, k, p = self._n_deterministic_columns, self.k_endog, self._order
+        if not p:
+            return np.zeros((0, k, k), dtype=np.float64)
+        return np.stack([coef[offset + i * k : offset + (i + 1) * k, :].T for i in range(p)])
+
+    def _fit_family(self) -> _VectorAutoRegressionFit:
+        """Estimate the system by multivariate least squares."""
+        k = self.k_endog
+        target, design, _ = self._design()
+        moments = self._gaussian_moments(target, design)
+        return _VectorAutoRegressionFit(
+            coefficients=self._lag_blocks(moments.coef),
+            deterministic=moments.coef[: self._n_deterministic_columns],
+            sigma_u=moments.sigma_u,
+            sigma_ml=moments.sigma_ml,
+            design=design,
+            resid=moments.resid,
+            fittedvalues=moments.fittedvalues,
+            llf=moments.llf,
+            nobs=moments.nobs,
+            n_params=k * moments.width + k * (k + 1) // 2,
         )
 
     def lag_order_selection(self, max_lags: int | None = None) -> _LagOrderSelection:
-        """Score every order from zero to ``max_lags`` by four criteria.
-
-        Ignores the constructed order deliberately: this answers "what order
-        should this panel have", which is a question about the data, and
-        forcing a caller to build a model at the order they are trying to
-        choose would be circular.
-
-        Every candidate is scored on the **same** effective sample, trimmed at
-        ``max_lags`` rather than at each candidate's own order. Selecting on
-        each order's natural sample is the standard way to get this wrong: a
-        VAR(1) fitted to one more observation than a VAR(2) produces criteria
-        that are not comparable, and the bias runs toward short lags because a
-        larger sample lowers the log-determinant. It is the same defect
-        :meth:`_ComparisonMixin.compare` refuses across estimators, arriving
-        here through the back door.
+        """Score every order from zero to ``max_lags`` on one common sample.
 
         Args:
-            max_lags: Longest order to consider. Defaults to the largest order
-                the sample can support with at least one degree of freedom.
+            max_lags: Highest order to score. Defaults to the largest the
+                sample supports.
 
         Returns:
-            The :class:`_LagOrderSelection`, carrying the full criterion curves
-            alongside the four selected orders. The curves matter: the criteria
-            routinely disagree -- Bayesian and Hannan-Quinn penalize harder
-            than Akaike and pick shorter -- and a caller shown only the winners
-            cannot see whether the choice was close.
+            A :class:`_LagOrderSelection` holding all four criteria.
 
         Raises:
-            SpecificationError: If ``max_lags`` is negative or exceeds what the
-                sample supports.
-            NumericalError: If the common-sample construction fails, which
-                would silently invalidate every comparison.
+            SpecificationError: If ``max_lags`` exceeds what the sample supports.
+            NumericalError: If the candidates do not share one effective sample,
+                which would make the criteria incomparable.
         """
-        k, n = self.k_endog, self._endog.shape[0]
-        d = n_deterministic(self._trend)
-        supported = (n - d - 1) // (k + 1)
-        top = supported if max_lags is None else validate_order(max_lags, "max_lags", minimum=0)
-        if top > supported:
+        supported = self._max_supported_lags()
+        top = supported if max_lags is None else int(max_lags)
+        if top < 0 or top > supported:
             raise SpecificationError(
-                f"max_lags {top} exceeds what {n} observations support for {k} "
-                f"variables (maximum {supported})."
+                f"max_lags {top} exceeds what this sample supports (maximum {supported})."
             )
-        effective = n - top
+        k = self.k_endog
+        top_burn = self._burn_for(top)
         curves: dict[str, list[float]] = {name: [] for name in ("aic", "bic", "hqic", "fpe")}
+        effective = -1
         for candidate in range(top + 1):
-            target, design, nobs = self._design(candidate, endog=self._endog[top - candidate :])
-            if nobs != effective:
+            target, design, nobs = self._design(
+                candidate, trim=top_burn - self._burn_for(candidate)
+            )
+            if effective < 0:
+                effective = nobs
+            elif nobs != effective:
                 raise NumericalError(
-                    f"order {candidate} produced {nobs} observations against a common "
-                    f"sample of {effective}; the criteria would not be comparable."
+                    f"order {candidate} produced {nobs} rows against {effective} for the "
+                    "shorter orders; the common-sample construction failed."
                 )
             width = design.shape[1]
             _, resid = self._least_squares(target, design)
@@ -2774,10 +2825,334 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
             curves["fpe"].append(
                 float(np.linalg.det(sigma) * ((effective + width) / (effective - width)) ** k)
             )
-        criteria = {name: np.asarray(values, dtype=np.float64) for name, values in curves.items()}
         return _LagOrderSelection(
             max_lags=top,
             nobs=effective,
-            criteria=criteria,
-            selected={name: int(np.argmin(values)) for name, values in criteria.items()},
+            **{name: np.asarray(values, dtype=np.float64) for name, values in curves.items()},
+        )
+
+
+class _PanelVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """A vector autoregression estimated across units with pooled slopes.
+
+    Every unit shares the autoregressive matrices and the innovation
+    covariance; only the intercept is allowed to differ. That is the whole
+    content of the specification, and it is a strong assumption rather than a
+    technicality -- heterogeneous dynamics estimated as if pooled do not average
+    to the mean dynamics.
+
+    The one mechanical rule that matters is that lags are built inside each unit
+    and never across a boundary. Stacking first and lagging afterwards would
+    quietly regress each unit's first observation on the previous unit's last,
+    which produces a number rather than an error.
+
+    With unit effects the estimator is least-squares dummy variables, so the lag
+    coefficients carry the Nickell bias: of order ``1/T``, downward for a
+    positive own-lag, and unaffected by the number of units. The result says so
+    on its summary rather than reporting a clean-looking coefficient.
+    """
+
+    __slots__ = ("_effects", "_lengths", "_unit_names", "_units")
+
+    def __init__(
+        self,
+        panel: npt.ArrayLike | Sequence[npt.ArrayLike],
+        *,
+        order: int,
+        effects: PanelEffects = "unit",
+        trend: Trend = "n",
+        names: Sequence[str] | None = None,
+        unit_names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the panel and the specification.
+
+        Args:
+            panel: A ``(n_units, nobs, k)`` array, or a sequence of ``(nobs_i, k)``
+                arrays for an unbalanced panel.
+            order: Autoregressive order, common to all units.
+            effects: ``"unit"`` for one intercept per unit, ``"none"`` for a
+                single deterministic block shared by the pool.
+            trend: Deterministic terms, used only when ``effects="none"``.
+            names: Variable labels.
+            unit_names: Unit labels. Defaults to ``unit1 ... unitN``.
+
+        Raises:
+            SpecificationError: If ``effects`` is unrecognized, unit effects are
+                combined with a pooled constant, or the labels are malformed.
+            DimensionError: If the panel is malformed or a unit is too short to
+                supply the lags.
+        """
+        self._units = validate_panel(panel)
+        self._lengths = tuple(int(unit.shape[0]) for unit in self._units)
+        if effects not in ("none", "unit"):
+            raise SpecificationError(f"effects must be one of ('none', 'unit'); got {effects!r}.")
+        self._effects: str = effects
+        if effects == "unit" and trend in ("c", "ct"):
+            raise SpecificationError(
+                "unit effects already span the intercept, so trend must be 'n' when "
+                f"effects='unit'; got trend={trend!r}. A pooled constant alongside unit "
+                "dummies is exactly collinear and the two are not separately identified."
+            )
+        self._unit_names = self._resolve_names(unit_names, len(self._units), "unit_names", "unit")
+        super().__init__(np.vstack(self._units), order=order, trend=trend, names=names)
+        shortest = min(self._lengths)
+        if shortest <= self._order:
+            raise DimensionError(
+                f"unit {self._unit_names[self._lengths.index(shortest)]!r} has {shortest} "
+                f"observations, which cannot supply {self._order} lags; lags are never "
+                "taken across a unit boundary, so the shortest unit binds."
+            )
+
+    @property
+    def units(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """The per-unit series, in the order given."""
+        return self._units
+
+    @property
+    def unit_names(self) -> tuple[str, ...]:
+        """Unit labels."""
+        return self._unit_names
+
+    @property
+    def unit_lengths(self) -> tuple[int, ...]:
+        """Observations per unit, before lags are taken."""
+        return self._lengths
+
+    @property
+    def effects(self) -> str:
+        """Which intercepts the specification allows to vary."""
+        return self._effects
+
+    @property
+    def n_units(self) -> int:
+        """Number of units."""
+        return len(self._units)
+
+    @property
+    def _n_deterministic_columns(self) -> int:
+        """Unit indicators under fixed effects, otherwise the trend block."""
+        return self.n_units if self._effects == "unit" else n_deterministic(self._trend)
+
+    def _rows_lost(self, order: int) -> int:
+        """Rows lost across the stack: ``order`` from each unit."""
+        return self.n_units * order
+
+    def _max_supported_lags(self) -> int:
+        """Largest order the pool supports, bounded by the shortest unit."""
+        total = sum(self._lengths)
+        free = total - self._n_deterministic_columns - 1
+        cap = free // (self.n_units + self.k_endog)
+        return max(min(cap, min(self._lengths) - 1), 0)
+
+    def _unit_deterministic(self, index: int, rows: int, *, start: int) -> npt.NDArray[np.float64]:
+        """The deterministic block one unit contributes.
+
+        Args:
+            index: Position of the unit.
+            rows: Rows this unit contributes to the design.
+            start: Time index of the unit's first modelled row.
+
+        Returns:
+            A ``(rows, _n_deterministic_columns)`` block.
+        """
+        if self._effects != "unit":
+            return deterministic_columns(self._trend, rows, start=start)
+        block = np.zeros((rows, self.n_units), dtype=np.float64)
+        block[:, index] = 1.0
+        return block
+
+    def _design(
+        self, order: int | None = None, *, trim: int = 0
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
+        """Build each unit's design separately and stack them.
+
+        Args:
+            order: Autoregressive order; defaults to the fitted order.
+            trim: Leading observations to discard from *each* unit first.
+
+        Returns:
+            The stacked target, the stacked design, and their row count.
+
+        Raises:
+            DimensionError: If any unit is too short after the trim.
+        """
+        lags = self._order if order is None else order
+        targets: list[npt.NDArray[np.float64]] = []
+        designs: list[npt.NDArray[np.float64]] = []
+        for index, unit in enumerate(self._units):
+            trimmed = unit[trim:]
+            nobs = trimmed.shape[0]
+            if nobs <= lags:
+                raise DimensionError(
+                    f"unit {self._unit_names[index]!r} has {nobs} usable observations, too "
+                    f"few for a design of order {lags}."
+                )
+            det = self._unit_deterministic(index, nobs - lags, start=trim + lags + 1)
+            targets.append(trimmed[lags:])
+            designs.append(np.column_stack([det, lag_matrix(trimmed, lags)]))
+        target = np.vstack(targets)
+        return target, np.vstack(designs), int(target.shape[0])
+
+
+class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """A vector autoregression with a distributed lag of weakly exogenous regressors.
+
+    The design gains one block of ``k_exog`` columns per exogenous lag, placed
+    *after* the endogenous lags rather than beside the deterministic terms. That
+    ordering is load-bearing: every offset the base computes -- the
+    deterministic slice, the lag slice, the Wald index -- is written against a
+    lag block that starts immediately after the deterministic block, and
+    appending keeps all of them correct without a single override.
+
+    Two things the exogenous block does not do. It does not enter the
+    moving-average representation, because ``x`` is conditioned on rather than
+    shocked, so impulse responses and the variance decomposition are exactly the
+    endogenous ones. And it does not extend a forecast, because there is no
+    model of ``x`` here to extend it with.
+    """
+
+    __slots__ = ("_exog", "_exog_names", "_exog_order")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        exog: npt.ArrayLike,
+        *,
+        order: int,
+        exog_order: int = 0,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+        exog_names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate both samples and the specification.
+
+        Args:
+            endog: The ``(nobs, k)`` endogenous panel.
+            exog: The ``(nobs, m)`` exogenous block, aligned on the same index.
+            order: Endogenous autoregressive order.
+            exog_order: Exogenous lags beyond the contemporaneous term.
+            trend: Deterministic terms.
+            names: Endogenous labels.
+            exog_names: Exogenous labels. Defaults to ``x1 ... xm``.
+
+        Raises:
+            SpecificationError: If ``exog_order`` is malformed, the labels are
+                malformed, or an endogenous and an exogenous label collide.
+            DimensionError: If the two samples are not aligned or the sample is
+                too short for the specification.
+        """
+        rows = validate_endog_matrix(endog).shape[0]
+        self._exog = validate_exog(exog, nobs=rows)
+        if int(exog_order) != exog_order or exog_order < 0:
+            raise SpecificationError(f"exog_order must be an integer >= 0; got {exog_order!r}.")
+        self._exog_order = int(exog_order)
+        self._exog_names = self._resolve_names(exog_names, self._exog.shape[1], "exog_names", "x")
+        super().__init__(endog, order=order, trend=trend, names=names)
+        overlap = set(self._names) & set(self._exog_names)
+        if overlap:
+            raise SpecificationError(
+                "names and exog_names must not overlap, or a coefficient table cannot say "
+                f"which block a row came from; both contain {tuple(sorted(overlap))}."
+            )
+
+    @property
+    def exog(self) -> npt.NDArray[np.float64]:
+        """The validated exogenous block."""
+        return self._exog
+
+    @property
+    def exog_order(self) -> int:
+        """Exogenous lags beyond the contemporaneous term."""
+        return self._exog_order
+
+    @property
+    def exog_names(self) -> tuple[str, ...]:
+        """Exogenous labels."""
+        return self._exog_names
+
+    @property
+    def k_exog(self) -> int:
+        """Number of exogenous variables."""
+        return int(self._exog.shape[1])
+
+    @property
+    def n_regressors(self) -> int:
+        """Regressors per equation, including the distributed lag."""
+        return super().n_regressors + self.k_exog * (self._exog_order + 1)
+
+    def _burn_for(self, order: int) -> int:
+        """Leading observations lost, which the longer of the two orders sets."""
+        return max(order, self._exog_order)
+
+    def _max_supported_lags(self) -> int:
+        """Largest endogenous order the sample can identify."""
+        free = (
+            int(self._endog.shape[0])
+            - self._n_deterministic_columns
+            - self.k_exog * (self._exog_order + 1)
+            - 1
+        )
+        return max(free // (self.k_endog + 1), 0)
+
+    def _exog_block(self, exog: npt.NDArray[np.float64], burn: int) -> npt.NDArray[np.float64]:
+        """Stack ``x_t, x_{t-1}, ..., x_{t-s}`` for rows ``burn`` onward."""
+        nobs = exog.shape[0]
+        return np.column_stack([exog[burn - j : nobs - j] for j in range(self._exog_order + 1)])
+
+    def _design(
+        self, order: int | None = None, *, trim: int = 0
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
+        """Build the target and the three-block regressor matrix.
+
+        Args:
+            order: Endogenous order; defaults to the fitted order.
+            trim: Leading observations to discard from both samples first.
+
+        Returns:
+            The target block, the design, and the row count of both.
+
+        Raises:
+            DimensionError: If the trimmed sample cannot supply both sets of lags.
+        """
+        lags = self._order if order is None else order
+        burn = max(lags, self._exog_order)
+        panel = self._endog[trim:]
+        exog = self._exog[trim:]
+        nobs = panel.shape[0]
+        if nobs <= burn:
+            raise DimensionError(
+                f"{nobs} observations is too few for a design of order {lags} with "
+                f"{self._exog_order} exogenous lags."
+            )
+        effective = nobs - burn
+        det = deterministic_columns(self._trend, effective, start=trim + burn + 1)
+        design = np.column_stack(
+            [det, lag_matrix(panel, lags, start=burn), self._exog_block(exog, burn)]
+        )
+        return panel[burn:], design, effective
+
+    def _fit_family(self) -> _ExogenousVectorAutoRegressionFit:
+        """Estimate the system by multivariate least squares."""
+        k, m = self.k_endog, self.k_exog
+        target, design, _ = self._design()
+        moments = self._gaussian_moments(target, design)
+        start = self._n_deterministic_columns + k * self._order
+        exog_blocks = np.stack(
+            [
+                moments.coef[start + j * m : start + (j + 1) * m, :].T
+                for j in range(self._exog_order + 1)
+            ]
+        )
+        return _ExogenousVectorAutoRegressionFit(
+            coefficients=self._lag_blocks(moments.coef),
+            exog_coefficients=exog_blocks,
+            deterministic=moments.coef[: self._n_deterministic_columns],
+            sigma_u=moments.sigma_u,
+            sigma_ml=moments.sigma_ml,
+            design=design,
+            resid=moments.resid,
+            fittedvalues=moments.fittedvalues,
+            llf=moments.llf,
+            nobs=moments.nobs,
+            n_params=k * moments.width + k * (k + 1) // 2,
         )

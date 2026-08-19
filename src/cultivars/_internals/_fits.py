@@ -327,3 +327,26 @@ class _VectorAutoRegressionFit(_BaseFit):
     def n_regressors(self) -> int:
         """Regressors per equation, deterministic block included."""
         return int(self.design.shape[1])
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _ExogenousVectorAutoRegressionFit(_VectorAutoRegressionFit):
+    """A fit that additionally carries the distributed-lag coefficients.
+
+    Attributes:
+        exog_coefficients: ``(s + 1, k, m)`` stack of ``B_0, ..., B_s``, laid
+            out so that ``exog_coefficients[j]`` is the ``(k, m)`` matrix on
+            ``x_{t-j}`` and index ``0`` is the contemporaneous term.
+    """
+
+    exog_coefficients: npt.NDArray[np.float64]
+
+    @property
+    def exog_order(self) -> int:
+        """Number of exogenous lags beyond the contemporaneous term."""
+        return int(self.exog_coefficients.shape[0]) - 1
+
+    @property
+    def k_exog(self) -> int:
+        """Number of exogenous variables."""
+        return int(self.exog_coefficients.shape[2])

@@ -1,12 +1,11 @@
-
 from dataclasses import dataclass
 from typing import ClassVar
 
 import numpy as np
 import numpy.typing as npt
 
-from ..exceptions import SpecificationError
 from .._core import SummaryTable
+from ..exceptions import SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)

@@ -102,3 +102,13 @@ _CAPACITY_WARNING: float = 0.1
 
 _DEFAULT_ALPHA: Final[float] = 0.05
 """Significance level assumed by a bare ``reject()`` call and by the repr."""
+
+_CHOLESKY_NOTE = (
+    "Orthogonalized impulse responses and the variance decomposition use a Cholesky "
+    "factor, which imposes the recursive ordering of `names`; that is a structural "
+    "assumption, not a reduced-form result."
+)
+
+_NO_STDERR_NOTE = "Standard errors are not yet available for this estimator."
+
+_UNSTABLE_NOTE = "NOT STABLE: impulse responses diverge and forecasts are meaningless."

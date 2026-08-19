@@ -81,3 +81,13 @@ type LongMemoryMethod = Literal["gph", "local_whittle"]
 
 type ProbabilityType = Literal["smoothed", "filtered", "predicted"]
 """The three posteriors a Hamilton filter and Kim smoother produce."""
+
+type PanelEffects = Literal["none", "unit"]
+"""Which intercepts a panel vector autoregression lets vary across units.
+
+``"unit"`` estimates one intercept per unit as a dummy block, which is the
+least-squares dummy-variable estimator and carries the Nickell bias. ``"none"``
+pools the deterministic terms, which is only defensible when the units are
+known to share a mean. Slopes are pooled under both -- unit-varying dynamics
+are a different specification, not a value of this option.
+"""

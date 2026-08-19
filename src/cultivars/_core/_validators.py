@@ -59,7 +59,7 @@ def validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return arr
 
 
-def validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float64] | None:
+def validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float64]:
     """Coerce optional exogenous regressors to a ``(nobs, k)`` matrix.
 
     A 1-D input is promoted to a single column.
@@ -76,7 +76,7 @@ def validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float
         NumericalError: If ``exog`` contains non-finite values.
     """
     if exog is None:
-        return None
+        raise DimensionError("exog cannot be None; pass an empty array instead.")
     x = np.asarray(exog, dtype=np.float64)
     if x.ndim == 1:
         x = x[:, None]
@@ -300,3 +300,140 @@ def validate_endog_matrix(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     if not np.all(np.isfinite(arr)):
         raise NumericalError("endog contains non-finite values.")
     return arr
+
+
+def validate_exog_matrix(
+    exog: npt.ArrayLike, *, nobs: int, label: str = "exog"
+) -> npt.NDArray[np.float64]:
+    """Coerce a required exogenous regressor block and align it to a time index.
+
+    The multivariate counterpart of :func:`validate_exog`, standing to it as
+    :func:`validate_endog_matrix` stands to :func:`validate_endog`. The split is
+    the same one and it is about the contract rather than the shape: a
+    univariate family may or may not carry exogenous regressors, so its
+    validator accepts ``None`` and hands back an ``Optional``; a VARX is defined
+    by having them, so requiring one here puts that in the signature instead of
+    in a runtime guard, and no caller downstream has to narrow a value that was
+    never going to be absent.
+
+    Carries no minimum-length rule and no transpose heuristic. An exogenous
+    block has no sample of its own -- it is only ever meaningful alongside an
+    endogenous panel -- so the one structural question worth asking is whether
+    its rows line up with that panel, and a mismatch there is unambiguous in a
+    way that a shape guess never is.
+
+    Args:
+        exog: The regressor block. A one-dimensional input is promoted to a
+            single column, since one exogenous variable is the common case and
+            requiring a trailing axis for it is friction with no payoff.
+        nobs: Number of rows the endogenous panel carries.
+        label: Name used in error messages, so a second block in the same call
+            -- a future path, an instrument set -- reports under its own name.
+
+    Returns:
+        A ``(nobs, m)`` float array.
+
+    Raises:
+        DimensionError: If the input is not one- or two-dimensional, has no
+            columns, or has a row count other than ``nobs``.
+        NumericalError: If the block contains non-finite values.
+
+    Example:
+        >>> validate_exog_matrix([1.0, 2.0, 3.0], nobs=3).shape
+        (3, 1)
+    """
+    arr = np.asarray(exog, dtype=np.float64)
+    if arr.ndim == 1:
+        arr = arr[:, None]
+    if arr.ndim != 2:
+        raise DimensionError(
+            f"{label} must be two-dimensional (nobs, m); got a {arr.ndim}-dimensional "
+            f"array of shape {arr.shape}."
+        )
+    if arr.shape[1] < 1:
+        raise DimensionError(f"{label} must have at least one column.")
+    if arr.shape[0] != nobs:
+        raise DimensionError(
+            f"{label} has {arr.shape[0]} rows but the endogenous panel has {nobs}; "
+            "the two are read against the same time index and must be aligned."
+        )
+    if not np.all(np.isfinite(arr)):
+        raise NumericalError(f"{label} contains non-finite values.")
+    return arr
+
+
+def validate_panel(
+    panel: npt.ArrayLike | Sequence[npt.ArrayLike], *, label: str = "panel"
+) -> tuple[npt.NDArray[np.float64], ...]:
+    """Coerce a collection of per-unit series into a tuple of aligned matrices.
+
+    Two input shapes are accepted and they mean different things. A three-
+    dimensional array is a balanced panel indexed ``(unit, time, variable)``. A
+    sequence of two-dimensional arrays is the general case and may be ragged,
+    which is what an unbalanced panel is.
+
+    The per-unit checks deliberately omit the transpose heuristic that
+    :func:`validate_endog_matrix` applies. That heuristic reads "more columns
+    than rows" as a transposed series, which is sound for one long series and
+    wrong for a panel unit, where a short ``T`` next to a moderate number of
+    variables is ordinary rather than suspicious. The stacked panel is validated
+    as a whole downstream, which is where the heuristic still has purchase.
+
+    Args:
+        panel: A ``(n_units, nobs, k)`` array, or a sequence of ``(nobs_i, k)``
+            arrays. One-dimensional units are promoted to a single column.
+        label: Name used in error messages.
+
+    Returns:
+        One float matrix per unit, in the order given.
+
+    Raises:
+        DimensionError: If the input is an array of rank other than three, is
+            not a sequence, is empty, contains a unit of rank other than one or
+            two, contains a unit with no columns, or mixes column counts.
+        NumericalError: If any unit contains non-finite values.
+
+    Example:
+        >>> units = validate_panel(np.zeros((3, 20, 2)))
+        >>> len(units), units[0].shape
+        (3, (20, 2))
+    """
+    if isinstance(panel, np.ndarray):
+        if panel.ndim != 3:
+            raise DimensionError(
+                f"{label} given as an array must be three-dimensional "
+                f"(units, time, variables); got shape {panel.shape}. Pass a sequence of "
+                "two-dimensional arrays for an unbalanced panel."
+            )
+        raw: list[npt.ArrayLike] = [panel[i] for i in range(panel.shape[0])]
+    elif isinstance(panel, Sequence):
+        raw = list(panel)
+    else:
+        raise DimensionError(
+            f"{label} must be a three-dimensional array or a sequence of two-dimensional "
+            f"arrays; got {type(panel).__name__}."
+        )
+    if not raw:
+        raise DimensionError(f"{label} must contain at least one unit.")
+    blocks: list[npt.NDArray[np.float64]] = []
+    for index, unit in enumerate(raw):
+        arr = np.asarray(unit, dtype=np.float64)
+        if arr.ndim == 1:
+            arr = arr[:, None]
+        if arr.ndim != 2:
+            raise DimensionError(
+                f"unit {index} of {label} must be two-dimensional (nobs, k); got a "
+                f"{arr.ndim}-dimensional array of shape {arr.shape}."
+            )
+        if arr.shape[1] < 1:
+            raise DimensionError(f"unit {index} of {label} must have at least one column.")
+        if not np.all(np.isfinite(arr)):
+            raise NumericalError(f"unit {index} of {label} contains non-finite values.")
+        blocks.append(arr)
+    widths = {block.shape[1] for block in blocks}
+    if len(widths) != 1:
+        raise DimensionError(
+            f"every unit of {label} must carry the same variables in the same order; got "
+            f"column counts {sorted(widths)}."
+        )
+    return tuple(blocks)
