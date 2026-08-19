@@ -21,13 +21,16 @@ class _JohansenRankTest:
     of any single step -- a caveat the table states rather than hides.
 
     Attributes:
-        eigenvalues: All ``k`` squared canonical correlations, descending.
+        eigenvalues: The squared canonical correlations, descending. One per
+            modelled equation, since a conditional system cannot support more
+            cointegrating relations than it has equations.
         trace_statistic: One entry per null ``rank <= r``, ``r = 0 .. k - 1``.
         max_eigenvalue_statistic: One entry per null ``rank = r``.
         trace_pvalue: Empirical p-values from the simulated null.
         max_eigenvalue_pvalue: Empirical p-values from the simulated null.
         nobs: Effective sample the statistics were computed on.
         deterministic: The Johansen case the null was simulated under.
+        k_exog: Weakly exogenous integrated regressors the null accounted for.
         simulations: Replications behind each p-value, so its resolution is
             visible rather than implied.
         small_sample: Whether the Reinsel-Ahn degrees-of-freedom scaling was
@@ -41,12 +44,13 @@ class _JohansenRankTest:
     max_eigenvalue_pvalue: npt.NDArray[np.float64]
     nobs: int
     deterministic: str
+    k_exog: int
     simulations: int
     small_sample: bool
 
     @property
     def k_endog(self) -> int:
-        """Number of variables in the system."""
+        """Number of modelled equations, which bounds the rank."""
         return int(self.eigenvalues.shape[0])
 
     @property
@@ -97,6 +101,12 @@ class _JohansenRankTest:
             f"asymptotic null for the '{self.deterministic}' case, so the smallest "
             f"resolvable value is {1 / self.simulations:.0e}.",
         ]
+        if self.k_exog:
+            notes.append(
+                f"The null accounts for {self.k_exog} weakly exogenous integrated "
+                "regressor(s); its critical values are materially larger than the "
+                "unconditional Johansen ones and the two are not interchangeable."
+            )
         if self.small_sample:
             notes.append(
                 "Statistics carry the Reinsel-Ahn degrees-of-freedom scaling, which pulls "
@@ -109,6 +119,7 @@ class _JohansenRankTest:
                 ("Observations", f"{self.nobs}"),
                 ("Variables", f"{self.k_endog}"),
                 ("Deterministic", self.deterministic),
+                ("Exogenous I(1)", f"{self.k_exog}"),
                 ("Selected rank", f"{chosen}"),
             ),
             columns=("H0", "eigenvalue", "trace", "P>trace", "max-eig", "P>max-eig"),

@@ -38,6 +38,7 @@ from ._converters import (
 from ._defaults import (
     _CAPACITY_WARNING,
     _CHOLESKY_NOTE,
+    _CONDITIONAL_REFUSAL,
     _D_MAX,
     _DEFAULT_ALPHA,
     _DEFAULT_GRID,
@@ -47,6 +48,7 @@ from ._defaults import (
     _DEFAULT_TRIM,
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
+    _NO_CLOSED_SYSTEM,
     _PENALTY,
     _ROW_SUM_ATOL,
     _SCHEMA_VERSION,
@@ -114,6 +116,7 @@ from ._validators import (
 __all__ = [
     "_CAPACITY_WARNING",
     "_CHOLESKY_NOTE",
+    "_CONDITIONAL_REFUSAL",
     "_DEFAULT_ALPHA",
     "_DEFAULT_GRID",
     "_DEFAULT_MAX_ITER",
@@ -124,7 +127,7 @@ __all__ = [
     "_D_MAX",
     "_LEVELS_TREND",
     "_LOG_2PI",
-    "_NO_STDERR_NOTE",
+    "_NO_CLOSED_SYSTEM",
     "_PENALTY",
     "_ROW_SUM_ATOL",
     "_SCHEMA_VERSION",

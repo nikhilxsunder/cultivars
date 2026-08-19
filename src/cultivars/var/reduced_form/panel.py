@@ -20,12 +20,20 @@ from ..._internals import (
     _SummaryMixin,
     _VectorAutoRegressionFit,
     _VectorInferenceMixin,
+    _VectorPropagationMixin,
+    _VectorResult,
 )
 from ...exceptions import SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class PanelVARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
+class PanelVARResult(
+    _VectorResult,
+    _SummaryMixin,
+    _ComparisonMixin,
+    _VectorInferenceMixin,
+    _VectorPropagationMixin,
+):
     """A fitted panel vector autoregression with pooled slopes.
 
     The residual matrix is a stack of units rather than one series, and every
@@ -59,23 +67,11 @@ class PanelVARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
         n_params: Free parameters, covariance included.
     """
 
-    endog: npt.NDArray[np.float64]
-    names: tuple[str, ...]
+    coefficients: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
     unit_names: tuple[str, ...]
     unit_lengths: tuple[int, ...]
     effects: str
-    order: int
-    trend: str
-    coefficients: npt.NDArray[np.float64]
-    deterministic: npt.NDArray[np.float64]
-    sigma_u: npt.NDArray[np.float64]
-    sigma_ml: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    design: npt.NDArray[np.float64]
-    llf: float
-    nobs: int
-    n_params: int
 
     @classmethod
     def _from_fit(

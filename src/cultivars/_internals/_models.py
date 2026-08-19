@@ -95,6 +95,7 @@ from .._core import (
     validate_endog,
     validate_endog_matrix,
     validate_exog,
+    validate_exog_matrix,
     validate_open_interval,
     validate_order,
     validate_order_tuple,
@@ -3180,6 +3181,14 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
     onto the base class's ``trend``, which is what the short-run regression and
     the lag-order criteria see.
 
+    An optional ``exog`` block makes this the conditional specification of
+    Pesaran, Shin and Smith: weakly exogenous integrated regressors that share
+    the cointegrating space and enter the lagged differences, but carry no
+    equations of their own. It lives on this class rather than a subclass
+    because a closed system is the case where the block happens to be empty,
+    and duplicating the eigenvalue problem to say so would be the wrong kind of
+    honesty.
+
     Estimation is Johansen's reduced-rank maximum likelihood: concentrate out
     the short-run terms, solve the eigenvalue problem for the cointegrating
     space, then -- and this is the part that keeps the class small -- take the
@@ -3191,7 +3200,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
     ``beta`` that converges fast enough for the conditioning to be free.
     """
 
-    __slots__ = ("_rank", "_trend_case")
+    __slots__ = ("_contemporaneous", "_exog", "_exog_names", "_rank", "_trend_case")
 
     def __init__(
         self,
@@ -3200,7 +3209,10 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         order: int,
         rank: int,
         cointegration_trend: CointegrationTrend = "constant",
+        exog: npt.ArrayLike | None = None,
+        contemporaneous: bool = True,
         names: Sequence[str] | None = None,
+        exog_names: Sequence[str] | None = None,
     ) -> None:
         """Validate the sample, the lag length, and the rank.
 
@@ -3208,16 +3220,27 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             endog: The ``(nobs, k)`` panel of levels, time down the rows.
             order: Lags of the levels system; the VECM carries ``order - 1``
                 lagged differences.
-            rank: Cointegrating rank, from ``0`` to ``k - 1``.
+            rank: Cointegrating rank. Up to ``k - 1`` for a closed system, since
+                rank ``k`` is stationarity in levels; up to ``k`` when an
+                exogenous block is present, where it means every modelled
+                variable cointegrates with that block.
             cointegration_trend: One of Johansen's five cases.
-            names: Variable labels.
+            exog: An optional ``(nobs, k_x)`` block of weakly exogenous
+                integrated regressors, carried in the cointegrating space and
+                the lagged differences but given no equations of their own.
+                ``None`` is the closed system.
+            contemporaneous: Whether the current exogenous difference enters the
+                short-run equation. Ignored without an exogenous block.
+            names: Endogenous variable labels.
+            exog_names: Exogenous labels. Defaults to ``x1 ... xkx``.
 
         Raises:
             SpecificationError: If the order is below one, the case is
-                unrecognized, or the rank is outside ``0 .. k - 1``.
+                unrecognized, the labels collide, or the rank is outside its
+                admissible range.
             DimensionError: If the sample cannot support the specification.
         """
-        self._trend_case: CointegrationTrend = validate_choice(
+        self._trend_case: str = validate_choice(
             cointegration_trend, CointegrationTrend, "cointegration_trend"
         )
         if int(order) != order or order < 1:
@@ -3225,6 +3248,14 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
                 f"order counts lags of the levels system and must be at least 1; got {order!r}."
             )
         self._rank = -1
+        self._contemporaneous = bool(contemporaneous)
+        rows = int(validate_endog_matrix(endog).shape[0])
+        self._exog = (
+            np.zeros((rows, 0), dtype=np.float64)
+            if exog is None
+            else validate_exog_matrix(exog, nobs=rows)
+        )
+        self._exog_names = self._resolve_names(exog_names, self._exog.shape[1], "exog_names", "x")
         super().__init__(
             endog,
             order=int(order),
@@ -3232,16 +3263,27 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             names=names,
         )
         k = self.k_endog
-        if int(rank) != rank or not 0 <= rank < k:
+        overlap = set(self._names) & set(self._exog_names)
+        if overlap:
             raise SpecificationError(
-                f"rank must be an integer in 0..{k - 1}; got {rank!r}. A rank of {k} is "
-                "an unrestricted stationary system, which is a VAR in levels rather than "
-                "an error-correction model."
+                "names and exog_names must not overlap, or a coefficient table cannot say "
+                f"which block a row came from; both contain {tuple(sorted(overlap))}."
+            )
+        upper = k if self._exog.shape[1] else k - 1
+        if int(rank) != rank or not 0 <= rank <= upper:
+            raise SpecificationError(
+                f"rank must be an integer in 0..{upper}; got {rank!r}."
+                + (
+                    ""
+                    if self._exog.shape[1]
+                    else f" A rank of {k} is an unrestricted stationary system, which is a "
+                    "VAR in levels rather than an error-correction model."
+                )
             )
         self._rank = int(rank)
 
     @property
-    def cointegration_trend(self) -> CointegrationTrend:
+    def cointegration_trend(self) -> str:
         """The Johansen case."""
         return self._trend_case
 
@@ -3251,9 +3293,33 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         return self._rank
 
     @property
+    def exog(self) -> npt.NDArray[np.float64]:
+        """The weakly exogenous block, zero-width for a closed system."""
+        return self._exog
+
+    @property
+    def exog_names(self) -> tuple[str, ...]:
+        """Exogenous labels."""
+        return self._exog_names
+
+    @property
+    def k_exog(self) -> int:
+        """Weakly exogenous integrated regressors."""
+        return int(self._exog.shape[1])
+
+    @property
+    def contemporaneous(self) -> bool:
+        """Whether the current exogenous difference enters the short-run equation."""
+        return self._contemporaneous and bool(self.k_exog)
+
+    @property
     def k_cointegrating(self) -> int:
-        """Rows of ``beta``: the variables plus any restricted deterministic term."""
-        return self.k_endog + int(self._trend_case in ("restricted_constant", "restricted_trend"))
+        """Rows of ``beta``: every integrated variable plus any restricted term."""
+        return (
+            self.k_endog
+            + self.k_exog
+            + int(self._trend_case in ("restricted_constant", "restricted_trend"))
+        )
 
     @property
     def _n_short_run_lags(self) -> int:
@@ -3265,7 +3331,8 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         """Short-run regressors per equation."""
         return (
             n_deterministic(self._trend)
-            + self.k_endog * self._n_short_run_lags
+            + (self.k_endog + self.k_exog) * self._n_short_run_lags
+            + self.k_exog * int(self.contemporaneous)
             + max(self._rank, 0)
         )
 
@@ -3280,20 +3347,23 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             NumericalError: If the lagged-levels second moment is singular,
                 which means a variable is redundant.
         """
-        levels_all = self._endog
-        nobs_total = levels_all.shape[0]
+        k = self.k_endog
+        joint = np.column_stack([self._endog, self._exog]) if self.k_exog else self._endog
+        nobs_total = joint.shape[0]
         order = self._order
         effective = nobs_total - order
         if effective <= 0:
             raise DimensionError(
                 f"a sample of {nobs_total} rows cannot support {order} levels lags."
             )
-        diffs = np.diff(levels_all, axis=0)
-        differences = diffs[order - 1 :]
-        levels = levels_all[order - 1 : nobs_total - 1]
+        diffs = np.diff(joint, axis=0)
+        differences = diffs[order - 1 :, :k]
+        levels = joint[order - 1 : nobs_total - 1]
         blocks = [
             diffs[order - i - 1 : nobs_total - i - 1] for i in range(1, self._n_short_run_lags + 1)
         ]
+        if self.contemporaneous:
+            blocks.append(diffs[order - 1 :, k:])
         index = np.arange(order, nobs_total, dtype=np.float64)[:, None]
         if self._trend_case == "restricted_constant":
             levels = np.column_stack([levels, np.ones(effective)])
@@ -3304,9 +3374,8 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             np.column_stack([det, *blocks]) if blocks or det.shape[1] else np.zeros((effective, 0))
         )
         if short_run.shape[1]:
-            projector = short_run @ np.linalg.pinv(short_run)
-            r0 = differences - projector @ differences
-            r1 = levels - projector @ levels
+            r0 = differences - short_run @ np.linalg.lstsq(short_run, differences, rcond=None)[0]
+            r1 = levels - short_run @ np.linalg.lstsq(short_run, levels, rcond=None)[0]
         else:
             r0, r1 = differences, levels
         s00 = r0.T @ r0 / effective
@@ -3324,7 +3393,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         eigenvalues, vectors = np.linalg.eigh((quad + quad.T) / 2.0)
         order_desc = np.argsort(eigenvalues)[::-1]
         return _CointegrationMoments(
-            eigenvalues=np.clip(eigenvalues[order_desc], 0.0, 1.0 - 1e-15),
+            eigenvalues=np.clip(eigenvalues[order_desc][:k], 0.0, 1.0 - 1e-15),
             eigenvectors=inverse.T @ vectors[:, order_desc],
             levels=levels,
             differences=differences,
@@ -3348,8 +3417,13 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         the data and the lag length alone and can be read before committing to
         a specification.
 
+        With an exogenous block the null distribution is the conditional one of
+        Pesaran, Shin and Smith, which the simulator is told about through
+        ``n_exog``. Its critical values are materially larger, so a conditional
+        statistic read against the unconditional table would over-reject.
+
         Args:
-            small_sample: Apply the Reinsel-Ahn scaling ``(T - k * p) / T``.
+            small_sample: Apply the Reinsel-Ahn scaling ``(T - (k_y + k_x) * p) / T``.
                 The asymptotic test over-rejects in short samples -- around
                 seven percent at a nominal five in a three-variable system with
                 four hundred observations -- and this pulls it back.
@@ -3362,7 +3436,8 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         """
         moments = self._cointegration_moments()
         k, effective = self.k_endog, moments.nobs
-        scale = (effective - k * self._order) / effective if small_sample else 1.0
+        span = k + self.k_exog
+        scale = (effective - span * self._order) / effective if small_sample else 1.0
         logs = np.log1p(-moments.eigenvalues[:k])
         trace = np.array(
             [-effective * scale * logs[rank:].sum() for rank in range(k)], dtype=np.float64
@@ -3374,6 +3449,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             trace_null, maximum_null = simulate_cointegration_null(
                 k - rank,
                 self._trend_case,
+                n_exog=self.k_exog,
                 simulations=simulations,
                 steps=steps,
                 seed=seed,
@@ -3388,8 +3464,66 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             max_eigenvalue_pvalue=maximum_p,
             nobs=effective,
             deterministic=self._trend_case,
+            k_exog=self.k_exog,
             simulations=simulations,
             small_sample=small_sample,
+        )
+
+    def _fit_family(self) -> _VectorErrorCorrectionFit:
+        """Estimate the system at the specified rank.
+
+        Returns:
+            A :class:`_VectorErrorCorrectionFit`.
+
+        Raises:
+            DimensionError: If the short-run design is not overidentified.
+            NumericalError: If the residual covariance is singular.
+        """
+        moments = self._cointegration_moments()
+        k, rank, m = self.k_endog, self._rank, self.k_exog
+        span = k + m
+        beta = moments.eigenvectors[:, :rank]
+        correction = moments.levels @ beta
+        design = np.column_stack([moments.short_run, correction])
+        least_squares: _VectorMoments = self._gaussian_moments(moments.differences, design)
+        width_det = n_deterministic(self._trend)
+        lags = self._n_short_run_lags
+        gamma = (
+            np.stack(
+                [
+                    least_squares.coef[width_det + i * span : width_det + (i + 1) * span, :].T
+                    for i in range(lags)
+                ]
+            )
+            if lags
+            else np.zeros((0, k, span), dtype=np.float64)
+        )
+        cursor = width_det + span * lags
+        impact = (
+            least_squares.coef[cursor : cursor + m, :].T
+            if self.contemporaneous
+            else np.zeros((k, 0), dtype=np.float64)
+        )
+        cursor += m * int(self.contemporaneous)
+        alpha = least_squares.coef[cursor:, :].T
+        short_run_det = least_squares.coef[:width_det]
+        return _VectorErrorCorrectionFit(
+            alpha=alpha,
+            beta=beta,
+            gamma=gamma,
+            short_run_deterministic=short_run_det,
+            impact=impact,
+            eigenvalues=moments.eigenvalues,
+            coefficients=self._levels_blocks(alpha, beta, gamma),
+            deterministic=self._levels_deterministic(alpha, beta, short_run_det),
+            sigma_u=least_squares.sigma_u,
+            sigma_ml=least_squares.sigma_ml,
+            design=design,
+            resid=least_squares.resid,
+            fittedvalues=least_squares.fittedvalues,
+            llf=least_squares.llf,
+            nobs=least_squares.nobs,
+            n_params=k * least_squares.width + k * (k + 1) // 2,
         )
 
     def _levels_blocks(
@@ -3405,8 +3539,16 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         is what lets every dynamic method downstream -- impulse responses, the
         variance decomposition, forecasts -- be inherited from the reduced-form
         surface instead of reimplemented in error-correction coordinates.
+
+        A conditional specification has no such representation and gets a
+        zero-length stack, which is the statement that there are no ``A_i`` --
+        not a default, and not something a caller should propagate. Closing the
+        system requires a model for the exogenous block, which is what a global
+        vector autoregression supplies by stacking units.
         """
         k, p = self.k_endog, self._order
+        if self.k_exog:
+            return np.zeros((0, k, k), dtype=np.float64)
         blocks = np.zeros((p, k, k), dtype=np.float64)
         blocks[0] = np.eye(k) + alpha @ beta[:k].T
         if p > 1:
@@ -3427,10 +3569,14 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         A restricted constant enters the data as ``alpha`` times the extra row
         of ``beta``; in the levels representation it is an ordinary intercept.
         Folding it out here means a forecast does not have to know which
-        Johansen case produced the model.
+        Johansen case produced the model. A conditional specification has no
+        levels representation to fold into, and says so with a zero-length
+        block.
         """
         k = self.k_endog
         case = self._trend_case
+        if self.k_exog:
+            return np.zeros((0, k), dtype=np.float64)
         if case == "none":
             return np.zeros((0, k), dtype=np.float64)
         if case in ("constant", "trend"):
@@ -3440,50 +3586,57 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             return restricted
         return np.vstack([short_run, restricted])
 
-    def _fit_family(self) -> _VectorErrorCorrectionFit:
-        """Estimate the system at the specified rank.
 
-        Returns:
-            A :class:`_VectorErrorCorrectionFit`.
+class _ExogenousVectorErrorCorrectionModel[R](_VectorErrorCorrectionModel[R]):
+    """The conditional case, with the exogenous block required rather than optional.
+
+    Adds nothing to the estimator. The base already carries an exogenous block
+    through the cointegrating space, the lagged differences, the contemporaneous
+    term, and the conditional null distribution, because a closed system is the
+    special case where that block is empty rather than a different model. This
+    subclass exists to make the requirement visible in the signature: a
+    conditional specification without exogenous variables is a VECM, and
+    silently accepting ``None`` here would let a caller believe they had asked
+    for something they had not.
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        exog: npt.ArrayLike,
+        *,
+        order: int,
+        rank: int,
+        cointegration_trend: CointegrationTrend = "constant",
+        contemporaneous: bool = True,
+        names: Sequence[str] | None = None,
+        exog_names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate both samples and the specification.
+
+        Args:
+            endog: The ``(nobs, k_y)`` modelled variables.
+            exog: The ``(nobs, k_x)`` weakly exogenous integrated regressors.
+            order: Lags of the levels system.
+            rank: Cointegrating rank, from ``0`` to ``k_y``.
+            cointegration_trend: One of Johansen's five cases.
+            contemporaneous: Whether the current exogenous difference enters.
+            names: Modelled variable labels.
+            exog_names: Exogenous labels.
 
         Raises:
-            DimensionError: If the short-run design is not overidentified.
-            NumericalError: If the residual covariance is singular.
+            SpecificationError: If the specification is malformed.
+            DimensionError: If the samples are misaligned or too short.
         """
-        moments = self._cointegration_moments()
-        k, rank = self.k_endog, self._rank
-        beta = moments.eigenvectors[:, :rank]
-        correction = moments.levels @ beta
-        design = np.column_stack([moments.short_run, correction])
-        least_squares: _VectorMoments = self._gaussian_moments(moments.differences, design)
-        width_det = n_deterministic(self._trend)
-        lags = self._n_short_run_lags
-        gamma = (
-            np.stack(
-                [
-                    least_squares.coef[width_det + i * k : width_det + (i + 1) * k, :].T
-                    for i in range(lags)
-                ]
-            )
-            if lags
-            else np.zeros((0, k, k), dtype=np.float64)
-        )
-        alpha = least_squares.coef[width_det + k * lags :, :].T
-        short_run_det = least_squares.coef[:width_det]
-        return _VectorErrorCorrectionFit(
-            alpha=alpha,
-            beta=beta,
-            gamma=gamma,
-            short_run_deterministic=short_run_det,
-            eigenvalues=moments.eigenvalues[:k],
-            coefficients=self._levels_blocks(alpha, beta, gamma),
-            deterministic=self._levels_deterministic(alpha, beta, short_run_det),
-            sigma_u=least_squares.sigma_u,
-            sigma_ml=least_squares.sigma_ml,
-            design=design,
-            resid=least_squares.resid,
-            fittedvalues=least_squares.fittedvalues,
-            llf=least_squares.llf,
-            nobs=least_squares.nobs,
-            n_params=k * least_squares.width + k * (k + 1) // 2,
+        super().__init__(
+            endog,
+            order=order,
+            rank=rank,
+            cointegration_trend=cointegration_trend,
+            exog=exog,
+            contemporaneous=contemporaneous,
+            names=names,
+            exog_names=exog_names,
         )

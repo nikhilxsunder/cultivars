@@ -10,26 +10,38 @@ import numpy.typing as npt
 
 from ..._core import (
     _CHOLESKY_NOTE,
+    _CONDITIONAL_REFUSAL,
     _LEVELS_TREND,
+    _UNRESTRICTED_TREND,
     _UNSTABLE_NOTE,
     CointegrationTrend,
     SummaryTable,
     deterministic_columns,
+    validate_exog_matrix,
 )
 from ..._internals import (
     _ComparisonMixin,
+    _ErrorCorrectionResult,
+    _ExogenousVectorErrorCorrectionModel,
     _StabilityResult,
     _SummaryMixin,
     _VectorErrorCorrectionFit,
     _VectorErrorCorrectionModel,
     _VectorInferenceMixin,
+    _VectorPropagationMixin,
     _WaldTestResult,
 )
-from ...exceptions import SpecificationError
+from ...exceptions import DimensionError, SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class VECMResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
+class VECMResult(
+    _ErrorCorrectionResult,
+    _SummaryMixin,
+    _ComparisonMixin,
+    _VectorInferenceMixin,
+    _VectorPropagationMixin,
+):
     """A fitted vector error-correction model.
 
     The result carries two representations of one estimate, and each half of
@@ -87,27 +99,8 @@ class VECMResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
         n_params: Free parameters, covariance included.
     """
 
-    endog: npt.NDArray[np.float64]
-    names: tuple[str, ...]
-    order: int
-    rank: int
-    cointegration_trend: str
-    trend: str
-    alpha: npt.NDArray[np.float64]
-    beta: npt.NDArray[np.float64]
-    gamma: npt.NDArray[np.float64]
     coefficients: npt.NDArray[np.float64]
     deterministic: npt.NDArray[np.float64]
-    short_run_deterministic: npt.NDArray[np.float64]
-    eigenvalues: npt.NDArray[np.float64]
-    sigma_u: npt.NDArray[np.float64]
-    sigma_ml: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    design: npt.NDArray[np.float64]
-    llf: float
-    nobs: int
-    n_params: int
 
     @classmethod
     def _from_fit(
@@ -467,3 +460,248 @@ class VECM(_VectorErrorCorrectionModel[VECMResult]):
     def fit(self) -> VECMResult:
         """Estimate the system at the specified rank and return the result."""
         return VECMResult._from_fit(self._fit_family(), self)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class VECMXResult(VECMResult):
+    """A fitted conditional vector error-correction model.
+
+    The Pesaran-Shin-Smith specification: ``k_y`` modelled variables share a
+    cointegrating space with ``k_x`` weakly exogenous integrated regressors,
+    and only the modelled equations are estimated. ``beta`` spans the combined
+    vector, ``Gamma`` is ``(k_y, k_y + k_x)`` because lagged differences of both
+    blocks enter, and ``impact`` carries the contemporaneous response to the
+    exogenous differences.
+
+    Everything that reads the estimated regression is inherited and correct:
+    ``params``, ``bse``, ``pvalues``, ``conf_int``, the residual diagnostics,
+    the weak-exogeneity test, and the two-channel Granger test. What is *not*
+    inherited is the half of the surface that needs a closed system. Impulse
+    responses, the variance decomposition, the historical decomposition, the
+    companion matrix, and the stability check all require a law of motion for
+    every integrated variable in the system, and this model deliberately does
+    not have one for ``x`` -- that omission is the specification, not a gap.
+    Those six raise rather than returning a number computed from the modelled
+    block alone, which would look like an impulse response and be an artifact.
+
+    :meth:`forecast` survives the same test and is kept: it needs a *path* for
+    the exogenous block, not a model of it, so the caller supplies one exactly
+    as for a VARX.
+
+    Attributes:
+        exog: The weakly exogenous sample.
+        exog_names: Exogenous labels.
+        impact: ``(k_y, k_x)`` contemporaneous response to exogenous
+            differences, zero-width when the model excludes it.
+        contemporaneous: Whether the current exogenous difference is included.
+    """
+
+    exog: npt.NDArray[np.float64]
+    exog_names: tuple[str, ...]
+    impact: npt.NDArray[np.float64]
+    contemporaneous: bool
+
+    @classmethod
+    def _from_fit(
+        cls, fit: _VectorErrorCorrectionFit, model: _VectorErrorCorrectionModel[Self]
+    ) -> Self:
+        """Assemble the public result from the internal fit and its model.
+
+        Annotated at the parent's binding rather than narrowed to the
+        conditional model, which would be a contravariance violation. Nothing
+        is lost: the exogenous block lives on the shared base, because a closed
+        system is the case where it happens to be empty.
+        """
+        case = cast(CointegrationTrend, model.cointegration_trend)
+        return cls(
+            endog=model.endog,
+            exog=model.exog,
+            names=model.names,
+            exog_names=model.exog_names,
+            order=model.order,
+            rank=model.rank,
+            cointegration_trend=case,
+            trend=_LEVELS_TREND[case],
+            alpha=fit.alpha,
+            beta=fit.beta,
+            gamma=fit.gamma,
+            impact=fit.impact,
+            contemporaneous=model.contemporaneous,
+            coefficients=fit.coefficients,
+            deterministic=fit.deterministic,
+            short_run_deterministic=fit.short_run_deterministic,
+            eigenvalues=fit.eigenvalues,
+            sigma_u=fit.sigma_u,
+            sigma_ml=fit.sigma_ml,
+            resid=fit.resid,
+            fittedvalues=fit.fittedvalues,
+            design=fit.design,
+            llf=fit.llf,
+            nobs=fit.nobs,
+            n_params=fit.n_params,
+        )
+
+    @property
+    def k_exog(self) -> int:
+        """Weakly exogenous integrated regressors."""
+        return len(self.exog_names)
+
+    @property
+    def n_common_trends(self) -> int:
+        """Unit roots the joint system carries, ``k_y + k_x - r``."""
+        return self.k_endog + self.k_exog - self.rank
+
+    def _refuse(self, what: str) -> None:
+        """Raise the shared explanation for a quantity the conditional model lacks."""
+        raise SpecificationError(_CONDITIONAL_REFUSAL.format(what=what, names=self.exog_names))
+
+    def _lag_labels(self) -> tuple[str, ...]:
+        """Lagged-difference column names over the joint vector."""
+        joint = (*self.names, *self.exog_names)
+        return tuple(f"D.{source}.L{lag + 1}" for lag in range(self.order - 1) for source in joint)
+
+    def _trailing_labels(self) -> tuple[str, ...]:
+        """Contemporaneous exogenous differences, then the error-correction terms."""
+        head = tuple(f"D.{name}" for name in self.exog_names) if self.contemporaneous else ()
+        return head + tuple(f"ec{i + 1}" for i in range(self.rank))
+
+    def _trailing_blocks(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """The impact block, then the adjustment loadings, in design order."""
+        head = (self.impact.T,) if self.contemporaneous else ()
+        return head + ((self.alpha.T,) if self.rank else ())
+
+    def _coefficient_stack(self) -> npt.NDArray[np.float64]:
+        """Short-run coefficients, laid out exactly as the design columns."""
+        blocks = [self.short_run_deterministic] if self.short_run_deterministic.shape[0] else []
+        blocks += [self.gamma[i].T for i in range(self.order - 1)]
+        blocks += list(self._trailing_blocks())
+        return np.vstack(blocks) if blocks else np.zeros((0, self.k_endog), dtype=np.float64)
+
+    def to_var(self) -> npt.NDArray[np.float64]:
+        """Unavailable: a conditional model has no levels representation."""
+        self._refuse("a levels vector autoregression")
+        raise AssertionError  # pragma: no cover
+
+    @property
+    def companion(self) -> npt.NDArray[np.float64]:
+        """Unavailable: a conditional model has no closed companion."""
+        self._refuse("the companion matrix")
+        raise AssertionError  # pragma: no cover
+
+    def stability_check(self) -> _StabilityResult:
+        """Unavailable: stability is a property of the closed system."""
+        self._refuse("a stability check")
+        raise AssertionError  # pragma: no cover
+
+    def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs a law of motion for the exogenous block."""
+        self._refuse("a moving-average representation")
+        raise AssertionError  # pragma: no cover
+
+    def irf(
+        self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
+    ) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs a law of motion for the exogenous block."""
+        self._refuse("an impulse response")
+        raise AssertionError  # pragma: no cover
+
+    def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs a law of motion for the exogenous block."""
+        self._refuse("a variance decomposition")
+        raise AssertionError  # pragma: no cover
+
+    def historical_decomposition(self) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs a law of motion for the exogenous block."""
+        self._refuse("a historical decomposition")
+        raise AssertionError  # pragma: no cover
+
+    def forecast(
+        self, steps: int = 1, *, exog_future: npt.ArrayLike | None = None
+    ) -> npt.NDArray[np.float64]:
+        """Point forecasts conditional on a future path for the exogenous block.
+
+        Args:
+            steps: Horizon.
+            exog_future: A ``(steps, k_x)`` path in the column order of
+                :attr:`exog_names`. Required.
+
+        Returns:
+            A ``(steps, k_y)`` array of conditional means for the modelled
+            levels.
+
+        Raises:
+            SpecificationError: If ``steps`` is not positive or the path is
+                omitted.
+            DimensionError: If the path has the wrong shape.
+        """
+        if steps < 1:
+            raise SpecificationError(f"steps must be at least 1; got {steps}.")
+        if exog_future is None:
+            raise SpecificationError(
+                "a conditional forecast needs the exogenous path, so it cannot be produced "
+                f"from the fitted model alone: pass exog_future with {steps} rows and "
+                f"{self.k_exog} columns for {self.exog_names}. This model holds no process "
+                "for x and will not invent one."
+            )
+        future = validate_exog_matrix(exog_future, nobs=steps, label="exog_future")
+        if future.shape[1] != self.k_exog:
+            raise DimensionError(
+                f"exog_future has {future.shape[1]} columns but the model was fitted with "
+                f"{self.k_exog}."
+            )
+        k, p = self.k_endog, self.order
+        total = self.endog.shape[0]
+        det = deterministic_columns(
+            _UNRESTRICTED_TREND[cast(CointegrationTrend, self.cointegration_trend)],
+            steps,
+            start=total + 1,
+        )
+        joint = np.column_stack([self.endog, self.exog])
+        path = np.vstack([joint, np.column_stack([np.zeros((steps, k)), future])])
+        out = np.empty((steps, k), dtype=np.float64)
+        for h in range(steps):
+            row = total + h
+            level = path[row - 1]
+            point = (
+                det[h] @ self.short_run_deterministic
+                if self.short_run_deterministic.shape[0]
+                else np.zeros(k)
+            )
+            if self.rank:
+                extended = level
+                if self.cointegration_trend == "restricted_constant":
+                    extended = np.append(level, 1.0)
+                elif self.cointegration_trend == "restricted_trend":
+                    extended = np.append(level, float(row))
+                point = point + self.alpha @ (self.beta.T @ extended)
+            for lag in range(p - 1):
+                point = point + self.gamma[lag] @ (path[row - lag - 1] - path[row - lag - 2])
+            if self.contemporaneous:
+                point = point + self.impact @ (path[row, k:] - path[row - 1, k:])
+            out[h] = level[:k] + point
+            path[row, :k] = out[h]
+        return out
+
+    def _comparison_label(self) -> str:
+        """Short specification label for a ranking table."""
+        return f"VECMX({self.order}, r={self.rank}, kx={self.k_exog})"
+
+
+class VECMX(_ExogenousVectorErrorCorrectionModel[VECMXResult]):
+    """Conditional vector error-correction model with weakly exogenous I(1) regressors.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> x = np.cumsum(rng.standard_normal((300, 1)), axis=0)
+        >>> y = np.column_stack([x[:, 0] + rng.standard_normal(300),
+        ...                      np.cumsum(rng.standard_normal(300))])
+        >>> res = VECMX(y, x, order=2, rank=1).fit()
+        >>> res.k_exog
+        1
+    """
+
+    __slots__ = ()
+
+    def fit(self) -> VECMXResult:
+        """Estimate the conditional system and return the fitted result."""
+        return VECMXResult._from_fit(self._fit_family(), self)

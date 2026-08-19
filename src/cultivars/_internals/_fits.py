@@ -364,27 +364,41 @@ class _VectorErrorCorrectionFit(_VectorAutoRegressionFit):
     once here so that no consumer has to know the folding rules, while the
     fields below carry the coordinates the model was actually estimated in.
 
+    A conditional specification is the exception: it has no levels
+    representation, so ``coefficients`` and ``deterministic`` come back
+    zero-length. That is a statement, not a default, and the conditional result
+    refuses to propagate it.
+
     Attributes:
-        alpha: ``(k, r)`` adjustment loadings.
-        beta: ``(k or k + 1, r)`` cointegrating vectors, the extra row present
-            when the case restricts a deterministic term to the cointegrating
-            space.
-        gamma: ``(p - 1, k, k)`` short-run coefficients on lagged differences.
-        short_run_deterministic: ``(d_s, k)`` unrestricted deterministic terms,
-            as they entered the regression.
-        eigenvalues: All ``k`` squared canonical correlations, descending.
+        alpha: ``(k_y, r)`` adjustment loadings.
+        beta: ``(k_y + k_x [+ 1], r)`` cointegrating vectors, the extra row
+            present when the case restricts a deterministic term to the
+            cointegrating space.
+        gamma: ``(p - 1, k_y, k_y + k_x)`` short-run coefficients on lagged
+            differences of every integrated variable.
+        short_run_deterministic: ``(d_s, k_y)`` unrestricted deterministic
+            terms, as they entered the regression.
+        impact: ``(k_y, k_x)`` contemporaneous response to the weakly exogenous
+            differences, zero-width for a closed system.
+        eigenvalues: The squared canonical correlations, descending.
     """
 
     alpha: npt.NDArray[np.float64]
     beta: npt.NDArray[np.float64]
     gamma: npt.NDArray[np.float64]
     short_run_deterministic: npt.NDArray[np.float64]
+    impact: npt.NDArray[np.float64]
     eigenvalues: npt.NDArray[np.float64]
 
     @property
     def rank(self) -> int:
         """Cointegrating rank."""
         return int(self.alpha.shape[1])
+
+    @property
+    def k_exog(self) -> int:
+        """Weakly exogenous integrated regressors carried without equations."""
+        return int(self.impact.shape[1])
 
     @property
     def cointegrating_matrix(self) -> npt.NDArray[np.float64]:

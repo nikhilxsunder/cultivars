@@ -30,6 +30,7 @@ from .._core import (
     _CAPACITY_WARNING,
     _DEFAULT_ALPHA,
     _SCHEMA_VERSION,
+    CointegrationTrend,
     InformationCriteria,
     companion_matrix,
 )
@@ -830,3 +831,73 @@ class _ObservedRegimeResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             f"max |root| lower = {self.lower_stability.max_modulus:.4f}, "
             f"upper = {self.upper_stability.max_modulus:.4f}"
         )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorResult:
+    """What every fitted multivariate result carries, whatever the family.
+
+    Twelve fields, and the test for membership is narrow: a field belongs here
+    only if it means the same thing for a reduced-form autoregression, a
+    fixed-effects panel, and an error-correction model. ``coefficients`` fails
+    that test -- for a VECM it is a derived levels representation and for a
+    conditional model it does not exist -- so it lives on the families that have
+    one rather than here, which is what lets a conditional result be a
+    first-class member of this hierarchy instead of a closed one with holes.
+
+    Attributes:
+        endog: The sample the model was fitted to.
+        names: Variable labels, in the order the columns appear.
+        order: Autoregressive order, counted in the family's own convention.
+        trend: Deterministic specification.
+        sigma_u: Residual covariance with the degrees-of-freedom correction.
+        sigma_ml: Residual covariance divided by the effective sample.
+        resid: Residuals over the effective sample.
+        fittedvalues: One-step conditional means over the effective sample.
+        design: The regressor matrix as estimated.
+        llf: Gaussian log-likelihood.
+        nobs: Effective sample size.
+        n_params: Free parameters, covariance included.
+    """
+
+    endog: npt.NDArray[np.float64]
+    names: tuple[str, ...]
+    order: int
+    trend: str
+    sigma_u: npt.NDArray[np.float64]
+    sigma_ml: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    design: npt.NDArray[np.float64]
+    llf: float
+    nobs: int
+    n_params: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _ErrorCorrectionResult(_VectorResult):
+    """The coordinates an error-correction model is actually estimated in.
+
+    Shared by the closed and conditional families, which differ in what they can
+    propagate and not in how they are parameterized. Everything here reads the
+    short-run regression, so all of it is valid for both: the cointegrating
+    space, the adjustment loadings, the lagged-difference coefficients, and the
+    two tests that restrict them.
+
+    Attributes:
+        rank: Cointegrating rank.
+        cointegration_trend: The Johansen case the model was estimated under.
+        alpha: ``(k_y, r)`` adjustment loadings.
+        beta: ``(k_y [+ k_x] [+ 1], r)`` cointegrating vectors.
+        gamma: ``(p - 1, k_y, ...)`` coefficients on lagged differences.
+        short_run_deterministic: ``(d_s, k_y)`` unrestricted deterministic terms.
+        eigenvalues: The squared canonical correlations, descending.
+    """
+
+    rank: int
+    cointegration_trend: CointegrationTrend
+    alpha: npt.NDArray[np.float64]
+    beta: npt.NDArray[np.float64]
+    gamma: npt.NDArray[np.float64]
+    short_run_deterministic: npt.NDArray[np.float64]
+    eigenvalues: npt.NDArray[np.float64]

@@ -287,6 +287,7 @@ def simulate_cointegration_null(
     n: int,
     case: CointegrationTrend,
     *,
+    n_exog: int = 0,
     simulations: int = 25_000,
     steps: int = 500,
     seed: int = 20260819,
@@ -311,9 +312,22 @@ def simulate_cointegration_null(
     Results are memoized on the full argument tuple, so a model that tests
     several ranks pays for each ``n`` once.
 
+    A conditional specification shifts the distribution rather than leaving it
+    alone. When ``n_exog`` weakly exogenous integrated regressors enter without
+    equations of their own, they widen the process being projected onto while
+    contributing no innovations of their own to project, so the statistic grows
+    and the critical values with it -- at five percent and one modelled common
+    trend, from 8.2 with no exogenous block to 11.3 with one. Reading a
+    conditional statistic against the unconditional table would over-reject
+    badly, which is why this is an argument rather than a footnote.
+
     Args:
-        n: Number of common trends under the null, ``k - r``.
+        n: Number of *modelled* common trends under the null. For a closed
+            system that is ``k - r``; for a conditional one it is ``k_y - r``,
+            counting only the equations that were estimated.
         case: One of :data:`CointegrationTrend`.
+        n_exog: Weakly exogenous integrated regressors carried without
+            equations. Zero recovers the standard Johansen distribution.
         simulations: Replications. Tail resolution is ``1 / simulations``.
         steps: Discretization of the unit interval. Coarse grids bias the
             statistic downward; 500 places the five percent point within about
@@ -324,11 +338,14 @@ def simulate_cointegration_null(
         Sorted trace and maximum-eigenvalue draws.
 
     Raises:
-        SpecificationError: If ``n`` is not positive, the case is unrecognized,
-            or the simulation controls are not positive.
+        SpecificationError: If ``n`` is not positive, ``n_exog`` is negative,
+            the case is unrecognized, or the simulation controls are not
+            positive.
     """
     if n < 1:
         raise SpecificationError(f"n must be at least 1; got {n}.")
+    if n_exog < 0:
+        raise SpecificationError(f"n_exog must be non-negative; got {n_exog}.")
     if case not in CointegrationTrend.__value__:
         raise SpecificationError(
             f"case must be one of {CointegrationTrend.__value__}; got {case!r}."
@@ -339,15 +356,16 @@ def simulate_cointegration_null(
     trace = np.empty(simulations, dtype=np.float64)
     maximum = np.empty(simulations, dtype=np.float64)
     grid = (np.arange(1, steps + 1, dtype=np.float64) / steps)[:, None]
+    width = n + n_exog
     chunk = max(1, min(2000, simulations))
     done = 0
     while done < simulations:
         size = min(chunk, simulations - done)
-        increments = rng.standard_normal((size, steps, n)) / np.sqrt(steps)
+        increments = rng.standard_normal((size, steps, width)) / np.sqrt(steps)
         walk = np.cumsum(increments, axis=1)
-        lagged = np.concatenate([np.zeros((size, 1, n)), walk[:, :-1]], axis=1)
+        lagged = np.concatenate([np.zeros((size, 1, width)), walk[:, :-1]], axis=1)
         regressor = _null_functional(lagged, grid, case)
-        cross = np.einsum("msi,msj->mij", increments, regressor)
+        cross = np.einsum("msi,msj->mij", increments[:, :, :n], regressor)
         gram = np.einsum("msi,msj->mij", regressor, regressor) / steps
         quad = cross @ np.linalg.solve(gram, np.swapaxes(cross, 1, 2))
         quad = (quad + np.swapaxes(quad, 1, 2)) / 2.0

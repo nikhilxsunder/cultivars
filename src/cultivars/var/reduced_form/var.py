@@ -49,12 +49,20 @@ from ..._internals import (
     _VectorAutoRegressionFit,
     _VectorAutoRegressionModel,
     _VectorInferenceMixin,
+    _VectorPropagationMixin,
+    _VectorResult,
 )
 from ...exceptions import DimensionError, SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class VARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
+class VARResult(
+    _VectorResult,
+    _SummaryMixin,
+    _ComparisonMixin,
+    _VectorInferenceMixin,
+    _VectorPropagationMixin,
+):
     """A fitted reduced-form vector autoregression.
 
     Attributes:
@@ -74,20 +82,8 @@ class VARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
         n_params: Free parameters, covariance included.
     """
 
-    endog: npt.NDArray[np.float64]
-    names: tuple[str, ...]
-    order: int
-    trend: str
     coefficients: npt.NDArray[np.float64]
     deterministic: npt.NDArray[np.float64]
-    sigma_u: npt.NDArray[np.float64]
-    sigma_ml: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    design: npt.NDArray[np.float64]
-    llf: float
-    nobs: int
-    n_params: int
 
     @classmethod
     def _from_fit(
@@ -163,7 +159,13 @@ class VAR(_VectorAutoRegressionModel[VARResult]):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class VARXResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
+class VARXResult(
+    _VectorResult,
+    _SummaryMixin,
+    _ComparisonMixin,
+    _VectorInferenceMixin,
+    _VectorPropagationMixin,
+):
     """A fitted vector autoregression with exogenous regressors.
 
     Everything the reduced-form surface offers is inherited unchanged, because
@@ -198,24 +200,12 @@ class VARXResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
         n_params: Free parameters, covariance included.
     """
 
-    endog: npt.NDArray[np.float64]
-    exog: npt.NDArray[np.float64]
-    names: tuple[str, ...]
-    exog_names: tuple[str, ...]
-    order: int
-    exog_order: int
-    trend: str
     coefficients: npt.NDArray[np.float64]
-    exog_coefficients: npt.NDArray[np.float64]
     deterministic: npt.NDArray[np.float64]
-    sigma_u: npt.NDArray[np.float64]
-    sigma_ml: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-    design: npt.NDArray[np.float64]
-    llf: float
-    nobs: int
-    n_params: int
+    exog: npt.NDArray[np.float64]
+    exog_names: tuple[str, ...]
+    exog_order: int
+    exog_coefficients: npt.NDArray[np.float64]
 
     @classmethod
     def _from_fit(

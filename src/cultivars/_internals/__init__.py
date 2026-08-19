@@ -43,11 +43,13 @@ from ._mixins import (
     _StationarityMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
+    _VectorPropagationMixin,
 )
 from ._models import (
     _AutoRegressionModel,
     _BoxJenkinsModel,
     _ExogenousVectorAutoRegressionModel,
+    _ExogenousVectorErrorCorrectionModel,
     _FractionalIntegrationModel,
     _FractionalVarianceModel,
     _LinearGaussianStateSpaceModel,
@@ -66,6 +68,7 @@ from ._predictors import MeanPredictor
 from ._results import (
     _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
+    _ErrorCorrectionResult,
     _HamiltonFilterResult,
     _KalmanFilterResult,
     _KimSmootherResult,
@@ -73,6 +76,7 @@ from ._results import (
     _MeanFunctionResult,
     _ObservedRegimeResult,
     _StabilityResult,
+    _VectorResult,
     _WaldTestResult,
 )
 
@@ -88,6 +92,7 @@ __all__ = [
     "_DurbinKoopmanSmootherResult",
     "_ExogenousVectorAutoRegressionFit",
     "_ExogenousVectorAutoRegressionModel",
+    "_ExogenousVectorErrorCorrectionModel",
     "_FractionalIntegrationFit",
     "_FractionalIntegrationModel",
     "_FractionalVarianceFit",
@@ -123,5 +128,7 @@ __all__ = [
     "_VectorErrorCorrectionFit",
     "_VectorErrorCorrectionModel",
     "_VectorInferenceMixin",
+    "_VectorPropagationMixin",
+    "_VectorResult",
     "_WaldTestResult",
 ]

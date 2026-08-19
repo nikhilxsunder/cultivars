@@ -38,13 +38,14 @@ comparison for anything reporting a likelihood.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
 from .._core import (
+    _NO_CLOSED_SYSTEM,
     InformationCriteria,
     SummaryTable,
     companion_matrix,
@@ -448,29 +449,6 @@ class _VectorInferenceMixin:
         return len(self.names)
 
     @property
-    def companion(self) -> npt.NDArray[np.float64]:
-        """The ``(kp, kp)`` companion matrix of the autoregressive block."""
-        return companion_matrix(self.coefficients)
-
-    def stability_check(self) -> _StabilityResult:
-        """Eigenvalue verdict for the companion matrix.
-
-        Returns:
-            The :class:`_StabilityResult`; the process is stable, and so has a
-            convergent moving-average representation, exactly when every
-            companion eigenvalue lies inside the unit circle. Every other
-            method here presumes that: an impulse response computed from an
-            explosive companion diverges rather than decays, and a forecast
-            from one is meaningless at any horizon.
-        """
-        return _StabilityResult.assess_stability(self.coefficients)
-
-    @property
-    def is_stable(self) -> bool:
-        """Whether every companion eigenvalue lies inside the unit circle."""
-        return self.stability_check().is_stable
-
-    @property
     def _lag_offset(self) -> int:
         """Design columns that sit ahead of the endogenous lag block.
 
@@ -530,130 +508,6 @@ class _VectorInferenceMixin:
 
     # -- dynamics ----------------------------------------------------------
 
-    def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
-        """Moving-average matrices ``Psi_0, ..., Psi_horizon``.
-
-        Computed as ``J C^h J'`` from the companion rather than by the
-        recursion ``Psi_h = sum_i A_i Psi_{h-i}``. The two agree to machine
-        precision, and the companion form generalizes without change to any
-        member of the family that can produce a companion matrix.
-
-        Args:
-            horizon: Largest lead to return.
-
-        Returns:
-            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
-
-        Raises:
-            SpecificationError: If ``horizon`` is negative.
-        """
-        if horizon < 0:
-            raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
-        k, p = self.k_endog, self.order
-        out = np.empty((horizon + 1, k, k), dtype=np.float64)
-        if p == 0:
-            out[:] = 0.0
-            out[0] = np.eye(k)
-            return out
-        selector = np.zeros((k, k * p), dtype=np.float64)
-        selector[:, :k] = np.eye(k)
-        power = np.eye(k * p, dtype=np.float64)
-        companion = self.companion
-        for h in range(horizon + 1):
-            out[h] = selector @ power @ selector.T
-            power = power @ companion
-        return out
-
-    def irf(
-        self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
-    ) -> npt.NDArray[np.float64]:
-        """Impulse responses to a one-standard-deviation shock.
-
-        Args:
-            horizon: Largest lead to return.
-            orthogonalized: When ``True``, post-multiply by the Cholesky factor
-                of ``sigma_u`` so the shocks are mutually uncorrelated. **This
-                is a structural assumption, not a reduced-form fact.** The
-                Cholesky factor is lower-triangular, so it imposes a recursive
-                ordering: the first variable in ``names`` responds to no shock
-                but its own on impact, the second to the first and its own, and
-                so on. Permuting ``names`` changes the answer. An orthogonalized
-                impulse response reported from a reduced-form VAR is a recursive
-                SVAR whose identifying restriction happens to be undeclared;
-                :mod:`cultivars.var.structural` is where that restriction gets
-                stated rather than assumed. With ``False`` you get the raw
-                ``Psi_h``, whose columns are responses to correlated
-                innovations and are therefore not interpretable one at a time.
-            cumulative: Return running sums, which is what you want when the
-                data are differences and the question is about levels.
-
-        Returns:
-            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]`` is
-            the response of variable ``i`` at lead ``h`` to shock ``j``.
-        """
-        psi = self.ma_representation(horizon)
-        out = psi @ self._impact() if orthogonalized else psi
-        return np.cumsum(out, axis=0) if cumulative else out
-
-    def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
-        """Forecast-error variance decomposition.
-
-        Args:
-            horizon: Largest lead to return.
-
-        Returns:
-            An array of shape ``(horizon + 1, k, k)`` whose entry ``[h, i, j]``
-            is the share of variable ``i``'s ``h + 1``-step forecast-error
-            variance attributable to shock ``j``. Rows sum to one by
-            construction, so a row that does not is a bug rather than a finding.
-
-        Note:
-            Inherits the ordering dependence of :meth:`irf` in full, and more
-            visibly: at ``h = 0`` the decomposition is exactly triangular, so
-            the first variable is always attributed 100% of its own impact
-            variance purely because of where it sits in ``names``.
-        """
-        theta = self.irf(horizon, orthogonalized=True)
-        contribution = np.cumsum(theta**2, axis=0)
-        return contribution / contribution.sum(axis=2, keepdims=True)
-
-    def forecast(self, steps: int = 1) -> npt.NDArray[np.float64]:
-        """Deterministic multi-step forecasts from the end of the sample.
-
-        Iterates the estimated system forward with future innovations set to
-        their zero mean, which is the conditional expectation. No interval is
-        returned: the coefficient uncertainty that should widen it is exactly
-        the standard-error machinery this package does not yet have, and a band
-        computed as though the coefficients were known would be too narrow in a
-        way nobody could see.
-
-        Args:
-            steps: Forecast horizon, at least one.
-
-        Returns:
-            An array of shape ``(steps, k)``.
-
-        Raises:
-            SpecificationError: If ``steps`` is less than one.
-        """
-        if steps < 1:
-            raise SpecificationError(f"steps must be at least 1; got {steps}.")
-        k, p, n = self.k_endog, self.order, self.endog.shape[0]
-        future = deterministic_columns(self.trend, steps, start=n + 1)
-        history = [self.endog[n - i - 1] for i in range(p)]
-        out = np.empty((steps, k), dtype=np.float64)
-        for h in range(steps):
-            point = (
-                future[h] @ self.deterministic
-                if self.deterministic.shape[0]
-                else np.zeros(k, dtype=np.float64)
-            )
-            for i in range(p):
-                point = point + self.coefficients[i] @ history[i]
-            out[h] = point
-            history = [point, *history[: p - 1]] if p else []
-        return out
-
     # -- shock accounting --------------------------------------------------
 
     def structural_shocks(self) -> npt.NDArray[np.float64]:
@@ -663,30 +517,6 @@ class _VectorInferenceMixin:
         recursive ordering :meth:`irf` documents.
         """
         return np.linalg.solve(self._impact(), self.resid.T).T
-
-    def historical_decomposition(self) -> npt.NDArray[np.float64]:
-        """Attribute each observation to the shocks that produced it.
-
-        Returns:
-            An array of shape ``(nobs, k, k)`` whose entry ``[t, i, j]`` is
-            shock ``j``'s cumulative contribution to variable ``i`` at time
-            ``t``. Summing over ``j`` recovers the *stochastic* component of
-            the path, not the observed series: the deterministic terms and the
-            influence of pre-sample initial conditions are excluded by
-            construction, since neither is attributable to any shock. Add the
-            deterministic path back before comparing against ``endog``.
-
-        Note:
-            Costs ``O(nobs^2)`` moving-average terms, because the contribution
-            at ``t`` sums over every shock up to ``t``. Fine for macro samples;
-            noticeable past a few thousand observations.
-        """
-        weights = self.structural_shocks()
-        theta = self.irf(self.nobs - 1, orthogonalized=True)
-        out = np.zeros((self.nobs, self.k_endog, self.k_endog), dtype=np.float64)
-        for t in range(self.nobs):
-            out[t] = np.einsum("lij,lj->ij", theta[: t + 1], weights[t::-1])
-        return out
 
     # -- tests -------------------------------------------------------------
 
@@ -1028,3 +858,391 @@ class _VectorInferenceMixin:
                 "every other quantity the result reports.",
             ),
         )
+
+
+class _VectorPropagationMixin:
+    """How a shock travels through a closed vector system.
+
+    The half of the reduced-form surface that needs a law of motion for every
+    variable in the model: the companion matrix and its roots, the
+    moving-average representation, the two impulse responses, the variance
+    decomposition, the historical decomposition, and the forecast. All of them
+    read :attr:`coefficients`, and all of them are meaningless without it.
+
+    Split from :class:`_VectorInferenceMixin` because that line is real rather
+    than tidy. A conditional model -- a VECMX, a single unit of a global
+    autoregression before the units are linked -- estimates its coefficients
+    honestly and can report every standard error, p-value and residual
+    diagnostic the inference mixin offers, while having no closed system at all.
+    Before the split those families inherited nine methods they had to override
+    one by one with refusals, which is a list that drifts the moment a tenth is
+    added. Now they simply do not mix this in, and
+    :class:`_ConditionalSystemMixin` keeps the error messages good without
+    claiming the type.
+
+    Attributes:
+        coefficients: ``(p, k, k)`` autoregressive matrices of the closed
+            system. A family that reparameterizes -- an error-correction model
+            -- supplies the levels representation here, which is why its
+            impulse responses need no separate implementation.
+    """
+
+    __slots__ = ()
+
+    coefficients: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    endog: npt.NDArray[np.float64]
+    names: tuple[str, ...]
+    order: int
+    trend: str
+    sigma_u: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    nobs: int
+
+    _PROPAGATION_MEMBERS: ClassVar[frozenset[str]] = frozenset(
+        {
+            "companion",
+            "fevd",
+            "forecast",
+            "generalized_irf",
+            "historical_decomposition",
+            "irf",
+            "is_stable",
+            "ma_representation",
+            "stability_check",
+        }
+    )
+
+    @property
+    def k_endog(self) -> int:
+        """Number of endogenous variables."""
+        return len(self.names)
+
+    def _impact(self) -> npt.NDArray[np.float64]:
+        """The Cholesky impact matrix."""
+        return np.linalg.cholesky(self.sigma_u)
+
+    def structural_shocks(self) -> npt.NDArray[np.float64]:
+        """Residuals rotated by the inverse Cholesky impact matrix."""
+        return np.linalg.solve(self._impact(), self.resid.T).T
+
+    @property
+    def _sample_blocks(self) -> tuple[tuple[int, int], ...]:
+        """Half-open residual row spans, one per independent series."""
+        return ((0, self.nobs),)
+
+    @property
+    def companion(self) -> npt.NDArray[np.float64]:
+        """The ``(kp, kp)`` companion matrix of the autoregressive block."""
+        return companion_matrix(self.coefficients)
+
+    def stability_check(self) -> _StabilityResult:
+        """Eigenvalue verdict for the companion matrix.
+
+        Returns:
+            The :class:`_StabilityResult`; the process is stable, and so has a
+            convergent moving-average representation, exactly when every
+            companion eigenvalue lies inside the unit circle. Every other
+            method here presumes that: an impulse response computed from an
+            explosive companion diverges rather than decays, and a forecast
+            from one is meaningless at any horizon.
+        """
+        return _StabilityResult.assess_stability(self.coefficients)
+
+    @property
+    def is_stable(self) -> bool:
+        """Whether every companion eigenvalue lies inside the unit circle."""
+        return self.stability_check().is_stable
+
+    def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Moving-average matrices ``Psi_0, ..., Psi_horizon``.
+
+        Computed as ``J C^h J'`` from the companion rather than by the
+        recursion ``Psi_h = sum_i A_i Psi_{h-i}``. The two agree to machine
+        precision, and the companion form generalizes without change to any
+        member of the family that can produce a companion matrix.
+
+        Args:
+            horizon: Largest lead to return.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
+
+        Raises:
+            SpecificationError: If ``horizon`` is negative.
+        """
+        if horizon < 0:
+            raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
+        k, p = self.k_endog, self.order
+        out = np.empty((horizon + 1, k, k), dtype=np.float64)
+        if p == 0:
+            out[:] = 0.0
+            out[0] = np.eye(k)
+            return out
+        selector = np.zeros((k, k * p), dtype=np.float64)
+        selector[:, :k] = np.eye(k)
+        power = np.eye(k * p, dtype=np.float64)
+        companion = self.companion
+        for h in range(horizon + 1):
+            out[h] = selector @ power @ selector.T
+            power = power @ companion
+        return out
+
+    def irf(
+        self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
+    ) -> npt.NDArray[np.float64]:
+        """Impulse responses to a one-standard-deviation shock.
+
+        Args:
+            horizon: Largest lead to return.
+            orthogonalized: When ``True``, post-multiply by the Cholesky factor
+                of ``sigma_u`` so the shocks are mutually uncorrelated. **This
+                is a structural assumption, not a reduced-form fact.** The
+                Cholesky factor is lower-triangular, so it imposes a recursive
+                ordering: the first variable in ``names`` responds to no shock
+                but its own on impact, the second to the first and its own, and
+                so on. Permuting ``names`` changes the answer. An orthogonalized
+                impulse response reported from a reduced-form VAR is a recursive
+                SVAR whose identifying restriction happens to be undeclared;
+                :mod:`cultivars.var.structural` is where that restriction gets
+                stated rather than assumed. With ``False`` you get the raw
+                ``Psi_h``, whose columns are responses to correlated
+                innovations and are therefore not interpretable one at a time.
+            cumulative: Return running sums, which is what you want when the
+                data are differences and the question is about levels.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]`` is
+            the response of variable ``i`` at lead ``h`` to shock ``j``.
+        """
+        psi = self.ma_representation(horizon)
+        out = psi @ self._impact() if orthogonalized else psi
+        return np.cumsum(out, axis=0) if cumulative else out
+
+    def generalized_irf(
+        self, horizon: int = 20, *, cumulative: bool = False
+    ) -> npt.NDArray[np.float64]:
+        """Pesaran-Shin impulse responses, which do not depend on variable order.
+
+        The orthogonalized response asks what happens if shock ``j`` moves and
+        the shocks ordered after it are held at zero. That question needs an
+        order, and :meth:`irf` takes it from ``names``. The generalized response
+        asks a different question -- what happens if shock ``j`` moves and the
+        others take their conditional expectations given that move -- which
+        needs no order at all, only the covariance.
+
+        The two agree exactly for whichever variable is placed first, and
+        disagree for every other. Neither is more correct in general: the
+        orthogonalized one answers a structural question and requires a
+        defensible recursive ordering, the generalized one answers a predictive
+        question and requires none. Reach for this when no ordering is
+        defensible, which is the usual situation once a system spans more
+        variables than anyone has a theory about.
+
+        Args:
+            horizon: Periods to propagate.
+            cumulative: Accumulate the responses over the horizon.
+
+        Returns:
+            An ``(horizon + 1, k, k)`` array whose ``[h, i, j]`` entry is the
+            response of variable ``i`` at horizon ``h`` to a one-standard-
+            deviation shock to variable ``j``.
+        """
+        psi = self.ma_representation(horizon)
+        sigma = self.sigma_u
+        scale = np.sqrt(np.diag(sigma))
+        out = np.stack([psi @ sigma[:, j] / scale[j] for j in range(self.k_endog)], axis=-1)
+        return np.cumsum(out, axis=0) if cumulative else out
+
+    def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Forecast-error variance decomposition.
+
+        Args:
+            horizon: Largest lead to return.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)`` whose entry ``[h, i, j]``
+            is the share of variable ``i``'s ``h + 1``-step forecast-error
+            variance attributable to shock ``j``. Rows sum to one by
+            construction, so a row that does not is a bug rather than a finding.
+
+        Note:
+            Inherits the ordering dependence of :meth:`irf` in full, and more
+            visibly: at ``h = 0`` the decomposition is exactly triangular, so
+            the first variable is always attributed 100% of its own impact
+            variance purely because of where it sits in ``names``.
+        """
+        theta = self.irf(horizon, orthogonalized=True)
+        contribution = np.cumsum(theta**2, axis=0)
+        return contribution / contribution.sum(axis=2, keepdims=True)
+
+    def forecast(self, steps: int = 1) -> npt.NDArray[np.float64]:
+        """Deterministic multi-step forecasts from the end of the sample.
+
+        Iterates the estimated system forward with future innovations set to
+        their zero mean, which is the conditional expectation. No interval is
+        returned: the coefficient uncertainty that should widen it is exactly
+        the standard-error machinery this package does not yet have, and a band
+        computed as though the coefficients were known would be too narrow in a
+        way nobody could see.
+
+        Args:
+            steps: Forecast horizon, at least one.
+
+        Returns:
+            An array of shape ``(steps, k)``.
+
+        Raises:
+            SpecificationError: If ``steps`` is less than one.
+        """
+        if steps < 1:
+            raise SpecificationError(f"steps must be at least 1; got {steps}.")
+        k, p, n = self.k_endog, self.order, self.endog.shape[0]
+        future = deterministic_columns(self.trend, steps, start=n + 1)
+        history = [self.endog[n - i - 1] for i in range(p)]
+        out = np.empty((steps, k), dtype=np.float64)
+        for h in range(steps):
+            point = (
+                future[h] @ self.deterministic
+                if self.deterministic.shape[0]
+                else np.zeros(k, dtype=np.float64)
+            )
+            for i in range(p):
+                point = point + self.coefficients[i] @ history[i]
+            out[h] = point
+            history = [point, *history[: p - 1]] if p else []
+        return out
+
+    def historical_decomposition(self) -> npt.NDArray[np.float64]:
+        """Attribute each observation to the shocks that produced it.
+
+        Returns:
+            An array of shape ``(nobs, k, k)`` whose entry ``[t, i, j]`` is
+            shock ``j``'s cumulative contribution to variable ``i`` at time
+            ``t``. Summing over ``j`` recovers the *stochastic* component of
+            the path, not the observed series: the deterministic terms and the
+            influence of pre-sample initial conditions are excluded by
+            construction, since neither is attributable to any shock. Add the
+            deterministic path back before comparing against ``endog``.
+
+        Note:
+            Costs ``O(nobs^2)`` moving-average terms, because the contribution
+            at ``t`` sums over every shock up to ``t``. Fine for macro samples;
+            noticeable past a few thousand observations.
+        """
+        weights = self.structural_shocks()
+        theta = self.irf(self.nobs - 1, orthogonalized=True)
+        out = np.zeros((self.nobs, self.k_endog, self.k_endog), dtype=np.float64)
+        for t in range(self.nobs):
+            out[t] = np.einsum("lij,lj->ij", theta[: t + 1], weights[t::-1])
+        return out
+
+
+class _ConditionalSystemMixin:
+    """Good errors for the propagation surface a conditional family does not have.
+
+    Deliberately *not* a subclass or sibling of :class:`_VectorPropagationMixin`.
+    A conditional result is not substitutable for a closed one, and inheriting
+    the propagation type only to raise from every method would assert a
+    subtyping relationship that does not hold -- ``isinstance(result,
+    _VectorPropagationMixin)`` is ``False`` here, which is the honest answer.
+    What this mixin supplies is the courtesy of a message: without it the caller
+    gets ``AttributeError: no attribute 'irf'``, which is correct and tells them
+    nothing about why.
+
+    :meth:`__init_subclass__` checks the coverage. Adding a method to the
+    propagation mixin without a counterpart here fails at import, in the file
+    where the omission is, rather than months later at a call site with an
+    error naming whichever nested call happened to raise first.
+    """
+
+    __slots__ = ()
+
+    names: tuple[str, ...]
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        """Verify this family accounts for every propagation member.
+
+        Raises:
+            TypeError: If the propagation mixin has grown a member with no
+                refusal here.
+        """
+        super().__init_subclass__(**kwargs)
+        missing = sorted(
+            name
+            for name in _VectorPropagationMixin._PROPAGATION_MEMBERS
+            if not any(name in vars(base) for base in cls.__mro__)
+        )
+        if missing:
+            raise TypeError(
+                f"{cls.__name__} mixes in _ConditionalSystemMixin but does not account "
+                f"for {missing}; every member of _VectorPropagationMixin needs either an "
+                "implementation or a refusal here."
+            )
+
+    def _no_closed_system(self, what: str) -> None:
+        """Raise the shared explanation, naming the quantity that was asked for.
+
+        Args:
+            what: The quantity, phrased to read after "needs a law of motion".
+
+        Raises:
+            SpecificationError: Always.
+        """
+        raise SpecificationError(_NO_CLOSED_SYSTEM.format(model=type(self).__name__, what=what))
+
+    @property
+    def companion(self) -> npt.NDArray[np.float64]:
+        """Unavailable: there is no closed system to take a companion of."""
+        self._no_closed_system("a companion matrix")
+        raise AssertionError  # pragma: no cover
+
+    def stability_check(self) -> _StabilityResult:
+        """Unavailable: stability is a property of the closed system."""
+        self._no_closed_system("a stability check")
+        raise AssertionError  # pragma: no cover
+
+    @property
+    def is_stable(self) -> bool:
+        """Unavailable: stability is a property of the closed system."""
+        self._no_closed_system("a stability verdict")
+        raise AssertionError  # pragma: no cover
+
+    def ma_representation(self, horizon: int) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs the exogenous block's law of motion."""
+        self._no_closed_system("a moving-average representation")
+        raise AssertionError  # pragma: no cover
+
+    def irf(
+        self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
+    ) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs the exogenous block's law of motion."""
+        self._no_closed_system("an impulse response")
+        raise AssertionError  # pragma: no cover
+
+    def generalized_irf(
+        self, horizon: int = 20, *, cumulative: bool = False
+    ) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs the exogenous block's law of motion."""
+        self._no_closed_system("a generalized impulse response")
+        raise AssertionError  # pragma: no cover
+
+    def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs the exogenous block's law of motion."""
+        self._no_closed_system("a variance decomposition")
+        raise AssertionError  # pragma: no cover
+
+    def historical_decomposition(self) -> npt.NDArray[np.float64]:
+        """Unavailable: propagation needs the exogenous block's law of motion."""
+        self._no_closed_system("a historical decomposition")
+        raise AssertionError  # pragma: no cover
+
+    def forecast(self, steps: int = 1) -> npt.NDArray[np.float64]:
+        """Conditional families override this with one that takes a path.
+
+        Present so the coverage check passes, and so a family that has no
+        conditional forecast either still fails with an explanation rather than
+        an attribute error.
+        """
+        self._no_closed_system("an unconditional forecast")
+        raise AssertionError  # pragma: no cover
