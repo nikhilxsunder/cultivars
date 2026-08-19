@@ -33,6 +33,7 @@ from ._fits import (
     _SmoothTransitionFit,
     _ThresholdFit,
     _VectorAutoRegressionFit,
+    _VectorErrorCorrectionFit,
 )
 from ._mixins import (
     _ComparisonMixin,
@@ -59,6 +60,7 @@ from ._models import (
     _SmoothTransitionModel,
     _ThresholdModel,
     _VectorAutoRegressionModel,
+    _VectorErrorCorrectionModel,
 )
 from ._predictors import MeanPredictor
 from ._results import (
@@ -71,6 +73,7 @@ from ._results import (
     _MeanFunctionResult,
     _ObservedRegimeResult,
     _StabilityResult,
+    _WaldTestResult,
 )
 
 __all__ = [
@@ -117,5 +120,8 @@ __all__ = [
     "_ThresholdModel",
     "_VectorAutoRegressionFit",
     "_VectorAutoRegressionModel",
+    "_VectorErrorCorrectionFit",
+    "_VectorErrorCorrectionModel",
     "_VectorInferenceMixin",
+    "_WaldTestResult",
 ]

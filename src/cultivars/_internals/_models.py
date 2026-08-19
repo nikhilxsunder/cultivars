@@ -3217,7 +3217,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
                 unrecognized, or the rank is outside ``0 .. k - 1``.
             DimensionError: If the sample cannot support the specification.
         """
-        self._trend_case: str = validate_choice(
+        self._trend_case: CointegrationTrend = validate_choice(
             cointegration_trend, CointegrationTrend, "cointegration_trend"
         )
         if int(order) != order or order < 1:
@@ -3241,7 +3241,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         self._rank = int(rank)
 
     @property
-    def cointegration_trend(self) -> str:
+    def cointegration_trend(self) -> CointegrationTrend:
         """The Johansen case."""
         return self._trend_case
 
