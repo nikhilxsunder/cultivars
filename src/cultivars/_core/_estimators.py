@@ -22,11 +22,14 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._defaults import _LOG_2PI, _PENALTY
+from ._types import CointegrationTrend
 
 
 def ols(
@@ -257,3 +260,98 @@ def _gaussian_negloglik(resid: npt.NDArray[np.float64], sigma2: npt.NDArray[np.f
         return _PENALTY
     value = 0.5 * float(np.sum(_LOG_2PI + np.log(sigma2) + resid**2 / sigma2))
     return value if np.isfinite(value) else _PENALTY
+
+
+def _null_functional(
+    walk: npt.NDArray[np.float64], grid: npt.NDArray[np.float64], case: CointegrationTrend
+) -> npt.NDArray[np.float64]:
+    """Build the regressor process the limiting distribution is written against."""
+    reps, steps, _ = walk.shape
+    if case == "none":
+        return walk
+    if case == "restricted_constant":
+        return np.concatenate([walk, np.ones((reps, steps, 1))], axis=2)
+    centred = walk - walk.mean(axis=1, keepdims=True)
+    if case == "constant":
+        return centred
+    if case == "restricted_trend":
+        return np.concatenate([centred, np.broadcast_to(grid - 0.5, (reps, steps, 1))], axis=2)
+    ramp = np.broadcast_to(grid, (reps, steps, 1))
+    ramp = ramp - ramp.mean(axis=1, keepdims=True)
+    slope = (centred * ramp).sum(axis=1, keepdims=True) / (ramp * ramp).sum(axis=1, keepdims=True)
+    return centred - slope * ramp
+
+
+@lru_cache(maxsize=128)
+def simulate_cointegration_null(
+    n: int,
+    case: CointegrationTrend,
+    *,
+    simulations: int = 25_000,
+    steps: int = 500,
+    seed: int = 20260819,
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Draw from the asymptotic null distribution of the Johansen rank statistics.
+
+    Both statistics converge to functionals of an ``n``-dimensional Brownian
+    motion, where ``n = k - r`` is the number of common trends under the null.
+    The limit has no closed form and depends on which deterministic terms the
+    specification carries, so it is obtained here by simulating the functional
+    directly on a discretized path.
+
+    Simulating rather than tabulating is a deliberate choice. The published
+    route is MacKinnon, Haug and Michelis (1999), who fit a two-moment gamma
+    response surface so that a printed table can be compressed to three
+    coefficients per cell; the approximation is excellent to the upper decile
+    and drifts by most of a point by the 99.5th percentile. Having the draws in
+    hand removes the reason for that compression -- the empirical distribution
+    is exact up to Monte Carlo error, extends to any ``n`` without a new table,
+    and reports its own resolution through ``simulations``.
+
+    Results are memoized on the full argument tuple, so a model that tests
+    several ranks pays for each ``n`` once.
+
+    Args:
+        n: Number of common trends under the null, ``k - r``.
+        case: One of :data:`CointegrationTrend`.
+        simulations: Replications. Tail resolution is ``1 / simulations``.
+        steps: Discretization of the unit interval. Coarse grids bias the
+            statistic downward; 500 places the five percent point within about
+            a tenth of a unit of the published value.
+        seed: Fixed so that a p-value is reproducible.
+
+    Returns:
+        Sorted trace and maximum-eigenvalue draws.
+
+    Raises:
+        SpecificationError: If ``n`` is not positive, the case is unrecognized,
+            or the simulation controls are not positive.
+    """
+    if n < 1:
+        raise SpecificationError(f"n must be at least 1; got {n}.")
+    if case not in CointegrationTrend.__value__:
+        raise SpecificationError(
+            f"case must be one of {CointegrationTrend.__value__}; got {case!r}."
+        )
+    if simulations < 1 or steps < 1:
+        raise SpecificationError("simulations and steps must both be positive.")
+    rng = np.random.default_rng(seed)
+    trace = np.empty(simulations, dtype=np.float64)
+    maximum = np.empty(simulations, dtype=np.float64)
+    grid = (np.arange(1, steps + 1, dtype=np.float64) / steps)[:, None]
+    chunk = max(1, min(2000, simulations))
+    done = 0
+    while done < simulations:
+        size = min(chunk, simulations - done)
+        increments = rng.standard_normal((size, steps, n)) / np.sqrt(steps)
+        walk = np.cumsum(increments, axis=1)
+        lagged = np.concatenate([np.zeros((size, 1, n)), walk[:, :-1]], axis=1)
+        regressor = _null_functional(lagged, grid, case)
+        cross = np.einsum("msi,msj->mij", increments, regressor)
+        gram = np.einsum("msi,msj->mij", regressor, regressor) / steps
+        quad = cross @ np.linalg.solve(gram, np.swapaxes(cross, 1, 2))
+        quad = (quad + np.swapaxes(quad, 1, 2)) / 2.0
+        trace[done : done + size] = np.trace(quad, axis1=1, axis2=2)
+        maximum[done : done + size] = np.linalg.eigvalsh(quad)[:, -1]
+        done += size
+    return np.sort(trace), np.sort(maximum)

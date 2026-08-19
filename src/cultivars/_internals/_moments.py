@@ -37,3 +37,34 @@ class _VectorMoments:
     llf: float
     nobs: int
     width: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _CointegrationMoments:
+    """The reduced-rank problem's solution, before a rank is chosen.
+
+    Holds what the eigenvalue problem produces plus the three blocks the
+    short-run regression is built from. Separated from the fit because none of
+    it depends on the rank: every candidate rank reads the same eigenvectors,
+    which is what makes a rank test cheap once the decomposition is done.
+
+    Attributes:
+        eigenvalues: Squared canonical correlations, descending.
+        eigenvectors: Candidate cointegrating vectors, normalized so that
+            ``beta' S11 beta`` is the identity. Columns match
+            :attr:`eigenvalues`.
+        levels: The lagged levels block, with any restricted deterministic
+            column appended.
+        differences: The contemporaneous differences being explained.
+        short_run: Unrestricted deterministic terms and lagged differences.
+        s00: Residual second moment of the differences.
+        nobs: Effective sample.
+    """
+
+    eigenvalues: npt.NDArray[np.float64]
+    eigenvectors: npt.NDArray[np.float64]
+    levels: npt.NDArray[np.float64]
+    differences: npt.NDArray[np.float64]
+    short_run: npt.NDArray[np.float64]
+    s00: npt.NDArray[np.float64]
+    nobs: int

@@ -350,3 +350,43 @@ class _ExogenousVectorAutoRegressionFit(_VectorAutoRegressionFit):
     def k_exog(self) -> int:
         """Number of exogenous variables."""
         return int(self.exog_coefficients.shape[2])
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorErrorCorrectionFit(_VectorAutoRegressionFit):
+    """The estimated pieces of a vector error-correction model.
+
+    Subclasses the reduced-form fit rather than sitting beside it, because a
+    vector error-correction model *is* a vector autoregression written in
+    different coordinates and the levels coefficients are not an interpretation
+    laid on top -- they are recoverable exactly. The inherited ``coefficients``
+    and ``deterministic`` therefore carry the levels representation, computed
+    once here so that no consumer has to know the folding rules, while the
+    fields below carry the coordinates the model was actually estimated in.
+
+    Attributes:
+        alpha: ``(k, r)`` adjustment loadings.
+        beta: ``(k or k + 1, r)`` cointegrating vectors, the extra row present
+            when the case restricts a deterministic term to the cointegrating
+            space.
+        gamma: ``(p - 1, k, k)`` short-run coefficients on lagged differences.
+        short_run_deterministic: ``(d_s, k)`` unrestricted deterministic terms,
+            as they entered the regression.
+        eigenvalues: All ``k`` squared canonical correlations, descending.
+    """
+
+    alpha: npt.NDArray[np.float64]
+    beta: npt.NDArray[np.float64]
+    gamma: npt.NDArray[np.float64]
+    short_run_deterministic: npt.NDArray[np.float64]
+    eigenvalues: npt.NDArray[np.float64]
+
+    @property
+    def rank(self) -> int:
+        """Cointegrating rank."""
+        return int(self.alpha.shape[1])
+
+    @property
+    def cointegrating_matrix(self) -> npt.NDArray[np.float64]:
+        """The long-run impact matrix ``Pi = alpha beta'``, over the variables only."""
+        return self.alpha @ self.beta[: self.k_endog].T

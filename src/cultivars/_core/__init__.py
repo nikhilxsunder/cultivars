@@ -61,6 +61,11 @@ from ._estimators import (
     ewma_mean_square,
     local_whittle_d,
     ols,
+    simulate_cointegration_null,
+)
+from ._mappings import (
+    _LEVELS_TREND,
+    _UNRESTRICTED_TREND,
 )
 from ._matrices import (
     companion_matrix,
@@ -81,6 +86,7 @@ from ._recursions import (
 from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
+    CointegrationTrend,
     Mean,
     Method,
     OptimizerMethod,
@@ -116,6 +122,7 @@ __all__ = [
     "_DEFAULT_TRIM",
     "_DEFAULT_TRUNCATION",
     "_D_MAX",
+    "_LEVELS_TREND",
     "_LOG_2PI",
     "_NO_STDERR_NOTE",
     "_PENALTY",
@@ -123,7 +130,9 @@ __all__ = [
     "_SCHEMA_VERSION",
     "_SQRT_2_OVER_PI",
     "_TINY",
+    "_UNRESTRICTED_TREND",
     "_UNSTABLE_NOTE",
+    "CointegrationTrend",
     "InformationCriteria",
     "Mean",
     "Method",
@@ -161,6 +170,7 @@ __all__ = [
     "pack_stationary",
     "psd_sqrt",
     "sigmoid",
+    "simulate_cointegration_null",
     "softplus",
     "to_pandas_frame",
     "to_polars_frame",

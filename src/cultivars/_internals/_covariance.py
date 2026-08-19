@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -8,7 +7,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2, norm
 
-from ..exceptions import DimensionError, SpecificationError
+from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._results import _WaldTestResult
 
 
@@ -122,13 +121,9 @@ class _CoefficientCovariance:
             raise SpecificationError("a Wald test needs at least one restriction.")
         for equation, regressor in cells:
             if not 0 <= equation < self.k_endog:
-                raise DimensionError(
-                    f"equation index {equation} is outside 0..{self.k_endog - 1}."
-                )
+                raise DimensionError(f"equation index {equation} is outside 0..{self.k_endog - 1}.")
             if not 0 <= regressor < self.width:
-                raise DimensionError(
-                    f"regressor index {regressor} is outside 0..{self.width - 1}."
-                )
+                raise DimensionError(f"regressor index {regressor} is outside 0..{self.width - 1}.")
         estimate = np.array([self.coefficients[r, i] for i, r in cells], dtype=np.float64)
         block = np.array(
             [[self.sigma_u[i, j] * self.xtx_inv[r, s] for j, s in cells] for i, r in cells],
@@ -136,6 +131,53 @@ class _CoefficientCovariance:
         )
         statistic = float(estimate @ np.linalg.solve(block, estimate))
         df = len(cells)
+        return _WaldTestResult(
+            statistic=statistic, df=df, pvalue=float(chi2.sf(statistic, df)), null=null
+        )
+
+    def wald_restriction(
+        self, restriction: npt.NDArray[np.float64], *, null: str
+    ) -> _WaldTestResult:
+        """Test a general set of linear restrictions on ``vec(B)``.
+
+        The companion to :meth:`wald`, which handles the common case where each
+        restriction sets one coefficient to zero. This one takes an arbitrary
+        matrix, which is what a restriction spanning several coefficients needs
+        -- a long-run non-causality condition that weights the adjustment
+        loadings by a cointegrating vector, an identifying restriction on a
+        cointegrating space, a linear combination anyone wants a p-value for.
+
+        Args:
+            restriction: A ``(q, k * width)`` matrix over ``vec(B)`` in
+                equation-major order, so equation ``i`` occupies columns
+                ``i * width`` through ``(i + 1) * width - 1``.
+            null: Plain-language statement of the hypothesis.
+
+        Returns:
+            A :class:`_WaldTestResult` with ``q`` degrees of freedom.
+
+        Raises:
+            DimensionError: If the matrix has the wrong width or no rows.
+            NumericalError: If the restricted covariance is singular, which
+                means the rows are linearly dependent and the restriction
+                counts something twice.
+        """
+        size = self.k_endog * self.width
+        if restriction.ndim != 2 or restriction.shape[1] != size:
+            raise DimensionError(f"restriction must be (q, {size}); got shape {restriction.shape}.")
+        if not restriction.shape[0]:
+            raise DimensionError("a Wald test needs at least one restriction.")
+        estimate = restriction @ self.coefficients.flatten(order="F")
+        block = restriction @ self.to_matrix() @ restriction.T
+        try:
+            solved = np.linalg.solve(block, estimate)
+        except np.linalg.LinAlgError as error:
+            raise NumericalError(
+                "the restricted covariance is singular; the restriction rows are linearly "
+                "dependent, so at least one of them is implied by the others."
+            ) from error
+        statistic = float(estimate @ solved)
+        df = int(restriction.shape[0])
         return _WaldTestResult(
             statistic=statistic, df=df, pvalue=float(chi2.sf(statistic, df)), null=null
         )

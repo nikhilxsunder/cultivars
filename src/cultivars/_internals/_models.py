@@ -66,6 +66,8 @@ from .._core import (
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
     _ROW_SUM_ATOL,
+    _UNRESTRICTED_TREND,
+    CointegrationTrend,
     Mean,
     Method,
     PanelEffects,
@@ -87,6 +89,7 @@ from .._core import (
     ols,
     pack_stationary,
     psd_sqrt,
+    simulate_cointegration_null,
     validate_aligned,
     validate_choice,
     validate_endog,
@@ -114,10 +117,11 @@ from ._fits import (
     _SmoothTransitionFit,
     _ThresholdFit,
     _VectorAutoRegressionFit,
+    _VectorErrorCorrectionFit,
 )
 from ._layouts import _ParameterLayout
 from ._means import _ARMAMean, _LinearMean, _MeanLayer
-from ._moments import _VectorMoments
+from ._moments import _CointegrationMoments, _VectorMoments
 from ._objectives import (
     _AutoRegressionObjective,
     _BoxJenkinsObjective,
@@ -139,6 +143,7 @@ from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
 from ._solvers import _maximize_likelihood, _solve
 from ._states import _ExpectationMaximizationState
+from ._tests import _JohansenRankTest
 
 
 class _BaseModel[R](ABC):
@@ -3155,4 +3160,330 @@ class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             llf=moments.llf,
             nobs=moments.nobs,
             n_params=k * moments.width + k * (k + 1) // 2,
+        )
+
+
+class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
+    """A vector autoregression in levels, reparameterized around its unit roots.
+
+    ``order`` counts lags of the *levels* system, matching the VAR it is a
+    reparameterization of, so a VECM of order ``p`` carries ``p - 1`` lagged
+    differences. Holding the levels convention is what lets the inherited
+    :meth:`lag_order_selection` mean what it says: the standard way to choose
+    ``p`` for a VECM is to choose it for the unrestricted levels VAR, and that
+    is exactly the method this class inherits without touching.
+
+    ``cointegration_trend`` is Johansen's five-case classification rather than
+    the three-value trend the levels VAR takes, because a constant or trend can
+    sit either inside the cointegrating space or outside it and the two have
+    different implications for the long run. The unrestricted remainder maps
+    onto the base class's ``trend``, which is what the short-run regression and
+    the lag-order criteria see.
+
+    Estimation is Johansen's reduced-rank maximum likelihood: concentrate out
+    the short-run terms, solve the eigenvalue problem for the cointegrating
+    space, then -- and this is the part that keeps the class small -- take the
+    remaining parameters from an ordinary multivariate regression on
+    ``[deterministic | lagged differences | error-correction terms]``. That last
+    step is not an approximation. By the Frisch-Waugh-Lovell theorem it
+    reproduces Johansen's ``alpha`` exactly, which means the entire inference
+    layer built for the least-squares families applies here, conditional on a
+    ``beta`` that converges fast enough for the conditioning to be free.
+    """
+
+    __slots__ = ("_rank", "_trend_case")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        rank: int,
+        cointegration_trend: CointegrationTrend = "constant",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the sample, the lag length, and the rank.
+
+        Args:
+            endog: The ``(nobs, k)`` panel of levels, time down the rows.
+            order: Lags of the levels system; the VECM carries ``order - 1``
+                lagged differences.
+            rank: Cointegrating rank, from ``0`` to ``k - 1``.
+            cointegration_trend: One of Johansen's five cases.
+            names: Variable labels.
+
+        Raises:
+            SpecificationError: If the order is below one, the case is
+                unrecognized, or the rank is outside ``0 .. k - 1``.
+            DimensionError: If the sample cannot support the specification.
+        """
+        self._trend_case: str = validate_choice(
+            cointegration_trend, CointegrationTrend, "cointegration_trend"
+        )
+        if int(order) != order or order < 1:
+            raise SpecificationError(
+                f"order counts lags of the levels system and must be at least 1; got {order!r}."
+            )
+        self._rank = -1
+        super().__init__(
+            endog,
+            order=int(order),
+            trend=_UNRESTRICTED_TREND[self._trend_case],  # type: ignore[arg-type]
+            names=names,
+        )
+        k = self.k_endog
+        if int(rank) != rank or not 0 <= rank < k:
+            raise SpecificationError(
+                f"rank must be an integer in 0..{k - 1}; got {rank!r}. A rank of {k} is "
+                "an unrestricted stationary system, which is a VAR in levels rather than "
+                "an error-correction model."
+            )
+        self._rank = int(rank)
+
+    @property
+    def cointegration_trend(self) -> str:
+        """The Johansen case."""
+        return self._trend_case
+
+    @property
+    def rank(self) -> int:
+        """Cointegrating rank."""
+        return self._rank
+
+    @property
+    def k_cointegrating(self) -> int:
+        """Rows of ``beta``: the variables plus any restricted deterministic term."""
+        return self.k_endog + int(self._trend_case in ("restricted_constant", "restricted_trend"))
+
+    @property
+    def _n_short_run_lags(self) -> int:
+        """Lagged differences in the short-run equation."""
+        return self._order - 1
+
+    @property
+    def n_regressors(self) -> int:
+        """Short-run regressors per equation."""
+        return (
+            n_deterministic(self._trend)
+            + self.k_endog * self._n_short_run_lags
+            + max(self._rank, 0)
+        )
+
+    def _cointegration_moments(self) -> _CointegrationMoments:
+        """Concentrate out the short-run terms and solve the eigenvalue problem.
+
+        Returns:
+            A :class:`_CointegrationMoments` record, independent of the rank.
+
+        Raises:
+            DimensionError: If the sample is too short for the lag length.
+            NumericalError: If the lagged-levels second moment is singular,
+                which means a variable is redundant.
+        """
+        levels_all = self._endog
+        nobs_total = levels_all.shape[0]
+        order = self._order
+        effective = nobs_total - order
+        if effective <= 0:
+            raise DimensionError(
+                f"a sample of {nobs_total} rows cannot support {order} levels lags."
+            )
+        diffs = np.diff(levels_all, axis=0)
+        differences = diffs[order - 1 :]
+        levels = levels_all[order - 1 : nobs_total - 1]
+        blocks = [
+            diffs[order - i - 1 : nobs_total - i - 1] for i in range(1, self._n_short_run_lags + 1)
+        ]
+        index = np.arange(order, nobs_total, dtype=np.float64)[:, None]
+        if self._trend_case == "restricted_constant":
+            levels = np.column_stack([levels, np.ones(effective)])
+        elif self._trend_case == "restricted_trend":
+            levels = np.column_stack([levels, index])
+        det = deterministic_columns(self._trend, effective, start=order + 1)
+        short_run = (
+            np.column_stack([det, *blocks]) if blocks or det.shape[1] else np.zeros((effective, 0))
+        )
+        if short_run.shape[1]:
+            projector = short_run @ np.linalg.pinv(short_run)
+            r0 = differences - projector @ differences
+            r1 = levels - projector @ levels
+        else:
+            r0, r1 = differences, levels
+        s00 = r0.T @ r0 / effective
+        s01 = r0.T @ r1 / effective
+        s11 = r1.T @ r1 / effective
+        try:
+            factor = np.linalg.cholesky(s11)
+        except np.linalg.LinAlgError as error:
+            raise NumericalError(
+                "the lagged-levels second moment is singular; one variable is a linear "
+                "combination of the others."
+            ) from error
+        inverse = np.linalg.inv(factor)
+        quad = inverse @ s01.T @ np.linalg.solve(s00, s01) @ inverse.T
+        eigenvalues, vectors = np.linalg.eigh((quad + quad.T) / 2.0)
+        order_desc = np.argsort(eigenvalues)[::-1]
+        return _CointegrationMoments(
+            eigenvalues=np.clip(eigenvalues[order_desc], 0.0, 1.0 - 1e-15),
+            eigenvectors=inverse.T @ vectors[:, order_desc],
+            levels=levels,
+            differences=differences,
+            short_run=short_run,
+            s00=s00,
+            nobs=effective,
+        )
+
+    def rank_test(
+        self,
+        *,
+        small_sample: bool = False,
+        simulations: int = 25_000,
+        steps: int = 500,
+        seed: int = 20260819,
+    ) -> _JohansenRankTest:
+        """Trace and maximum-eigenvalue tests for every candidate rank.
+
+        Independent of the ``rank`` this model was constructed with: the
+        eigenvalue problem does not know about it, so the test is a property of
+        the data and the lag length alone and can be read before committing to
+        a specification.
+
+        Args:
+            small_sample: Apply the Reinsel-Ahn scaling ``(T - k * p) / T``.
+                The asymptotic test over-rejects in short samples -- around
+                seven percent at a nominal five in a three-variable system with
+                four hundred observations -- and this pulls it back.
+            simulations: Replications behind each p-value.
+            steps: Discretization of the simulated Brownian path.
+            seed: Fixed so a p-value is reproducible.
+
+        Returns:
+            A :class:`_JohansenRankTest`.
+        """
+        moments = self._cointegration_moments()
+        k, effective = self.k_endog, moments.nobs
+        scale = (effective - k * self._order) / effective if small_sample else 1.0
+        logs = np.log1p(-moments.eigenvalues[:k])
+        trace = np.array(
+            [-effective * scale * logs[rank:].sum() for rank in range(k)], dtype=np.float64
+        )
+        maximum = np.array([-effective * scale * logs[rank] for rank in range(k)], dtype=np.float64)
+        trace_p = np.empty(k, dtype=np.float64)
+        maximum_p = np.empty(k, dtype=np.float64)
+        for rank in range(k):
+            trace_null, maximum_null = simulate_cointegration_null(
+                k - rank,
+                self._trend_case,
+                simulations=simulations,
+                steps=steps,
+                seed=seed,
+            )
+            trace_p[rank] = float((trace_null >= trace[rank]).mean())
+            maximum_p[rank] = float((maximum_null >= maximum[rank]).mean())
+        return _JohansenRankTest(
+            eigenvalues=moments.eigenvalues[:k],
+            trace_statistic=trace,
+            max_eigenvalue_statistic=maximum,
+            trace_pvalue=trace_p,
+            max_eigenvalue_pvalue=maximum_p,
+            nobs=effective,
+            deterministic=self._trend_case,
+            simulations=simulations,
+            small_sample=small_sample,
+        )
+
+    def _levels_blocks(
+        self,
+        alpha: npt.NDArray[np.float64],
+        beta: npt.NDArray[np.float64],
+        gamma: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        """The levels autoregressive matrices this parameterization implies.
+
+        From ``A_1 = I + Pi + Gamma_1``, ``A_i = Gamma_i - Gamma_{i-1}``, and
+        ``A_p = -Gamma_{p-1}``. Recovering them here rather than in the result
+        is what lets every dynamic method downstream -- impulse responses, the
+        variance decomposition, forecasts -- be inherited from the reduced-form
+        surface instead of reimplemented in error-correction coordinates.
+        """
+        k, p = self.k_endog, self._order
+        blocks = np.zeros((p, k, k), dtype=np.float64)
+        blocks[0] = np.eye(k) + alpha @ beta[:k].T
+        if p > 1:
+            blocks[0] = blocks[0] + gamma[0]
+            for i in range(1, p - 1):
+                blocks[i] = gamma[i] - gamma[i - 1]
+            blocks[p - 1] = -gamma[p - 2]
+        return blocks
+
+    def _levels_deterministic(
+        self,
+        alpha: npt.NDArray[np.float64],
+        beta: npt.NDArray[np.float64],
+        short_run: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        """Deterministic coefficients expressed in levels coordinates.
+
+        A restricted constant enters the data as ``alpha`` times the extra row
+        of ``beta``; in the levels representation it is an ordinary intercept.
+        Folding it out here means a forecast does not have to know which
+        Johansen case produced the model.
+        """
+        k = self.k_endog
+        case = self._trend_case
+        if case == "none":
+            return np.zeros((0, k), dtype=np.float64)
+        if case in ("constant", "trend"):
+            return short_run
+        restricted = np.asarray(alpha @ beta[k], dtype=np.float64).reshape(1, k)
+        if case == "restricted_constant":
+            return restricted
+        return np.vstack([short_run, restricted])
+
+    def _fit_family(self) -> _VectorErrorCorrectionFit:
+        """Estimate the system at the specified rank.
+
+        Returns:
+            A :class:`_VectorErrorCorrectionFit`.
+
+        Raises:
+            DimensionError: If the short-run design is not overidentified.
+            NumericalError: If the residual covariance is singular.
+        """
+        moments = self._cointegration_moments()
+        k, rank = self.k_endog, self._rank
+        beta = moments.eigenvectors[:, :rank]
+        correction = moments.levels @ beta
+        design = np.column_stack([moments.short_run, correction])
+        least_squares: _VectorMoments = self._gaussian_moments(moments.differences, design)
+        width_det = n_deterministic(self._trend)
+        lags = self._n_short_run_lags
+        gamma = (
+            np.stack(
+                [
+                    least_squares.coef[width_det + i * k : width_det + (i + 1) * k, :].T
+                    for i in range(lags)
+                ]
+            )
+            if lags
+            else np.zeros((0, k, k), dtype=np.float64)
+        )
+        alpha = least_squares.coef[width_det + k * lags :, :].T
+        short_run_det = least_squares.coef[:width_det]
+        return _VectorErrorCorrectionFit(
+            alpha=alpha,
+            beta=beta,
+            gamma=gamma,
+            short_run_deterministic=short_run_det,
+            eigenvalues=moments.eigenvalues[:k],
+            coefficients=self._levels_blocks(alpha, beta, gamma),
+            deterministic=self._levels_deterministic(alpha, beta, short_run_det),
+            sigma_u=least_squares.sigma_u,
+            sigma_ml=least_squares.sigma_ml,
+            design=design,
+            resid=least_squares.resid,
+            fittedvalues=least_squares.fittedvalues,
+            llf=least_squares.llf,
+            nobs=least_squares.nobs,
+            n_params=k * least_squares.width + k * (k + 1) // 2,
         )

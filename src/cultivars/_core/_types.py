@@ -36,12 +36,26 @@ if TYPE_CHECKING:
     from scipy.optimize._minimize import _MinimizeOptions as OptimizerOptions
 else:
     OptimizerOptions = dict
-"""Keyword options accepted by :func:`scipy.optimize.minimize`.
+    """Keyword options accepted by :func:`scipy.optimize.minimize`.
 
-Aliased from the ``scipy-stubs`` ``TypedDict`` so that a mistyped option key or
-value is a type error rather than a silently ignored dictionary entry. The name
-is private to the stubs and does not exist at runtime, hence the guard; the
-runtime fallback keeps ``typing.get_type_hints`` working for Sphinx autodoc.
+    Aliased from the ``scipy-stubs`` ``TypedDict`` so that a mistyped option key or
+    value is a type error rather than a silently ignored dictionary entry. The name
+    is private to the stubs and does not exist at runtime, hence the guard; the
+    runtime fallback keeps ``typing.get_type_hints`` working for Sphinx autodoc.
+    """
+
+type CointegrationTrend = Literal[
+    "none", "restricted_constant", "constant", "restricted_trend", "trend"
+]
+"""Where a deterministic term sits relative to the cointegrating space.
+
+Johansen's five cases. A constant or trend can enter inside the cointegrating
+relations, outside them in the short-run equation, or not at all, and the three
+say different things about the long run: a constant restricted to the
+cointegrating space allows the relations a non-zero equilibrium level without
+giving the levels a drift, while an unrestricted one does both. The asymptotic
+distribution of the rank statistics depends on which of the five holds, so this
+is not a display option.
 """
 
 type OptimizerMethod = Literal["L-BFGS-B", "Nelder-Mead"]

@@ -231,9 +231,7 @@ class PanelVARResult(_SummaryMixin, _ComparisonMixin, _VectorInferenceMixin):
         """The pooled lag coefficients alone, without the unit intercepts."""
         keep = set(self._lag_labels())
         return {
-            name: value
-            for name, value in self.params.items()
-            if name.split(": ", 1)[1] in keep
+            name: value for name, value in self.params.items() if name.split(": ", 1)[1] in keep
         }
 
     def _comparison_label(self) -> str:
