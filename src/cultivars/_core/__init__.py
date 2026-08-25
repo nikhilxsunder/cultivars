@@ -90,6 +90,7 @@ from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_s
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
     CointegrationTrend,
+    Frequency,
     Mean,
     Method,
     OptimizerMethod,
@@ -138,6 +139,7 @@ __all__ = [
     "_UNRESTRICTED_TREND",
     "_UNSTABLE_NOTE",
     "CointegrationTrend",
+    "Frequency",
     "InformationCriteria",
     "Mean",
     "Method",

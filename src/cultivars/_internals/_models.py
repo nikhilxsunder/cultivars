@@ -51,6 +51,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from typing import cast
 
 import numpy as np
 import numpy.typing as npt
@@ -68,6 +69,7 @@ from .._core import (
     _ROW_SUM_ATOL,
     _UNRESTRICTED_TREND,
     CointegrationTrend,
+    Frequency,
     Mean,
     Method,
     PanelEffects,
@@ -742,7 +744,7 @@ class _LinearGaussianStateSpaceModel(
                 f"weights must have one entry per variable ({size}); got {len(supplied)}."
             )
         for index, kind in enumerate(labels):
-            row = aggregation_weights(kind, period, weights=supplied[index])
+            row = aggregation_weights(cast(Frequency, kind), period, weights=supplied[index])
             for sub in range(period):
                 design[index, sub * size + index] = row[sub]
         return cls(

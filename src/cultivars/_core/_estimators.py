@@ -373,3 +373,43 @@ def simulate_cointegration_null(
         maximum[done : done + size] = np.linalg.eigvalsh(quad)[:, -1]
         done += size
     return np.sort(trace), np.sort(maximum)
+
+
+def minnesota_scales(endog: npt.NDArray[np.float64], order: int) -> npt.NDArray[np.float64]:
+    """Per-variable residual scale, from univariate autoregressions.
+
+    The ``sigma_i`` every Minnesota variance is written against, and the choice
+    of estimator here is structural rather than conventional. Taking the scales
+    from univariate fits keeps the prior independent of the system it
+    regularizes; taking them from an unrestricted vector autoregression would
+    make the prior depend on an estimate that, for the large systems this prior
+    exists to serve, cannot be computed without it. For ``N`` greater than
+    ``T`` the unrestricted fit does not exist at all, which is precisely the
+    case where the prior is doing the most work.
+
+    Args:
+        endog: The ``(nobs, k)`` sample.
+        order: Autoregressive order for the univariate fits.
+
+    Returns:
+        One residual standard deviation per variable.
+
+    Raises:
+        DimensionError: If the sample is too short for the order.
+    """
+    rows, size = endog.shape
+    if rows <= order + 1:
+        raise DimensionError(
+            f"a sample of {rows} rows cannot support univariate fits of order {order}."
+        )
+    out = np.empty(size, dtype=np.float64)
+    for index in range(size):
+        design = np.column_stack(
+            [np.ones(rows - order)]
+            + [endog[order - lag : rows - lag, index] for lag in range(1, order + 1)]
+        )
+        target = endog[order:, index]
+        coef = np.linalg.lstsq(design, target, rcond=None)[0]
+        resid = target - design @ coef
+        out[index] = float(np.sqrt(resid @ resid / (resid.shape[0] - design.shape[1])))
+    return out

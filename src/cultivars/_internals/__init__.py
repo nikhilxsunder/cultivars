@@ -66,6 +66,7 @@ from ._models import (
     _VectorErrorCorrectionModel,
 )
 from ._predictors import MeanPredictor
+from ._priors import _Prior, _PriorContext
 from ._results import (
     _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
@@ -117,6 +118,8 @@ __all__ = [
     "_NeuralThresholdModel",
     "_ObservedRegimeResult",
     "_PanelVectorAutoRegressionModel",
+    "_Prior",
+    "_PriorContext",
     "_SeriesMixin",
     "_ShortMemoryVarianceFit",
     "_ShortMemoryVarianceModel",

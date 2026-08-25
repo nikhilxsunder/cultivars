@@ -32,6 +32,7 @@ from .._core import link_matrix
 from ..exceptions import DimensionError, NumericalError
 from ._levels import _ConditionalLevels
 from ._objectives import _Objective
+from ._priors import _Prior, _PriorContext
 
 
 def _solve[P](objective: _Objective[P]) -> tuple[P, float]:
@@ -162,3 +163,59 @@ def solve_global(
         )
     blocks = np.stack([np.linalg.solve(g_zero, np.vstack(lagged[lag])) for lag in range(depth)])
     return g_zero, blocks, np.linalg.solve(g_zero, drift.T).T
+
+
+def posterior_coefficients(
+    target: npt.NDArray[np.float64],
+    design: npt.NDArray[np.float64],
+    prior: _Prior,
+    context: _PriorContext,
+) -> npt.NDArray[np.float64]:
+    """Posterior mean of the coefficient matrix, equation by equation.
+
+    Each equation solves ``(X'X / s_i^2 + V_i^-1) b_i = X'y_i / s_i^2 +
+    V_i^-1 m_i`` with ``V_i`` the prior variances for that equation and ``m_i``
+    its prior mean. Running equation by equation is not an approximation and
+    not a shortcut: once the cross-equation weight differs from one, the prior
+    variance stops factoring as a Kronecker product, the Normal-inverse-Wishart
+    conjugacy is gone, and Litterman's original per-equation procedure is the
+    correct one.
+
+    Any dummy rows the prior contributes are stacked under the sample first,
+    which is how a restriction on a *sum* of coefficients enters a problem
+    whose other restrictions are diagonal variances.
+
+    Args:
+        target: The ``(nobs, k)`` block being explained.
+        design: The ``(nobs, width)`` regressor matrix.
+        prior: The prior, possibly a composition.
+        context: What the prior needs to know about the sample.
+
+    Returns:
+        A ``(width, k)`` posterior mean in design-column order.
+
+    Raises:
+        DimensionError: If the design does not match the context's width.
+    """
+    if design.shape[1] != context.width:
+        raise DimensionError(
+            f"design has {design.shape[1]} columns but the prior context describes "
+            f"{context.width}. The two must agree on the column order or the prior "
+            "lands on the wrong coefficients."
+        )
+    dummy_target, dummy_design = prior.dummy_observations(context)
+    full_target = np.vstack([target, dummy_target]) if dummy_target.shape[0] else target
+    full_design = np.vstack([design, dummy_design]) if dummy_design.shape[0] else design
+    mean = prior.coefficient_mean(context)
+    variance = prior.coefficient_variance(context)
+    cross = full_design.T @ full_design
+    moment = full_design.T @ full_target
+    out = np.empty((context.width, context.k_endog), dtype=np.float64)
+    for index in range(context.k_endog):
+        scale = float(context.scales[index]) ** 2
+        column = variance[:, index]
+        precision = np.where(np.isfinite(column), 1.0 / np.maximum(column, 1e-300), 0.0)
+        left = cross / scale + np.diag(precision)
+        right = moment[:, index] / scale + precision * mean[:, index]
+        out[:, index] = np.linalg.solve(left, right)
+    return out
