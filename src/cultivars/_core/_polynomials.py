@@ -28,6 +28,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, SpecificationError
+from ._types import Frequency
 
 
 def expand_ar(
@@ -247,3 +248,43 @@ def star_variables(
                     block[:, position] += matrix[unit, owners[source]] * data[:, source]
         out.append(block)
     return tuple(out)
+
+
+def aggregation_weights(
+    kind: Frequency, period: int, *, weights: npt.ArrayLike | None = None
+) -> npt.NDArray[np.float64]:
+    """Sub-period weights a single low-frequency reading places on the latent path.
+
+    Args:
+        kind: One of :data:`Frequency`.
+        period: Sub-periods per low-frequency period.
+        weights: Explicit flow weights, newest sub-period first. Defaults to a
+            simple average, which is the right convention for a series in
+            levels. A series in log-differences needs the triangular weights of
+            Mariano and Murasawa instead, because summing growth rates is not
+            the same as averaging levels -- pass them here rather than hoping
+            the default is close.
+
+    Returns:
+        A vector of length ``period``, newest sub-period first.
+
+    Raises:
+        SpecificationError: If the kind or period is unrecognized, or explicit
+            weights are the wrong length.
+    """
+    if kind not in Frequency.__value__:
+        raise SpecificationError(f"kind must be one of {Frequency.__value__}; got {kind!r}.")
+    if period < 1:
+        raise SpecificationError(f"period must be at least 1; got {period}.")
+    if kind in ("high", "stock"):
+        out = np.zeros(period, dtype=np.float64)
+        out[0] = 1.0
+        return out
+    if weights is None:
+        return np.full(period, 1.0 / period, dtype=np.float64)
+    supplied = np.asarray(weights, dtype=np.float64).ravel()
+    if supplied.shape != (period,):
+        raise SpecificationError(
+            f"weights must have one entry per sub-period ({period}); got {supplied.shape}."
+        )
+    return supplied

@@ -1,8 +1,9 @@
+"""Global reduced-form VAR results assembled from conditional units."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
@@ -10,9 +11,9 @@ from scipy.stats import chi2
 
 from ..._core import SummaryTable, validate_weights
 from ..._internals import _SummaryMixin, _VectorPropagationMixin, _WaldTestResult, solve_global
-from .error_correction import VECMXResult
-from .var import VARXResult
 from ...exceptions import SpecificationError
+from .error_correction import VECMXResult
+from .vector_autoregression import VARXResult
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -219,9 +220,7 @@ class GVARResult(_SummaryMixin, _VectorPropagationMixin):
                 "decomposition from this system should not be read as they stand.",
             )
         if skipped:
-            notes.append(
-                f"Units fitted in levels and therefore untestable: {tuple(skipped)}."
-            )
+            notes.append(f"Units fitted in levels and therefore untestable: {tuple(skipped)}.")
         return SummaryTable(
             title="Weak exogeneity of the foreign variables",
             metadata=(
@@ -354,9 +353,7 @@ class GVAR:
     @property
     def unit_of_column(self) -> tuple[int, ...]:
         """Owning unit index for each global column."""
-        return tuple(
-            index for index, unit in enumerate(self._units) for _ in range(unit.k_endog)
-        )
+        return tuple(index for index, unit in enumerate(self._units) for _ in range(unit.k_endog))
 
     @property
     def variable_of_column(self) -> tuple[int, ...]:

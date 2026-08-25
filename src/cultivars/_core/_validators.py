@@ -510,3 +510,54 @@ def validate_weights(
             "stop being the elasticities they are read as."
         )
     return arr
+
+
+def validate_observed_matrix(
+    endog: npt.ArrayLike, *, label: str = "endog"
+) -> npt.NDArray[np.float64]:
+    """Coerce a panel in which missing entries are meaningful rather than errors.
+
+    The counterpart of :func:`validate_endog_matrix` for a sample that is
+    deliberately incomplete. Every other family in the package treats a
+    non-finite entry as a data problem and refuses it; here the gaps *are* the
+    specification -- a quarterly series observed on a monthly grid is missing
+    two rows in three by construction -- so the checks change accordingly. What
+    is still refused is a column with nothing in it and a value that is infinite
+    rather than absent, because neither of those is a frequency mismatch.
+
+    Args:
+        endog: The ``(nobs, k)`` panel on the high-frequency grid, with
+            ``numpy.nan`` wherever a variable is not observed.
+        label: Name used in error messages.
+
+    Returns:
+        A ``(nobs, k)`` float array, ``nan`` preserved.
+
+    Raises:
+        DimensionError: If the input is not two-dimensional or has no columns.
+        NumericalError: If any entry is infinite, or a column is entirely
+            missing and therefore contributes nothing to the likelihood.
+    """
+    arr = np.asarray(endog, dtype=np.float64)
+    if arr.ndim == 1:
+        arr = arr[:, None]
+    if arr.ndim != 2:
+        raise DimensionError(
+            f"{label} must be two-dimensional (nobs, k); got a {arr.ndim}-dimensional "
+            f"array of shape {arr.shape}."
+        )
+    if arr.shape[1] < 1:
+        raise DimensionError(f"{label} must have at least one column.")
+    if np.any(np.isinf(arr)):
+        raise NumericalError(
+            f"{label} contains infinite values. A missing observation is nan; an infinity "
+            "is a computation that went wrong upstream and is not treated as absent."
+        )
+    empty = [int(c) for c in range(arr.shape[1]) if not np.any(np.isfinite(arr[:, c]))]
+    if empty:
+        raise NumericalError(
+            f"columns {tuple(empty)} of {label} are entirely missing, so they enter the "
+            "likelihood nowhere and their dynamics are whatever the prior says. Drop them "
+            "or supply data."
+        )
+    return arr

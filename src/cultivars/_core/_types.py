@@ -105,3 +105,19 @@ pools the deterministic terms, which is only defensible when the units are
 known to share a mean. Slopes are pooled under both -- unit-varying dynamics
 are a different specification, not a value of this option.
 """
+
+type Frequency = Literal["high", "stock", "flow"]
+"""How often a variable is seen, and what a low-frequency reading measures.
+
+``"high"`` is observed every sub-period. ``"stock"`` is a level read at the end
+of the low-frequency period -- a survey balance, an end-of-quarter position --
+so the reading is the last sub-period's value and nothing else. ``"flow"`` is
+accumulated across the period -- output, spending, hours -- so the reading is a
+weighted combination of every sub-period in it.
+
+The distinction is not presentational. A stock reading pins down one latent
+value; a flow reading pins down a weighted sum and leaves the individual
+sub-periods free to move against each other. Treating a flow as a stock throws
+away two thirds of a quarterly constraint and silently changes what the model
+is fitted to.
+"""

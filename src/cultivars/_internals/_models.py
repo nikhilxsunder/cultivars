@@ -75,6 +75,7 @@ from .._core import (
     Trend,
     Vol,
     _ForwardPass,
+    aggregation_weights,
     combined_difference,
     concentrated_gaussian,
     conditional_design,
@@ -666,6 +667,86 @@ class _LinearGaussianStateSpaceModel(
             selection,
             np.array([[sigma2]]),
             obs_intercept=obs_intercept.reshape(-1, 1),
+        )
+
+    @classmethod
+    def mixed_frequency_state_space(
+        cls,
+        coefficients: npt.NDArray[np.float64],
+        sigma_u: npt.NDArray[np.float64],
+        *,
+        kinds: Sequence[str],
+        period: int,
+        weights: Sequence[npt.ArrayLike | None] | None = None,
+    ) -> _LinearGaussianStateSpaceModel:
+        """Put a latent high-frequency autoregression into observable form.
+
+        The state carries the companion of the high-frequency system, padded to at
+        least ``period`` lags so that a flow reading can reach every sub-period it
+        accumulates. The observation matrix is *constant*: a flow variable's row
+        always computes its weighted sum, and a stock variable's row always selects
+        the current sub-period. What varies is the data, not the model -- a variable
+        that is not observed this sub-period is ``nan``, and the filter drops that
+        row from the update by itself.
+
+        Building it this way rather than with a time-varying observation matrix is
+        what keeps the representation honest about its own content. There is one
+        measurement equation per variable and it holds at every date; the calendar
+        lives in the sample, where anyone can see it.
+
+        Args:
+            coefficients: ``(p, k, k)`` autoregressive matrices of the latent system.
+            sigma_u: ``(k, k)`` innovation covariance of the latent system.
+            kinds: One :data:`Frequency` per variable.
+            period: Sub-periods per low-frequency period.
+            weights: Optional per-variable flow weights; ``None`` entries take the
+                default from :func:`aggregation_weights`.
+
+        Returns:
+            A configured :class:`_LinearGaussianStateSpaceModel` whose state is the
+            latent path and whose observation is what the calendar reveals of it.
+
+        Raises:
+            DimensionError: If the coefficient stack and covariance disagree, or the
+                kinds do not cover the variables.
+            SpecificationError: If a kind or the period is unrecognized.
+        """
+        blocks = np.asarray(coefficients, dtype=np.float64)
+        covariance = np.asarray(sigma_u, dtype=np.float64)
+        if blocks.ndim != 3 or blocks.shape[1] != blocks.shape[2]:
+            raise DimensionError(f"coefficients must be (p, k, k); got shape {blocks.shape}.")
+        order, size = int(blocks.shape[0]), int(blocks.shape[1])
+        if covariance.shape != (size, size):
+            raise DimensionError(
+                f"sigma_u must be ({size}, {size}) to match the coefficients; "
+                f"got {covariance.shape}."
+            )
+        labels = tuple(str(kind) for kind in kinds)
+        if len(labels) != size:
+            raise DimensionError(
+                f"kinds must have one entry per variable ({size}); got {len(labels)}."
+            )
+        depth = max(order, period)
+        width = size * depth
+        transition = np.zeros((width, width), dtype=np.float64)
+        for lag in range(order):
+            transition[:size, lag * size : (lag + 1) * size] = blocks[lag]
+        if depth > 1:
+            transition[size:, : size * (depth - 1)] = np.eye(size * (depth - 1))
+        selection = np.zeros((width, size), dtype=np.float64)
+        selection[:size, :] = np.eye(size)
+        design = np.zeros((size, width), dtype=np.float64)
+        supplied = tuple(weights) if weights is not None else (None,) * size
+        if len(supplied) != size:
+            raise DimensionError(
+                f"weights must have one entry per variable ({size}); got {len(supplied)}."
+            )
+        for index, kind in enumerate(labels):
+            row = aggregation_weights(kind, period, weights=supplied[index])
+            for sub in range(period):
+                design[index, sub * size + index] = row[sub]
+        return cls(
+            design, np.zeros((size, size), dtype=np.float64), transition, selection, covariance
         )
 
 

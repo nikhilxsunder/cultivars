@@ -79,7 +79,7 @@ from ._matrices import (
     psd_sqrt,
     trailing_lag,
 )
-from ._polynomials import expand_ar, expand_ma
+from ._polynomials import aggregation_weights, expand_ar, expand_ma
 from ._recursions import (
     _arch_infinity_variance,
     _arch_infinity_weights,
@@ -156,6 +156,7 @@ __all__ = [
     "_linear_variance_recursion",
     "_log_variance_recursion",
     "_mean_label",
+    "aggregation_weights",
     "combined_difference",
     "companion_matrix",
     "concentrated_gaussian",
