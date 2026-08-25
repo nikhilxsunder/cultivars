@@ -22,10 +22,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import numpy as np
 import numpy.typing as npt
 
-from ..exceptions import SpecificationError
+from ..exceptions import DimensionError, SpecificationError
 
 
 def expand_ar(
@@ -193,3 +195,55 @@ def ar_recursion(
         out[step] = value
         buf.append(value)
     return out
+
+
+def star_variables(
+    panel: npt.ArrayLike,
+    weights: npt.ArrayLike,
+    *,
+    unit_of_column: Sequence[int],
+    variable_of_column: Sequence[int],
+) -> tuple[npt.NDArray[np.float64], ...]:
+    """Build each unit's foreign aggregates from the global panel.
+
+    The foreign counterpart of a variable is the weighted average of *that same
+    variable* across the other units, so the construction needs to know which
+    global column is which variable as well as which unit owns it. A unit that
+    lacks a variable some other unit has simply does not get a star series for
+    it, which is the ordinary situation once the sample spans economies with
+    different data.
+
+    Args:
+        panel: The ``(nobs, k)`` global panel, all units side by side.
+        weights: A validated ``(n_units, n_units)`` matrix.
+        unit_of_column: Owning unit index for each global column.
+        variable_of_column: Variable identity for each global column, shared
+            across units so that like is averaged with like.
+
+    Returns:
+        One ``(nobs, k_i)`` array per unit, columns in the same order as that
+        unit's own columns appear in the panel.
+
+    Raises:
+        DimensionError: If the label sequences do not match the panel width.
+    """
+    data = np.asarray(panel, dtype=np.float64)
+    matrix = np.asarray(weights, dtype=np.float64)
+    width = data.shape[1]
+    owners = tuple(int(u) for u in unit_of_column)
+    kinds = tuple(int(v) for v in variable_of_column)
+    if len(owners) != width or len(kinds) != width:
+        raise DimensionError(
+            f"unit_of_column and variable_of_column must each have one entry per global "
+            f"column ({width}); got {len(owners)} and {len(kinds)}."
+        )
+    out: list[npt.NDArray[np.float64]] = []
+    for unit in range(matrix.shape[0]):
+        own = [c for c in range(width) if owners[c] == unit]
+        block = np.zeros((data.shape[0], len(own)), dtype=np.float64)
+        for position, column in enumerate(own):
+            for source in range(width):
+                if kinds[source] == kinds[column]:
+                    block[:, position] += matrix[unit, owners[source]] * data[:, source]
+        out.append(block)
+    return tuple(out)

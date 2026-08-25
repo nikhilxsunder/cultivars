@@ -903,6 +903,7 @@ class _VectorPropagationMixin:
         {
             "companion",
             "fevd",
+            "generalized_fevd",
             "forecast",
             "generalized_irf",
             "historical_decomposition",
@@ -1075,6 +1076,33 @@ class _VectorPropagationMixin:
         theta = self.irf(horizon, orthogonalized=True)
         contribution = np.cumsum(theta**2, axis=0)
         return contribution / contribution.sum(axis=2, keepdims=True)
+
+    def generalized_fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Variance shares from the generalized responses, normalized to sum to one.
+
+        The counterpart of :meth:`fevd` for systems with no defensible recursive
+        ordering. It carries one caveat that the orthogonalized version does
+        not, and the caveat is structural rather than cosmetic: generalized
+        shocks are not orthogonal to each other, so the raw contributions do not
+        add up to the forecast error variance. Dividing by their sum forces rows
+        to one, which makes the table readable and makes the numbers a relative
+        ranking rather than a decomposition.
+
+        Read a cell as "how much of this variable's forecast error is associated
+        with that shock, relative to the others", not as "how much is caused by
+        it". When the shocks are close to orthogonal the two readings coincide;
+        when they are strongly correlated the normalization is doing real work
+        and the shares should be treated as indicative.
+
+        Args:
+            horizon: Periods to accumulate over.
+
+        Returns:
+            An ``(horizon + 1, k, k)`` array whose rows sum to one.
+        """
+        theta = self.generalized_irf(horizon)
+        contrib = np.cumsum(theta**2, axis=0)
+        return contrib / contrib.sum(axis=2, keepdims=True)
 
     def forecast(self, steps: int = 1) -> npt.NDArray[np.float64]:
         """Deterministic multi-step forecasts from the end of the sample.

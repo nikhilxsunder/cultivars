@@ -21,6 +21,7 @@ from ..._core import (
 )
 from ..._internals import (
     _ComparisonMixin,
+    _ConditionalLevels,
     _ErrorCorrectionResult,
     _ExogenousVectorErrorCorrectionModel,
     _StabilityResult,
@@ -581,6 +582,45 @@ class VECMXResult(VECMResult):
         """Unavailable: a conditional model has no levels representation."""
         self._refuse("a levels vector autoregression")
         raise AssertionError  # pragma: no cover
+
+    def to_varx(self) -> _ConditionalLevels:
+        """The conditional levels form this error-correction model implies.
+
+        Not :meth:`to_var`, which stays unavailable: that would be a closed
+        system and this specification has none. What *is* recoverable is the
+        unit's own equations in levels -- how its variables respond to their own
+        past and to the foreign block -- and that is exactly what a global
+        system consumes when it links units together. The distinction is the
+        difference between "no law of motion for x" and "no equations at all".
+
+        Returns:
+            A :class:`_ConditionalLevels` record.
+        """
+        k, m, p = self.k_endog, self.k_exog, self.order
+        joint = self.alpha @ self.beta[: k + m].T
+        own_long, foreign_long = joint[:, :k], joint[:, k:]
+        own_short = [self.gamma[lag][:, :k] for lag in range(p - 1)]
+        foreign_short = [self.gamma[lag][:, k:] for lag in range(p - 1)]
+        phi = np.zeros((p, k, k), dtype=np.float64)
+        exog_lags = np.zeros((p, k, m), dtype=np.float64)
+        phi[0] = np.eye(k) + own_long
+        exog_lags[0] = foreign_long - self.impact
+        if p > 1:
+            phi[0] = phi[0] + own_short[0]
+            exog_lags[0] = exog_lags[0] + foreign_short[0]
+            for lag in range(1, p - 1):
+                phi[lag] = own_short[lag] - own_short[lag - 1]
+                exog_lags[lag] = foreign_short[lag] - foreign_short[lag - 1]
+            phi[p - 1] = -own_short[p - 2]
+            exog_lags[p - 1] = -foreign_short[p - 2]
+        return _ConditionalLevels(
+            phi=phi,
+            impact=self.impact,
+            exog_lags=exog_lags,
+            deterministic=self.short_run_deterministic,
+            names=self.names,
+            exog_names=self.exog_names,
+        )
 
     @property
     def companion(self) -> npt.NDArray[np.float64]:

@@ -43,6 +43,7 @@ from ..._core import (
 )
 from ..._internals import (
     _ComparisonMixin,
+    _ConditionalLevels,
     _ExogenousVectorAutoRegressionFit,
     _ExogenousVectorAutoRegressionModel,
     _SummaryMixin,
@@ -231,6 +232,22 @@ class VARXResult(
             llf=fit.llf,
             nobs=fit.nobs,
             n_params=fit.n_params,
+        )
+
+    def to_varx(self) -> _ConditionalLevels:
+        """This unit's equations in levels, as a global system consumes them.
+
+        A repackaging rather than a conversion: a VARX is already written in
+        levels, so the only work is splitting the exogenous stack into its
+        contemporaneous head and its lagged tail.
+        """
+        return _ConditionalLevels(
+            phi=self.coefficients,
+            impact=self.exog_coefficients[0],
+            exog_lags=self.exog_coefficients[1:],
+            deterministic=self.deterministic,
+            names=self.names,
+            exog_names=self.exog_names,
         )
 
     @property

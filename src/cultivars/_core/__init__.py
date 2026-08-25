@@ -74,6 +74,7 @@ from ._matrices import (
     conditional_design,
     deterministic_columns,
     lag_matrix,
+    link_matrix,
     n_deterministic,
     psd_sqrt,
     trailing_lag,
@@ -111,6 +112,7 @@ from ._validators import (
     validate_order_tuple,
     validate_panel,
     validate_transition,
+    validate_weights,
 )
 
 __all__ = [
@@ -167,6 +169,7 @@ __all__ = [
     "fractional_difference_weights",
     "inv_softplus",
     "lag_matrix",
+    "link_matrix",
     "local_whittle_d",
     "n_deterministic",
     "ols",
@@ -190,4 +193,5 @@ __all__ = [
     "validate_order_tuple",
     "validate_panel",
     "validate_transition",
+    "validate_weights",
 ]

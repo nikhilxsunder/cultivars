@@ -437,3 +437,76 @@ def validate_panel(
             f"column counts {sorted(widths)}."
         )
     return tuple(blocks)
+
+
+def validate_weights(
+    weights: npt.ArrayLike, *, n_units: int, label: str = "weights"
+) -> npt.NDArray[np.float64]:
+    """Coerce and check a cross-unit weight matrix.
+
+    Row ``i`` says how unit ``i`` sees the rest of the world: ``w_ij`` is the
+    share unit ``j`` contributes to unit ``i``'s foreign aggregate. Three
+    properties are checked rather than assumed, because each failure produces a
+    model that estimates cleanly and means something different from what was
+    intended.
+
+    A non-zero diagonal makes a unit part of its own foreign aggregate, which
+    puts the dependent variable on both sides of the equation and destroys the
+    weak exogeneity the whole construction rests on. Rows that do not sum to one
+    silently rescale the foreign variables, so a coefficient on them is no
+    longer the elasticity anyone thinks it is. Negative weights are not
+    obviously wrong -- a net-position matrix can carry them -- but they are
+    unusual enough that passing one by accident is far more likely than passing
+    one on purpose, so they are refused unless asked for.
+
+    Args:
+        weights: An ``(n_units, n_units)`` array.
+        n_units: Number of units the global system links.
+        label: Name used in error messages.
+
+    Returns:
+        An ``(n_units, n_units)`` float array.
+
+    Raises:
+        DimensionError: If the matrix is not square of the expected size.
+        NumericalError: If it contains non-finite values.
+        SpecificationError: If the diagonal is non-zero, a row does not sum to
+            one, or any weight is negative.
+
+    Example:
+        >>> validate_weights([[0.0, 1.0], [1.0, 0.0]], n_units=2).shape
+        (2, 2)
+    """
+    arr = np.asarray(weights, dtype=np.float64)
+    if arr.shape != (n_units, n_units):
+        raise DimensionError(
+            f"{label} must be ({n_units}, {n_units}), one row and column per unit; "
+            f"got shape {arr.shape}."
+        )
+    if not np.all(np.isfinite(arr)):
+        raise NumericalError(f"{label} contains non-finite values.")
+    diagonal = np.diag(arr)
+    if np.any(np.abs(diagonal) > 1e-12):
+        offenders = tuple(int(i) for i in np.flatnonzero(np.abs(diagonal) > 1e-12))
+        raise SpecificationError(
+            f"{label} must have a zero diagonal; units {offenders} carry weight on "
+            "themselves, which would put a unit inside its own foreign aggregate and "
+            "destroy the weak exogeneity the linkage depends on."
+        )
+    if np.any(arr < -1e-12):
+        raise SpecificationError(
+            f"{label} contains negative entries. A net-position matrix can legitimately "
+            "have them, but passing one unintentionally is the far more common case, so "
+            "they are refused here; take the absolute value and renormalize if the sign "
+            "is meant."
+        )
+    sums = arr.sum(axis=1)
+    bad = np.flatnonzero(np.abs(sums - 1.0) > 1e-8)
+    if bad.size:
+        worst = int(bad[np.argmax(np.abs(sums[bad] - 1.0))])
+        raise SpecificationError(
+            f"every row of {label} must sum to one; row {worst} sums to {sums[worst]:.6g}. "
+            "Unnormalized rows rescale the foreign variables, so the coefficients on them "
+            "stop being the elasticities they are read as."
+        )
+    return arr

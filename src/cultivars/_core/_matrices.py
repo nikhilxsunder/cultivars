@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from collections.abc import Sequence
+
 import numpy as np
 import numpy.typing as npt
 
@@ -300,3 +304,44 @@ def _as_coefficient_stack(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
     if not np.all(np.isfinite(ar)):
         raise NumericalError("AR coefficients contain non-finite values.")
     return ar
+
+
+def link_matrix(
+    unit: int,
+    *,
+    weights: npt.ArrayLike,
+    unit_of_column: Sequence[int],
+    variable_of_column: Sequence[int],
+) -> npt.NDArray[np.float64]:
+    """The selector ``W_i`` with ``z_it = W_i x_t`` for one unit.
+
+    Stacks the unit's own rows -- plain selections out of the global vector --
+    above its star rows, which are the weighted combinations
+    :func:`star_variables` computes. Expressing the foreign variables as a
+    matrix acting on the global vector is the whole trick behind a global
+    system: once every unit's equations are written against ``x_t`` rather than
+    against its own private mixture, they stack into one square system that can
+    be solved.
+
+    Args:
+        unit: Index of the unit.
+        weights: A validated ``(n_units, n_units)`` matrix.
+        unit_of_column: Owning unit index for each global column.
+        variable_of_column: Variable identity for each global column.
+
+    Returns:
+        A ``(2 * k_i, k)`` array: own rows first, then star rows.
+    """
+    matrix = np.asarray(weights, dtype=np.float64)
+    owners = tuple(int(u) for u in unit_of_column)
+    kinds = tuple(int(v) for v in variable_of_column)
+    width = len(owners)
+    own = [c for c in range(width) if owners[c] == unit]
+    rows = [np.eye(width, dtype=np.float64)[c] for c in own]
+    for column in own:
+        row = np.zeros(width, dtype=np.float64)
+        for source in range(width):
+            if kinds[source] == kinds[column]:
+                row[source] += matrix[unit, owners[source]]
+        rows.append(row)
+    return np.vstack(rows)
