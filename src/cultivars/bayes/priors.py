@@ -1,8 +1,7 @@
-
 from __future__ import annotations
 
-from dataclasses import dataclass
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
@@ -131,8 +130,7 @@ class MinnesotaPrior(_Prior):
             raise SpecificationError(f"decay must be non-negative; got {self.decay}.")
         if self.sum_of_coefficients is not None and self.sum_of_coefficients <= 0.0:
             raise SpecificationError(
-                f"sum_of_coefficients must be positive when given; "
-                f"got {self.sum_of_coefficients}."
+                f"sum_of_coefficients must be positive when given; got {self.sum_of_coefficients}."
             )
 
     def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
@@ -183,8 +181,7 @@ class MinnesotaPrior(_Prior):
             return super(MinnesotaPrior, self).dummy_observations(context)
         size = context.k_endog
         centre = (
-            np.diag(self._persistence(context) * context.presample_mean)
-            * self.sum_of_coefficients
+            np.diag(self._persistence(context) * context.presample_mean) * self.sum_of_coefficients
         )
         block = np.hstack(
             [
@@ -197,9 +194,7 @@ class MinnesotaPrior(_Prior):
 
     def _label(self) -> str:
         """Short description for a summary table."""
-        tail = (
-            "" if self.sum_of_coefficients is None else f", l5={self.sum_of_coefficients:g}"
-        )
+        tail = "" if self.sum_of_coefficients is None else f", l5={self.sum_of_coefficients:g}"
         return (
             f"minnesota(l1={self.tightness:g}, l2={self.cross_equation:g}, "
             f"l3={self.decay:g}, l4={self.exogenous:g}{tail})"
