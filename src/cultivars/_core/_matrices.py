@@ -30,7 +30,6 @@ import numpy.typing as npt
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._containers import LagPolynomial
 from ._defaults import _TREND_WIDTH
-from ._protocols import ClosedSystemResult
 
 
 def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -373,39 +372,87 @@ def _lower_cholesky(matrix: npt.NDArray[np.float64], label: str) -> npt.NDArray[
         ) from error
 
 
-def _long_run_matrix(result: ClosedSystemResult) -> npt.NDArray[np.float64]:
-    """The cumulated response of the system to its reduced-form innovations.
+def _long_run_matrix(
+    coefficients: npt.NDArray[np.float64],
+    ma_coefficients: npt.NDArray[np.float64] | None = None,
+) -> npt.NDArray[np.float64]:
+    """The cumulated response of a closed system to its innovations, in closed form.
 
     ``F = (I - A_1 - ... - A_p)^{-1} (I + M_1 + ... + M_q)``, the sum of the
-    moving-average matrices in closed form. The moving-average block is read
-    through ``ma_coefficients`` when the result carries one -- a VARMA -- and
-    is the identity contribution alone otherwise, which makes this exact for
-    every closed family rather than a truncation of the infinite sum.
+    moving-average matrices without truncating the infinite series. A pure
+    autoregression passes no moving-average stack and gets ``A(1)^{-1}``.
 
     Args:
-        result: The fitted reduced-form system.
+        coefficients: ``(p, k, k)`` autoregressive stack.
+        ma_coefficients: Optional ``(q, k, k)`` moving-average stack.
 
     Returns:
         The ``(k, k)`` long-run impact matrix of the innovations.
 
     Raises:
         SpecificationError: If the autoregressive polynomial has a unit root,
-            in which case cumulated responses diverge and no long-run
-            restriction can be imposed on levels dynamics; difference the
-            integrated variables first, which is what Blanchard-Quah do.
+            in which case cumulated responses diverge and no long-run object
+            exists; difference the integrated variables first, which is what
+            Blanchard-Quah do with output.
     """
-    k = result.k_endog
+    k = int(coefficients.shape[1])
     identity = np.eye(k)
-    ar_sum = result.coefficients.sum(axis=0) if result.coefficients.shape[0] else np.zeros((k, k))
-    ma = getattr(result, "ma_coefficients", None)
-    ma_sum = identity + (ma.sum(axis=0) if ma is not None and ma.shape[0] else 0.0)
+    ar_sum = coefficients.sum(axis=0) if coefficients.shape[0] else np.zeros((k, k))
+    ma_sum = identity + (
+        ma_coefficients.sum(axis=0)
+        if ma_coefficients is not None and ma_coefficients.shape[0]
+        else 0.0
+    )
     lhs = identity - ar_sum
     if abs(float(np.linalg.det(lhs))) < 1e-12:
         raise SpecificationError(
             "the autoregressive polynomial has a (near-)unit root, so cumulated "
             "responses diverge and the long-run impact matrix does not exist. "
             "Long-run identification lives in a stationary representation: "
-            "difference the integrated variables first, as Blanchard-Quah do "
-            "with output growth."
+            "difference the integrated variables first."
         )
     return np.linalg.solve(lhs, ma_sum)
+
+
+def _orthogonal_from_angles(angles: npt.NDArray[np.float64], size: int) -> npt.NDArray[np.float64]:
+    """Compose Givens rotations into a special orthogonal matrix.
+
+    One rotation per coordinate plane, ``size (size - 1) / 2`` in all, which
+    is exactly the dimension of the rotation group: the parameterization is
+    neither redundant nor short, so a search over the angles is a search over
+    rotations with no flat directions built in. Reflections -- the other
+    component of the orthogonal group -- are unreachable by construction;
+    callers that need them compose a fixed sign flip, which is how a shock and
+    its negative differ anyway.
+
+    Args:
+        angles: The plane-rotation angles, in the row-major plane order
+            ``(0,1), (0,2), ..., (size-2, size-1)``.
+        size: Matrix dimension.
+
+    Returns:
+        A ``(size, size)`` orthogonal matrix with determinant one.
+
+    Raises:
+        DimensionError: If the angle count does not match the plane count.
+    """
+    expected = size * (size - 1) // 2
+    values = np.asarray(angles, dtype=np.float64).ravel()
+    if values.shape[0] != expected:
+        raise DimensionError(
+            f"a {size}-dimensional rotation needs {expected} angles; got {values.shape[0]}."
+        )
+    out = np.eye(size, dtype=np.float64)
+    position = 0
+    for i in range(size - 1):
+        for j in range(i + 1, size):
+            cos = float(np.cos(values[position]))
+            sin = float(np.sin(values[position]))
+            rotation = np.eye(size, dtype=np.float64)
+            rotation[i, i] = cos
+            rotation[j, j] = cos
+            rotation[i, j] = -sin
+            rotation[j, i] = sin
+            out = out @ rotation
+            position += 1
+    return out

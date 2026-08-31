@@ -36,9 +36,7 @@ import numpy.typing as npt
 from ..exceptions import SpecificationError
 
 
-def _haar_rotation(
-    rng: np.random.Generator, size: int
-) -> npt.NDArray[np.float64]:
+def _haar_rotation(rng: np.random.Generator, size: int) -> npt.NDArray[np.float64]:
     """One draw from the uniform distribution over orthogonal matrices.
 
     The QR decomposition of a Gaussian draw, with the rotation's columns
@@ -101,17 +99,11 @@ def _accepted_rotations(
         keep = True
         for column, cells in enumerate(compiled):
             responses = np.einsum("hik,k->hi", psi, candidate[:, column])
-            direct = all(
-                sign * responses[h, i] > 0.0
-                for h in range(n_leads)
-                for i, sign in cells
-            )
+            direct = all(sign * responses[h, i] > 0.0 for h in range(n_leads) for i, sign in cells)
             if direct:
                 continue
             flipped = all(
-                -sign * responses[h, i] > 0.0
-                for h in range(n_leads)
-                for i, sign in cells
+                -sign * responses[h, i] > 0.0 for h in range(n_leads) for i, sign in cells
             )
             if flipped:
                 candidate[:, column] = -candidate[:, column]

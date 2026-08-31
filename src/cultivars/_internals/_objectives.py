@@ -41,6 +41,7 @@ from .._core import (
     _linear_variance_recursion,
     _log_variance_recursion,
     _midas_weights,
+    _orthogonal_from_angles,
     companion_matrix,
     expand_ar,
     expand_ma,
@@ -889,3 +890,67 @@ class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[n
         k = self.sigma.shape[0]
         llf = self.nobs * (-0.5 * k * _LOG_2PI + float(logdet_a) - float(logdet_b) - 0.5 * trace)
         return -llf
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _MixedHorizonObjective(_Objective[npt.NDArray[np.float64]]):
+    """Feasibility surface for zero restrictions split across two horizons.
+
+    The candidate impact matrix is ``chol(Sigma) Q`` with ``Q`` a rotation, so
+    the covariance is reproduced identically at every point of the search and
+    the criterion measures only how far the declared cells of the impact and
+    long-run matrices sit from their fixed values. At an exactly identified
+    pattern whose rank condition holds, the minimum is zero and the minimizer
+    is the identification; a strictly positive minimum is the rank condition
+    failing, and the caller reports it as exactly that.
+
+    Attributes:
+        impact_factor: ``(k, k)`` Cholesky factor of the innovation
+            covariance, possibly sign-flipped in its last column when the
+            caller explores the reflection component of the orthogonal group.
+        long_factor: ``(k, k)`` long-run matrix times the same factor.
+        impact_cells: ``(row, column, value)`` restrictions on the impact
+            matrix.
+        long_cells: ``(row, column, value)`` restrictions on the long-run
+            matrix.
+    """
+
+    options: ClassVar[OptimizerOptions | None] = {
+        "maxiter": 20000,
+        "ftol": 1e-18,
+        "gtol": 1e-14,
+    }
+
+    impact_factor: npt.NDArray[np.float64]
+    long_factor: npt.NDArray[np.float64]
+    impact_cells: tuple[tuple[int, int, float], ...]
+    long_cells: tuple[tuple[int, int, float], ...]
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """A small deterministic fan across the rotation group."""
+        size = self.impact_factor.shape[0]
+        count = size * (size - 1) // 2
+        return (
+            np.zeros(count, dtype=np.float64),
+            np.full(count, 0.7, dtype=np.float64),
+            np.full(count, -0.7, dtype=np.float64),
+            np.linspace(-1.2, 1.2, count) if count > 1 else np.array([1.2]),
+        )
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Map the angles to the rotation they compose."""
+        return _orthogonal_from_angles(theta, self.impact_factor.shape[0])
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Sum of squared restriction violations at this rotation."""
+        if not np.all(np.isfinite(theta)):
+            return _PENALTY
+        rotation = _orthogonal_from_angles(theta, self.impact_factor.shape[0])
+        impact = self.impact_factor @ rotation
+        long_run = self.long_factor @ rotation
+        violation = 0.0
+        for i, j, value in self.impact_cells:
+            violation += (impact[i, j] - value) ** 2
+        for i, j, value in self.long_cells:
+            violation += (long_run[i, j] - value) ** 2
+        return violation

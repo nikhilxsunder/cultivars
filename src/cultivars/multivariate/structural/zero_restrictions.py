@@ -68,11 +68,12 @@ from ..._core import (
 from ..._internals import (
     _IdentificationModel,
     _maximize_likelihood,
+    _MixedHorizonObjective,
     _ShortRunObjective,
+    _solve,
     _SummaryMixin,
 )
 from ...exceptions import NumericalError, SpecificationError
-
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -162,9 +163,7 @@ class SVARResult(_SummaryMixin):
         psi = self.source.ma_representation(horizon)
         theta = np.einsum("hik,ks->his", psi, self.impact)
         explained = np.cumsum(theta**2, axis=0)
-        total = np.cumsum(
-            np.einsum("hik,kl,hil->hi", psi, self.source.sigma_u, psi), axis=0
-        )
+        total = np.cumsum(np.einsum("hik,kl,hil->hi", psi, self.source.sigma_u, psi), axis=0)
         return explained / total[:, :, np.newaxis]
 
     def structural_shocks(self) -> npt.NDArray[np.float64]:
@@ -255,9 +254,7 @@ class RecursiveSVAR(_IdentificationModel[SVARResult]):
 
     __slots__ = ("_perm",)
 
-    def __init__(
-        self, result: ClosedSystemResult, *, order: Sequence[str] | None = None
-    ) -> None:
+    def __init__(self, result: ClosedSystemResult, *, order: Sequence[str] | None = None) -> None:
         """Validate the source system and the declared ordering."""
         super().__init__(result)
         self._perm = _validate_ordering(self.names, order)
@@ -334,9 +331,7 @@ class LongRunSVAR(_IdentificationModel[SVARResult]):
 
     __slots__ = ("_perm",)
 
-    def __init__(
-        self, result: ClosedSystemResult, *, order: Sequence[str] | None = None
-    ) -> None:
+    def __init__(self, result: ClosedSystemResult, *, order: Sequence[str] | None = None) -> None:
         """Validate the source system, its stationarity, and the ordering."""
         super().__init__(result)
         if getattr(result, "is_stable", True) is False:
@@ -371,9 +366,7 @@ class LongRunSVAR(_IdentificationModel[SVARResult]):
         ma = getattr(self.source, "ma_coefficients", None)
         total = _long_run_matrix(self.source.coefficients, ma)
         long_run_cov = total @ sigma @ total.T
-        factor = _lower_cholesky(
-            long_run_cov[np.ix_(perm, perm)], "the long-run covariance"
-        )
+        factor = _lower_cholesky(long_run_cov[np.ix_(perm, perm)], "the long-run covariance")
         theta = np.empty_like(factor)
         theta[list(perm), :] = factor
         impact = np.linalg.solve(total, theta)
@@ -478,9 +471,7 @@ class ShortRunSVAR(_IdentificationModel[SVARResult]):
                 "the diagonal of a must be fixed (conventionally 1): a free "
                 "diagonal trades scale with b, and nothing identifies the split."
             )
-        b_pattern = (
-            np.where(np.eye(k) > 0.0, np.nan, 0.0) if b is None else b
-        )
+        b_pattern = np.where(np.eye(k) > 0.0, np.nan, 0.0) if b is None else b
         self._b_base, self._b_free = _validate_impact_pattern(
             b_pattern, size=k, label="b", default_diagonal=None
         )
@@ -504,9 +495,7 @@ class ShortRunSVAR(_IdentificationModel[SVARResult]):
         else:
             resolved = tuple(str(name) for name in shock_names)
             if len(resolved) != k or len(set(resolved)) != k:
-                raise SpecificationError(
-                    f"shock_names must be {k} unique labels; got {resolved}."
-                )
+                raise SpecificationError(f"shock_names must be {k} unique labels; got {resolved}.")
             self._labels = resolved
 
     @property
@@ -556,9 +545,7 @@ class ShortRunSVAR(_IdentificationModel[SVARResult]):
                 impact[:, j] = -column
 
         saturated = float(self.source.nobs) * (
-            -0.5 * k * _LOG_2PI
-            - 0.5 * float(np.linalg.slogdet(sigma)[1])
-            - 0.5 * k
+            -0.5 * k * _LOG_2PI - 0.5 * float(np.linalg.slogdet(sigma)[1]) - 0.5 * k
         )
         ratio = max(2.0 * (saturated - llf), 0.0)
         if self._overid_df == 0:
@@ -599,4 +586,200 @@ class ShortRunSVAR(_IdentificationModel[SVARResult]):
                 "data cannot contradict."
             ),
             diagnostics=diagnostics,
+        )
+
+
+class MixedSVAR(_IdentificationModel[SVARResult]):
+    """Zero restrictions split across impact and the long run, Gali (1999).
+
+    The scheme that needs both horizons at once: a technology shock is the
+    only one moving productivity forever -- a long-run zero -- while a policy
+    shock is barred from moving output on impact -- a short-run zero. Neither
+    :class:`ShortRunSVAR` nor :class:`LongRunSVAR` can say both; this model
+    takes a pattern for each matrix and finds the one factorization
+    satisfying every declared cell.
+
+    The search runs where the problem lives: over rotations of the Cholesky
+    factor, so the innovation covariance is reproduced identically at every
+    candidate and the restrictions are the only thing being solved for. A
+    rotation has exactly ``k (k - 1) / 2`` degrees of freedom, which is why
+    exactly that many restrictions are required -- fewer is an under-
+    identified pattern, more is an over-identified one whose restricted
+    covariance estimation this model deliberately does not attempt.
+
+    Args:
+        result: The fitted closed, stationary reduced-form result to identify.
+        impact: ``(k, k)`` pattern on the impact matrix, ``nan`` for a free
+            cell and a finite value -- almost always zero -- for a fixed one.
+            ``None`` fixes nothing on impact.
+        long_run: ``(k, k)`` pattern on the cumulated long-run matrix, same
+            convention. Required: with nothing fixed at the long run,
+            :class:`ShortRunSVAR` is that model.
+        shock_names: One label per shock column. Defaults to the variable
+            names.
+
+    Raises:
+        SpecificationError: If the result is not a closed system or not
+            stationary, the long-run pattern is omitted, a pattern is
+            malformed, or the restriction count differs from
+            ``k (k - 1) / 2``.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> from cultivars.multivariate.reduced_form import VAR
+        >>> y = np.diff(rng.standard_normal((201, 2)).cumsum(axis=0) * 0.1, axis=0)
+        >>> res = VAR(y, order=1).fit()
+        >>> lr = np.array([[np.nan, 0.0], [np.nan, np.nan]])
+        >>> svar = MixedSVAR(res, long_run=lr).identify()
+        >>> bool(abs(svar.long_run_impact[0, 1]) < 1e-8)
+        True
+    """
+
+    __slots__ = ("_impact_cells", "_labels", "_long_cells")
+
+    def __init__(
+        self,
+        result: ClosedSystemResult,
+        *,
+        impact: npt.ArrayLike | None = None,
+        long_run: npt.ArrayLike | None = None,
+        shock_names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the source system, both patterns, and the order condition."""
+        super().__init__(result)
+        if getattr(result, "is_stable", True) is False:
+            raise SpecificationError(
+                "mixed-horizon identification needs a stationary system: an "
+                "explosive or unit-root companion has no finite cumulated "
+                "response to restrict."
+            )
+        k = self.k_endog
+        if long_run is None:
+            raise SpecificationError(
+                "long_run must fix at least one cell; with restrictions on "
+                "impact alone, ShortRunSVAR is that model."
+            )
+        self._impact_cells = self._fixed_cells(impact, k, "impact")
+        self._long_cells = self._fixed_cells(long_run, k, "long_run")
+        if not self._long_cells:
+            raise SpecificationError(
+                "long_run must fix at least one cell; with restrictions on "
+                "impact alone, ShortRunSVAR is that model."
+            )
+        declared = len(self._impact_cells) + len(self._long_cells)
+        needed = k * (k - 1) // 2
+        if declared != needed:
+            raise SpecificationError(
+                f"a rotation-solved mixed pattern needs exactly {needed} "
+                f"restrictions for {k} variables; got {declared}. Fewer leaves "
+                "the rotation under-determined; more is an over-identified "
+                "pattern, whose restricted covariance estimation this model "
+                "does not attempt."
+            )
+        if shock_names is None:
+            self._labels = self.names
+        else:
+            resolved = tuple(str(name) for name in shock_names)
+            if len(resolved) != k or len(set(resolved)) != k:
+                raise SpecificationError(f"shock_names must be {k} unique labels; got {resolved}.")
+            self._labels = resolved
+
+    @staticmethod
+    def _fixed_cells(
+        pattern: npt.ArrayLike | None, size: int, label: str
+    ) -> tuple[tuple[int, int, float], ...]:
+        """The declared restrictions of one pattern, as (row, column, value)."""
+        if pattern is None:
+            return ()
+        base, free = _validate_impact_pattern(pattern, size=size, label=label)
+        free_set = set(free)
+        return tuple(
+            (i, j, float(base[i, j]))
+            for i in range(size)
+            for j in range(size)
+            if (i, j) not in free_set
+        )
+
+    @property
+    def n_restrictions(self) -> int:
+        """Declared restrictions across both horizons."""
+        return len(self._impact_cells) + len(self._long_cells)
+
+    def identify(self) -> SVARResult:
+        """Solve for the rotation satisfying every declared cell.
+
+        Both components of the orthogonal group are searched -- rotations
+        directly, reflections through a fixed sign flip of the factor -- so a
+        pattern with nonzero fixed values is reachable wherever it lives.
+
+        Returns:
+            The complete structural result.
+
+        Raises:
+            SpecificationError: If the autoregressive polynomial has a unit
+                root, so no long-run matrix exists.
+            NumericalError: If no rotation satisfies the restrictions, which
+                is the rank condition failing at this pattern -- the declared
+                cells are arranged so that no factorization of this covariance
+                can honor all of them at once.
+        """
+        k = self.k_endog
+        sigma = np.asarray(self.source.sigma_u, dtype=np.float64)
+        ma = getattr(self.source, "ma_coefficients", None)
+        total = _long_run_matrix(self.source.coefficients, ma)
+        factor = _lower_cholesky(sigma, "sigma_u")
+        reflect = np.eye(k, dtype=np.float64)
+        reflect[-1, -1] = -1.0
+
+        best_impact: npt.NDArray[np.float64] | None = None
+        best_violation = np.inf
+        for base in (factor, factor @ reflect):
+            objective = _MixedHorizonObjective(
+                impact_factor=base,
+                long_factor=total @ base,
+                impact_cells=self._impact_cells,
+                long_cells=self._long_cells,
+            )
+            rotation, violation = _solve(objective)
+            if violation < best_violation:
+                best_violation = violation
+                best_impact = base @ rotation
+        assert best_impact is not None
+        tolerance = 1e-8 * max(1.0, float(np.abs(sigma).max()))
+        if best_violation > tolerance:
+            raise NumericalError(
+                "no factorization of the innovation covariance honors every "
+                f"declared cell (best violation {best_violation:.3e}): the "
+                "rank condition fails at this pattern. Rearrange the "
+                "restrictions across the two horizons."
+            )
+        impact = best_impact
+        for j in range(k):
+            fixed_values = [
+                value for i, c, value in (*self._impact_cells, *self._long_cells) if c == j
+            ]
+            if all(value == 0.0 for value in fixed_values):
+                column = impact[:, j]
+                if column[int(np.argmax(np.abs(column)))] < 0.0:
+                    impact[:, j] = -column
+        return SVARResult(
+            source=self.source,
+            impact=impact,
+            shock_names=self._labels,
+            scheme="mixed",
+            restriction=(
+                f"{len(self._impact_cells)} cells fixed on impact and "
+                f"{len(self._long_cells)} on the cumulated long-run matrix, "
+                "solved jointly over rotations of the Cholesky factor. The "
+                "covariance is reproduced identically; the restrictions alone "
+                "chose the rotation, and they are assumptions the data cannot "
+                "contradict at exact identification."
+            ),
+            diagnostics=(
+                ("Restrictions", f"{self.n_restrictions}"),
+                ("On impact", f"{len(self._impact_cells)}"),
+                ("At the long run", f"{len(self._long_cells)}"),
+                ("Max violation", f"{best_violation:.2e}"),
+                ("Identification", "exact"),
+            ),
         )

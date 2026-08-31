@@ -67,7 +67,7 @@ from ._models import (
     _VectorErrorCorrectionModel,
 )
 from ._moments import _VectorMoments
-from ._objectives import _MidasProfileObjective, _ShortRunObjective
+from ._objectives import _MidasProfileObjective, _MixedHorizonObjective, _ShortRunObjective
 from ._predictors import MeanPredictor
 from ._priors import _NoPrior, _Prior, _PriorContext
 from ._results import (
@@ -81,7 +81,7 @@ from ._results import (
     _ObservedRegimeResult,
     _VectorResult,
 )
-from ._solvers import _maximize_likelihood, solve_global
+from ._solvers import _maximize_likelihood, _solve, solve_global
 from ._tests import (
     _LikelihoodRatioTest,
     _StabilityTest,
@@ -120,6 +120,7 @@ __all__ = [
     "_MarkovSwitchingStateSpaceModel",
     "_MeanFunctionResult",
     "_MidasProfileObjective",
+    "_MixedHorizonObjective",
     "_NeuralAutoRegressionFit",
     "_NeuralAutoRegressionModel",
     "_NeuralThresholdFit",
@@ -152,5 +153,6 @@ __all__ = [
     "_WaldTest",
     "_WaldTestResult",
     "_maximize_likelihood",
+    "_solve",
     "solve_global",
 ]

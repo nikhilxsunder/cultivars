@@ -70,6 +70,7 @@ from ._mappings import (
 from ._matrices import (
     _long_run_matrix,
     _lower_cholesky,
+    _orthogonal_from_angles,
     companion_matrix,
     conditional_design,
     deterministic_columns,
@@ -208,6 +209,7 @@ __all__ = [
     "_midas_windows",
     "_mixed_frequency_system",
     "_nelson_siegel_loadings",
+    "_orthogonal_from_angles",
     "_projection_scores",
     "_resolve_ordering",
     "_validate_curves",

@@ -112,8 +112,7 @@ class ProxySVAR(_IdentificationModel[SVARResult]):
         anchor = self.names[0] if normalize is None else str(normalize)
         if anchor not in self.names:
             raise SpecificationError(
-                f"unknown normalization variable {anchor!r}; expected one of "
-                f"{self.names}."
+                f"unknown normalization variable {anchor!r}; expected one of {self.names}."
             )
         self._pivot = self.names.index(anchor)
         self._shock = str(shock)

@@ -61,10 +61,11 @@ from ..._core import (
     _UNIT_SHOCK_NOTE,
     ClosedSystemResult,
     SummaryTable,
+    _accepted_rotations,
     _lower_cholesky,
     _validate_sign_patterns,
 )
-from ..._internals import _accepted_rotations, _IdentificationModel, _SummaryMixin
+from ..._internals import _IdentificationModel, _SummaryMixin
 from ...exceptions import SpecificationError
 
 
@@ -117,9 +118,7 @@ class SignRestrictionSVARResult(_SummaryMixin):
         """Accepted rotations per draw, a direct read on how binding the signs are."""
         return self.n_accepted / self.attempts
 
-    def irf_draws(
-        self, horizon: int = 20, *, cumulative: bool = False
-    ) -> npt.NDArray[np.float64]:
+    def irf_draws(self, horizon: int = 20, *, cumulative: bool = False) -> npt.NDArray[np.float64]:
         """Structural impulse responses for every accepted rotation.
 
         Args:
@@ -232,18 +231,9 @@ class SignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
     Raises:
         SpecificationError: If the result is not a closed system, or the
             declaration, horizons, or draw budget are malformed.
-
-    Example:
-        >>> rng = np.random.default_rng(0)
-        >>> from cultivars.multivariate.reduced_form import VAR
-        >>> y = np.diff(rng.standard_normal((121, 2)).cumsum(axis=0) * 0.1, axis=0)
-        >>> res = VAR(y, order=1, names=("gdp", "infl")).fit()
-        >>> sset = SignRestrictionSVAR(res, {"demand": {"gdp": "+", "infl": "+"}}, draws=50).identify()
-        >>> sset.n_accepted
-        50
     """
 
-    __slots__ = ("_budget", "_compiled", "_draws", "_leads", "_labels", "_restriction", "_seed")
+    __slots__ = ("_budget", "_compiled", "_draws", "_labels", "_leads", "_restriction", "_seed")
 
     def __init__(
         self,
@@ -274,14 +264,12 @@ class SignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
         self._budget = budget
         self._seed = seed
         self._labels = tuple(restrictions) + tuple(
-            f"unrestricted{j + 1}"
-            for j in range(self.k_endog - len(self._compiled))
+            f"unrestricted{j + 1}" for j in range(self.k_endog - len(self._compiled))
         )
         self._restriction = (
             f"Declared signs, holding at horizons {leads}: "
             + "; ".join(
-                f"{label}: "
-                + ", ".join(f"{variable} {sign}" for variable, sign in pattern.items())
+                f"{label}: " + ", ".join(f"{variable} {sign}" for variable, sign in pattern.items())
                 for label, pattern in restrictions.items()
             )
             + ". Rotations were drawn at the reduced-form point estimate, so "
@@ -312,7 +300,7 @@ class SignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
             budget=self._budget,
             rng=np.random.default_rng(self._seed),
         )
-        return SignSVARResult(
+        return SignRestrictionSVARResult(
             source=self.source,
             impacts=impacts,
             shock_names=self._labels,

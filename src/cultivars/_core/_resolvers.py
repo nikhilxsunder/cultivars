@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -7,9 +5,7 @@ from collections.abc import Sequence
 from ..exceptions import SpecificationError
 
 
-def _resolve_ordering(
-    names: tuple[str, ...], order: Sequence[str] | None
-) -> tuple[int, ...]:
+def _resolve_ordering(names: tuple[str, ...], order: Sequence[str] | None) -> tuple[int, ...]:
     """Map a declared variable ordering onto column indices.
 
     Args:
