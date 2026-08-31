@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -6,35 +7,11 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from .._internals import _NoPrior as NoPrior
 from .._internals import _Prior, _PriorContext
 from ..exceptions import DimensionError, SpecificationError
 
-
-class NoPrior(_Prior):
-    """The absence of shrinkage, which is unrestricted least squares.
-
-    Present so that "no prior" is something a caller passes rather than
-    something they express by passing nothing, and so that a stack assembled in
-    a loop needs no special first case: it is the identity of composition.
-    """
-
-    __slots__ = ()
-
-    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
-        """Zero, which no infinite variance will ever pull toward."""
-        return np.zeros((context.width, context.k_endog), dtype=np.float64)
-
-    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
-        """Infinite everywhere: no opinion about any coefficient."""
-        return np.full((context.width, context.k_endog), np.inf, dtype=np.float64)
-
-    def _label(self) -> str:
-        """Short description for a summary table."""
-        return "none"
-
-    def _components(self) -> tuple[_Prior, ...]:
-        """Contribute nothing to a composition."""
-        return ()
+__all__ = ["MinnesotaPrior", "NoPrior"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)

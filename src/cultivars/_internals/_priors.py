@@ -23,6 +23,15 @@ class _PriorContext:
         presample_mean: Mean of the first ``order`` observations, which the
             sum-of-coefficients restriction is centred on.
         k_exog: Exogenous regressors carried after the lag block.
+        n_deterministic: Width of the leading deterministic block, which is a
+            count rather than a flag because families disagree about it: none
+            for a trendless specification, one for a constant, two for a
+            constant and trend, and one per unit for a fixed-effects panel. A
+            boolean would have been silently one column short for every
+            ``"ct"`` model and off by ``N - 1`` for every panel, and a prior
+            whose columns do not line up with the design is inert at the limits
+            while still looking plausible in between -- which is worse than
+            being wrong loudly.
         include_constant: Whether the design carries a leading intercept
             column. Dummy columns must match the design's own ordering, and a
             prior that guesses wrong is inert at the limits while still looking
@@ -34,17 +43,22 @@ class _PriorContext:
     scales: npt.NDArray[np.float64]
     presample_mean: npt.NDArray[np.float64]
     k_exog: int = 0
+    n_deterministic: int = 1
     include_constant: bool = True
 
     @property
     def width(self) -> int:
         """Design columns a prior's blocks must match."""
-        return int(self.include_constant) + self.k_endog * self.order + self.k_exog
+        return self.n_deterministic + self.k_endog * self.order + self.k_exog
 
     @property
     def lag_offset(self) -> int:
         """Design columns ahead of the endogenous lag block."""
-        return int(self.include_constant)
+        return self.n_deterministic
+
+    def _lead(self, rows: int, value: float = 0.0) -> npt.NDArray[np.float64]:
+        """The deterministic columns a dummy block carries, one per term."""
+        return np.full((rows, self.n_deterministic), value, dtype=np.float64)
 
 
 class _Prior(ABC):
@@ -192,3 +206,30 @@ class _CompositePrior(_Prior):
     def _components(self) -> tuple[_Prior, ...]:
         """Flatten rather than nest."""
         return self.components
+
+
+class _NoPrior(_Prior):
+    """The absence of shrinkage, which is unrestricted least squares.
+
+    Present so that "no prior" is something a caller passes rather than
+    something they express by passing nothing, and so that a stack assembled in
+    a loop needs no special first case: it is the identity of composition.
+    """
+
+    __slots__ = ()
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Zero, which no infinite variance will ever pull toward."""
+        return np.zeros((context.width, context.k_endog), dtype=np.float64)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Infinite everywhere: no opinion about any coefficient."""
+        return np.full((context.width, context.k_endog), np.inf, dtype=np.float64)
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return "none"
+
+    def _components(self) -> tuple[_Prior, ...]:
+        """Contribute nothing to a composition."""
+        return ()

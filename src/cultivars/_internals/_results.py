@@ -35,6 +35,7 @@ from .._core import (
     companion_matrix,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._inferences import _CoefficientInference
 from ._mixins import (
     _ComparisonMixin,
     _ConditionalVarianceMixin,
@@ -845,6 +846,11 @@ class _VectorResult:
     one rather than here, which is what lets a conditional result be a
     first-class member of this hierarchy instead of a closed one with holes.
 
+    The two prior fields live here rather than on the families because
+    shrinkage is orthogonal to specification: any of them can be estimated
+    under a prior, and putting the fields on the ancestor is what gave every
+    family the Bayesian mode without a line of change to its own body.
+
     Attributes:
         endog: The sample the model was fitted to.
         names: Variable labels, in the order the columns appear.
@@ -857,7 +863,14 @@ class _VectorResult:
         design: The regressor matrix as estimated.
         llf: Gaussian log-likelihood.
         nobs: Effective sample size.
-        n_params: Free parameters, covariance included.
+        n_params: Parameters the fit spends, covariance included. Not an
+            integer under shrinkage, which is the point: a shrunk model uses
+            less freedom than its design has columns and an information
+            criterion must charge it for what it used.
+        posterior: The posterior covariance when a prior was applied,
+            otherwise ``None``. Carried rather than rebuilt because under a
+            prior there is nothing to rebuild it from.
+        prior_label: What the prior was, for the summary.
     """
 
     endog: npt.NDArray[np.float64]
@@ -870,8 +883,10 @@ class _VectorResult:
     fittedvalues: npt.NDArray[np.float64]
     design: npt.NDArray[np.float64]
     llf: float
-    nobs: int
-    n_params: int
+    nobs: float
+    n_params: float
+    posterior: _CoefficientInference | None = None
+    prior_label: str = "none"
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)

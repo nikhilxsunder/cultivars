@@ -30,6 +30,7 @@ from scipy.optimize import minimize
 
 from .._core import link_matrix
 from ..exceptions import DimensionError, NumericalError
+from ._covariances import _PosteriorCovariance
 from ._levels import _ConditionalLevels
 from ._objectives import _Objective
 from ._priors import _Prior, _PriorContext
@@ -170,7 +171,7 @@ def posterior_coefficients(
     design: npt.NDArray[np.float64],
     prior: _Prior,
     context: _PriorContext,
-) -> npt.NDArray[np.float64]:
+) -> _PosteriorCovariance:
     """Posterior mean of the coefficient matrix, equation by equation.
 
     Each equation solves ``(X'X / s_i^2 + V_i^-1) b_i = X'y_i / s_i^2 +
@@ -192,7 +193,11 @@ def posterior_coefficients(
         context: What the prior needs to know about the sample.
 
     Returns:
-        A ``(width, k)`` posterior mean in design-column order.
+        A :class:`_PosteriorCovariance` carrying the posterior mean, the
+        per-equation covariance, and the effective parameter count. The last is
+        not decoration: shrinkage means the model spends fewer parameters than
+        the design has columns, and an information criterion that charges for
+        the nominal width penalizes a shrunk model for freedom it never used.
 
     Raises:
         DimensionError: If the design does not match the context's width.
@@ -211,6 +216,8 @@ def posterior_coefficients(
     cross = full_design.T @ full_design
     moment = full_design.T @ full_target
     out = np.empty((context.width, context.k_endog), dtype=np.float64)
+    blocks = np.empty((context.k_endog, context.width, context.width), dtype=np.float64)
+    effective = 0.0
     for index in range(context.k_endog):
         scale = float(context.scales[index]) ** 2
         column = variance[:, index]
@@ -218,4 +225,7 @@ def posterior_coefficients(
         left = cross / scale + np.diag(precision)
         right = moment[:, index] / scale + precision * mean[:, index]
         out[:, index] = np.linalg.solve(left, right)
-    return out
+        posterior = np.linalg.inv(left)
+        blocks[index] = posterior
+        effective += float(np.trace(posterior @ cross)) / scale
+    return _PosteriorCovariance(coefficients=out, blocks=blocks, effective_parameters=effective)

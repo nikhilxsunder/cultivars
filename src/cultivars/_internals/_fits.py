@@ -48,6 +48,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from ._inferences import _CoefficientInference
 from ._predictors import MeanPredictor
 
 
@@ -69,7 +70,7 @@ class _BaseFit(ABC):
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -277,34 +278,16 @@ class _SmoothTransitionFit(_BaseFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _VectorAutoRegressionFit(_BaseFit):
-    """Raw outputs of a reduced-form vector autoregression fit.
-
-    Inherits :class:`_BaseFit` unchanged: ``resid`` and ``fittedvalues`` become
-    ``(nobs, k)`` rather than ``(nobs,)``, but the annotation is a bare float
-    array either way and the meaning -- per-observation output aligned with the
-    effective sample -- generalizes exactly. What a vector fit adds is a
-    coefficient *stack* instead of a vector, and a covariance *matrix* instead
-    of a scalar.
+    """The estimated pieces of a reduced-form vector autoregression.
 
     Attributes:
-        coefficients: Autoregressive matrices ``A_1, ..., A_p``, shape
-            ``(p, k, k)``; empty leading axis when the order is zero.
-        deterministic: Coefficients on the deterministic block, shape
-            ``(d, k)``, one row per deterministic column and one column per
-            equation. Zero rows when ``trend == "n"``.
-        sigma_u: Innovation covariance divided by ``nobs - n_regressors``. The
-            estimator for *inference* -- Wald tests, the structural impact
-            matrix -- because the maximum-likelihood version is biased downward
-            by the estimated coefficients.
-        sigma_ml: Innovation covariance divided by ``nobs``. The estimator the
-            likelihood is built from, and the one the lag-order criteria use.
-            Both are carried because substituting either for the other is
-            silent: nothing raises, the numbers merely become wrong in a
-            direction nobody checks.
-        design: The regressor matrix the fit solved against, shape
-            ``(nobs, d + k * p)``, with the deterministic columns first.
-            Retained because a Wald test needs its cross-product, which cannot
-            be reconstructed from the coefficients alone.
+        coefficients: ``(p, k, k)`` stack of ``A_1, ..., A_p``.
+        deterministic: Deterministic coefficients, one row per term.
+        sigma_u: Residual covariance with the degrees-of-freedom correction.
+        sigma_ml: Residual covariance divided by the effective sample.
+        design: The regressor matrix as estimated.
+        posterior: Posterior covariance when a prior was applied, else ``None``.
+        prior_label: What the prior was, for the summary.
     """
 
     coefficients: npt.NDArray[np.float64]
@@ -312,20 +295,22 @@ class _VectorAutoRegressionFit(_BaseFit):
     sigma_u: npt.NDArray[np.float64]
     sigma_ml: npt.NDArray[np.float64]
     design: npt.NDArray[np.float64]
+    posterior: _CoefficientInference | None = None
+    prior_label: str = "none"
 
     @property
     def k_endog(self) -> int:
-        """Number of endogenous variables."""
+        """Number of equations."""
         return int(self.sigma_u.shape[0])
 
     @property
     def order(self) -> int:
-        """Autoregressive order, read off the coefficient stack."""
+        """Autoregressive order."""
         return int(self.coefficients.shape[0])
 
     @property
     def n_regressors(self) -> int:
-        """Regressors per equation, deterministic block included."""
+        """Regressors per equation."""
         return int(self.design.shape[1])
 
 

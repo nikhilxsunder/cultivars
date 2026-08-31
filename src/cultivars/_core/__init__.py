@@ -62,6 +62,7 @@ from ._estimators import (
     ergodic_distribution,
     ewma_mean_square,
     local_whittle_d,
+    minnesota_scales,
     ols,
     simulate_cointegration_null,
 )
@@ -174,6 +175,7 @@ __all__ = [
     "lag_matrix",
     "link_matrix",
     "local_whittle_d",
+    "minnesota_scales",
     "n_deterministic",
     "ols",
     "pack_stationary",

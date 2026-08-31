@@ -54,7 +54,8 @@ from .._core import (
     to_polars_frame,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ._covariance import _CoefficientCovariance
+from ._covariances import _CoefficientCovariance
+from ._inferences import _CoefficientInference
 from ._results import _LikelihoodRatioResult, _StabilityResult, _WaldTestResult
 
 if TYPE_CHECKING:
@@ -440,6 +441,7 @@ class _VectorInferenceMixin:
     resid: npt.NDArray[np.float64]
     design: npt.NDArray[np.float64]
     nobs: int
+    posterior: _CoefficientInference | None
 
     # -- structure ---------------------------------------------------------
 
@@ -555,8 +557,19 @@ class _VectorInferenceMixin:
         return self._deterministic_labels() + self._lag_labels() + self._trailing_labels()
 
     @property
-    def coefficient_covariance(self) -> _CoefficientCovariance:
-        """Asymptotic covariance of the coefficient matrix."""
+    def coefficient_covariance(self) -> _CoefficientInference:
+        """Covariance of the coefficient matrix, sampling or posterior.
+
+        Returns whichever object describes how the numbers were produced. A
+        shrunk fit carries its posterior covariance from estimation, because it
+        cannot be reconstructed here: under a prior the joint covariance stops
+        factoring as ``kron(sigma_u, inv(X'X))`` and there is nothing to
+        rebuild it from. Both objects answer the same questions, which is why
+        everything downstream -- ``bse``, ``tvalues``, ``conf_int``, the
+        coefficient table -- reads one interface and never asks which it has.
+        """
+        if self.posterior is not None:
+            return self.posterior
         return _CoefficientCovariance(
             coefficients=self._coefficient_stack(),
             sigma_u=self.sigma_u,
@@ -641,19 +654,29 @@ class _VectorInferenceMixin:
         return {name: (value, high[name]) for name, value in low.items()}
 
     def _coefficient_rows(self, *, alpha: float = 0.05) -> tuple[tuple[str, ...], ...]:
-        """Rows of the coefficient table: estimate, error, statistic, bounds."""
+        """Rows of the coefficient table, shaped by what produced the numbers.
+
+        A shrunk fit drops the p-value column rather than renaming it. There is
+        no honest name for a normal tail area centred on a posterior mean: it
+        answers how far zero sits from that mean in posterior standard
+        deviations, which the ratio column already says, and restating it in
+        probability units invites the frequentist reading that shrinkage makes
+        wrong.
+        """
         inference = self.coefficient_covariance
         stack = self._coefficient_stack()
-        stderr, tstat, pvalue = inference.stderr, inference.tstat, inference.pvalue
+        stderr, tstat = inference.stderr, inference.tstat
         lower, upper = inference.conf_int(alpha=alpha)
         labels = self._regressor_labels()
+        shrunk = inference._IS_POSTERIOR
+        pvalue = None if shrunk else inference.pvalue
         return tuple(
             (
                 f"{equation}: {label}",
                 f"{stack[j, i]:.4f}",
                 f"{stderr[j, i]:.4f}",
                 f"{tstat[j, i]:.3f}",
-                f"{pvalue[j, i]:.3f}",
+                *(() if pvalue is None else (f"{pvalue[j, i]:.3f}",)),
                 f"{lower[j, i]:.4f}",
                 f"{upper[j, i]:.4f}",
             )
@@ -661,8 +684,7 @@ class _VectorInferenceMixin:
             for j, label in enumerate(labels)
         )
 
-    @staticmethod
-    def _coefficient_columns(*, alpha: float = 0.05) -> tuple[str, ...]:
+    def _coefficient_columns(self, *, alpha: float = 0.05) -> tuple[str, ...]:
         """Headings for the coefficient table, with the bounds named honestly.
 
         The interval headings are derived from the same ``alpha`` that produced
@@ -670,13 +692,24 @@ class _VectorInferenceMixin:
         ``0.025`` above a 90 percent bound is not a cosmetic problem: it is the
         table asserting something false about its own contents.
 
+        Under a prior the headings change with them. ``std err`` becomes a
+        posterior standard deviation, ``z`` becomes a plain ratio because it is
+        no longer a test statistic, the p-value column is absent, and the
+        bounds are a credible interval rather than a confidence interval. A
+        table that kept the frequentist headings would be asserting something
+        false about its own contents, which is the same defect as printing
+        ``0.025`` above a ninety percent bound.
+
         Args:
             alpha: Two-sided level used for the interval.
 
         Returns:
             One heading per column of :meth:`_coefficient_rows`.
         """
-        return ("", "coef", "std err", "z", "P>|z|", f"[{alpha / 2:g}", f"{1 - alpha / 2:g}]")
+        edge = (f"[{alpha / 2:g}", f"{1 - alpha / 2:g}]")
+        if self.coefficient_covariance._IS_POSTERIOR:
+            return ("", "coef", "post. sd", "m/sd", *edge)
+        return ("", "coef", "std err", "z", "P>|z|", *edge)
 
     def granger_causality(self, cause: str, effect: str) -> _WaldTestResult:
         """Wald test that one variable's lags are jointly zero in another equation.

@@ -88,6 +88,7 @@ from .._core import (
     inv_softplus,
     lag_matrix,
     local_whittle_d,
+    minnesota_scales,
     n_deterministic,
     ols,
     pack_stationary,
@@ -123,6 +124,7 @@ from ._fits import (
     _VectorAutoRegressionFit,
     _VectorErrorCorrectionFit,
 )
+from ._inferences import _CoefficientInference
 from ._layouts import _ParameterLayout
 from ._means import _ARMAMean, _LinearMean, _MeanLayer
 from ._moments import _CointegrationMoments, _VectorMoments
@@ -134,6 +136,7 @@ from ._objectives import (
     _FractionalVarianceObjective,
     _SmoothTransitionObjective,
 )
+from ._priors import _NoPrior, _Prior, _PriorContext
 from ._results import (
     _DurbinKoopmanSmootherResult,
     _FilterResult,
@@ -145,7 +148,7 @@ from ._results import (
 )
 from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
-from ._solvers import _maximize_likelihood, _solve
+from ._solvers import _maximize_likelihood, _solve, posterior_coefficients
 from ._states import _ExpectationMaximizationState
 from ._tests import _JohansenRankTest
 
@@ -2620,7 +2623,7 @@ class _MultivariateModel[R](_BaseModel[R]):
 class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
     """The specification space of a reduced-form vector autoregression."""
 
-    __slots__ = ("_names", "_order", "_trend")
+    __slots__ = ("_endog", "_names", "_order", "_prior", "_trend")
 
     def __init__(
         self,
@@ -2629,6 +2632,7 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         order: int,
         trend: Trend = "c",
         names: Sequence[str] | None = None,
+        prior: _Prior | None = None,
     ) -> None:
         """Validate the sample and the specification.
 
@@ -2637,21 +2641,40 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
             order: Autoregressive order.
             trend: Deterministic terms: none, constant, or constant and trend.
             names: One label per variable. Defaults to ``y1 ... yk``.
+            prior: Shrinkage toward a stated belief about the coefficients.
+                ``None`` is unrestricted least squares. A prior belongs here
+                rather than on ``fit`` because it changes which specifications
+                are *admissible*: a proper prior makes a system estimable that
+                has more regressors than observations, so the length guard
+                below has to know about it.
 
         Raises:
             SpecificationError: If the order, trend, or names are malformed.
             DimensionError: If the sample cannot support the specification.
         """
-        super().__init__(endog)
+        self._endog = validate_endog_matrix(endog)
+        k = self._endog.shape[1]
         if int(order) != order or order < 0:
             raise SpecificationError(f"order must be an integer >= 0; got {order!r}.")
         self._order = int(order)
         self._trend: str = validate_choice(trend, Trend, "trend")
-        self._names = self._resolve_names(names, self.k_endog, "names", "y")
-        self._ensure_length(
-            self._rows_lost(self._order) + self.n_regressors + 1,
-            f"{type(self).__name__}({self._order})",
+        self._names = self._resolve_names(names, k, "names", "y")
+        self._prior: _Prior = _NoPrior() if prior is None else prior
+        need = (
+            self._rows_lost(self._order) + 1
+            if self.is_shrunk
+            else self._rows_lost(self._order) + self.n_regressors + 1
         )
+        if self._endog.shape[0] < need:
+            raise DimensionError(
+                f"a sample of {self._endog.shape[0]} rows is too short for "
+                f"{type(self).__name__}({self._order}); it needs at least {need}."
+                + (
+                    ""
+                    if self.is_shrunk
+                    else " A proper prior would make this specification estimable."
+                )
+            )
 
     @staticmethod
     def _resolve_names(
@@ -2687,6 +2710,31 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         if len(set(resolved)) != count:
             raise SpecificationError(f"{label} must be unique; got {resolved}.")
         return resolved
+
+    @property
+    def prior(self) -> _Prior:
+        """The prior on the coefficients; :class:`NoPrior` when unrestricted."""
+        return self._prior
+
+    @property
+    def is_shrunk(self) -> bool:
+        """Whether a prior contributes anything to this estimate."""
+        return bool(self._prior._components())
+
+    def _prior_context(self) -> _PriorContext:
+        """Everything the prior needs to know about this sample.
+
+        Built by the model rather than by the prior, so that the design's
+        column order is stated once by whoever owns the design.
+        """
+        return _PriorContext(
+            k_endog=self.k_endog,
+            order=self._order,
+            scales=minnesota_scales(self._endog, self._order),
+            presample_mean=self._endog[: self._order].mean(axis=0),
+            k_exog=self.n_regressors - self._n_deterministic_columns - self.k_endog * self._order,
+            include_constant=self._n_deterministic_columns > 0,
+        )
 
     @property
     def endog(self) -> npt.NDArray[np.float64]:
@@ -2835,6 +2883,51 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
             width=int(width),
         )
 
+    def _shrunk_moments(
+        self, target: npt.NDArray[np.float64], design: npt.NDArray[np.float64]
+    ) -> tuple[_VectorMoments, _CoefficientInference]:
+        """Posterior mean and the Gaussian quantities that follow from it.
+
+        The residual covariance and the likelihood are computed at the
+        posterior mean rather than at the least-squares one, and the
+        degrees-of-freedom correction charges the *effective* parameter count.
+        Charging the nominal width would penalize a shrunk model for freedom it
+        never used, which is the whole point of shrinking.
+
+        Args:
+            target: The ``(nobs, k)`` block being explained.
+            design: The ``(nobs, width)`` regressor matrix.
+
+        Returns:
+            The moments record and the posterior covariance behind it.
+
+        Raises:
+            NumericalError: If the residual covariance is singular.
+        """
+        posterior = posterior_coefficients(target, design, self._prior, self._prior_context())
+        coef = posterior.coefficients
+        fitted = design @ coef
+        resid = target - fitted
+        nobs, k = target.shape
+        cross = resid.T @ resid
+        sigma_ml = cross / nobs
+        sign, logdet = np.linalg.slogdet(sigma_ml)
+        if sign <= 0:
+            raise NumericalError("the residual covariance is singular.")
+        llf = -0.5 * nobs * k * _LOG_2PI - 0.5 * nobs * float(logdet) - 0.5 * nobs * k
+        spent = posterior.effective_parameters / k
+        moments = _VectorMoments(
+            coef=coef,
+            resid=resid,
+            fittedvalues=fitted,
+            sigma_u=cross / max(nobs - spent, 1.0),
+            sigma_ml=sigma_ml,
+            llf=float(llf),
+            nobs=int(nobs),
+            width=int(design.shape[1]),
+        )
+        return moments, posterior
+
     def _lag_blocks(self, coef: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """Slice the endogenous lag coefficients out as ``A_1, ..., A_p``.
 
@@ -2850,10 +2943,16 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         return np.stack([coef[offset + i * k : offset + (i + 1) * k, :].T for i in range(p)])
 
     def _fit_family(self) -> _VectorAutoRegressionFit:
-        """Estimate the system by multivariate least squares."""
+        """Estimate the system, by least squares or under the prior."""
         k = self.k_endog
         target, design, _ = self._design()
-        moments = self._gaussian_moments(target, design)
+        posterior: _CoefficientInference | None = None
+        if self.is_shrunk:
+            moments, posterior = self._shrunk_moments(target, design)
+            spent = posterior.effective_parameters
+        else:
+            moments = self._gaussian_moments(target, design)
+            spent = float(k * moments.width)
         return _VectorAutoRegressionFit(
             coefficients=self._lag_blocks(moments.coef),
             deterministic=moments.coef[: self._n_deterministic_columns],
@@ -2864,7 +2963,9 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
             fittedvalues=moments.fittedvalues,
             llf=moments.llf,
             nobs=moments.nobs,
-            n_params=k * moments.width + k * (k + 1) // 2,
+            n_params=spent + k * (k + 1) / 2,
+            posterior=posterior,
+            prior_label=self._prior._label(),
         )
 
     def lag_order_selection(self, max_lags: int | None = None) -> _LagOrderSelection:
