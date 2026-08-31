@@ -27,7 +27,7 @@ from collections.abc import Sequence
 import numpy as np
 import numpy.typing as npt
 
-from ..exceptions import DimensionError, SpecificationError
+from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._types import Frequency
 
 
@@ -393,3 +393,48 @@ def _midas_windows(
     ends = (np.arange(start, nobs) + 1) * period - 1
     idx = ends[:, np.newaxis] - np.arange(lags)[np.newaxis, :]
     return exog_high[idx]
+
+
+def _nelson_siegel_loadings(grid: npt.NDArray[np.float64], decay: float) -> npt.NDArray[np.float64]:
+    """The level, slope, and curvature loadings at one decay.
+
+    Args:
+        grid: Strictly positive maturities.
+        decay: The exponential decay rate ``lambda``.
+
+    Returns:
+        An ``(n_points, 3)`` matrix; columns are level ``1``, slope
+        ``(1 - e^{-lt}) / (lt)``, and curvature ``(1 - e^{-lt}) / (lt) -
+        e^{-lt}``.
+    """
+    x = decay * grid
+    slope = np.where(x > 1e-10, (1.0 - np.exp(-x)) / np.where(x > 1e-10, x, 1.0), 1.0)
+    curvature = slope - np.exp(-x)
+    return np.column_stack([np.ones_like(grid), slope, curvature])
+
+
+def _projection_scores(
+    curves: npt.NDArray[np.float64], basis: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
+    """Least-squares coordinates of each curve in a basis.
+
+    Args:
+        curves: The ``(nobs, n_points)`` panel.
+        basis: The ``(n_points, r)`` basis matrix.
+
+    Returns:
+        The ``(nobs, r)`` score panel.
+
+    Raises:
+        NumericalError: If the basis is rank-deficient on this grid.
+    """
+    gram = basis.T @ basis
+    try:
+        return np.linalg.solve(gram, basis.T @ curves.T).T
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            "the basis is rank-deficient on this grid: two of its functions are "
+            "numerically indistinguishable at the observed points, so the "
+            "projection has no unique answer. Fewer components, fewer spline "
+            "degrees of freedom, or a larger decay usually resolves it."
+        ) from error

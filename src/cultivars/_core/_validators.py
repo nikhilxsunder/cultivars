@@ -607,3 +607,36 @@ def _validate_observed(endog: npt.ArrayLike, *, label: str = "endog") -> npt.NDA
             "check the frequency alignment."
         )
     return arr
+
+
+def _validate_curves(curves: npt.ArrayLike) -> npt.NDArray[np.float64]:
+    """Coerce and check a panel of discretized curves.
+
+    Deliberately not :func:`validate_endog_matrix`: that validator rejects a
+    panel with more columns than rows, which for a VAR is the right guard and
+    for curves is wrong on its face -- a daily yield curve observed at thirty
+    maturities over twenty days is a perfectly good functional sample.
+
+    Args:
+        curves: The ``(nobs, n_points)`` panel, one curve per row.
+
+    Returns:
+        A 2-D float array.
+
+    Raises:
+        DimensionError: If the input is not two-dimensional or has fewer than
+            two rows or two columns.
+        NumericalError: If any entry is non-finite.
+    """
+    arr = np.asarray(curves, dtype=np.float64)
+    if arr.ndim != 2:
+        raise DimensionError(
+            f"curves must be 2-D with one curve per row; got {arr.ndim} dimension(s)."
+        )
+    if arr.shape[0] < 2 or arr.shape[1] < 2:
+        raise DimensionError(
+            f"curves must have at least two rows and two columns; got {arr.shape}."
+        )
+    if not np.all(np.isfinite(arr)):
+        raise NumericalError("curves must be finite.")
+    return arr

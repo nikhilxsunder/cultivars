@@ -65,6 +65,7 @@ from ._models import (
     _VectorAutoRegressionModel,
     _VectorErrorCorrectionModel,
 )
+from ._moments import _VectorMoments
 from ._objectives import _MidasProfileObjective
 from ._predictors import MeanPredictor
 from ._priors import _NoPrior, _Prior, _PriorContext
@@ -142,6 +143,7 @@ __all__ = [
     "_VectorErrorCorrectionFit",
     "_VectorErrorCorrectionModel",
     "_VectorInferenceMixin",
+    "_VectorMoments",
     "_VectorPropagationMixin",
     "_VectorResult",
     "_WaldTest",

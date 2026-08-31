@@ -121,3 +121,5 @@ sub-periods free to move against each other. Treating a flow as a stock throws
 away two thirds of a quarterly constraint and silently changes what the model
 is fitted to.
 """
+
+type FunctionalBasis = Literal["fpca", "nelson-siegel", "bspline"]

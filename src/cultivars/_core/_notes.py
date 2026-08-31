@@ -34,3 +34,19 @@ _MIDAS_CONDITIONAL_NOTE = (
     "Coefficient standard errors condition on the estimated lag polynomial. "
     "Call joint_stderr() for errors that also account for estimating it."
 )
+
+_HR_CONDITIONAL_NOTE = (
+    "Standard errors treat the lagged innovations in the design as observed "
+    "regressors rather than as the estimates they are; they are conditional in "
+    "the Hannan-Rissanen sense and modestly understate uncertainty."
+)
+
+_VARMA_IDENTIFICATION_NOTE = (
+    "An unrestricted VARMA(p, q) is not globally identified: distinct (A, M) "
+    "pairs can generate identical second moments, and echelon-form restrictions "
+    "-- the standard resolution -- are not imposed here. For a stable, "
+    "invertible representation the moving-average matrices, forecasts, impulse "
+    "responses, and variance decompositions are invariant across "
+    "observationally equivalent parameterizations; the individual coefficients "
+    "are not."
+)
