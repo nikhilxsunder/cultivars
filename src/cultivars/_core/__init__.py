@@ -86,6 +86,7 @@ from ._notes import (
     _CONDITIONAL_REFUSAL,
     _HR_CONDITIONAL_NOTE,
     _MIDAS_CONDITIONAL_NOTE,
+    _NARRATIVE_NOTE,
     _NO_CLOSED_SYSTEM,
     _PARTIAL_IDENTIFICATION_NOTE,
     _SIGN_QUANTILE_NOTE,
@@ -112,7 +113,7 @@ from ._recursions import (
 )
 from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
 from ._resolvers import _resolve_ordering
-from ._rotations import _accepted_rotations, _haar_rotation
+from ._rotations import _accepted_rotations, _haar_rotation, _narrative_rotations
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
     CointegrationTrend,
@@ -131,6 +132,7 @@ from ._types import (
 from ._validators import (
     _validate_curves,
     _validate_impact_pattern,
+    _validate_narrative_events,
     _validate_observed,
     _validate_ordering,
     _validate_sign_patterns,
@@ -165,6 +167,7 @@ __all__ = [
     "_LEVELS_TREND",
     "_LOG_2PI",
     "_MIDAS_CONDITIONAL_NOTE",
+    "_NARRATIVE_NOTE",
     "_NO_CLOSED_SYSTEM",
     "_PARTIAL_IDENTIFICATION_NOTE",
     "_PENALTY",
@@ -208,12 +211,14 @@ __all__ = [
     "_midas_weights",
     "_midas_windows",
     "_mixed_frequency_system",
+    "_narrative_rotations",
     "_nelson_siegel_loadings",
     "_orthogonal_from_angles",
     "_projection_scores",
     "_resolve_ordering",
     "_validate_curves",
     "_validate_impact_pattern",
+    "_validate_narrative_events",
     "_validate_observed",
     "_validate_ordering",
     "_validate_sign_patterns",

@@ -759,3 +759,95 @@ def _validate_impact_pattern(
     free = tuple((int(i), int(j)) for i in range(size) for j in range(size) if np.isnan(arr[i, j]))
     base = np.where(np.isnan(arr), 0.0, arr)
     return np.asarray(base, dtype=np.float64), free
+
+
+def _validate_narrative_events(
+    shock_signs: Sequence[tuple[str, int, str]],
+    contributions: Sequence[tuple[str, str, int, str]],
+    *,
+    labels: tuple[str, ...],
+    names: tuple[str, ...],
+    nobs: int,
+) -> tuple[
+    tuple[tuple[tuple[int, float], ...], ...],
+    tuple[tuple[int, int, int, bool], ...],
+    tuple[int, ...],
+]:
+    """Compile narrative restrictions into index form against one sample.
+
+    Args:
+        shock_signs: Declared shock-sign events, each ``(shock label, period,
+            sign)`` with the period indexing the effective sample -- one row
+            per residual row of the result being identified.
+        contributions: Declared contribution events, each ``(shock label,
+            variable, period, kind)`` with ``kind`` one of ``"most"`` or
+            ``"overwhelming"``.
+        labels: The shock labels, one per column, in column order.
+        names: The result's variable labels.
+        nobs: Rows of the effective sample the periods index.
+
+    Returns:
+        Per-column shock-sign requirements as ``(event index, +-1.0)`` pairs;
+        contribution requirements as ``(column, variable index, event index,
+        overwhelming?)``; and the unique periods the events reference, which
+        is what the event indices index into.
+
+    Raises:
+        SpecificationError: If an event references an unknown shock label or
+            variable, a period outside the effective sample, or an
+            unrecognized sign or kind.
+    """
+    periods: list[int] = []
+
+    def _event_index(period: int, what: str) -> int:
+        moment = int(period)
+        if not 0 <= moment < nobs:
+            raise SpecificationError(
+                f"{what} references period {period}, outside the effective "
+                f"sample of {nobs} residual rows. Narrative periods index the "
+                "effective sample -- the estimation sample minus the burned "
+                "lags -- exactly as a proxy's instrument rows do."
+            )
+        if moment not in periods:
+            periods.append(moment)
+        return periods.index(moment)
+
+    per_column: list[list[tuple[int, float]]] = [[] for _ in labels]
+    for label, period, sign in shock_signs:
+        if label not in labels:
+            raise SpecificationError(
+                f"unknown shock {label!r} in a shock-sign event; expected one of {labels}."
+            )
+        if sign not in ("+", "-"):
+            raise SpecificationError(f"sign for shock {label!r} must be '+' or '-'; got {sign!r}.")
+        index = _event_index(period, f"shock-sign event on {label!r}")
+        per_column[labels.index(label)].append((index, 1.0 if sign == "+" else -1.0))
+
+    compiled_contributions: list[tuple[int, int, int, bool]] = []
+    for label, variable, period, kind in contributions:
+        if label not in labels:
+            raise SpecificationError(
+                f"unknown shock {label!r} in a contribution event; expected one of {labels}."
+            )
+        if variable not in names:
+            raise SpecificationError(
+                f"unknown variable {variable!r} in a contribution event; expected one of {names}."
+            )
+        if kind not in ("most", "overwhelming"):
+            raise SpecificationError(
+                f"contribution kind must be 'most' or 'overwhelming'; got {kind!r}."
+            )
+        index = _event_index(period, f"contribution event on {label!r}")
+        compiled_contributions.append(
+            (
+                labels.index(label),
+                names.index(variable),
+                index,
+                kind == "overwhelming",
+            )
+        )
+    return (
+        tuple(tuple(cells) for cells in per_column),
+        tuple(compiled_contributions),
+        tuple(periods),
+    )

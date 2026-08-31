@@ -71,3 +71,12 @@ _UNIT_SHOCK_NOTE = (
     "Shocks are normalized to unit variance, so impact-column entries are "
     "responses to a one-standard-deviation structural shock."
 )
+
+_NARRATIVE_NOTE = (
+    "Narrative events were checked against the point-estimate residuals: the "
+    "set is the rotations consistent with the declared signs and the declared "
+    "history at this reduced form. The Antolin-Diaz and Rubio-Ramirez "
+    "importance weighting, which propagates narrative information into the "
+    "reduced-form posterior, belongs to the posterior-draw version that "
+    "arrives with the sampling backend."
+)
