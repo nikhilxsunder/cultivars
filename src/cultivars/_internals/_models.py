@@ -51,7 +51,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import cast
+from typing import ClassVar, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -68,6 +68,7 @@ from .._core import (
     _LOG_2PI,
     _ROW_SUM_ATOL,
     _UNRESTRICTED_TREND,
+    ClosedSystemResult,
     CointegrationTrend,
     Frequency,
     Mean,
@@ -3823,3 +3824,68 @@ class _ExogenousVectorErrorCorrectionModel[R](_VectorErrorCorrectionModel[R]):
             names=names,
             exog_names=exog_names,
         )
+
+
+class _IdentificationModel[R](ABC):
+    """Base for identification models over a fitted closed reduced-form system.
+
+    The structural counterpart of :class:`_BaseModel`: where an estimation
+    model constructs with a sample and exposes ``fit``, an identification
+    model constructs with a *fitted result* and exposes ``identify``. The
+    constructor checks the one contract every scheme shares -- that the source
+    is a closed system, exposing the propagation surface an identification
+    reads -- so a conditional family fails here with an explanation rather
+    than deep inside a scheme with an attribute error.
+    """
+
+    __slots__ = ("_source",)
+
+    _REQUIRED: ClassVar[tuple[str, ...]] = (
+        "names",
+        "nobs",
+        "sigma_u",
+        "resid",
+        "coefficients",
+        "ma_representation",
+    )
+
+    def __init__(self, result: ClosedSystemResult) -> None:
+        """Validate that the source result is a closed system and store it.
+
+        Args:
+            result: The fitted reduced-form result to identify.
+
+        Raises:
+            SpecificationError: If the result lacks part of the closed-system
+                surface, which is what a conditional family -- a VARX viewed
+                through its conditional mixin, a lone global unit -- looks
+                like from here.
+        """
+        missing = [name for name in self._REQUIRED if not hasattr(result, name)]
+        if missing:
+            raise SpecificationError(
+                f"identification needs a closed reduced-form result exposing "
+                f"{self._REQUIRED}; this one lacks {missing}. A conditional "
+                "family has no closed system to identify -- close it first, "
+                "the way a global model closes its units."
+            )
+        self._source = result
+
+    @property
+    def source(self) -> ClosedSystemResult:
+        """The fitted reduced-form result being identified."""
+        return self._source
+
+    @property
+    def names(self) -> tuple[str, ...]:
+        """Variable labels of the source system."""
+        return self._source.names
+
+    @property
+    def k_endog(self) -> int:
+        """Number of variables in the source system."""
+        return self._source.k_endog
+
+    @abstractmethod
+    def identify(self) -> R:
+        """Apply the scheme and return the structural view."""

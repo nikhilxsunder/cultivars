@@ -39,8 +39,8 @@ from .conditional_variance import (
     GARCHResult,
 )
 from .fractional_integration import ARFIMA, ARFIMAResult
-from .markov_switching import MSAR, MSARResult
 from .mean_function import ARNN, TARNN, ARNNResult, TARNNResult
+from .regime_switching import MSAR, MSARResult
 from .smooth_transition import ESTAR, LSTAR, STARResult
 from .threshold import SETAR, TAR, SETARResult
 

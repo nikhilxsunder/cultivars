@@ -68,6 +68,8 @@ from ._mappings import (
     _UNRESTRICTED_TREND,
 )
 from ._matrices import (
+    _long_run_matrix,
+    _lower_cholesky,
     companion_matrix,
     conditional_design,
     deterministic_columns,
@@ -84,6 +86,9 @@ from ._notes import (
     _HR_CONDITIONAL_NOTE,
     _MIDAS_CONDITIONAL_NOTE,
     _NO_CLOSED_SYSTEM,
+    _PARTIAL_IDENTIFICATION_NOTE,
+    _SIGN_QUANTILE_NOTE,
+    _UNIT_SHOCK_NOTE,
     _UNSTABLE_NOTE,
     _VARMA_IDENTIFICATION_NOTE,
 )
@@ -97,6 +102,7 @@ from ._polynomials import (
     expand_ar,
     expand_ma,
 )
+from ._protocols import ClosedSystemResult, Identification
 from ._recursions import (
     _arch_infinity_variance,
     _arch_infinity_weights,
@@ -104,6 +110,8 @@ from ._recursions import (
     _log_variance_recursion,
 )
 from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
+from ._resolvers import _resolve_ordering
+from ._rotations import _accepted_rotations, _haar_rotation
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
     CointegrationTrend,
@@ -121,7 +129,10 @@ from ._types import (
 )
 from ._validators import (
     _validate_curves,
+    _validate_impact_pattern,
     _validate_observed,
+    _validate_ordering,
+    _validate_sign_patterns,
     validate_aligned,
     validate_choice,
     validate_endog,
@@ -154,17 +165,22 @@ __all__ = [
     "_LOG_2PI",
     "_MIDAS_CONDITIONAL_NOTE",
     "_NO_CLOSED_SYSTEM",
+    "_PARTIAL_IDENTIFICATION_NOTE",
     "_PENALTY",
     "_ROW_SUM_ATOL",
     "_SCHEMA_VERSION",
+    "_SIGN_QUANTILE_NOTE",
     "_SQRT_2_OVER_PI",
     "_TINY",
+    "_UNIT_SHOCK_NOTE",
     "_UNRESTRICTED_TREND",
     "_UNSTABLE_NOTE",
     "_VARMA_IDENTIFICATION_NOTE",
+    "ClosedSystemResult",
     "CointegrationTrend",
     "Frequency",
     "FunctionalBasis",
+    "Identification",
     "InformationCriteria",
     "Mean",
     "Method",
@@ -177,20 +193,28 @@ __all__ = [
     "Trend",
     "Vol",
     "_ForwardPass",
+    "_accepted_rotations",
     "_aggregation_weights",
     "_arch_infinity_variance",
     "_arch_infinity_weights",
     "_gaussian_negloglik",
+    "_haar_rotation",
     "_linear_variance_recursion",
     "_log_variance_recursion",
+    "_long_run_matrix",
+    "_lower_cholesky",
     "_mean_label",
     "_midas_weights",
     "_midas_windows",
     "_mixed_frequency_system",
     "_nelson_siegel_loadings",
     "_projection_scores",
+    "_resolve_ordering",
     "_validate_curves",
+    "_validate_impact_pattern",
     "_validate_observed",
+    "_validate_ordering",
+    "_validate_sign_patterns",
     "aggregation_weights",
     "combined_difference",
     "companion_matrix",

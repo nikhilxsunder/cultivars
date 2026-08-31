@@ -53,6 +53,7 @@ from ._models import (
     _ExogenousVectorErrorCorrectionModel,
     _FractionalIntegrationModel,
     _FractionalVarianceModel,
+    _IdentificationModel,
     _LinearGaussianStateSpaceModel,
     _MarkovSwitchingModel,
     _MarkovSwitchingStateSpaceModel,
@@ -66,7 +67,7 @@ from ._models import (
     _VectorErrorCorrectionModel,
 )
 from ._moments import _VectorMoments
-from ._objectives import _MidasProfileObjective
+from ._objectives import _MidasProfileObjective, _ShortRunObjective
 from ._predictors import MeanPredictor
 from ._priors import _NoPrior, _Prior, _PriorContext
 from ._results import (
@@ -107,6 +108,7 @@ __all__ = [
     "_FractionalVarianceFit",
     "_FractionalVarianceModel",
     "_HamiltonFilterResult",
+    "_IdentificationModel",
     "_InvertibilityMixin",
     "_KalmanFilterResult",
     "_KimSmootherResult",
@@ -130,6 +132,7 @@ __all__ = [
     "_SeriesMixin",
     "_ShortMemoryVarianceFit",
     "_ShortMemoryVarianceModel",
+    "_ShortRunObjective",
     "_SmoothTransitionFit",
     "_SmoothTransitionModel",
     "_StabilityResult",

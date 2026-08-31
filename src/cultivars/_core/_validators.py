@@ -29,7 +29,7 @@ shape regardless of which model raised it.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from typing import TypeAliasType, cast, get_args
 
 import numpy as np
@@ -640,3 +640,122 @@ def _validate_curves(curves: npt.ArrayLike) -> npt.NDArray[np.float64]:
     if not np.all(np.isfinite(arr)):
         raise NumericalError("curves must be finite.")
     return arr
+
+
+def _validate_ordering(names: tuple[str, ...], order: Sequence[str] | None) -> tuple[int, ...]:
+    """Map a declared variable ordering onto column indices.
+
+    Args:
+        names: The result's variable labels.
+        order: The declared ordering, or ``None`` for the labels as given.
+
+    Returns:
+        A permutation of ``range(k)``.
+
+    Raises:
+        SpecificationError: If ``order`` is not a permutation of ``names``.
+    """
+    if order is None:
+        return tuple(range(len(names)))
+    declared = tuple(str(name) for name in order)
+    if sorted(declared) != sorted(names):
+        raise SpecificationError(
+            f"order must be a permutation of the variable names {names}; got {declared}."
+        )
+    return tuple(names.index(name) for name in declared)
+
+
+def _validate_sign_patterns(
+    restrictions: Mapping[str, Mapping[str, str]], names: tuple[str, ...]
+) -> tuple[tuple[tuple[int, float], ...], ...]:
+    """Compile declared sign patterns into per-column (variable, sign) pairs.
+
+    Args:
+        restrictions: Mapping from shock label to its pattern, itself a mapping
+            from variable name to ``"+"`` or ``"-"``.
+        names: The result's variable labels.
+
+    Returns:
+        One tuple of ``(variable index, +-1.0)`` pairs per restricted column,
+        in declaration order.
+
+    Raises:
+        SpecificationError: If the declaration is empty, names more shocks than
+            the system has, restricts a shock with no signs, references an
+            unknown variable, or uses a symbol other than ``"+"`` or ``"-"``.
+    """
+    if not restrictions:
+        raise SpecificationError(
+            "restrictions must declare at least one shock; an empty declaration identifies nothing."
+        )
+    if len(restrictions) > len(names):
+        raise SpecificationError(
+            f"{len(restrictions)} restricted shocks exceed the {len(names)} shocks the system has."
+        )
+    compiled: list[tuple[tuple[int, float], ...]] = []
+    for label, pattern in restrictions.items():
+        if not pattern:
+            raise SpecificationError(f"shock {label!r} declares no signs; drop it or restrict it.")
+        cells: list[tuple[int, float]] = []
+        for variable, sign in pattern.items():
+            if variable not in names:
+                raise SpecificationError(
+                    f"unknown variable {variable!r} in shock {label!r}; expected one of {names}."
+                )
+            if sign not in ("+", "-"):
+                raise SpecificationError(
+                    f"sign for {variable!r} in shock {label!r} must be '+' or '-'; got {sign!r}."
+                )
+            cells.append((names.index(variable), 1.0 if sign == "+" else -1.0))
+        compiled.append(tuple(cells))
+    return tuple(compiled)
+
+
+def _validate_impact_pattern(
+    pattern: npt.ArrayLike | None,
+    *,
+    size: int,
+    label: str,
+    default_diagonal: float | None = None,
+) -> tuple[npt.NDArray[np.float64], tuple[tuple[int, int], ...]]:
+    """Split a contemporaneous-restriction pattern into fixed values and free cells.
+
+    The convention is the one the SVAR literature writes on paper: a finite
+    entry is a restriction -- almost always zero, sometimes a normalization of
+    one -- and ``nan`` marks a coefficient the likelihood must estimate.
+
+    Args:
+        pattern: The ``(size, size)`` pattern, or ``None`` for a default: the
+            identity when ``default_diagonal`` is given, with that value fixed
+            on the diagonal and ``nan`` off it reserved to the caller's
+            convention.
+        size: System dimension.
+        label: Which matrix this is, for error messages.
+        default_diagonal: When ``pattern`` is ``None``, the fixed diagonal
+            value of the default pattern; off-diagonal entries default to
+            zero. ``None`` forbids omission.
+
+    Returns:
+        The matrix of fixed values with zeros in the free cells, and the free
+        cell coordinates in row-major order.
+
+    Raises:
+        SpecificationError: If the pattern is omitted without a default, has
+            the wrong shape, or contains an infinity.
+    """
+    if pattern is None:
+        if default_diagonal is None:
+            raise SpecificationError(f"{label} must be supplied for this model.")
+        base = np.eye(size, dtype=np.float64) * default_diagonal
+        return base, ()
+    arr = np.asarray(pattern, dtype=np.float64)
+    if arr.shape != (size, size):
+        raise SpecificationError(f"{label} must have shape ({size}, {size}); got {arr.shape}.")
+    if np.isinf(arr).any():
+        raise SpecificationError(
+            f"{label} entries must be finite restrictions or nan for a free "
+            "coefficient; infinities restrict nothing."
+        )
+    free = tuple((int(i), int(j)) for i in range(size) for j in range(size) if np.isnan(arr[i, j]))
+    base = np.where(np.isnan(arr), 0.0, arr)
+    return np.asarray(base, dtype=np.float64), free

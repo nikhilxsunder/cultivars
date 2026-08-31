@@ -809,3 +809,83 @@ class _MidasProfileObjective(_Objective[npt.NDArray[np.float64]]):
         if sign <= 0 or not np.isfinite(logdet):
             return _PENALTY
         return 0.5 * nobs * (k * _LOG_2PI + float(logdet) + k)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]]):
+    """Concentrated Gaussian likelihood of an AB-model contemporaneous structure.
+
+    ``A u_t = B e_t`` with unit-variance shocks implies ``Sigma_u =
+    A^{-1} B B' A^{-1}'``, and the reduced-form coefficients concentrate out,
+    so the surface depends on the data only through the estimated innovation
+    covariance and the sample size. The criterion is the exact negative
+    log-likelihood, kept on the likelihood scale rather than divided through
+    by the sample, so that twice the gap to the saturated model is directly
+    the over-identification statistic.
+
+    Attributes:
+        sigma: The ``(k, k)`` estimated innovation covariance.
+        nobs: Effective sample size behind ``sigma``.
+        a_base: Fixed values of ``A``, zeros in the free cells.
+        a_free: Free cell coordinates of ``A``.
+        b_base: Fixed values of ``B``, zeros in the free cells.
+        b_free: Free cell coordinates of ``B``.
+    """
+
+    sigma: npt.NDArray[np.float64]
+    nobs: int
+    a_base: npt.NDArray[np.float64]
+    a_free: tuple[tuple[int, int], ...]
+    b_base: npt.NDArray[np.float64]
+    b_free: tuple[tuple[int, int], ...]
+
+    def build(
+        self, theta: npt.NDArray[np.float64]
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Fill the free cells of ``A`` and ``B`` from the flat vector."""
+        values = np.asarray(theta, dtype=np.float64)
+        a = self.a_base.copy()
+        for position, (i, j) in enumerate(self.a_free):
+            a[i, j] = values[position]
+        b = self.b_base.copy()
+        offset = len(self.a_free)
+        for position, (i, j) in enumerate(self.b_free):
+            b[i, j] = values[offset + position]
+        return a, b
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Warm starts: free ``B`` cells from the Cholesky factor, free ``A`` at zero."""
+        factor = np.linalg.cholesky(self.sigma)
+        warm = np.concatenate(
+            [
+                np.zeros(len(self.a_free), dtype=np.float64),
+                np.array([factor[i, j] for i, j in self.b_free], dtype=np.float64),
+            ]
+        )
+        return (warm, 0.5 * warm + 0.01)
+
+    def unpack(
+        self, theta: npt.NDArray[np.float64]
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Map the flat vector back to the ``(A, B)`` pair."""
+        return self.build(theta)
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Exact negative log-likelihood at these contemporaneous matrices."""
+        if not np.all(np.isfinite(theta)):
+            return _PENALTY
+        a, b = self.build(theta)
+        sign_a, logdet_a = np.linalg.slogdet(a)
+        sign_b, logdet_b = np.linalg.slogdet(b)
+        if sign_a == 0 or sign_b == 0:
+            return _PENALTY
+        try:
+            inner = np.linalg.solve(b, a)
+        except np.linalg.LinAlgError:
+            return _PENALTY
+        trace = float(np.trace(inner.T @ inner @ self.sigma))
+        if not np.isfinite(trace):
+            return _PENALTY
+        k = self.sigma.shape[0]
+        llf = self.nobs * (-0.5 * k * _LOG_2PI + float(logdet_a) - float(logdet_b) - 0.5 * trace)
+        return -llf

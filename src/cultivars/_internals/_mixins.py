@@ -46,6 +46,7 @@ from scipy.stats import chi2
 
 from .._core import (
     _NO_CLOSED_SYSTEM,
+    Identification,
     InformationCriteria,
     SummaryTable,
     companion_matrix,
@@ -948,6 +949,7 @@ class _VectorPropagationMixin:
             "forecast",
             "generalized_irf",
             "historical_decomposition",
+            "identify",
             "irf",
             "is_stable",
             "ma_representation",
@@ -963,6 +965,27 @@ class _VectorPropagationMixin:
     def _impact(self) -> npt.NDArray[np.float64]:
         """The Cholesky impact matrix."""
         return np.linalg.cholesky(self.sigma_u)
+
+    def identify[R](self, strategy: Identification[R]) -> R:
+        """Declare an identification scheme and return the structural view.
+
+        The reduced form ends where this method begins: everything above it is
+        estimable from second moments alone, and everything a strategy returns
+        rests on restrictions the caller has now stated rather than assumed.
+        The strategy object carries the declaration; this method only hands it
+        the fitted system, which is what lets one scheme serve every closed
+        family -- a VAR, a VARMA, a panel, an error-correction model -- without
+        knowing which it was given.
+
+        Args:
+            strategy: The identification scheme, from
+                :mod:`cultivars.multivariate.structural`.
+
+        Returns:
+            Whatever the scheme constructs: a point-identified structural
+            result, or the accepted set of a set-identified one.
+        """
+        return strategy.identify(self)
 
     def structural_shocks(self) -> npt.NDArray[np.float64]:
         """Residuals rotated by the inverse Cholesky impact matrix."""
@@ -1299,6 +1322,11 @@ class _ConditionalSystemMixin:
     def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
         """Unavailable: propagation needs the exogenous block's law of motion."""
         self._no_closed_system("a variance decomposition")
+        raise AssertionError  # pragma: no cover
+
+    def identify(self, strategy: object) -> None:
+        """Unavailable: propagation needs the exogenous block's law of motion."""
+        self._no_closed_system("a structural identification")
         raise AssertionError  # pragma: no cover
 
     def historical_decomposition(self) -> npt.NDArray[np.float64]:

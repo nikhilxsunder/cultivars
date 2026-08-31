@@ -30,6 +30,7 @@ import numpy.typing as npt
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._containers import LagPolynomial
 from ._defaults import _TREND_WIDTH
+from ._protocols import ClosedSystemResult
 
 
 def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -345,3 +346,66 @@ def link_matrix(
                 row[source] += matrix[unit, owners[source]]
         rows.append(row)
     return np.vstack(rows)
+
+
+def _lower_cholesky(matrix: npt.NDArray[np.float64], label: str) -> npt.NDArray[np.float64]:
+    """The lower Cholesky factor, with a specification error rather than LinAlgError.
+
+    Args:
+        matrix: A symmetric matrix expected to be positive definite.
+        label: What the matrix is, for the error message.
+
+    Returns:
+        The lower-triangular factor.
+
+    Raises:
+        NumericalError: If the matrix is not positive definite, which means one
+            innovation is an exact linear combination of the others and no
+            factorization into ``k`` independent shocks exists.
+    """
+    try:
+        return np.linalg.cholesky(matrix)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            f"{label} is not positive definite, so no factorization into "
+            "independent shocks exists; one innovation is an exact linear "
+            "combination of the others."
+        ) from error
+
+
+def _long_run_matrix(result: ClosedSystemResult) -> npt.NDArray[np.float64]:
+    """The cumulated response of the system to its reduced-form innovations.
+
+    ``F = (I - A_1 - ... - A_p)^{-1} (I + M_1 + ... + M_q)``, the sum of the
+    moving-average matrices in closed form. The moving-average block is read
+    through ``ma_coefficients`` when the result carries one -- a VARMA -- and
+    is the identity contribution alone otherwise, which makes this exact for
+    every closed family rather than a truncation of the infinite sum.
+
+    Args:
+        result: The fitted reduced-form system.
+
+    Returns:
+        The ``(k, k)`` long-run impact matrix of the innovations.
+
+    Raises:
+        SpecificationError: If the autoregressive polynomial has a unit root,
+            in which case cumulated responses diverge and no long-run
+            restriction can be imposed on levels dynamics; difference the
+            integrated variables first, which is what Blanchard-Quah do.
+    """
+    k = result.k_endog
+    identity = np.eye(k)
+    ar_sum = result.coefficients.sum(axis=0) if result.coefficients.shape[0] else np.zeros((k, k))
+    ma = getattr(result, "ma_coefficients", None)
+    ma_sum = identity + (ma.sum(axis=0) if ma is not None and ma.shape[0] else 0.0)
+    lhs = identity - ar_sum
+    if abs(float(np.linalg.det(lhs))) < 1e-12:
+        raise SpecificationError(
+            "the autoregressive polynomial has a (near-)unit root, so cumulated "
+            "responses diverge and the long-run impact matrix does not exist. "
+            "Long-run identification lives in a stationary representation: "
+            "difference the integrated variables first, as Blanchard-Quah do "
+            "with output growth."
+        )
+    return np.linalg.solve(lhs, ma_sum)

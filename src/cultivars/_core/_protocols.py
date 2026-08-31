@@ -95,3 +95,41 @@ class TimeSeriesModel[R](Protocol):
     @property
     def endog(self) -> npt.NDArray[np.float64]: ...
     def fit(self) -> R: ...
+
+
+@runtime_checkable
+class ClosedSystemResult(Protocol):
+    """What an identification strategy reads from a fitted reduced-form result.
+
+    Deliberately the *propagation* subset rather than the full result surface:
+    identification turns reduced-form innovations into structural shocks, and
+    everything that requires is the innovation covariance, the residuals, the
+    autoregressive representation, and the labels. Any closed result in the
+    package satisfies this -- a VAR, a VARMA, a panel, an error-correction
+    model through its levels form, a mixed-frequency filter -- and so does any
+    user-defined result that exposes the same members.
+    """
+
+    names: tuple[str, ...]
+    nobs: int
+    sigma_u: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    coefficients: npt.NDArray[np.float64]
+
+    @property
+    def k_endog(self) -> int: ...
+    def ma_representation(self, horizon: int = ...) -> npt.NDArray[np.float64]: ...
+
+
+class Identification[R](Protocol):
+    """An identification scheme: reduced-form innovations in, a structural view out.
+
+    The strategy-object contract behind ``result.identify(strategy)``. A scheme
+    is a declaration -- which restrictions turn correlated innovations into
+    economic shocks -- and this protocol is what lets that declaration be
+    passed to any closed reduced-form result rather than being welded to one
+    model family. Point-identified schemes return a single structural result;
+    set-identified schemes return the accepted set.
+    """
+
+    def identify(self, result: ClosedSystemResult) -> R: ...

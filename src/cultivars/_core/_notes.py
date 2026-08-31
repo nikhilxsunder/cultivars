@@ -50,3 +50,24 @@ _VARMA_IDENTIFICATION_NOTE = (
     "observationally equivalent parameterizations; the individual coefficients "
     "are not."
 )
+
+_PARTIAL_IDENTIFICATION_NOTE = (
+    "Only the listed shock columns are identified; the remaining structural "
+    "shocks exist but are not pinned down by these restrictions. Variance "
+    "shares therefore need not sum to one across the identified shocks, and "
+    "the unidentified remainder is exactly the variation the scheme is silent "
+    "about."
+)
+
+_SIGN_QUANTILE_NOTE = (
+    "Bands are pointwise quantiles across the accepted rotations. No single "
+    "structural model traces the median band: at each horizon the quantile may "
+    "come from a different rotation, which is the Fry-Pagan critique, and the "
+    "honest reading is as a summary of the identified set rather than as the "
+    "impulse response of a representative model."
+)
+
+_UNIT_SHOCK_NOTE = (
+    "Shocks are normalized to unit variance, so impact-column entries are "
+    "responses to a one-standard-deviation structural shock."
+)
