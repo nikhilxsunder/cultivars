@@ -98,7 +98,7 @@ class ARMAResult(
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
     order: tuple[int, int, int]
     seasonal_order: tuple[int, int, int, int]
     trend: str

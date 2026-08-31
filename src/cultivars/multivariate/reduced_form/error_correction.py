@@ -24,13 +24,13 @@ from ..._internals import (
     _ConditionalLevels,
     _ErrorCorrectionResult,
     _ExogenousVectorErrorCorrectionModel,
-    _StabilityResult,
+    _StabilityTest,
     _SummaryMixin,
     _VectorErrorCorrectionFit,
     _VectorErrorCorrectionModel,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
-    _WaldTestResult,
+    _WaldTest,
 )
 from ...exceptions import DimensionError, SpecificationError
 
@@ -256,14 +256,14 @@ class VECMResult(
 
     # ------------------------------------------------------------- inference
 
-    def stability_check(self) -> _StabilityResult:
+    def stability_check(self) -> _StabilityTest:
         """Assess the levels companion, permitting the unit roots by design.
 
         A rank-``r`` system in ``k`` variables carries exactly ``k - r`` unit
         roots. Treating those as instability, which the reduced-form check does,
         would flag every correctly specified model in this family.
         """
-        return _StabilityResult.assess_stability(self.coefficients, allow_unit_roots=True)
+        return _StabilityTest.assess_stability(self.coefficients, allow_unit_roots=True)
 
     def forecast(self, steps: int = 1) -> npt.NDArray[np.float64]:
         """Point forecasts in levels.
@@ -293,7 +293,7 @@ class VECMResult(
             history = [point, *history[: p - 1]]
         return out
 
-    def weak_exogeneity(self, variable: str) -> _WaldTestResult:
+    def weak_exogeneity(self, variable: str) -> _WaldTest:
         """Test that a variable does not adjust to any disequilibrium.
 
         The null is that the variable's row of ``alpha`` is zero, so it drives
@@ -304,7 +304,7 @@ class VECMResult(
             variable: One of :attr:`names`.
 
         Returns:
-            A :class:`_WaldTestResult` with ``rank`` degrees of freedom.
+            A :class:`_WaldTest` with ``rank`` degrees of freedom.
 
         Raises:
             SpecificationError: If the variable is unknown, or the rank is zero
@@ -326,7 +326,7 @@ class VECMResult(
             cells, null=f"{variable} is weakly exogenous for the cointegrating space"
         )
 
-    def granger_causality(self, cause: str, effect: str) -> _WaldTestResult:
+    def granger_causality(self, cause: str, effect: str) -> _WaldTest:
         """Test that one variable drives another through neither channel.
 
         An error-correction model transmits through two routes and a test that
@@ -347,7 +347,7 @@ class VECMResult(
             effect: The equation the restriction applies to.
 
         Returns:
-            A :class:`_WaldTestResult` with ``order - 1 + (rank > 0)`` degrees
+            A :class:`_WaldTest` with ``order - 1 + (rank > 0)`` degrees
             of freedom.
 
         Raises:
@@ -628,7 +628,7 @@ class VECMXResult(VECMResult):
         self._refuse("the companion matrix")
         raise AssertionError  # pragma: no cover
 
-    def stability_check(self) -> _StabilityResult:
+    def stability_check(self) -> _StabilityTest:
         """Unavailable: stability is a property of the closed system."""
         self._refuse("a stability check")
         raise AssertionError  # pragma: no cover

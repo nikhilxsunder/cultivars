@@ -10,7 +10,7 @@ import numpy.typing as npt
 from scipy.stats import chi2
 
 from ..._core import SummaryTable, validate_weights
-from ..._internals import _SummaryMixin, _VectorPropagationMixin, _WaldTestResult, solve_global
+from ..._internals import _SummaryMixin, _VectorPropagationMixin, _WaldTest, solve_global
 from ...exceptions import SpecificationError
 from .error_correction import VECMXResult
 from .vector_autoregression import VARXResult
@@ -111,7 +111,7 @@ class GVARResult(_SummaryMixin, _VectorPropagationMixin):
         """
         return float(np.linalg.cond(self.contemporaneous))
 
-    def weak_exogeneity_test(self, unit: str) -> tuple[_WaldTestResult, ...]:
+    def weak_exogeneity_test(self, unit: str) -> tuple[_WaldTest, ...]:
         """Test that a unit's foreign aggregates ignore its disequilibria.
 
         The condition the whole construction rests on. If a unit's foreign
@@ -164,7 +164,7 @@ class GVARResult(_SummaryMixin, _VectorPropagationMixin):
         restricted = np.delete(auxiliary, positions, axis=1)
         rows = auxiliary.shape[0]
         changes = np.diff(fitted.exog, axis=0)[-rows:]
-        out: list[_WaldTestResult] = []
+        out: list[_WaldTest] = []
         for column, label in enumerate(fitted.exog_names):
             target = changes[:, column]
             full_resid = target - auxiliary @ np.linalg.lstsq(auxiliary, target, rcond=None)[0]
@@ -172,7 +172,7 @@ class GVARResult(_SummaryMixin, _VectorPropagationMixin):
             denominator = float(full_resid @ full_resid)
             statistic = rows * (float(null_resid @ null_resid) - denominator) / denominator
             out.append(
-                _WaldTestResult(
+                _WaldTest(
                     statistic=statistic,
                     df=rank,
                     pvalue=float(chi2.sf(statistic, rank)),

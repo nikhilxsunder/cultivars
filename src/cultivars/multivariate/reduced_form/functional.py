@@ -55,24 +55,23 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
 from scipy.interpolate import BSpline
 
-from ..._core import SummaryTable, Trend, validate_choice, _validate_curves, FunctionalBasis, _projection_scores, _nelson_siegel_loadings
+from ..._core import (
+    FunctionalBasis,
+    SummaryTable,
+    Trend,
+    _nelson_siegel_loadings,
+    _projection_scores,
+    _validate_curves,
+    validate_choice,
+)
 from ..._internals import _SummaryMixin
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from .vector_autoregression import VAR, VARResult
-
-
-
-
-
-
-
-
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -338,9 +337,7 @@ class FunctionalVAR:
         self._trend: Trend = validate_choice(trend, Trend, "trend")
 
         if n_components is not None and (int(n_components) != n_components or n_components < 1):
-            raise SpecificationError(
-                f"n_components must be an integer >= 1; got {n_components!r}."
-            )
+            raise SpecificationError(f"n_components must be an integer >= 1; got {n_components!r}.")
         self._n_components = None if n_components is None else int(n_components)
         if decay is not None and (not np.isfinite(decay) or decay <= 0):
             raise SpecificationError(f"decay must be a positive number; got {decay!r}.")

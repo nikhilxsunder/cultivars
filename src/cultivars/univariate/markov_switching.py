@@ -136,7 +136,7 @@ class MSARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
     order: int
     n_regimes: int
     switching_mean: bool

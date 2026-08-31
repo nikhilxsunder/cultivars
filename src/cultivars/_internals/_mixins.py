@@ -235,7 +235,7 @@ class _ComparisonMixin:
 
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
 
     def _comparison_label(self) -> str:
         """Short specification label for this result in a comparison table.
@@ -292,7 +292,7 @@ class _ComparisonMixin:
                 (
                     model._comparison_label(),
                     f"{model.llf:.3f}",
-                    f"{model.n_params}",
+                    f"{model.n_params:g}",
                     f"{value:.3f}",
                     f"{value - best:.3f}",
                 )
@@ -323,6 +323,13 @@ class _ComparisonMixin:
             )
         df = unrestricted.n_params - self.n_params
         if df <= 0:
+            if df != int(df):
+                raise SpecificationError(
+                    f"the parameter-count difference is fractional ({df:g}): a shrunk "
+                    "model spends effective rather than whole parameters, and a "
+                    "chi-squared likelihood-ratio test is not defined between such "
+                    "a pair."
+                )
             raise SpecificationError(
                 f"the unrestricted model must have more parameters; got {unrestricted.n_params} "
                 f"against {self.n_params}."
@@ -335,7 +342,7 @@ class _ComparisonMixin:
             )
         return _LikelihoodRatioTest(
             statistic=statistic,
-            df=df,
+            df=int(df),
             pvalue=float(chi2.sf(statistic, df)),
         )
 

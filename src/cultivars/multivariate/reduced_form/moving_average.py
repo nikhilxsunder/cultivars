@@ -144,11 +144,7 @@ class VARMAResult(
 
     def _trailing_labels(self) -> tuple[str, ...]:
         """Moving-average column names, innovation lag by innovation lag."""
-        return tuple(
-            f"u[{source}].L{j + 1}"
-            for j in range(self.ma_order)
-            for source in self.names
-        )
+        return tuple(f"u[{source}].L{j + 1}" for j in range(self.ma_order) for source in self.names)
 
     def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
         """Moving-average matrices ``Psi_0, ..., Psi_horizon`` of the VARMA.
@@ -250,8 +246,7 @@ class VARMAResult(
         stability = self.stability_check()
         invertibility = self.invertibility_check()
         notes = [
-            f"Stable: {self.is_stable}   max |AR companion root| = "
-            f"{stability.max_modulus:.4f}",
+            f"Stable: {self.is_stable}   max |AR companion root| = {stability.max_modulus:.4f}",
             f"Invertible: {self.is_invertible}   max |MA companion root| = "
             f"{invertibility.max_modulus:.4f}",
             _HR_CONDITIONAL_NOTE,

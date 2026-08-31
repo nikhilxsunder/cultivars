@@ -275,13 +275,15 @@ class InformationCriteria(NamedTuple):
     hqic: float
 
     @classmethod
-    def from_likelihood(cls, llf: float, nobs: int, n_params: int) -> InformationCriteria:
+    def from_likelihood(cls, llf: float, nobs: int, n_params: float) -> InformationCriteria:
         """Compute all three information criteria from a fit summary.
 
         Args:
             llf: Maximized log-likelihood.
             nobs: Number of observations the likelihood was evaluated on.
-            n_params: Number of free parameters, including the innovation variance.
+            n_params: Number of free parameters, including the innovation
+                variance. Fractional under shrinkage, which charges the
+                effective rather than the nominal freedom.
 
         Returns:
             The populated :class:`InformationCriteria`.

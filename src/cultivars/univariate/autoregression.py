@@ -95,7 +95,7 @@ class ARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin, _StationarityMixin
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
     order: int
     trend: str
     method: str

@@ -91,7 +91,7 @@ class ARFIMAResult(
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
     order: tuple[int, int]
     truncation: int
     d: float

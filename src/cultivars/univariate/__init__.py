@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Cultivars univariate time series module."""
 
 from .autoregression import AR, ARResult
 from .box_jenkins import ARIMA, ARIMAX, ARMA, SARIMA, SARIMAX, ARMAResult

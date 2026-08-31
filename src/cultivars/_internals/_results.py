@@ -53,13 +53,16 @@ class _FittedResult:
     Attributes:
         llf: Maximized log-likelihood.
         nobs: Observations the likelihood was evaluated on.
-        n_params: Free parameter count, including the innovation variance.
+        n_params: Free parameters, including the innovation variance. Not
+            necessarily an integer: a shrunk fit spends effective rather
+            than nominal freedom, and the criteria must charge what was
+            actually used.
         schema_version: Serialization schema version.
     """
 
     llf: float
     nobs: int
-    n_params: int = field(repr=False)
+    n_params: float = field(repr=False)
     schema_version: int = field(default=_SCHEMA_VERSION, repr=False)
 
     @property
@@ -223,7 +226,7 @@ class _ConditionalVarianceResult(
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
     mean: str
     const: float | None
     omega: float
@@ -310,7 +313,7 @@ class _MeanFunctionResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
     order: int
     sigma2: float
     engine: str
@@ -473,7 +476,7 @@ class _ObservedRegimeResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
     resid: npt.NDArray[np.float64]
     llf: float
     nobs: int
-    n_params: int
+    n_params: float
     order: int
     delay: int
     threshold: float
