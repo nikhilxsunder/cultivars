@@ -144,13 +144,12 @@ from ._results import (
     _KalmanFilterResult,
     _KimSmootherResult,
     _SmootherResult,
-    _StabilityResult,
 )
 from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
 from ._solvers import _maximize_likelihood, _solve, posterior_coefficients
 from ._states import _ExpectationMaximizationState
-from ._tests import _JohansenRankTest
+from ._tests import _JohansenRankTest, _StabilityTest
 
 
 class _BaseModel[R](ABC):
@@ -857,7 +856,7 @@ class _AutoRegressionModel[R](_UnivariateModel[R]):
 
         warm = self._fit_css()
         phi0 = warm.ar_params
-        if not _StabilityResult.assess_stability(phi0).is_stable:
+        if not _StabilityTest.assess_stability(phi0).is_stable:
             phi0 = np.zeros(order, dtype=np.float64)
         psi0 = pack_stationary(phi0)
         log_sigma0 = np.log(warm.sigma2)
@@ -1122,7 +1121,7 @@ class _BoxJenkinsModel[R](_UnivariateModel[R]):
                 ar0 = np.asarray(
                     np.linalg.lstsq(lag_mat, resid0[p:], rcond=None)[0], dtype=np.float64
                 )
-                if not _StabilityResult.assess_stability(ar0).is_stable:
+                if not _StabilityTest.assess_stability(ar0).is_stable:
                     ar0 = np.zeros(p)
             except np.linalg.LinAlgError:
                 ar0 = np.zeros(p)

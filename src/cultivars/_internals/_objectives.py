@@ -31,6 +31,7 @@ import numpy.typing as npt
 
 from .._core import (
     _D_MAX,
+    _LOG_2PI,
     _PENALTY,
     OptimizerMethod,
     OptimizerOptions,
@@ -39,6 +40,7 @@ from .._core import (
     _gaussian_negloglik,
     _linear_variance_recursion,
     _log_variance_recursion,
+    _midas_weights,
     companion_matrix,
     expand_ar,
     expand_ma,
@@ -733,3 +735,77 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
         """Return the concentrated sum of squared residuals."""
         return self.least_squares(self.unpack(theta))[0]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _MidasProfileObjective(_Objective[npt.NDArray[np.float64]]):
+    """Concentrated Gaussian likelihood of a MIDAS vector autoregression.
+
+    Only the lag-polynomial parameters are searched: conditional on them, each
+    high-frequency history collapses to one regressor column per series, the
+    model is linear, and every coefficient comes from a single least-squares
+    solve with the innovation covariance concentrated out at its maximum. The
+    surface is smooth but can be multi-modal in the decay parameter, which is
+    why the algorithm is derivative-free and the search is multi-start.
+
+    Attributes:
+        target: ``(nobs, k)`` low-frequency block being explained.
+        base_design: ``(nobs, d + k p)`` deterministic and endogenous-lag
+            columns, fixed across the search.
+        windows: ``(nobs, lags, m)`` high-frequency history behind each
+            low-frequency row, most recent sub-period first.
+        seeds: Starting points, two polynomial parameters per series.
+    """
+
+    method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    options: ClassVar[OptimizerOptions | None] = {
+        "xatol": 1e-6,
+        "fatol": 1e-9,
+        "maxiter": 5000,
+    }
+
+    target: npt.NDArray[np.float64]
+    base_design: npt.NDArray[np.float64]
+    windows: npt.NDArray[np.float64]
+    seeds: tuple[npt.NDArray[np.float64], ...]
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Return the multi-start grid over the polynomial parameters."""
+        return self.seeds
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Map the flat vector to one ``(theta_1, theta_2)`` row per series."""
+        return np.asarray(theta, dtype=np.float64).reshape(-1, 2)
+
+    def compressed(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """One regressor column per high-frequency series at these parameters.
+
+        Args:
+            theta: The flat vector the optimizer searches over.
+
+        Returns:
+            An ``(nobs, m)`` block of weighted sub-period sums.
+        """
+        lags = int(self.windows.shape[1])
+        weights = np.column_stack([_midas_weights(row, lags) for row in self.unpack(theta)])
+        return np.einsum("tjm,jm->tm", self.windows, weights)
+
+    def design(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Assemble the full regressor matrix at these parameters."""
+        return np.column_stack([self.base_design, self.compressed(theta)])
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Negative log-likelihood with coefficients and covariance concentrated out."""
+        if not np.all(np.isfinite(theta)):
+            return _PENALTY
+        design = self.design(theta)
+        nobs, k = self.target.shape
+        try:
+            coef: npt.NDArray[np.float64] = np.linalg.lstsq(design, self.target, rcond=None)[0]
+            resid = self.target - design @ coef
+            sign, logdet = np.linalg.slogdet(resid.T @ resid / nobs)
+        except np.linalg.LinAlgError:
+            return _PENALTY
+        if sign <= 0 or not np.isfinite(logdet):
+            return _PENALTY
+        return 0.5 * nobs * (k * _LOG_2PI + float(logdet) + k)

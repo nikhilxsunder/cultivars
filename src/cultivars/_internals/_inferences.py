@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -7,7 +6,7 @@ from typing import Protocol, runtime_checkable
 import numpy as np
 import numpy.typing as npt
 
-from ._results import _WaldTestResult
+from ._tests import _WaldTest
 
 
 @runtime_checkable
@@ -55,13 +54,11 @@ class _CoefficientInference(Protocol):
         """The full covariance over ``vec(B)``."""
         ...
 
-    def wald(self, cells: Sequence[tuple[int, int]], *, null: str) -> _WaldTestResult:
+    def wald(self, cells: Sequence[tuple[int, int]], *, null: str) -> _WaldTest:
         """Test that a set of coefficients is jointly zero."""
         ...
 
-    def wald_restriction(
-        self, restriction: npt.NDArray[np.float64], *, null: str
-    ) -> _WaldTestResult:
+    def wald_restriction(self, restriction: npt.NDArray[np.float64], *, null: str) -> _WaldTest:
         """Test a general set of linear restrictions."""
         ...
 

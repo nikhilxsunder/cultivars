@@ -102,29 +102,3 @@ _CAPACITY_WARNING: float = 0.1
 
 _DEFAULT_ALPHA: Final[float] = 0.05
 """Significance level assumed by a bare ``reject()`` call and by the repr."""
-
-_CHOLESKY_NOTE = (
-    "Orthogonalized impulse responses and the variance decomposition use a Cholesky "
-    "factor, which imposes the recursive ordering of `names`; that is a structural "
-    "assumption, not a reduced-form result."
-)
-
-_UNSTABLE_NOTE = "NOT STABLE: impulse responses diverge and forecasts are meaningless."
-
-
-_CONDITIONAL_REFUSAL = (
-    "a conditional vector error-correction model has no closed system, so {what} is not "
-    "defined for it. The weakly exogenous block {names} is carried without equations, "
-    "which means there is no law of motion to propagate a shock through and no companion "
-    "matrix to take roots of. Closing the system is what a global vector autoregression "
-    "does, by stacking units and solving the links; forecast(), which only needs a path "
-    "for x rather than a model of it, is available here."
-)
-
-_NO_CLOSED_SYSTEM = (
-    "{model} is a conditional model: {what} needs a law of motion for every variable in "
-    "the system, and this specification deliberately provides none for its exogenous "
-    "block. That omission is the model, not a gap in it. Everything estimated -- "
-    "coefficients, standard errors, p-values, residual diagnostics -- is available; "
-    "closing the system is what a global vector autoregression does by linking units."
-)

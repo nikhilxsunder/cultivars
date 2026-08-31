@@ -288,3 +288,108 @@ def aggregation_weights(
             f"weights must have one entry per sub-period ({period}); got {supplied.shape}."
         )
     return supplied
+
+
+def _aggregation_weights(
+    kind: Frequency, period: int, *, weights: npt.ArrayLike | None = None
+) -> npt.NDArray[np.float64]:
+    """Sub-period weights a single low-frequency reading places on the latent path.
+
+    Args:
+        kind: How the series relates to the latent path.
+        period: Number of high-frequency sub-periods per low-frequency period.
+        weights: Explicit sub-period weights, most recent first. Overrides the
+            default for ``kind``. Length must equal ``period``.
+
+    Returns:
+        Weights of length ``period``, most recent sub-period first.
+
+    Raises:
+        SpecificationError: If ``weights`` has the wrong length or is not finite.
+
+    Example:
+        >>> _aggregation_weights("flow", 3)
+        array([0.33333333, 0.33333333, 0.33333333])
+        >>> _aggregation_weights("stock", 3)
+        array([1., 0., 0.])
+    """
+    if weights is not None:
+        w = np.asarray(weights, dtype=np.float64).ravel()
+        if w.shape[0] != period:
+            raise SpecificationError(f"weights must have length period={period}; got {w.shape[0]}.")
+        if not np.all(np.isfinite(w)):
+            raise SpecificationError("weights must be finite.")
+        return w
+    out = np.zeros(period, dtype=np.float64)
+    if kind == "flow":
+        out[:] = 1.0 / period
+    else:
+        out[0] = 1.0
+    return out
+
+
+def _midas_weights(theta: npt.ArrayLike, lags: int) -> npt.NDArray[np.float64]:
+    """Normalized exponential Almon weights, most recent sub-period first.
+
+    The two-parameter family of Ghysels, Santa-Clara, and Valkanov:
+    ``w_j proportional to exp(theta_1 j + theta_2 j^2)`` for ``j = 1, ..., lags``,
+    normalized to sum to one so that the scale of the regressor lives in its
+    slope coefficient rather than in the polynomial. The exponent is shifted by
+    its maximum before exponentiating, so the normalization is exact for any
+    finite parameters and no clipping is needed.
+
+    Args:
+        theta: The two polynomial parameters ``(theta_1, theta_2)``.
+        lags: Window length in sub-periods, at least one.
+
+    Returns:
+        Weights of length ``lags`` summing to one, weight on the most recent
+        sub-period first.
+
+    Raises:
+        SpecificationError: If ``theta`` does not hold exactly two finite
+            values, or ``lags`` is less than one.
+
+    Example:
+        >>> _midas_weights([0.0, 0.0], 3)
+        array([0.33333333, 0.33333333, 0.33333333])
+        >>> w = _midas_weights([0.0, -0.5], 4)
+        >>> bool(w[0] > w[1] > w[2] > w[3])
+        True
+    """
+    if lags < 1:
+        raise SpecificationError(f"lags must be at least 1; got {lags}.")
+    values = np.asarray(theta, dtype=np.float64).ravel()
+    if values.shape[0] != 2:
+        raise SpecificationError(
+            f"theta must hold exactly two parameters (theta_1, theta_2); got {values.shape[0]}."
+        )
+    if not np.all(np.isfinite(values)):
+        raise SpecificationError("theta must be finite.")
+    j = np.arange(1, lags + 1, dtype=np.float64)
+    exponent = values[0] * j + values[1] * j**2
+    weights = np.exp(exponent - exponent.max())
+    return weights / weights.sum()
+
+
+def _midas_windows(
+    exog_high: npt.NDArray[np.float64], *, nobs: int, period: int, lags: int, start: int
+) -> npt.NDArray[np.float64]:
+    """Stack the high-frequency history behind each low-frequency row.
+
+    Args:
+        exog_high: ``(nobs * period, m)`` high-frequency panel, chronological.
+        nobs: Number of low-frequency periods the panel spans.
+        period: Sub-periods per low-frequency period.
+        lags: Window length in sub-periods.
+        start: First low-frequency row to keep. The caller guarantees the
+            window behind it does not reach before the sample.
+
+    Returns:
+        A ``(nobs - start, lags, m)`` array whose ``[t, j]`` entry is the
+        ``j``-th most recent sub-period reading at the end of low-frequency
+        period ``start + t``.
+    """
+    ends = (np.arange(start, nobs) + 1) * period - 1
+    idx = ends[:, np.newaxis] - np.arange(lags)[np.newaxis, :]
+    return exog_high[idx]

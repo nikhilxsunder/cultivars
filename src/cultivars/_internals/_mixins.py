@@ -56,7 +56,7 @@ from .._core import (
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._covariances import _CoefficientCovariance
 from ._inferences import _CoefficientInference
-from ._results import _LikelihoodRatioResult, _StabilityResult, _WaldTestResult
+from ._tests import _LikelihoodRatioTest, _StabilityTest, _WaldTest
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -85,9 +85,9 @@ class _StationarityMixin:
         return self.ar_params
 
     @property
-    def stability(self) -> _StabilityResult:
+    def stability(self) -> _StabilityTest:
         """Full eigenvalue verdict for the autoregressive polynomial."""
-        return _StabilityResult.assess_stability(self._stationarity_ar())
+        return _StabilityTest.assess_stability(self._stationarity_ar())
 
     @property
     def is_stationary(self) -> bool:
@@ -301,7 +301,7 @@ class _ComparisonMixin:
             notes=("Ranked best-first; the final column is the gap to the best model.",),
         )
 
-    def likelihood_ratio_test(self, unrestricted: _ComparisonMixin) -> _LikelihoodRatioResult:
+    def likelihood_ratio_test(self, unrestricted: _ComparisonMixin) -> _LikelihoodRatioTest:
         """Test this result as the restricted model against a nesting one.
 
         Args:
@@ -333,7 +333,7 @@ class _ComparisonMixin:
                 "the restricted model attained a higher likelihood than the unrestricted "
                 "one; the models are probably not nested, or one has not converged."
             )
-        return _LikelihoodRatioResult(
+        return _LikelihoodRatioTest(
             statistic=statistic,
             df=df,
             pvalue=float(chi2.sf(statistic, df)),
@@ -374,9 +374,9 @@ class _InvertibilityMixin:
         return -self.ma_params
 
     @property
-    def invertibility(self) -> _StabilityResult:
+    def invertibility(self) -> _StabilityTest:
         """Full eigenvalue verdict for the moving-average polynomial."""
-        return _StabilityResult.assess_stability(self._invertibility_ma())
+        return _StabilityTest.assess_stability(self._invertibility_ma())
 
     @property
     def is_invertible(self) -> bool:
@@ -528,6 +528,7 @@ class _VectorInferenceMixin:
         if self.deterministic.shape[0]:
             blocks.append(self.deterministic)
         blocks.extend(self.coefficients[i].T for i in range(self.order))
+        blocks.extend(self._trailing_blocks())
         return np.vstack(blocks) if blocks else np.zeros((0, self.k_endog), dtype=np.float64)
 
     def _deterministic_labels(self) -> tuple[str, ...]:
@@ -711,7 +712,7 @@ class _VectorInferenceMixin:
             return ("", "coef", "post. sd", "m/sd", *edge)
         return ("", "coef", "std err", "z", "P>|z|", *edge)
 
-    def granger_causality(self, cause: str, effect: str) -> _WaldTestResult:
+    def granger_causality(self, cause: str, effect: str) -> _WaldTest:
         """Wald test that one variable's lags are jointly zero in another equation.
 
         Args:
@@ -719,7 +720,7 @@ class _VectorInferenceMixin:
             effect: The equation the restriction is applied to.
 
         Returns:
-            A :class:`_WaldTestResult` naming the non-causality null.
+            A :class:`_WaldTest` naming the non-causality null.
 
         Raises:
             SpecificationError: If either name is unknown, they are the same
@@ -740,7 +741,7 @@ class _VectorInferenceMixin:
             cells, null=f"{cause} does not Granger-cause {effect}"
         )
 
-    def portmanteau_test(self, lags: int = 10) -> _WaldTestResult:
+    def portmanteau_test(self, lags: int = 10) -> _WaldTest:
         """Multivariate Ljung-Box test for residual autocorrelation.
 
         Args:
@@ -749,7 +750,7 @@ class _VectorInferenceMixin:
                 every degree of freedom.
 
         Returns:
-            The :class:`_WaldTestResult`. Rejection means the lag order is too
+            The :class:`_WaldTest`. Rejection means the lag order is too
             short, so every other quantity here -- impulse responses included
             -- is computed from a misspecified system.
 
@@ -774,21 +775,21 @@ class _VectorInferenceMixin:
                 f"{lags} lags leaves {df} degrees of freedom against "
                 f"{self.design.shape[1]} fitted parameters per equation; use more lags."
             )
-        return _WaldTestResult(
+        return _WaldTest(
             statistic=statistic,
             df=df,
             pvalue=float(chi2.sf(statistic, df)),
             null=f"residual autocorrelation is zero through lag {lags}",
         )
 
-    def normality_test(self, variable: str) -> _WaldTestResult:
+    def normality_test(self, variable: str) -> _WaldTest:
         """Jarque-Bera test on one equation's residuals.
 
         Args:
             variable: Name of the equation to test.
 
         Returns:
-            The :class:`_WaldTestResult` with two degrees of freedom.
+            The :class:`_WaldTest` with two degrees of freedom.
 
         Raises:
             SpecificationError: If ``variable`` is not in ``names``.
@@ -810,14 +811,14 @@ class _VectorInferenceMixin:
         skew = float((standardized**3).mean())
         kurtosis = float((standardized**4).mean())
         statistic = n * (skew**2 / 6.0 + (kurtosis - 3.0) ** 2 / 24.0)
-        return _WaldTestResult(
+        return _WaldTest(
             statistic=float(statistic),
             df=2,
             pvalue=float(chi2.sf(statistic, 2)),
             null=f"{variable} residuals are Gaussian",
         )
 
-    def arch_test(self, variable: str, lags: int = 5) -> _WaldTestResult:
+    def arch_test(self, variable: str, lags: int = 5) -> _WaldTest:
         """Engle's LM test for conditional heteroskedasticity in one equation.
 
         Args:
@@ -825,7 +826,7 @@ class _VectorInferenceMixin:
             lags: Number of squared-residual lags in the auxiliary regression.
 
         Returns:
-            The :class:`_WaldTestResult` with ``lags`` degrees of freedom.
+            The :class:`_WaldTest` with ``lags`` degrees of freedom.
 
         Raises:
             SpecificationError: If ``variable`` is unknown or ``lags`` is
@@ -854,7 +855,7 @@ class _VectorInferenceMixin:
         total = float(centred @ centred)
         r_squared = 0.0 if total <= 0.0 else 1.0 - float(residual @ residual) / total
         statistic = (n - lags) * r_squared
-        return _WaldTestResult(
+        return _WaldTest(
             statistic=float(statistic),
             df=lags,
             pvalue=float(chi2.sf(statistic, lags)),
@@ -873,7 +874,7 @@ class _VectorInferenceMixin:
         Returns:
             A :class:`SummaryTable` with one row per test.
         """
-        tests: list[tuple[str, _WaldTestResult]] = [
+        tests: list[tuple[str, _WaldTest]] = [
             (f"portmanteau({portmanteau_lags})", self.portmanteau_test(portmanteau_lags)),
             *((f"jarque-bera[{n}]", self.normality_test(n)) for n in self.names),
             *((f"arch-lm({arch_lags})[{n}]", self.arch_test(n, arch_lags)) for n in self.names),
@@ -970,18 +971,18 @@ class _VectorPropagationMixin:
         """The ``(kp, kp)`` companion matrix of the autoregressive block."""
         return companion_matrix(self.coefficients)
 
-    def stability_check(self) -> _StabilityResult:
+    def stability_check(self) -> _StabilityTest:
         """Eigenvalue verdict for the companion matrix.
 
         Returns:
-            The :class:`_StabilityResult`; the process is stable, and so has a
+            The :class:`_StabilityTest`; the process is stable, and so has a
             convergent moving-average representation, exactly when every
             companion eigenvalue lies inside the unit circle. Every other
             method here presumes that: an impulse response computed from an
             explosive companion diverges rather than decays, and a forecast
             from one is meaningless at any horizon.
         """
-        return _StabilityResult.assess_stability(self.coefficients)
+        return _StabilityTest.assess_stability(self.coefficients)
 
     @property
     def is_stable(self) -> bool:
@@ -1258,7 +1259,7 @@ class _ConditionalSystemMixin:
         self._no_closed_system("a companion matrix")
         raise AssertionError  # pragma: no cover
 
-    def stability_check(self) -> _StabilityResult:
+    def stability_check(self) -> _StabilityTest:
         """Unavailable: stability is a property of the closed system."""
         self._no_closed_system("a stability check")
         raise AssertionError  # pragma: no cover

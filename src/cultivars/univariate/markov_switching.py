@@ -95,7 +95,7 @@ from .._internals import (
     _MarkovSwitchingModel,
     _MarkovSwitchingStateSpaceModel,
     _SeriesMixin,
-    _StabilityResult,
+    _StabilityTest,
     _SummaryMixin,
 )
 from ..exceptions import SpecificationError
@@ -313,14 +313,14 @@ class MSARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
 
     # -- per-regime dynamics -----------------------------------------------
 
-    def regime_stability(self, regime: int) -> _StabilityResult:
+    def regime_stability(self, regime: int) -> _StabilityTest:
         """Companion-eigenvalue verdict for one regime's autoregressive block.
 
         Args:
             regime: Regime index in ``0..K-1``.
 
         Returns:
-            The :class:`_StabilityResult` for that regime read as a linear
+            The :class:`_StabilityTest` for that regime read as a linear
             autoregression.
 
         Raises:
@@ -328,7 +328,7 @@ class MSARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         """
         if not 0 <= regime < self.n_regimes:
             raise SpecificationError(f"regime must be in 0..{self.n_regimes - 1}; got {regime}.")
-        return _StabilityResult.assess_stability(self.ar_params[regime])
+        return _StabilityTest.assess_stability(self.ar_params[regime])
 
     @property
     def is_regimewise_stationary(self) -> bool:

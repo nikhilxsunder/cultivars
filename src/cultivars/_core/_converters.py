@@ -41,6 +41,8 @@ import numpy as np
 import numpy.typing as npt
 
 from ._loaders import require_optional
+from ._polynomials import _aggregation_weights
+from ._types import Frequency
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from collections.abc import Mapping, Sequence
@@ -145,3 +147,69 @@ def as_sequence(values: npt.ArrayLike) -> Sequence[Any]:
         own repr rules.
     """
     return list(np.asarray(values).tolist())
+
+
+def _mixed_frequency_system(
+    coefficients: npt.NDArray[np.float64],
+    sigma_u: npt.NDArray[np.float64],
+    *,
+    kinds: Sequence[Frequency],
+    period: int,
+    weights: Sequence[npt.ArrayLike | None] | None = None,
+    intercept: npt.NDArray[np.float64] | None = None,
+) -> tuple[
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+]:
+    """Put a latent high-frequency autoregression into observable form.
+
+    The state stacks ``depth = max(order, period)`` lags of the latent vector,
+    deep enough that a low-frequency reading spanning ``period`` sub-periods is
+    a linear function of the *contemporaneous* state. That is what keeps the
+    observation matrix constant across time.
+
+    Args:
+        coefficients: ``(order, k, k)`` latent autoregressive coefficients.
+        sigma_u: ``(k, k)`` innovation covariance of the latent process.
+        kinds: One :data:`Frequency` per latent variable.
+        period: High-frequency sub-periods per low-frequency period.
+        weights: Optional explicit sub-period weights, one entry per variable.
+        intercept: Optional ``(k,)`` latent intercept.
+
+    Returns:
+        The tuple ``(design, obs_cov, transition, selection, state_cov,
+        state_intercept)`` in the argument order of
+        :class:`_LinearGaussianStateSpaceModel`.
+    """
+    order, size = coefficients.shape[0], coefficients.shape[1]
+    depth = max(order, period)
+    width = size * depth
+
+    transition = np.zeros((width, width), dtype=np.float64)
+    for lag in range(order):
+        transition[:size, lag * size : (lag + 1) * size] = coefficients[lag]
+    if depth > 1:
+        transition[size:, : size * (depth - 1)] = np.eye(size * (depth - 1))
+
+    selection = np.zeros((width, size), dtype=np.float64)
+    selection[:size] = np.eye(size)
+
+    design = np.zeros((size, width), dtype=np.float64)
+    for i, kind in enumerate(kinds):
+        w = _aggregation_weights(kind, period, weights=None if weights is None else weights[i])
+        if kind == "high":
+            design[i, i] = 1.0
+        else:
+            for j in range(period):
+                design[i, j * size + i] = w[j]
+
+    state_intercept = np.zeros(width, dtype=np.float64)
+    if intercept is not None:
+        state_intercept[:size] = intercept
+
+    obs_cov = np.zeros((size, size), dtype=np.float64)
+    return design, obs_cov, transition, selection, sigma_u, state_intercept

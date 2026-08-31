@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -121,15 +120,47 @@ class MinnesotaPrior(_Prior):
         return out
 
     def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
-        """Litterman's variances, tighter for cross terms and for longer lags."""
+        """Litterman's variances, tighter for cross terms and for longer lags.
+
+        Three kinds of column, three rules. A variable's own lag gets
+        ``(tightness / lag ** decay) ** 2``, which is the only rule with no
+        scale in it, because a coefficient on a variable's own past is
+        dimensionless. A cross lag gets the same thing multiplied by
+        ``cross_equation`` and by ``s_i / s_j``, the ratio that makes a
+        coefficient linking two variables measured in different units shrink by
+        the same amount it would if they were measured in the same ones.
+        Deterministic terms and exogenous regressors get
+        ``(tightness * exogenous * s_i) ** 2``, which with the default
+        ``exogenous`` is four orders of magnitude looser than an own lag and is
+        meant to be.
+
+        The deterministic block is a loop rather than a single row because its
+        width is a property of the family, not a constant: none for a trendless
+        specification, one for a constant, two for a constant and trend, and
+        one per unit for a fixed-effects panel. Writing it as ``out[0]`` was
+        silently one column short for every ``"ct"`` model and off by ``N - 1``
+        for every panel -- a prior whose columns do not line up with the design
+        shrinks the wrong coefficients and reports a number rather than
+        raising.
+
+        Args:
+            context: What the prior needs to know about the sample.
+
+        Returns:
+            A ``(width, k)`` array of variances in design-column order.
+
+        Raises:
+            SpecificationError: If a tightness is not positive or the decay is
+                negative.
+        """
         self._check()
         size, order = context.k_endog, context.order
         scales = context.scales
         out = np.empty((context.width, size), dtype=np.float64)
         offset = context.lag_offset
         loose = (self.tightness * self.exogenous * scales) ** 2
-        if context.include_constant:
-            out[0] = loose
+        for term in range(context.n_deterministic):
+            out[term] = loose
         for lag in range(1, order + 1):
             damped = float(lag) ** self.decay
             for source in range(size):

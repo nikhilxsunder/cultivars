@@ -6,11 +6,10 @@ from typing import ClassVar
 
 import numpy as np
 import numpy.typing as npt
-
 from scipy.stats import chi2, norm
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ._results import _WaldTestResult
+from ._tests import _WaldTest
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -102,7 +101,7 @@ class _CoefficientCovariance:
         """
         return np.asarray(np.kron(self.sigma_u, self.xtx_inv), dtype=np.float64)
 
-    def wald(self, cells: Sequence[tuple[int, int]], *, null: str) -> _WaldTestResult:
+    def wald(self, cells: Sequence[tuple[int, int]], *, null: str) -> _WaldTest:
         """Test that a set of coefficients is jointly zero.
 
         Args:
@@ -114,7 +113,7 @@ class _CoefficientCovariance:
                 result so the test says what it tested.
 
         Returns:
-            A :class:`_WaldTestResult` with degrees of freedom equal to the
+            A :class:`_WaldTest` with degrees of freedom equal to the
             number of restrictions.
 
         Raises:
@@ -135,13 +134,11 @@ class _CoefficientCovariance:
         )
         statistic = float(estimate @ np.linalg.solve(block, estimate))
         df = len(cells)
-        return _WaldTestResult(
+        return _WaldTest(
             statistic=statistic, df=df, pvalue=float(chi2.sf(statistic, df)), null=null
         )
 
-    def wald_restriction(
-        self, restriction: npt.NDArray[np.float64], *, null: str
-    ) -> _WaldTestResult:
+    def wald_restriction(self, restriction: npt.NDArray[np.float64], *, null: str) -> _WaldTest:
         """Test a general set of linear restrictions on ``vec(B)``.
 
         The companion to :meth:`wald`, which handles the common case where each
@@ -158,7 +155,7 @@ class _CoefficientCovariance:
             null: Plain-language statement of the hypothesis.
 
         Returns:
-            A :class:`_WaldTestResult` with ``q`` degrees of freedom.
+            A :class:`_WaldTest` with ``q`` degrees of freedom.
 
         Raises:
             DimensionError: If the matrix has the wrong width or no rows.
@@ -182,7 +179,7 @@ class _CoefficientCovariance:
             ) from error
         statistic = float(estimate @ solved)
         df = int(restriction.shape[0])
-        return _WaldTestResult(
+        return _WaldTest(
             statistic=statistic, df=df, pvalue=float(chi2.sf(statistic, df)), null=null
         )
 
@@ -196,6 +193,7 @@ class _CoefficientCovariance:
         it has.
         """
         return float(self.k_endog * self.width)
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _PosteriorCovariance:
@@ -245,9 +243,7 @@ class _PosteriorCovariance:
     @property
     def stderr(self) -> npt.NDArray[np.float64]:
         """Posterior standard deviations, shaped like :attr:`coefficients`."""
-        return np.sqrt(
-            np.clip(np.diagonal(self.blocks, axis1=1, axis2=2), 0.0, None)
-        ).T
+        return np.sqrt(np.clip(np.diagonal(self.blocks, axis1=1, axis2=2), 0.0, None)).T
 
     @property
     def tstat(self) -> npt.NDArray[np.float64]:
@@ -292,9 +288,7 @@ class _PosteriorCovariance:
             out[lo : lo + self.width, lo : lo + self.width] = self.blocks[index]
         return out
 
-    def wald_restriction(
-        self, restriction: npt.NDArray[np.float64], *, null: str
-    ) -> _WaldTestResult:
+    def wald_restriction(self, restriction: npt.NDArray[np.float64], *, null: str) -> _WaldTest:
         """Test a general set of linear restrictions on ``vec(B)``.
 
         The block-diagonal joint covariance carries the same caveat as
@@ -308,7 +302,7 @@ class _PosteriorCovariance:
             null: Plain-language statement of the hypothesis.
 
         Returns:
-            A :class:`_WaldTestResult` with ``q`` degrees of freedom.
+            A :class:`_WaldTest` with ``q`` degrees of freedom.
 
         Raises:
             DimensionError: If the matrix has the wrong width or no rows.
@@ -316,9 +310,7 @@ class _PosteriorCovariance:
         """
         size = self.k_endog * self.width
         if restriction.ndim != 2 or restriction.shape[1] != size:
-            raise DimensionError(
-                f"restriction must be (q, {size}); got shape {restriction.shape}."
-            )
+            raise DimensionError(f"restriction must be (q, {size}); got shape {restriction.shape}.")
         if not restriction.shape[0]:
             raise DimensionError("a Wald test needs at least one restriction.")
         estimate = restriction @ self.coefficients.flatten(order="F")
@@ -332,11 +324,11 @@ class _PosteriorCovariance:
             ) from error
         statistic = float(estimate @ solved)
         df = int(restriction.shape[0])
-        return _WaldTestResult(
+        return _WaldTest(
             statistic=statistic, df=df, pvalue=float(chi2.sf(statistic, df)), null=null
         )
 
-    def wald(self, cells: Sequence[tuple[int, int]], *, null: str) -> _WaldTestResult:
+    def wald(self, cells: Sequence[tuple[int, int]], *, null: str) -> _WaldTest:
         """Test that a set of coefficients is jointly zero.
 
         Args:
@@ -344,7 +336,7 @@ class _PosteriorCovariance:
             null: Plain-language statement of the hypothesis.
 
         Returns:
-            A :class:`_WaldTestResult` with one degree of freedom per cell.
+            A :class:`_WaldTest` with one degree of freedom per cell.
 
         Raises:
             SpecificationError: If no cells are given.
@@ -355,19 +347,12 @@ class _PosteriorCovariance:
             raise SpecificationError("a Wald test needs at least one restriction.")
         for equation, regressor in cells:
             if not 0 <= equation < self.k_endog:
-                raise DimensionError(
-                    f"equation index {equation} is outside 0..{self.k_endog - 1}."
-                )
+                raise DimensionError(f"equation index {equation} is outside 0..{self.k_endog - 1}.")
             if not 0 <= regressor < self.width:
-                raise DimensionError(
-                    f"regressor index {regressor} is outside 0..{self.width - 1}."
-                )
+                raise DimensionError(f"regressor index {regressor} is outside 0..{self.width - 1}.")
         estimate = np.array([self.coefficients[r, i] for i, r in cells], dtype=np.float64)
         block = np.array(
-            [
-                [self.blocks[i][r, s] if i == j else 0.0 for j, s in cells]
-                for i, r in cells
-            ],
+            [[self.blocks[i][r, s] if i == j else 0.0 for j, s in cells] for i, r in cells],
             dtype=np.float64,
         )
         try:
@@ -379,6 +364,6 @@ class _PosteriorCovariance:
             ) from error
         statistic = float(estimate @ solved)
         df = len(cells)
-        return _WaldTestResult(
+        return _WaldTest(
             statistic=statistic, df=df, pvalue=float(chi2.sf(statistic, df)), null=null
         )

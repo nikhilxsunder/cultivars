@@ -31,10 +31,10 @@ from typing import TYPE_CHECKING, ClassVar, NamedTuple
 import numpy as np
 import numpy.typing as npt
 
-from ..exceptions import DimensionError, SpecificationError
+from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._loaders import require_optional
 
-if TYPE_CHECKING:  # pragma: no cover - typing only
+if TYPE_CHECKING:  # pragma: no cover
     import pandas as pd
     import polars as pl
 
@@ -100,8 +100,6 @@ class LagPolynomial:
                 f"dimensions {c.shape[1]}x{c.shape[2]}."
             )
         if not np.all(np.isfinite(c)):
-            from cultivars.exceptions import NumericalError
-
             raise NumericalError("LagPolynomial coefficients contain non-finite values.")
         c.setflags(write=False)
         self._c = c

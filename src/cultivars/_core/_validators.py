@@ -561,3 +561,49 @@ def validate_observed_matrix(
             "or supply data."
         )
     return arr
+
+
+def _validate_observed(endog: npt.ArrayLike, *, label: str = "endog") -> npt.NDArray[np.float64]:
+    """Coerce a panel in which missing entries are meaningful rather than errors.
+
+    Every other validator in the package rejects non-finite input, because
+    everywhere else a NaN is a data problem. Here it is the specification: an
+    unobserved month of a quarterly series is how the calendar is expressed.
+    Infinities are still rejected -- those are never meaningful -- and so is a
+    column with no observations at all, which cannot inform anything and whose
+    presence is almost always an alignment mistake.
+
+    Args:
+        endog: The ``(nobs, k)`` panel at the high frequency, with ``nan`` in
+            every period a series is not observed.
+        label: Name used in error messages.
+
+    Returns:
+        A float64 array of shape ``(nobs, k)``, missing entries preserved.
+
+    Raises:
+        DimensionError: If the input is not two-dimensional after promotion,
+            or has no rows or columns.
+        NumericalError: If any entry is infinite.
+        SpecificationError: If any column is entirely missing.
+    """
+    arr = np.asarray(endog, dtype=np.float64)
+    if arr.ndim == 1:
+        arr = arr.reshape(-1, 1)
+    if arr.ndim != 2:
+        raise DimensionError(f"{label} must be at most two-dimensional; got {arr.ndim}.")
+    if arr.shape[0] == 0 or arr.shape[1] == 0:
+        raise DimensionError(f"{label} must have at least one row and column; got {arr.shape}.")
+    if np.isinf(arr).any():
+        raise NumericalError(
+            f"{label} contains infinite values. Missing observations must be "
+            "nan; an infinity is never a valid observation."
+        )
+    empty = [int(j) for j in range(arr.shape[1]) if not np.isfinite(arr[:, j]).any()]
+    if empty:
+        raise SpecificationError(
+            f"{label} columns {empty} are entirely missing. A series with no "
+            "observations cannot be identified from the others; drop it or "
+            "check the frequency alignment."
+        )
+    return arr

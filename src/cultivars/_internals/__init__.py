@@ -65,6 +65,7 @@ from ._models import (
     _VectorAutoRegressionModel,
     _VectorErrorCorrectionModel,
 )
+from ._objectives import _MidasProfileObjective
 from ._predictors import MeanPredictor
 from ._priors import _NoPrior, _Prior, _PriorContext
 from ._results import (
@@ -74,14 +75,16 @@ from ._results import (
     _HamiltonFilterResult,
     _KalmanFilterResult,
     _KimSmootherResult,
-    _LikelihoodRatioResult,
     _MeanFunctionResult,
     _ObservedRegimeResult,
-    _StabilityResult,
     _VectorResult,
-    _WaldTestResult,
 )
-from ._solvers import solve_global
+from ._solvers import _maximize_likelihood, solve_global
+from ._tests import (
+    _LikelihoodRatioTest,
+    _StabilityTest,
+    _WaldTest,
+)
 
 __all__ = [
     "MeanPredictor",
@@ -107,11 +110,13 @@ __all__ = [
     "_KalmanFilterResult",
     "_KimSmootherResult",
     "_LikelihoodRatioResult",
+    "_LikelihoodRatioTest",
     "_LinearGaussianStateSpaceModel",
     "_MarkovSwitchingFit",
     "_MarkovSwitchingModel",
     "_MarkovSwitchingStateSpaceModel",
     "_MeanFunctionResult",
+    "_MidasProfileObjective",
     "_NeuralAutoRegressionFit",
     "_NeuralAutoRegressionModel",
     "_NeuralThresholdFit",
@@ -127,6 +132,7 @@ __all__ = [
     "_SmoothTransitionFit",
     "_SmoothTransitionModel",
     "_StabilityResult",
+    "_StabilityTest",
     "_StationarityMixin",
     "_SummaryMixin",
     "_ThresholdFit",
@@ -138,6 +144,8 @@ __all__ = [
     "_VectorInferenceMixin",
     "_VectorPropagationMixin",
     "_VectorResult",
+    "_WaldTest",
     "_WaldTestResult",
+    "_maximize_likelihood",
     "solve_global",
 ]
