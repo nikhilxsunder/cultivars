@@ -954,3 +954,54 @@ class _MixedHorizonObjective(_Objective[npt.NDArray[np.float64]]):
         for i, j, value in self.long_cells:
             violation += (long_run[i, j] - value) ** 2
         return violation
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _CoDiagonalObjective(_Objective[npt.NDArray[np.float64]]):
+    """Joint approximate diagonalization of regime covariances by one rotation.
+
+    With more than two variance regimes the constant impact matrix is
+    over-identified: no single rotation exactly diagonalizes every whitened
+    regime covariance in sample, and the minimized off-diagonal energy is the
+    data's verdict on the constant-impact assumption. The two-regime problem
+    has a closed form and never reaches this surface; the caller warm-starts
+    the search there, so the angles parameterize a refinement around the
+    exactly-solvable pair.
+
+    Attributes:
+        targets: The whitened regime covariances to diagonalize jointly, each
+            ``(k, k)`` symmetric.
+    """
+
+    options: ClassVar[OptimizerOptions | None] = {
+        "maxiter": 20000,
+        "ftol": 1e-18,
+        "gtol": 1e-14,
+    }
+
+    targets: tuple[npt.NDArray[np.float64], ...]
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Start at the warm point the caller built into the targets."""
+        size = self.targets[0].shape[0]
+        count = size * (size - 1) // 2
+        return (
+            np.zeros(count, dtype=np.float64),
+            np.full(count, 0.3, dtype=np.float64),
+            np.full(count, -0.3, dtype=np.float64),
+        )
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Map the angles to the rotation they compose."""
+        return _orthogonal_from_angles(theta, self.targets[0].shape[0])
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Total squared off-diagonal energy across regimes at this rotation."""
+        if not np.all(np.isfinite(theta)):
+            return _PENALTY
+        rotation = _orthogonal_from_angles(theta, self.targets[0].shape[0])
+        energy = 0.0
+        for target in self.targets:
+            transformed = rotation.T @ target @ rotation
+            energy += float(np.sum(transformed**2) - np.sum(np.diagonal(transformed) ** 2))
+        return energy

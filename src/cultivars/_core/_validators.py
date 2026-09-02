@@ -851,3 +851,44 @@ def _validate_narrative_events(
         tuple(compiled_contributions),
         tuple(periods),
     )
+
+
+def _validate_regimes(
+    regimes: npt.ArrayLike, *, nobs: int
+) -> tuple[tuple[str, ...], npt.NDArray[np.int64]]:
+    """Coerce a per-period regime assignment over one effective sample.
+
+    Args:
+        regimes: One regime label per residual row of the result being
+            identified -- the effective sample, exactly as a proxy's
+            instrument rows index it. Labels may be anything hashable a
+            string can name.
+        nobs: Rows of the effective sample.
+
+    Returns:
+        The regime labels in order of first appearance, and the integer
+        assignment mapping each period to its label's position.
+
+    Raises:
+        SpecificationError: If the assignment does not align with the
+            effective sample or names fewer than two regimes.
+    """
+    values = np.asarray(regimes)
+    if values.ndim != 1 or values.shape[0] != nobs:
+        raise SpecificationError(
+            f"regimes must assign one label per residual row ({nobs}), the "
+            f"effective sample after the burned lags; got shape {values.shape}."
+        )
+    labels: list[str] = []
+    assignment = np.empty(nobs, dtype=np.int64)
+    for position, raw in enumerate(values):
+        label = str(raw)
+        if label not in labels:
+            labels.append(label)
+        assignment[position] = labels.index(label)
+    if len(labels) < 2:
+        raise SpecificationError(
+            "heteroskedasticity identifies through variance *change*: at "
+            f"least two regimes are needed, got {labels}."
+        )
+    return tuple(labels), assignment

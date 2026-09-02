@@ -67,7 +67,12 @@ from ._models import (
     _VectorErrorCorrectionModel,
 )
 from ._moments import _VectorMoments
-from ._objectives import _MidasProfileObjective, _MixedHorizonObjective, _ShortRunObjective
+from ._objectives import (
+    _CoDiagonalObjective,
+    _MidasProfileObjective,
+    _MixedHorizonObjective,
+    _ShortRunObjective,
+)
 from ._predictors import MeanPredictor
 from ._priors import _NoPrior, _Prior, _PriorContext
 from ._results import (
@@ -94,6 +99,7 @@ __all__ = [
     "_AutoRegressionModel",
     "_BoxJenkinsFit",
     "_BoxJenkinsModel",
+    "_CoDiagonalObjective",
     "_ComparisonMixin",
     "_ConditionalLevels",
     "_ConditionalVarianceMixin",
