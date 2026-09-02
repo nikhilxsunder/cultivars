@@ -23,13 +23,14 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from itertools import combinations
 
 import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._containers import LagPolynomial
-from ._defaults import _TREND_WIDTH
+from ._defaults import _RANK_TOL, _TREND_WIDTH
 
 
 def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -455,4 +456,167 @@ def _orthogonal_from_angles(angles: npt.NDArray[np.float64], size: int) -> npt.N
             rotation[j, i] = sin
             out = out @ rotation
             position += 1
+    return out
+
+
+def _null_basis(rows: npt.NDArray[np.float64], size: int) -> npt.NDArray[np.float64]:
+    """An orthonormal basis of the null space of a stack of row constraints.
+
+    Args:
+        rows: ``(p, size)`` constraint rows; an empty stack constrains
+            nothing.
+        size: Ambient dimension.
+
+    Returns:
+        A ``(size, d)`` orthonormal basis with ``d = size - rank(rows)``.
+
+    Raises:
+        SpecificationError: If the constraints leave no direction at all.
+    """
+    if rows.shape[0] == 0:
+        return np.eye(size, dtype=np.float64)
+    _, singular, vt = np.linalg.svd(rows, full_matrices=True)
+    rank = int(np.sum(singular > _RANK_TOL * max(1.0, float(singular[0]))))
+    if rank >= size:
+        raise SpecificationError(
+            "the equality restrictions span the whole space, leaving no "
+            "direction for the shock; drop at least one zero restriction."
+        )
+    return np.ascontiguousarray(vt[rank:].T)
+
+
+def _face_projectors(
+    inequalities: npt.NDArray[np.float64], *, cap: int = 20000
+) -> tuple[npt.NDArray[np.float64], ...]:
+    """Orthonormal bases of every face span of a polyhedral cone.
+
+    One basis per subset of constraints treated as active, from the empty
+    set -- the interior, where the basis is the identity -- up to
+    dimension-minus-one constraints, which is as many as a face of the sphere
+    intersection can bind generically.
+
+    Args:
+        inequalities: ``(m, d)`` inequality rows ``s'v >= 0``.
+        cap: Largest subset count this will enumerate before refusing, since
+            the face count is combinatorial in the restrictions.
+
+    Returns:
+        The face bases, the empty-set identity first.
+
+    Raises:
+        SpecificationError: If the face count exceeds the cap.
+    """
+    m, dim = inequalities.shape
+    total = 1
+    running = 1
+    for size in range(1, min(m, dim - 1) + 1):
+        running = running * (m - size + 1) // size
+        total += running
+    if total > cap:
+        raise SpecificationError(
+            f"{m} sign restrictions in dimension {dim} generate {total} faces "
+            f"to enumerate, past the cap of {cap}; exact bounds need a "
+            "smaller declaration."
+        )
+    bases: list[npt.NDArray[np.float64]] = [np.eye(dim, dtype=np.float64)]
+    for size in range(1, min(m, dim - 1) + 1):
+        for subset in combinations(range(m), size):
+            active = inequalities[list(subset)]
+            basis = _null_basis_or_none(active, dim)
+            if basis is not None:
+                bases.append(basis)
+    return tuple(bases)
+
+
+def _null_basis_or_none(rows: npt.NDArray[np.float64], size: int) -> npt.NDArray[np.float64] | None:
+    """The null-space basis of a constraint stack, or ``None`` when empty."""
+    _, singular, vt = np.linalg.svd(rows, full_matrices=True)
+    rank = int(np.sum(singular > _RANK_TOL * max(1.0, float(singular[0]))))
+    if rank >= size:
+        return None
+    return np.ascontiguousarray(vt[rank:].T)
+
+
+def _sphere_extrema(
+    targets: npt.NDArray[np.float64],
+    inequalities: npt.NDArray[np.float64],
+    projectors: tuple[npt.NDArray[np.float64], ...],
+    *,
+    tolerance: float = 1e-9,
+) -> npt.NDArray[np.float64]:
+    """Exact extrema of linear functionals over the sphere-cone intersection.
+
+    The stationarity conditions on the sphere-and-cone region split the
+    extrema into two kinds, and both are scanned. Where the multiplier on the
+    sphere constraint is nonzero, the extremum is the normalized projection
+    of the objective -- or its negative, for the minimum -- onto some face's
+    span. Where it is zero, the objective is a conic combination of the
+    active rows, the value is exactly zero, and zero enters the candidate set
+    whenever the face is certifiably feasible -- certified by probing the
+    face's basis directions and the projections of the constraint rows and
+    their inward sum onto its span.
+
+    Args:
+        targets: ``(n, d)`` objective rows, one per bound wanted.
+        inequalities: ``(m, d)`` inequality rows.
+        projectors: Face bases from :func:`_face_projectors`.
+        tolerance: Feasibility slack, scaled per constraint row.
+
+    Returns:
+        An ``(n, 2)`` array of ``(lower, upper)`` bounds.
+
+    Raises:
+        NumericalError: If no face yields a feasible candidate, which means
+            the declared restrictions are infeasible on the sphere -- no
+            rotation column satisfies them all.
+    """
+    n = targets.shape[0]
+    out = np.empty((n, 2), dtype=np.float64)
+    scale = (
+        np.maximum(np.linalg.norm(inequalities, axis=1), 1.0) if inequalities.size else np.ones(0)
+    )
+    inward = inequalities.sum(axis=0) if inequalities.size else np.zeros(0)
+
+    def _feasible(candidate: npt.NDArray[np.float64]) -> bool:
+        return not inequalities.size or bool(np.all(inequalities @ candidate >= -tolerance * scale))
+
+    for position in range(n):
+        best_upper = -np.inf
+        best_lower = np.inf
+        objective = targets[position]
+        for basis in projectors:
+            projected = basis @ (basis.T @ objective)
+            norm = float(np.linalg.norm(projected))
+            if norm > _RANK_TOL:
+                for candidate in (projected / norm, -projected / norm):
+                    if not _feasible(candidate):
+                        continue
+                    value = float(objective @ candidate)
+                    best_upper = max(best_upper, value)
+                    best_lower = min(best_lower, value)
+                continue
+            probes = [basis[:, column] for column in range(basis.shape[1])]
+            if inequalities.size:
+                probes.append(basis @ (basis.T @ inward))
+                probes.extend(basis @ (basis.T @ row) for row in inequalities)
+            for probe in probes:
+                for oriented in (probe, -probe):
+                    norm = float(np.linalg.norm(oriented))
+                    if norm <= _RANK_TOL:
+                        continue
+                    candidate = oriented / norm
+                    if not _feasible(candidate):
+                        continue
+                    value = float(objective @ candidate)
+                    best_upper = max(best_upper, value)
+                    best_lower = min(best_lower, value)
+                    break
+        if not np.isfinite(best_upper):
+            raise NumericalError(
+                "no rotation column satisfies the declared restrictions: the "
+                "identified set is empty at this reduced form. Loosen a sign "
+                "or drop a zero."
+            )
+        out[position, 0] = best_lower
+        out[position, 1] = best_upper
     return out

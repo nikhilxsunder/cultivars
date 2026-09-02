@@ -80,3 +80,15 @@ _NARRATIVE_NOTE = (
     "reduced-form posterior, belongs to the posterior-draw version that "
     "arrives with the sampling backend."
 )
+
+_SET_BOUNDS_NOTE = (
+    "Bounds are the exact endpoints of the identified set, computed pointwise "
+    "per response and horizon: they depend on no prior over rotations, which "
+    "is what separates them from the quantile bands of a sign-restricted set "
+    "-- those inherit the uniform prior over the admissible rotations, the "
+    "Baumeister-Hamilton critique. Read the bounds pointwise: the set of "
+    "admissible impulse-response paths is not the box they outline. Computed "
+    "at the reduced-form point estimate; the robust Bayesian treatment, "
+    "which repeats these bounds across posterior draws, arrives with the "
+    "sampling backend."
+)

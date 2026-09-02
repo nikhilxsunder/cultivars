@@ -102,3 +102,6 @@ _CAPACITY_WARNING: float = 0.1
 
 _DEFAULT_ALPHA: Final[float] = 0.05
 """Significance level assumed by a bare ``reject()`` call and by the repr."""
+
+_RANK_TOL: float = 1e-10
+"""Tolerance for determining the numerical rank of a matrix."""
