@@ -413,3 +413,43 @@ def minnesota_scales(endog: npt.NDArray[np.float64], order: int) -> npt.NDArray[
         resid = target - design @ coef
         out[index] = float(np.sqrt(resid @ resid / (resid.shape[0] - design.shape[1])))
     return out
+
+
+def _cumulant_slices(
+    whitened: npt.NDArray[np.float64],
+) -> tuple[npt.NDArray[np.float64], ...]:
+    """Third- and fourth-order cumulant slices of a whitened panel.
+
+    For mutually independent unit-variance sources every one of these
+    matrices is diagonal, and a rotation of the panel rotates them all
+    congruently -- which is what turns independent-component analysis into
+    joint diagonalization. The third-order slices carry skewness, the
+    fourth-order slices carry excess kurtosis, and including both is what
+    identifies a shock that is non-Gaussian through either.
+
+    Args:
+        whitened: The ``(nobs, k)`` panel, unit covariance by construction.
+
+    Returns:
+        ``k`` third-order slices ``M_i = E[z_i z z']`` followed by
+        ``k (k + 1) / 2`` fourth-order cumulant slices ``Q_ij = E[z_i z_j z
+        z'] - delta_ij I - E_ij - E_ji``, each symmetrized.
+    """
+    nobs, k = whitened.shape
+    identity = np.eye(k)
+    out: list[npt.NDArray[np.float64]] = []
+    for i in range(k):
+        slice_third = (whitened * whitened[:, i : i + 1]).T @ whitened / nobs
+        out.append((slice_third + slice_third.T) / 2.0)
+    for i in range(k):
+        for j in range(i, k):
+            weight = whitened[:, i] * whitened[:, j]
+            raw = (whitened * weight[:, np.newaxis]).T @ whitened / nobs
+            correction = np.zeros((k, k))
+            if i == j:
+                correction += identity
+            correction[i, j] += 1.0
+            correction[j, i] += 1.0
+            slice_fourth = raw - correction
+            out.append((slice_fourth + slice_fourth.T) / 2.0)
+    return tuple(out)

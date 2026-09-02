@@ -54,6 +54,7 @@ from ._defaults import (
     _TINY,
 )
 from ._estimators import (
+    _cumulant_slices,
     _gaussian_negloglik,
     concentrated_gaussian,
     ergodic_distribution,
@@ -202,6 +203,7 @@ __all__ = [
     "_aggregation_weights",
     "_arch_infinity_variance",
     "_arch_infinity_weights",
+    "_cumulant_slices",
     "_gaussian_negloglik",
     "_haar_rotation",
     "_linear_variance_recursion",
