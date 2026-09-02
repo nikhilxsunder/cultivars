@@ -66,11 +66,11 @@ from ..._core import (
     _UNIT_SHOCK_NOTE,
     ClosedSystemResult,
     SummaryTable,
+    _face_projectors,
     _lower_cholesky,
-    _validate_sign_patterns,
     _null_basis,
     _sphere_extrema,
-    _face_projectors,
+    _validate_sign_patterns,
 )
 from ..._internals import (
     _IdentificationModel,
@@ -122,9 +122,7 @@ class SetIdentifiedSVARResult(_SummaryMixin):
         """Exact ``(k, 2)`` lower and upper impact responses to the shock."""
         return self.irf(0)[0]
 
-    def irf(
-        self, horizon: int = 20, *, cumulative: bool = False
-    ) -> npt.NDArray[np.float64]:
+    def irf(self, horizon: int = 20, *, cumulative: bool = False) -> npt.NDArray[np.float64]:
         """Exact pointwise response bounds to the restricted shock.
 
         Args:
@@ -240,15 +238,13 @@ class SetIdentifiedSVAR(_IdentificationModel[SetIdentifiedSVARResult]):
         for variable, moments in (zeros or {}).items():
             if variable not in self.names:
                 raise SpecificationError(
-                    f"unknown variable {variable!r} in zeros; expected one of "
-                    f"{self.names}."
+                    f"unknown variable {variable!r} in zeros; expected one of {self.names}."
                 )
             for moment in moments:
                 lead = int(moment)
                 if lead < 0:
                     raise SpecificationError(
-                        f"zero restriction on {variable!r} names a negative "
-                        f"lead {moment}."
+                        f"zero restriction on {variable!r} names a negative lead {moment}."
                     )
                 zero_cells.append((self.names.index(variable), lead))
         if len(zero_cells) >= self.k_endog:
@@ -259,10 +255,7 @@ class SetIdentifiedSVAR(_IdentificationModel[SetIdentifiedSVARResult]):
             )
         self._zero_cells = tuple(zero_cells)
         described_zeros = (
-            "; zeros: "
-            + ", ".join(
-                f"{self.names[i]} at lead {h}" for i, h in self._zero_cells
-            )
+            "; zeros: " + ", ".join(f"{self.names[i]} at lead {h}" for i, h in self._zero_cells)
             if self._zero_cells
             else ""
         )
@@ -270,8 +263,7 @@ class SetIdentifiedSVAR(_IdentificationModel[SetIdentifiedSVARResult]):
             f"Declared signs on the {self._shock!r} shock, holding at "
             f"horizons {leads}: "
             + ", ".join(
-                f"{self.names[i]} {'+' if sign > 0 else '-'}"
-                for i, sign in self._sign_cells
+                f"{self.names[i]} {'+' if sign > 0 else '-'}" for i, sign in self._sign_cells
             )
             + described_zeros
             + ". Every other shock is left entirely unrestricted."
@@ -294,9 +286,7 @@ class SetIdentifiedSVAR(_IdentificationModel[SetIdentifiedSVARResult]):
         k = self.k_endog
         sigma = np.asarray(self.source.sigma_u, dtype=np.float64)
         factor = _lower_cholesky(sigma, "sigma_u")
-        top = max(
-            (*(h for _, h in self._zero_cells), *self._leads)
-        )
+        top = max((*(h for _, h in self._zero_cells), *self._leads))
         psi = self.source.ma_representation(top)
         loadings = np.einsum("hik,kl->hil", psi, factor)
 
@@ -307,11 +297,7 @@ class SetIdentifiedSVAR(_IdentificationModel[SetIdentifiedSVARResult]):
         )
         basis = _null_basis(equality_rows, k)
         inequality_rows = np.stack(
-            [
-                sign * loadings[h, i] @ basis
-                for h in self._leads
-                for i, sign in self._sign_cells
-            ]
+            [sign * loadings[h, i] @ basis for h in self._leads for i, sign in self._sign_cells]
         )
         projectors = _face_projectors(inequality_rows)
         result = SetIdentifiedSVARResult(
