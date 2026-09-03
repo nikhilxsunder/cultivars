@@ -90,6 +90,7 @@ from ._results import (
     _KimSmootherResult,
     _MeanFunctionResult,
     _ObservedRegimeResult,
+    _RegimeSystemResult,
     _VectorObservedRegimeResult,
     _VectorResult,
 )
@@ -144,6 +145,7 @@ __all__ = [
     "_PanelVectorAutoRegressionModel",
     "_Prior",
     "_PriorContext",
+    "_RegimeSystemResult",
     "_SeriesMixin",
     "_ShortMemoryVarianceFit",
     "_ShortMemoryVarianceModel",
