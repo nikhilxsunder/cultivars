@@ -1131,3 +1131,96 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
             )
             for i, name in enumerate(self.names)
         )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _RegimeSystemResult:
+    """One regime of a fitted regime model, dressed as a closed linear system.
+
+    The interchange view of the regime families, on the pattern
+    :class:`_ConditionalLevels` set for the global model: a public result
+    produces it, the identification layer consumes it, and users receive it
+    without ever constructing it. Conditional on its regime the model is a
+    linear VAR, and this view exposes exactly the closed-system surface an
+    identification model reads -- labels, coefficients, an innovation
+    covariance, residuals, and a moving-average representation -- so it
+    passes anywhere a fitted VAR result passes as an identification source.
+
+    Two honesty notes on the statistical members. ``nobs`` is the *expected*
+    number of periods governed by this regime -- the sum of its weights, a
+    float, because under a latent chain no date belongs to a regime with
+    certainty. ``resid`` is the full-sample residuals under this regime's
+    parameters, weighted by the square root of the regime weights and scaled
+    so their second moment matches :attr:`sigma_u`; a scheme that only reads
+    the covariance (recursive, long-run, short-run) is unaffected, while a
+    scheme that reads residual moments directly is consuming a
+    weight-averaged object and should be interpreted accordingly.
+
+    Attributes:
+        index: This regime's label under the producing fit's convention.
+        names: Variable labels, in column order.
+        order: Autoregressive order.
+        trend: Deterministic specification.
+        coefficients: ``(p, k, k)`` lag stack of this regime.
+        deterministic: This regime's deterministic coefficients.
+        sigma_u: This regime's innovation covariance.
+        resid: Probability-weighted residuals, aligned with the effective
+            sample.
+        weight: This regime's weights -- smoothed probabilities for a
+            latent chain -- one per effective row.
+        nobs: Expected periods governed by this regime.
+    """
+
+    index: int
+    names: tuple[str, ...]
+    order: int
+    trend: str
+    coefficients: npt.NDArray[np.float64] = field(repr=False)
+    deterministic: npt.NDArray[np.float64] = field(repr=False)
+    sigma_u: npt.NDArray[np.float64] = field(repr=False)
+    resid: npt.NDArray[np.float64] = field(repr=False)
+    weight: npt.NDArray[np.float64] = field(repr=False)
+    nobs: float
+
+    @property
+    def k_endog(self) -> int:
+        """Number of endogenous variables."""
+        return len(self.names)
+
+    def stability_check(self) -> _StabilityTest:
+        """Companion-eigenvalue verdict for this regime's lag stack."""
+        return _StabilityTest.assess_stability(self.coefficients)
+
+    @property
+    def is_stable(self) -> bool:
+        """Whether this regime, read as a linear VAR, is stable."""
+        return self.stability_check().is_stable
+
+    def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
+        """Moving-average matrices of this regime, held frozen.
+
+        Args:
+            horizon: Largest lead to return.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
+
+        Raises:
+            SpecificationError: If ``horizon`` is negative.
+        """
+        if horizon < 0:
+            raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
+        k, p = self.k_endog, self.order
+        out = np.empty((horizon + 1, k, k), dtype=np.float64)
+        if p == 0:
+            out[:] = 0.0
+            out[0] = np.eye(k)
+            return out
+        selector = np.zeros((k, k * p), dtype=np.float64)
+        selector[:, :k] = np.eye(k)
+        power = np.eye(k * p, dtype=np.float64)
+        companion = companion_matrix(self.coefficients)
+        for h in range(horizon + 1):
+            out[h] = selector @ power @ selector.T
+            power = power @ companion
+        return out
