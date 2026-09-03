@@ -277,6 +277,37 @@ class _SmoothTransitionFit(_BaseFit):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorMarkovSwitchingFit(_BaseFit):
+    """Raw outputs of a Markov-switching vector autoregression fit.
+
+    Attributes:
+        transition: Row-stochastic ``(M, M)`` matrix.
+        coefficients: ``(M, p, k, k)`` per-regime lag stacks.
+        deterministics: ``(M, d, k)`` per-regime deterministic coefficients.
+        sigmas: ``(M, k, k)`` per-regime innovation covariances.
+        filtered_prob: ``Pr(S_t = m | y_1..t)``, shape ``(nobs, M)``.
+        predicted_prob: ``Pr(S_t = m | y_1..t-1)``, shape ``(nobs, M)``.
+        smoothed_prob: ``Pr(S_t = m | y_1..T)``, shape ``(nobs, M)``.
+        ergodic_prob: Stationary distribution of ``transition``.
+        expected_durations: ``1 / (1 - P_mm)``, in periods.
+        n_iter: EM iterations used by the refining run.
+        converged: Whether the refining run met its tolerance.
+    """
+
+    transition: npt.NDArray[np.float64]
+    coefficients: npt.NDArray[np.float64]
+    deterministics: npt.NDArray[np.float64]
+    sigmas: npt.NDArray[np.float64]
+    filtered_prob: npt.NDArray[np.float64]
+    predicted_prob: npt.NDArray[np.float64]
+    smoothed_prob: npt.NDArray[np.float64]
+    ergodic_prob: npt.NDArray[np.float64]
+    expected_durations: npt.NDArray[np.float64]
+    n_iter: int
+    converged: bool
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _VectorObservedRegimeFit(_BaseFit):
     """Raw outputs shared by the observed-regime vector estimators.
 

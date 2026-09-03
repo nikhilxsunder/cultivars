@@ -42,3 +42,18 @@ class _ExpectationMaximizationState:
     llf: float
     n_iter: int
     converged: bool
+
+
+@dataclass(frozen=True, kw_only=True)
+class _VectorExpectationMaximizationState:
+    """Internal state carried between EM restarts of a switching VAR."""
+
+    transition: npt.NDArray[np.float64]
+    coefficients: npt.NDArray[np.float64]
+    sigmas: npt.NDArray[np.float64]
+    filtered_prob: npt.NDArray[np.float64]
+    predicted_prob: npt.NDArray[np.float64]
+    smoothed_prob: npt.NDArray[np.float64]
+    llf: float
+    n_iter: int
+    converged: bool

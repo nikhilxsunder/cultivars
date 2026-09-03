@@ -124,6 +124,7 @@ from ._fits import (
     _ThresholdFit,
     _VectorAutoRegressionFit,
     _VectorErrorCorrectionFit,
+    _VectorMarkovSwitchingFit,
     _VectorSmoothTransitionFit,
     _VectorThresholdFit,
 )
@@ -152,7 +153,7 @@ from ._results import (
 from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
 from ._solvers import _maximize_likelihood, _solve, posterior_coefficients
-from ._states import _ExpectationMaximizationState
+from ._states import _ExpectationMaximizationState, _VectorExpectationMaximizationState
 from ._tests import _JohansenRankTest, _StabilityTest
 
 
@@ -4296,3 +4297,410 @@ class _IdentificationModel[R](ABC):
     @abstractmethod
     def identify(self) -> R:
         """Apply the scheme and return the structural view."""
+
+
+class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """Specification and EM engine of a Markov-switching vector autoregression.
+
+    Rides on the same Hamilton filter and Kim smoother as the univariate
+    family -- both consume a log-density matrix and a transition matrix and
+    never see the data, so the only genuinely new machinery here is the
+    density (multivariate Gaussian per regime) and the M-step. The M-step is
+    exact under partial switching: all regimes' coefficient slabs are solved
+    in one generalized-Sylvester system, weighted by the smoothed
+    probabilities and each regime's inverse covariance, so a non-switching
+    block is estimated jointly across regimes rather than per regime and then
+    averaged.
+
+    Args:
+        endog: The observed panel.
+        order: Autoregressive order within each regime.
+        n_regimes: Number of latent regimes ``M``, at least two.
+        switching_mean: Whether the deterministic block switches.
+        switching_variance: Whether the innovation covariance switches.
+        switching_ar: Whether the lag coefficients switch.
+        trend: Deterministic terms per regime.
+        names: One label per variable.
+
+    Raises:
+        SpecificationError: If no component switches, so no regime is
+            identified, or the specification is malformed.
+        DimensionError: If the sample cannot support ``M`` regimes.
+    """
+
+    __slots__ = ("_m", "_sw_ar", "_sw_mean", "_sw_var")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        n_regimes: int = 2,
+        switching_mean: bool = True,
+        switching_variance: bool = True,
+        switching_ar: bool = False,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog, order=order, trend=trend, names=names)
+        self._m = validate_order(n_regimes, "n_regimes", minimum=2)
+        self._sw_mean = bool(switching_mean)
+        self._sw_var = bool(switching_variance)
+        self._sw_ar = bool(switching_ar)
+        if not (self._sw_mean or self._sw_var or self._sw_ar):
+            raise SpecificationError(
+                "at least one of switching_mean, switching_variance, "
+                "switching_ar must be True; otherwise no regime is identified."
+            )
+        if self._sw_mean and self._n_deterministic_columns == 0:
+            raise SpecificationError(
+                "switching_mean is meaningless with trend='n': there is no "
+                "deterministic block to switch. Set switching_mean=False or "
+                "choose a trend."
+            )
+        need = self._m * (self.n_regressors + self.k_endog + 1) + self._order
+        if self._endog.shape[0] < need:
+            raise DimensionError(
+                f"a sample of {self._endog.shape[0]} rows is too short for "
+                f"{self._m} regimes of a {type(self).__name__}({self._order}); "
+                f"it needs at least {need}."
+            )
+
+    @property
+    def n_regimes(self) -> int:
+        """Number of latent regimes."""
+        return self._m
+
+    @property
+    def switching_mean(self) -> bool:
+        """Whether the deterministic block switches."""
+        return self._sw_mean
+
+    @property
+    def switching_variance(self) -> bool:
+        """Whether the innovation covariance switches."""
+        return self._sw_var
+
+    @property
+    def switching_ar(self) -> bool:
+        """Whether the lag coefficients switch."""
+        return self._sw_ar
+
+    @property
+    def label_ordering(self) -> str:
+        """Which quantity regimes are sorted by, ascending.
+
+        A mixture likelihood is invariant to relabelling regimes, so the fit
+        imposes an ordering to make two runs comparable: the first variable's
+        intercept when the mean switches, the log-determinant of the
+        innovation covariance when only scale does (regime 0 is then the
+        quiet regime), and the first variable's own first-lag coefficient
+        otherwise.
+        """
+        if self._sw_mean:
+            return "first-variable intercept"
+        if self._sw_var:
+            return "covariance log-determinant"
+        return "first own-lag coefficient"
+
+    def _selection_matrices(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Per-regime maps from the stacked slab matrix to full coefficients.
+
+        The free parameters are slabs: one deterministic block per regime or
+        one shared, one lag block per regime or one shared. ``S_m`` maps the
+        ``(q, k)`` stacked slab matrix to regime ``m``'s full ``(w, k)``
+        coefficient matrix as ``B_m = S_m @ theta``.
+
+        Returns:
+            One ``(w, q)`` selection matrix per regime.
+        """
+        d = self._n_deterministic_columns
+        lagw = self.k_endog * self._order
+        n_det_slabs = self._m if (self._sw_mean and d) else (1 if d else 0)
+        n_ar_slabs = self._m if (self._sw_ar and lagw) else (1 if lagw else 0)
+        q = d * n_det_slabs + lagw * n_ar_slabs
+        out: list[npt.NDArray[np.float64]] = []
+        for m in range(self._m):
+            s = np.zeros((d + lagw, q), dtype=np.float64)
+            if d:
+                i = m if self._sw_mean else 0
+                s[:d, i * d : (i + 1) * d] = np.eye(d)
+            if lagw:
+                j = m if self._sw_ar else 0
+                offset = d * n_det_slabs
+                s[d:, offset + j * lagw : offset + (j + 1) * lagw] = np.eye(lagw)
+            out.append(s)
+        return tuple(out)
+
+    @staticmethod
+    def _log_densities(
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+        coefficients: npt.NDArray[np.float64],
+        sigmas: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        """Per-regime multivariate Gaussian log-densities, shape ``(T, M)``.
+
+        Raises:
+            NumericalError: If a regime covariance is not positive definite.
+        """
+        n_eff, k = target.shape
+        m = coefficients.shape[0]
+        out = np.empty((n_eff, m), dtype=np.float64)
+        for j in range(m):
+            resid = target - design @ coefficients[j]
+            try:
+                factor = np.linalg.cholesky(sigmas[j])
+            except np.linalg.LinAlgError as error:
+                raise NumericalError(
+                    f"regime {j}'s innovation covariance lost positive definiteness during EM."
+                ) from error
+            logdet = 2.0 * float(np.sum(np.log(np.diagonal(factor))))
+            quad = np.sum(np.linalg.solve(factor, resid.T) ** 2, axis=0)
+            out[:, j] = -0.5 * (k * _LOG_2PI + logdet + quad)
+        return out
+
+    def _update_coefficients(
+        self,
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+        smoothed: npt.NDArray[np.float64],
+        sigmas: npt.NDArray[np.float64],
+        selections: tuple[npt.NDArray[np.float64], ...],
+    ) -> npt.NDArray[np.float64]:
+        """M-step coefficient update by probability-weighted GLS.
+
+        Minimizes ``sum_m tr[Sigma_m^{-1} (Y - X S_m theta)' W_m
+        (Y - X S_m theta)]`` over the stacked slab matrix ``theta``, which is
+        the generalized Sylvester system ``sum_m G_m theta Sigma_m^{-1} = C``
+        with ``G_m = S_m' X' W_m X S_m``, solved through its Kronecker form.
+        With every block switching the system is block-diagonal and collapses
+        to per-regime weighted least squares; with shared blocks the coupling
+        through ``Sigma_m^{-1}`` is exactly what per-regime-then-average
+        would get wrong.
+
+        Returns:
+            The updated ``(M, w, k)`` stack of full coefficient matrices.
+        """
+        k = self.k_endog
+        q = selections[0].shape[1]
+        a = np.zeros((q * k, q * k), dtype=np.float64)
+        b = np.zeros((q, k), dtype=np.float64)
+        for m in range(self._m):
+            weighted = design * smoothed[:, m][:, None]
+            gram = selections[m].T @ (design.T @ weighted) @ selections[m]
+            inverse = np.linalg.inv(sigmas[m])
+            a += np.kron(inverse, gram)
+            b += selections[m].T @ (weighted.T @ target) @ inverse
+        theta = np.linalg.solve(a, b.T.ravel()).reshape((k, q)).T
+        return np.stack([s @ theta for s in selections])
+
+    def _update_sigmas(
+        self,
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+        coefficients: npt.NDArray[np.float64],
+        smoothed: npt.NDArray[np.float64],
+        floor: float,
+    ) -> npt.NDArray[np.float64]:
+        """M-step covariance update, per regime or pooled.
+
+        Returns:
+            The updated ``(M, k, k)`` covariance stack, ridged by ``floor``
+            so a momentarily starved regime stays positive definite.
+        """
+        k = self.k_endog
+        n_eff = target.shape[0]
+        out = np.empty((self._m, k, k), dtype=np.float64)
+        pooled = np.zeros((k, k), dtype=np.float64)
+        for m in range(self._m):
+            resid = target - design @ coefficients[m]
+            weighted = resid * smoothed[:, m][:, None]
+            cross = weighted.T @ resid
+            if self._sw_var:
+                out[m] = cross / max(float(smoothed[:, m].sum()), 1e-12)
+            else:
+                pooled += cross
+        if not self._sw_var:
+            out[:] = pooled / n_eff
+        return out + floor * np.eye(k)
+
+    def _run_em(
+        self,
+        transition0: npt.NDArray[np.float64],
+        coefficients0: npt.NDArray[np.float64],
+        sigmas0: npt.NDArray[np.float64],
+        *,
+        max_iter: int,
+        tol: float,
+    ) -> _VectorExpectationMaximizationState:
+        """Run EM to convergence or ``max_iter`` from one set of starts.
+
+        Raises:
+            NumericalError: If the log-likelihood becomes non-finite or a
+                covariance loses positive definiteness.
+        """
+        target, design, _ = self._design()
+        selections = self._selection_matrices()
+        floor = 1e-8 * float(np.mean(np.var(self._endog, axis=0))) + 1e-12
+        prob_floor = 1e-8
+        transition = transition0.copy()
+        coefficients = coefficients0.copy()
+        sigmas = sigmas0.copy()
+        prev_llf = -np.inf
+        filtered = predicted = smoothed = np.empty((0, self._m))
+        n_iter = 0
+        converged = False
+        for n_iter in range(1, max_iter + 1):
+            density = self._log_densities(target, design, coefficients, sigmas)
+            filt = hamilton_filter(density, transition)
+            smooth = kim_smoother(filt, transition)
+            filtered = filt.filtered_prob
+            predicted = filt.predicted_prob
+            smoothed = smooth.smoothed_prob
+            llf = filt.loglikelihood
+            if not np.isfinite(llf):
+                raise NumericalError("MS-VAR log-likelihood became non-finite during EM.")
+            if llf - prev_llf < tol and n_iter > 1:
+                converged = True
+                prev_llf = llf
+                break
+            prev_llf = llf
+            transition = _MarkovSwitchingModel.update_transition(
+                smoothed, smooth.smoothed_joint_prob, prob_floor
+            )
+            coefficients = self._update_coefficients(target, design, smoothed, sigmas, selections)
+            sigmas = self._update_sigmas(target, design, coefficients, smoothed, floor)
+        return _VectorExpectationMaximizationState(
+            transition=transition,
+            coefficients=coefficients,
+            sigmas=sigmas,
+            filtered_prob=filtered,
+            predicted_prob=predicted,
+            smoothed_prob=smoothed,
+            llf=float(prev_llf),
+            n_iter=n_iter,
+            converged=converged,
+        )
+
+    def _label_permutation(
+        self,
+        coefficients: npt.NDArray[np.float64],
+        sigmas: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.intp]:
+        """The regime ordering :attr:`label_ordering` names, as a permutation."""
+        if self._sw_mean:
+            keys = coefficients[:, 0, 0]
+        elif self._sw_var:
+            keys = np.array([np.linalg.slogdet(sigma)[1] for sigma in sigmas])
+        else:
+            d = self._n_deterministic_columns
+            keys = coefficients[:, d, 0]
+        return np.argsort(keys)
+
+    def _fit_markov(
+        self,
+        *,
+        max_iter: int,
+        tol: float,
+        n_init: int,
+        screen_iter: int,
+        seed: int | np.random.Generator | None,
+    ) -> _VectorMarkovSwitchingFit:
+        """Estimate by EM with multi-start screening.
+
+        Start zero is the linear fit with regimes separated along whichever
+        block switches -- intercepts spread by the residual scale, covariances
+        scaled geometrically, lag blocks damped and amplified -- and further
+        starts perturb it randomly. Each start is screened briefly and only
+        the best is refined, exactly the univariate protocol.
+
+        Raises:
+            NumericalError: If every start fails to produce a finite
+                likelihood.
+        """
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        target, design, n_eff = self._design()
+        k, m = self.k_endog, self._m
+        d = self._n_deterministic_columns
+        moments = self._gaussian_moments(target, design)
+        base_coef = np.stack([moments.coef.copy() for _ in range(m)])
+        base_sigma = np.stack([moments.sigma_ml.copy() for _ in range(m)])
+        scale = np.std(moments.resid, axis=0)
+        if self._sw_mean and d:
+            spread = np.linspace(-1.0, 1.0, m)
+            for j in range(m):
+                base_coef[j, 0] += spread[j] * scale
+        if self._sw_var:
+            factors = np.geomspace(0.5, 2.0, m)
+            for j in range(m):
+                base_sigma[j] *= factors[j]
+        if self._sw_ar and self._order and not self._sw_mean:
+            damp = np.linspace(0.8, 1.2, m)
+            for j in range(m):
+                base_coef[j, d:] *= damp[j]
+
+        def start(
+            index: int,
+        ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+            if index == 0:
+                return (
+                    _MarkovSwitchingModel.initial_transition(m, rng, 0.9),
+                    base_coef,
+                    base_sigma,
+                )
+            noise = rng.standard_normal(base_coef.shape) * 0.3
+            coef = base_coef + noise * np.std(base_coef, axis=(0, 1), keepdims=True)
+            sigma = base_sigma * rng.uniform(0.5, 2.0, size=(m, 1, 1))
+            return (
+                _MarkovSwitchingModel.initial_transition(m, rng, float(rng.uniform(0.8, 0.95))),
+                coef,
+                sigma,
+            )
+
+        best: _VectorExpectationMaximizationState | None = None
+        for index in range(max(n_init, 1)):
+            transition0, coef0, sigma0 = start(index)
+            try:
+                state = self._run_em(transition0, coef0, sigma0, max_iter=screen_iter, tol=tol)
+            except NumericalError:
+                continue
+            if best is None or state.llf > best.llf:
+                best = state
+        if best is None:
+            raise NumericalError("MS-VAR estimation failed for every start.")
+        refined = self._run_em(
+            best.transition, best.coefficients, best.sigmas, max_iter=max_iter, tol=tol
+        )
+        state = refined if refined.llf >= best.llf else best
+
+        perm = self._label_permutation(state.coefficients, state.sigmas)
+        transition = state.transition[np.ix_(perm, perm)]
+        coefficients = state.coefficients[perm]
+        sigmas = state.sigmas[perm]
+        smoothed = state.smoothed_prob[:, perm]
+        fitted = np.einsum("tm,mtk->tk", smoothed, design @ coefficients)
+        n_det_slabs = m if (self._sw_mean and d) else (1 if d else 0)
+        n_ar_slabs = m if (self._sw_ar and self._order) else (1 if self._order else 0)
+        q = d * n_det_slabs + k * self._order * n_ar_slabs
+        return _VectorMarkovSwitchingFit(
+            transition=transition,
+            coefficients=np.stack([self._lag_blocks(coefficients[j]) for j in range(m)]),
+            deterministics=coefficients[:, :d, :].copy(),
+            sigmas=sigmas,
+            filtered_prob=state.filtered_prob[:, perm],
+            predicted_prob=state.predicted_prob[:, perm],
+            smoothed_prob=smoothed,
+            ergodic_prob=ergodic_distribution(transition),
+            expected_durations=1.0 / np.clip(1.0 - np.diag(transition), 1e-12, None),
+            resid=target - fitted,
+            fittedvalues=fitted,
+            llf=state.llf,
+            nobs=n_eff,
+            n_params=float(m * (m - 1))
+            + float(k * q)
+            + (m if self._sw_var else 1) * k * (k + 1) / 2.0,
+            n_iter=state.n_iter,
+            converged=state.converged,
+        )

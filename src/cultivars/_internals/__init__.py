@@ -1,7 +1,7 @@
 # filepath: /src/cultivars/_internals/__init__.py
 #
 # Copyright (c) 2026 Nikhil Sunder
-# 66
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -34,6 +34,7 @@ from ._fits import (
     _ThresholdFit,
     _VectorAutoRegressionFit,
     _VectorErrorCorrectionFit,
+    _VectorMarkovSwitchingFit,
     _VectorSmoothTransitionFit,
     _VectorThresholdFit,
 )
@@ -59,6 +60,7 @@ from ._models import (
     _LinearGaussianStateSpaceModel,
     _MarkovSwitchingModel,
     _MarkovSwitchingStateSpaceModel,
+    _MarkovSwitchingVectorAutoRegressionModel,
     _NeuralAutoRegressionModel,
     _NeuralThresholdModel,
     _PanelVectorAutoRegressionModel,
@@ -129,6 +131,7 @@ __all__ = [
     "_MarkovSwitchingFit",
     "_MarkovSwitchingModel",
     "_MarkovSwitchingStateSpaceModel",
+    "_MarkovSwitchingVectorAutoRegressionModel",
     "_MeanFunctionResult",
     "_MidasProfileObjective",
     "_MixedHorizonObjective",
@@ -160,6 +163,7 @@ __all__ = [
     "_VectorErrorCorrectionFit",
     "_VectorErrorCorrectionModel",
     "_VectorInferenceMixin",
+    "_VectorMarkovSwitchingFit",
     "_VectorMoments",
     "_VectorObservedRegimeResult",
     "_VectorPropagationMixin",
