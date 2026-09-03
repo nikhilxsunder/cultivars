@@ -892,3 +892,38 @@ def _validate_regimes(
             f"least two regimes are needed, got {labels}."
         )
     return tuple(labels), assignment
+
+
+def _validate_wide_panel(panel: npt.ArrayLike, *, label: str = "panel") -> npt.NDArray[np.float64]:
+    """Coerce an informational panel that may be wider than it is long.
+
+    The counterpart of :func:`validate_endog_matrix` for data that summarize
+    rather than get modelled equation by equation: a factor model's
+    informational panel routinely carries more series than observations, so
+    the rows-versus-columns guard that protects a VAR would reject perfectly
+    good input here.
+
+    Args:
+        panel: The ``(nobs, n_series)`` panel, one period per row.
+        label: Name used in error messages.
+
+    Returns:
+        A 2-D float array.
+
+    Raises:
+        DimensionError: If the input is not two-dimensional or has fewer than
+            two rows or two columns.
+        NumericalError: If any entry is non-finite.
+    """
+    arr = np.asarray(panel, dtype=np.float64)
+    if arr.ndim != 2:
+        raise DimensionError(
+            f"{label} must be 2-D with one period per row; got {arr.ndim} dimension(s)."
+        )
+    if arr.shape[0] < 2 or arr.shape[1] < 2:
+        raise DimensionError(
+            f"{label} must have at least two rows and two columns; got {arr.shape}."
+        )
+    if not np.all(np.isfinite(arr)):
+        raise NumericalError(f"{label} must be finite.")
+    return arr

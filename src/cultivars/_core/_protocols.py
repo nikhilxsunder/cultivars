@@ -110,12 +110,16 @@ class ClosedSystemResult(Protocol):
     user-defined result that exposes the same members.
     """
 
-    names: tuple[str, ...]
-    nobs: int
-    sigma_u: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    coefficients: npt.NDArray[np.float64]
-
+    @property
+    def names(self) -> tuple[str, ...]: ...
+    @property
+    def nobs(self) -> float: ...
+    @property
+    def sigma_u(self) -> npt.NDArray[np.float64]: ...
+    @property
+    def resid(self) -> npt.NDArray[np.float64]: ...
+    @property
+    def coefficients(self) -> npt.NDArray[np.float64]: ...
     @property
     def k_endog(self) -> int: ...
     def ma_representation(self, horizon: int = ...) -> npt.NDArray[np.float64]: ...
@@ -133,3 +137,19 @@ class Identification[R](Protocol):
     """
 
     def identify(self, result: ClosedSystemResult) -> R: ...
+
+
+@runtime_checkable
+class StructuralResult(Protocol):
+    """What a consumer of an identification needs from its result.
+
+    The contract a point-identified structural result satisfies: it remembers
+    the closed system it was identified from, and it produces structural
+    impulse responses. Anything mapping identified shocks onward -- a
+    factor-augmented model translating them onto its panel -- programs
+    against this rather than against a concrete result class.
+    """
+
+    source: ClosedSystemResult
+
+    def irf(self, horizon: int = ..., *, cumulative: bool = ...) -> npt.NDArray[np.float64]: ...

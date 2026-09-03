@@ -109,7 +109,7 @@ from ._polynomials import (
     expand_ar,
     expand_ma,
 )
-from ._protocols import ClosedSystemResult, Identification
+from ._protocols import ClosedSystemResult, Identification, StructuralResult
 from ._recursions import (
     _arch_infinity_variance,
     _arch_infinity_weights,
@@ -142,6 +142,7 @@ from ._validators import (
     _validate_ordering,
     _validate_regimes,
     _validate_sign_patterns,
+    _validate_wide_panel,
     validate_aligned,
     validate_choice,
     validate_endog,
@@ -199,6 +200,7 @@ __all__ = [
     "OptimizerOptions",
     "PanelEffects",
     "ProbabilityType",
+    "StructuralResult",
     "SummaryTable",
     "Transition",
     "Trend",
@@ -277,4 +279,5 @@ __all__ = [
     "validate_panel",
     "validate_transition",
     "validate_weights",
+    "validate_wide_panel",
 ]
