@@ -277,6 +277,66 @@ class _SmoothTransitionFit(_BaseFit):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorObservedRegimeFit(_BaseFit):
+    """Raw outputs shared by the observed-regime vector estimators.
+
+    Attributes:
+        delay: Delay of the transition variable.
+        threshold: The regime split point, in the transition variable's units.
+        threshold_values: The transition variable, aligned with ``resid``.
+        lower_coefficients: ``(p, k, k)`` lag stack of the lower regime.
+        upper_coefficients: ``(p, k, k)`` lag stack of the upper regime.
+        lower_deterministic: Lower-regime deterministic coefficients.
+        upper_deterministic: Upper-regime deterministic coefficients.
+    """
+
+    delay: int
+    threshold: float
+    threshold_values: npt.NDArray[np.float64]
+    lower_coefficients: npt.NDArray[np.float64]
+    upper_coefficients: npt.NDArray[np.float64]
+    lower_deterministic: npt.NDArray[np.float64]
+    upper_deterministic: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorThresholdFit(_VectorObservedRegimeFit):
+    """Raw outputs of a two-regime threshold VAR grid search.
+
+    Attributes:
+        lower_sigma_u: Lower-regime innovation covariance, dof-corrected.
+        upper_sigma_u: Upper-regime innovation covariance, dof-corrected.
+        n_lower: Observations assigned to the lower regime.
+        n_upper: Observations assigned to the upper regime.
+    """
+
+    lower_sigma_u: npt.NDArray[np.float64]
+    upper_sigma_u: npt.NDArray[np.float64]
+    n_lower: int
+    n_upper: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorSmoothTransitionFit(_VectorObservedRegimeFit):
+    """Raw outputs of a smooth-transition VAR fit.
+
+    Attributes:
+        gamma: Transition speed, per standard deviation of the transition
+            variable.
+        transition_scale: The standard deviation ``gamma`` is expressed
+            against.
+        sigma_u: Common innovation covariance, dof-corrected. One covariance
+            rather than two, because smooth weights never partition the
+            sample: every observation is a blend of both regimes, so a
+            per-regime covariance has no subsample to be estimated from.
+    """
+
+    gamma: float
+    transition_scale: float
+    sigma_u: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _VectorAutoRegressionFit(_BaseFit):
     """The estimated pieces of a reduced-form vector autoregression.
 

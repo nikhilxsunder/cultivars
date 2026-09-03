@@ -73,7 +73,7 @@ from ...exceptions import SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class SignRestrictionSVARResult(_SummaryMixin):
+class SignRestrictedSVARResult(_SummaryMixin):
     """The accepted set of a sign-restricted identification.
 
     Not a point estimate wearing bands: every accepted rotation is a complete
@@ -209,7 +209,7 @@ class SignRestrictionSVARResult(_SummaryMixin):
         )
 
 
-class SignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
+class SignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]):
     """Set identification by declared response signs, Uhlig (2005) via RWZ draws.
 
     Rotations of the Cholesky factor are drawn uniformly and kept when every
@@ -279,7 +279,7 @@ class SignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
             "the set reflects identification uncertainty only."
         )
 
-    def identify(self) -> SignRestrictionSVARResult:
+    def identify(self) -> SignRestrictedSVARResult:
         """Draw rotations and keep those satisfying every declared sign.
 
         Returns:
@@ -303,7 +303,7 @@ class SignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
             budget=self._budget,
             rng=np.random.default_rng(self._seed),
         )
-        return SignRestrictionSVARResult(
+        return SignRestrictedSVARResult(
             source=self.source,
             impacts=impacts,
             shock_names=self._labels,
@@ -314,7 +314,7 @@ class SignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
         )
 
 
-class NarrativeSignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResult]):
+class NarrativeSignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]):
     """Sign restrictions sharpened by declared history, Antolin-Diaz and Rubio-Ramirez (2018).
 
     Traditional signs restrict what a shock *would do*; narrative events
@@ -472,7 +472,7 @@ class NarrativeSignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResul
             f"{described_events}."
         )
 
-    def identify(self) -> SignRestrictionSVARResult:
+    def identify(self) -> SignRestrictedSVARResult:
         """Draw rotations and keep those reproducing signs and history alike.
 
         Returns:
@@ -500,7 +500,7 @@ class NarrativeSignRestrictionSVAR(_IdentificationModel[SignRestrictionSVARResul
             budget=self._budget,
             rng=np.random.default_rng(self._seed),
         )
-        return SignRestrictionSVARResult(
+        return SignRestrictedSVARResult(
             source=self.source,
             impacts=impacts,
             shock_names=self._labels,

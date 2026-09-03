@@ -59,7 +59,7 @@ import numpy.typing as npt
 from ..._core import StructuralResult, SummaryTable
 from ..._internals import _IdentificationModel, _SummaryMixin
 from ...exceptions import SpecificationError
-from ..large_dim.factor_augmented import FAVARResult
+from ..large_dim import FAVARResult
 from .zero_restrictions import RecursiveSVAR
 
 
@@ -97,9 +97,7 @@ class FactorAugmentedSVARResult(_SummaryMixin):
         """Labels of the identified shocks, from the factor-space result."""
         names = getattr(self.structural, "shock_names", None)
         if names is None:
-            return tuple(
-                f"shock{j + 1}" for j in range(self.impact.shape[1])
-            )
+            return tuple(f"shock{j + 1}" for j in range(self.impact.shape[1]))
         return tuple(names)
 
     @property
@@ -107,9 +105,7 @@ class FactorAugmentedSVARResult(_SummaryMixin):
         """Impact responses of every panel series, ``(n_series, s)``."""
         return self.irf(0)[0]
 
-    def irf(
-        self, horizon: int = 20, *, cumulative: bool = False
-    ) -> npt.NDArray[np.float64]:
+    def irf(self, horizon: int = 20, *, cumulative: bool = False) -> npt.NDArray[np.float64]:
         """Responses of every panel series to the identified shocks.
 
         The observation equation applied to the factor-space structural
@@ -127,13 +123,12 @@ class FactorAugmentedSVARResult(_SummaryMixin):
             series' original units.
         """
         responses = self.structural.irf(horizon, cumulative=cumulative)
-        return np.einsum(
-            "nk,hks->hns", self.favar.loadings, responses
-        ) * self.favar._scales[np.newaxis, :, np.newaxis]
+        return (
+            np.einsum("nk,hks->hns", self.favar.loadings, responses)
+            * self.favar._scales[np.newaxis, :, np.newaxis]
+        )
 
-    def factor_irf(
-        self, horizon: int = 20, *, cumulative: bool = False
-    ) -> npt.NDArray[np.float64]:
+    def factor_irf(self, horizon: int = 20, *, cumulative: bool = False) -> npt.NDArray[np.float64]:
         """The factor-space structural impulse responses, undelegated.
 
         Args:

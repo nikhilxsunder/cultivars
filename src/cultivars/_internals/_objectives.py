@@ -739,6 +739,90 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorSmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
+    """Concentrated Gaussian likelihood of a smooth-transition VAR.
+
+    The multivariate counterpart of :class:`_SmoothTransitionObjective`, with
+    one substantive change: the concentrated criterion is the log-determinant
+    of the residual covariance rather than a sum of squares, because with more
+    than one equation the sum of squares would weight the equations by their
+    innovation variances and let the noisiest series choose the transition.
+    Conditional on ``(gamma, c)`` the model is linear, so the regime
+    coefficients come from one multivariate least-squares solve and only the
+    two transition parameters are searched -- derivative-free and multi-start,
+    for the same flat-in-``gamma``, multimodal-in-``c`` reasons as the
+    univariate surface.
+
+    Attributes:
+        target: ``(nobs, k)`` block being explained, trimmed for lags and
+            delay.
+        design: The per-regime regressor block, deterministic terms first.
+        z: The transition variable, aligned with ``target``.
+        scale: Standard deviation of ``z``; ``gamma`` is per unit of it.
+        transition: ``"logistic"`` or ``"exponential"``.
+        seeds: Starting points over ``[log gamma, c]``.
+    """
+
+    method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    options: ClassVar[OptimizerOptions | None] = {
+        "xatol": 1e-4,
+        "fatol": 1e-7,
+        "maxiter": 2000,
+    }
+
+    target: npt.NDArray[np.float64]
+    design: npt.NDArray[np.float64]
+    z: npt.NDArray[np.float64]
+    scale: float
+    transition: str
+    seeds: tuple[npt.NDArray[np.float64], ...]
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Return the multi-start grid."""
+        return self.seeds
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> _SmoothTransitionParameters:
+        """Map ``[log gamma, c]`` to the transition parameters."""
+        return _SmoothTransitionParameters(gamma=float(np.exp(theta[0])), threshold=float(theta[1]))
+
+    def weights(self, parameters: _SmoothTransitionParameters) -> npt.NDArray[np.float64]:
+        """Evaluate the transition function, exponent clipped against overflow."""
+        u = (self.z - parameters.threshold) / self.scale
+        if self.transition == "logistic":
+            return 1.0 / (1.0 + np.exp(-np.clip(parameters.gamma * u, -50.0, 50.0)))
+        return 1.0 - np.exp(-np.clip(parameters.gamma * u**2, 0.0, 50.0))
+
+    def regressors(self, parameters: _SmoothTransitionParameters) -> npt.NDArray[np.float64]:
+        """Stack the two weighted regime blocks side by side, lower first."""
+        g = self.weights(parameters)
+        return np.column_stack([self.design * (1.0 - g)[:, None], self.design * g[:, None]])
+
+    def concentrated(
+        self, parameters: _SmoothTransitionParameters
+    ) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Solve for the regime coefficients at fixed transition parameters.
+
+        Args:
+            parameters: An unpacked draw.
+
+        Returns:
+            A tuple ``(logdet, coef, resid)``: the log-determinant of the
+            residual covariance (``inf`` when it is singular), the stacked
+            coefficient matrix with the lower-regime rows first, and the
+            residuals.
+        """
+        regressors = self.regressors(parameters)
+        coef: npt.NDArray[np.float64] = np.linalg.lstsq(regressors, self.target, rcond=None)[0]
+        resid = self.target - regressors @ coef
+        sign, logdet = np.linalg.slogdet(resid.T @ resid / self.target.shape[0])
+        return (float(logdet) if sign > 0 else np.inf), coef, resid
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Return the concentrated negative log-likelihood, up to constants."""
+        return self.concentrated(self.unpack(theta))[0]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _MidasProfileObjective(_Objective[npt.NDArray[np.float64]]):
     """Concentrated Gaussian likelihood of a MIDAS vector autoregression.
 

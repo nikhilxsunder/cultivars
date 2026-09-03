@@ -264,13 +264,10 @@ class FAVAR:
         nobs, n_series = self._panel.shape
         self._observed = validate_exog_matrix(observed, nobs=nobs, label="observed")
         if int(n_factors) != n_factors or n_factors < 1:
-            raise SpecificationError(
-                f"n_factors must be an integer >= 1; got {n_factors!r}."
-            )
+            raise SpecificationError(f"n_factors must be an integer >= 1; got {n_factors!r}.")
         if n_factors > min(nobs - 1, n_series):
             raise SpecificationError(
-                f"n_factors ({n_factors}) exceeds what a ({nobs}, {n_series}) "
-                "panel can support."
+                f"n_factors ({n_factors}) exceeds what a ({nobs}, {n_series}) panel can support."
             )
         self._n_factors = int(n_factors)
         self._order = int(order)
@@ -281,8 +278,7 @@ class FAVAR:
             resolved = tuple(str(name) for name in panel_names)
             if len(resolved) != n_series or len(set(resolved)) != n_series:
                 raise SpecificationError(
-                    f"panel_names must be {n_series} unique labels; got "
-                    f"{len(resolved)}."
+                    f"panel_names must be {n_series} unique labels; got {len(resolved)}."
                 )
             self._panel_names = resolved
         m = self._observed.shape[1]
@@ -292,8 +288,7 @@ class FAVAR:
             resolved = tuple(str(name) for name in observed_names)
             if len(resolved) != m or len(set(resolved)) != m:
                 raise SpecificationError(
-                    f"observed_names must be {m} unique labels; got "
-                    f"{len(resolved)}."
+                    f"observed_names must be {m} unique labels; got {len(resolved)}."
                 )
             self._observed_names = resolved
         if slow is None:
@@ -304,8 +299,7 @@ class FAVAR:
                 label = str(name)
                 if label not in self._panel_names:
                     raise SpecificationError(
-                        f"unknown slow series {label!r}; expected one of the "
-                        "panel names."
+                        f"unknown slow series {label!r}; expected one of the panel names."
                     )
                 positions.append(self._panel_names.index(label))
             if len(positions) < self._n_factors + 1:
@@ -341,13 +335,9 @@ class FAVAR:
         scores, shares = self._components(standardized, self._n_factors)
         cleaned = False
         if self._slow is not None:
-            slow_scores, _ = self._components(
-                standardized[:, list(self._slow)], self._n_factors
-            )
+            slow_scores, _ = self._components(standardized[:, list(self._slow)], self._n_factors)
             design = np.column_stack([slow_scores, self._observed])
-            coef: npt.NDArray[np.float64] = np.linalg.lstsq(
-                design, scores, rcond=None
-            )[0]
+            coef: npt.NDArray[np.float64] = np.linalg.lstsq(design, scores, rcond=None)[0]
             scores = scores - self._observed @ coef[self._n_factors :]
             cleaned = True
 
@@ -360,9 +350,9 @@ class FAVAR:
             names=(*factor_names, *self._observed_names),
         ).fit()
 
-        loadings: npt.NDArray[np.float64] = np.linalg.lstsq(
-            augmented, standardized, rcond=None
-        )[0].T
+        loadings: npt.NDArray[np.float64] = np.linalg.lstsq(augmented, standardized, rcond=None)[
+            0
+        ].T
         fitted = augmented @ loadings.T
         residual = standardized - fitted
         total = np.sum(standardized**2, axis=0)

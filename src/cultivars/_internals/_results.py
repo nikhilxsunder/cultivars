@@ -30,6 +30,10 @@ from .._core import (
     _SCHEMA_VERSION,
     CointegrationTrend,
     InformationCriteria,
+    Regime,
+    companion_matrix,
+    deterministic_columns,
+    validate_choice,
 )
 from ..exceptions import SpecificationError
 from ._inferences import _CoefficientInference
@@ -699,3 +703,431 @@ class _ErrorCorrectionResult(_VectorResult):
     gamma: npt.NDArray[np.float64]
     short_run_deterministic: npt.NDArray[np.float64]
     eigenvalues: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
+    """What every fitted observed-regime vector autoregression reports.
+
+    The multivariate counterpart of :class:`_ObservedRegimeResult`: two full
+    coefficient stacks, the transition variable they are indexed by, and the
+    split point between them. Subclasses supply the regime weight and the
+    per-regime innovation covariance -- the two things an abrupt and a smooth
+    transition genuinely do differently.
+
+    What this base deliberately is *not* is a :class:`_VectorResult` with the
+    propagation surface. A regime model has no single coefficient stack, no
+    single companion matrix, and no single moving-average representation, so
+    every propagation question must name a regime, and the linear answer it
+    gets holds the regime frozen: it is the response *within* that regime,
+    valid to the extent the shock does not itself move the transition
+    variable across the split. The honest nonlinear objects -- generalized
+    impulse responses averaged over histories and simulated paths, Koop-
+    Pesaran-Potter (1996) -- are simulation-based and belong to a later
+    inference layer; nothing here pretends to be them.
+
+    Attributes:
+        endog: The full observed panel.
+        names: Variable labels, in column order.
+        order: Autoregressive order within each regime.
+        trend: Deterministic specification.
+        delay: Delay of the transition variable.
+        threshold: The regime split point, in the transition variable's units.
+        threshold_name: The transition variable's label -- a variable name
+            when self-exciting, ``"external"`` otherwise.
+        threshold_values: The *delayed* transition variable ``z_t``, aligned
+            with ``resid``; what the regime weight is evaluated on.
+        transition_series: The raw transition series, aligned with ``endog``
+            -- the column of ``endog`` when self-exciting, the external
+            variable otherwise. Carried because a forecast needs the last
+            ``delay`` raw values, which the delayed alignment cannot supply.
+        lower_coefficients: ``(p, k, k)`` lag stack of the lower regime.
+        upper_coefficients: ``(p, k, k)`` lag stack of the upper regime.
+        lower_deterministic: Lower-regime deterministic coefficients.
+        upper_deterministic: Upper-regime deterministic coefficients.
+        resid: Residuals over the effective sample.
+        fittedvalues: One-step conditional means over the effective sample.
+        llf: Gaussian log-likelihood at the optimum.
+        nobs: Effective sample size after trimming for lags and delay.
+        n_params: Free parameters, covariances and transition included.
+    """
+
+    endog: npt.NDArray[np.float64]
+    names: tuple[str, ...]
+    order: int
+    trend: str
+    delay: int
+    threshold: float
+    threshold_name: str
+    threshold_values: npt.NDArray[np.float64]
+    transition_series: npt.NDArray[np.float64]
+    lower_coefficients: npt.NDArray[np.float64]
+    upper_coefficients: npt.NDArray[np.float64]
+    lower_deterministic: npt.NDArray[np.float64]
+    upper_deterministic: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    llf: float
+    nobs: int
+    n_params: float
+
+    @property
+    def k_endog(self) -> int:
+        """Number of endogenous variables."""
+        return len(self.names)
+
+    @property
+    def regime_weight(self) -> npt.NDArray[np.float64]:
+        """Weight on the upper regime at each observation, in ``[0, 1]``.
+
+        Returns:
+            An array of length ``nobs``.
+
+        Raises:
+            NotImplementedError: If the concrete result does not define one.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} must define regime_weight to describe its transition."
+        )
+
+    def _weight_at(self, values: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The regime weight evaluated at arbitrary transition-variable values.
+
+        Args:
+            values: Transition-variable values.
+
+        Returns:
+            Weights in ``[0, 1]``, one per value.
+
+        Raises:
+            NotImplementedError: If the concrete result does not define one.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} must define _weight_at to be forecastable."
+        )
+
+    def _regime_sigma(self, regime: Regime) -> npt.NDArray[np.float64]:
+        """The innovation covariance the named regime propagates.
+
+        Args:
+            regime: ``"lower"`` or ``"upper"``.
+
+        Returns:
+            A ``(k, k)`` covariance.
+
+        Raises:
+            NotImplementedError: If the concrete result does not define one.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} must define _regime_sigma to orthogonalize."
+        )
+
+    def _regime_stack(self, regime: Regime) -> npt.NDArray[np.float64]:
+        """The named regime's lag stack, after validating the name."""
+        choice = validate_choice(regime, Regime, "regime")
+        return self.lower_coefficients if choice == "lower" else self.upper_coefficients
+
+    @property
+    def upper_fraction(self) -> float:
+        """Share of the effective sample carried by the upper regime.
+
+        The exact proportion above the split for a hard threshold; the mean
+        transition weight for a smooth one.
+        """
+        return float(np.mean(self.regime_weight))
+
+    @property
+    def lower_stability(self) -> _StabilityTest:
+        """Companion-eigenvalue verdict for the lower regime's lag stack."""
+        return _StabilityTest.assess_stability(self.lower_coefficients)
+
+    @property
+    def upper_stability(self) -> _StabilityTest:
+        """Companion-eigenvalue verdict for the upper regime's lag stack."""
+        return _StabilityTest.assess_stability(self.upper_coefficients)
+
+    @property
+    def is_regimewise_stationary(self) -> bool:
+        """Whether *both* regimes are stationary read as linear systems.
+
+        Sufficient for global stationarity of the nonlinear process, but not
+        necessary: a model whose inner regime is explosive and whose outer
+        regime contracts is globally stationary, because excursions are
+        pulled back. A ``False`` here is a prompt to inspect the regimes
+        individually, not a verdict that the process explodes.
+        """
+        return self.lower_stability.is_stable and self.upper_stability.is_stable
+
+    def ma_representation(self, horizon: int = 20, *, regime: Regime) -> npt.NDArray[np.float64]:
+        """Moving-average matrices of one regime, held frozen.
+
+        Args:
+            horizon: Largest lead to return.
+            regime: Which regime's dynamics to propagate.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
+
+        Raises:
+            SpecificationError: If ``horizon`` is negative or the regime name
+                is unknown.
+        """
+        if horizon < 0:
+            raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
+        stack = self._regime_stack(regime)
+        k, p = self.k_endog, self.order
+        out = np.empty((horizon + 1, k, k), dtype=np.float64)
+        selector = np.zeros((k, k * p), dtype=np.float64)
+        selector[:, :k] = np.eye(k)
+        power = np.eye(k * p, dtype=np.float64)
+        companion = companion_matrix(stack)
+        for h in range(horizon + 1):
+            out[h] = selector @ power @ selector.T
+            power = power @ companion
+        return out
+
+    def irf(
+        self,
+        horizon: int = 20,
+        *,
+        regime: Regime,
+        orthogonalized: bool = True,
+        cumulative: bool = False,
+    ) -> npt.NDArray[np.float64]:
+        """Impulse responses within one regime, held frozen.
+
+        Two declarations are being made at once here, and both are named in
+        the signature rather than defaulted out of sight. Freezing the regime
+        is a *linearization*: the response is exact only while the shock does
+        not push the transition variable across the split, so read it as
+        "the dynamics prevailing in this regime", not as the response of the
+        nonlinear process -- that object requires simulation over histories
+        (Koop-Pesaran-Potter 1996) and is deliberately not faked here.
+        Orthogonalization is the same recursive identifying restriction it is
+        for a linear VAR, applied with this regime's own Cholesky factor.
+
+        Args:
+            horizon: Largest lead to return.
+            regime: Which regime's dynamics to propagate.
+            orthogonalized: Rotate by the regime's Cholesky factor; the
+                ordering of ``names`` is then an identifying assumption.
+            cumulative: Return running sums.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]`` is
+            the response of variable ``i`` at lead ``h`` to shock ``j``.
+        """
+        psi = self.ma_representation(horizon, regime=regime)
+        out = psi @ np.linalg.cholesky(self._regime_sigma(regime)) if orthogonalized else psi
+        return np.cumsum(out, axis=0) if cumulative else out
+
+    def fevd(self, horizon: int = 20, *, regime: Regime) -> npt.NDArray[np.float64]:
+        """Forecast-error variance decomposition within one regime, held frozen.
+
+        Args:
+            horizon: Largest lead to return.
+            regime: Which regime's dynamics and covariance to read.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)`` whose rows sum to one.
+            Inherits both caveats of :meth:`irf`: the regime is frozen and the
+            ordering of ``names`` is an identifying assumption.
+        """
+        theta = self.irf(horizon, regime=regime, orthogonalized=True)
+        contribution = np.cumsum(theta**2, axis=0)
+        return contribution / contribution.sum(axis=2, keepdims=True)
+
+    def forecast(
+        self, steps: int = 1, *, transition_future: npt.ArrayLike | None = None
+    ) -> npt.NDArray[np.float64]:
+        """Iterate the fitted skeleton forward, blending regimes as it goes.
+
+        At each step the transition weight is evaluated on the path itself --
+        the forecast re-enters the transition variable when the model is
+        self-exciting -- and the two regimes' one-step maps are blended by
+        that weight. This is the *skeleton* forecast: exact at one step, and
+        an approximation beyond, because for a nonlinear model the multi-step
+        conditional mean averages the transition over future shocks rather
+        than evaluating it at the mean path. The gap is small when the path
+        stays clear of the threshold and largest on top of it; a simulation-
+        based conditional mean belongs to a later inference layer.
+
+        Args:
+            steps: Forecast horizon, at least one.
+            transition_future: Future values of an *external* transition
+                variable, at least ``steps - delay + 1`` of them when
+                ``steps > delay``. Ignored for a self-exciting model, which
+                generates its own transition path; required for an external
+                one that must see past its observed history, refused rather
+                than extrapolated otherwise.
+
+        Returns:
+            An array of shape ``(steps, k)``.
+
+        Raises:
+            SpecificationError: If ``steps`` is less than one, or an external
+                transition path is needed and not supplied.
+        """
+        if steps < 1:
+            raise SpecificationError(f"steps must be at least 1; got {steps}.")
+        k, p, d, n = self.k_endog, self.order, self.delay, self.endog.shape[0]
+        self_exciting = self.threshold_name in self.names
+        column = self.names.index(self.threshold_name) if self_exciting else -1
+        future = (
+            None
+            if transition_future is None
+            else np.atleast_1d(np.asarray(transition_future, dtype=np.float64))
+        )
+        if not self_exciting and steps > d:
+            needed = steps - d
+            if future is None:
+                raise SpecificationError(
+                    "the transition variable is external, so forecasting "
+                    f"{steps} steps needs its future path beyond the observed "
+                    f"history: pass transition_future with at least {needed} "
+                    "values. This model holds no process for the transition "
+                    "variable and will not extrapolate one."
+                )
+            if future.shape[0] < needed:
+                raise SpecificationError(
+                    f"transition_future has {future.shape[0]} values but "
+                    f"forecasting {steps} steps at delay {d} needs at least "
+                    f"{needed}."
+                )
+        det = deterministic_columns(self.trend, steps, start=n + 1)
+        history = [self.endog[n - i - 1] for i in range(p)]
+        out = np.empty((steps, k), dtype=np.float64)
+        for h in range(steps):
+            back = h - d
+            if back < 0:
+                z = float(self.transition_series[n + back])
+            elif self_exciting:
+                z = float(out[back, column])
+            else:
+                assert future is not None
+                z = float(future[back])
+            w = float(self._weight_at(np.asarray([z]))[0])
+            lower = (
+                det[h] @ self.lower_deterministic
+                if self.lower_deterministic.shape[0]
+                else np.zeros(k, dtype=np.float64)
+            )
+            upper = (
+                det[h] @ self.upper_deterministic
+                if self.upper_deterministic.shape[0]
+                else np.zeros(k, dtype=np.float64)
+            )
+            for i in range(p):
+                lower = lower + self.lower_coefficients[i] @ history[i]
+                upper = upper + self.upper_coefficients[i] @ history[i]
+            point = (1.0 - w) * lower + w * upper
+            out[h] = point
+            history = [point, *history[: p - 1]] if p else []
+        return out
+
+    def equation(self, name: str, *, regime: Regime) -> dict[str, float]:
+        """One equation of one regime, keyed by regressor.
+
+        Args:
+            name: An endogenous variable.
+            regime: Which regime's coefficients to read.
+
+        Returns:
+            Deterministic terms, then endogenous lags, in design order.
+
+        Raises:
+            SpecificationError: If the variable or regime is unknown.
+        """
+        if name not in self.names:
+            raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
+        choice = validate_choice(regime, Regime, "regime")
+        stack = self._regime_stack(choice)
+        deterministic = self.lower_deterministic if choice == "lower" else self.upper_deterministic
+        row = self.names.index(name)
+        out: dict[str, float] = {}
+        labels = (["const"] if self.trend in ("c", "ct") else []) + (
+            ["trend"] if self.trend == "ct" else []
+        )
+        for j, label in enumerate(labels):
+            out[label] = float(deterministic[j, row])
+        for lag in range(self.order):
+            for j, source in enumerate(self.names):
+                out[f"{source}.L{lag + 1}"] = float(stack[lag][row, j])
+        return out
+
+    def likelihood_ratio_test(self, unrestricted: _ComparisonMixin) -> _LikelihoodRatioTest:
+        """Refuse the test: the threshold is unidentified under the null.
+
+        Args:
+            unrestricted: Ignored.
+
+        Returns:
+            Never returns.
+
+        Raises:
+            SpecificationError: Always. Under linearity the threshold, the
+                delay, and any transition speed drop out of the likelihood
+                entirely, so the likelihood ratio has no chi-squared limit --
+                the Davies problem. The correct procedure is a bootstrap or a
+                supremum-type test (Hansen 1996), and returning a well-formed
+                and wrong p-value here would be worse than declining.
+        """
+        raise SpecificationError(
+            "a chi-squared likelihood-ratio test is not valid for observed-regime "
+            "vector autoregressions: the threshold and delay are not identified "
+            "under the null of linearity, so the statistic has a non-standard "
+            "distribution. Use a bootstrap or a supremum-type test instead."
+        )
+
+    def _stationarity_note(self) -> str:
+        """One line reporting each regime's largest companion root."""
+        return (
+            f"Regime-wise stationary: {self.is_regimewise_stationary}   "
+            f"max |root| lower = {self.lower_stability.max_modulus:.4f}, "
+            f"upper = {self.upper_stability.max_modulus:.4f}"
+        )
+
+    def _regime_conditional_note(self) -> str:
+        """The one caveat every propagation method here carries."""
+        return (
+            "irf(), fevd(), and ma_representation() are regime-conditional: each "
+            "freezes one regime's dynamics, which linearizes the model and is "
+            "exact only while the shock does not move the transition variable "
+            "across the split. Orthogonalized responses additionally impose the "
+            "recursive ordering of names, an identifying assumption this reduced "
+            "form has not declared."
+        )
+
+    def _summary_metadata(self) -> tuple[tuple[str, str], ...]:
+        """Left/right metadata pairs shared by both transition shapes."""
+        ic: InformationCriteria = self.information_criteria
+        return (
+            ("Model", self._comparison_label()),
+            ("Log-likelihood", f"{self.llf:.3f}"),
+            ("Variables", f"{self.k_endog}"),
+            ("AIC", f"{ic.aic:.3f}"),
+            ("Threshold", f"{self.threshold:.4f}"),
+            ("BIC", f"{ic.bic:.3f}"),
+            ("Transition variable", f"{self.threshold_name}.L{self.delay}"),
+            ("HQIC", f"{ic.hqic:.3f}"),
+            ("Observations", f"{self.nobs}"),
+            ("Trend", self.trend),
+        )
+
+    def _own_lag_rows(self) -> tuple[tuple[str, ...], ...]:
+        """Per-variable first-own-lag coefficients, one row per equation.
+
+        The full stacks are ``k * k * p`` numbers per regime and belong in
+        :attr:`lower_coefficients` / :attr:`upper_coefficients` or
+        :meth:`equation`, not in a summary table; the own first lag is the
+        one coefficient per equation a reader scans to see how the regimes
+        differ.
+        """
+        return tuple(
+            (
+                name,
+                f"{self.lower_coefficients[0][i, i]:.4f}",
+                f"{self.upper_coefficients[0][i, i]:.4f}",
+            )
+            for i, name in enumerate(self.names)
+        )

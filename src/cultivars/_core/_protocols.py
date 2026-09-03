@@ -150,6 +150,7 @@ class StructuralResult(Protocol):
     against this rather than against a concrete result class.
     """
 
-    source: ClosedSystemResult
+    @property
+    def source(self) -> ClosedSystemResult: ...
 
     def irf(self, horizon: int = ..., *, cumulative: bool = ...) -> npt.NDArray[np.float64]: ...

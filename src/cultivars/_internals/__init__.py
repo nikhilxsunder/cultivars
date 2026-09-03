@@ -34,6 +34,8 @@ from ._fits import (
     _ThresholdFit,
     _VectorAutoRegressionFit,
     _VectorErrorCorrectionFit,
+    _VectorSmoothTransitionFit,
+    _VectorThresholdFit,
 )
 from ._levels import _ConditionalLevels
 from ._mixins import (
@@ -62,7 +64,9 @@ from ._models import (
     _PanelVectorAutoRegressionModel,
     _ShortMemoryVarianceModel,
     _SmoothTransitionModel,
+    _SmoothTransitionVectorAutoRegressionModel,
     _ThresholdModel,
+    _ThresholdVectorAutoRegressionModel,
     _VectorAutoRegressionModel,
     _VectorErrorCorrectionModel,
 )
@@ -84,6 +88,7 @@ from ._results import (
     _KimSmootherResult,
     _MeanFunctionResult,
     _ObservedRegimeResult,
+    _VectorObservedRegimeResult,
     _VectorResult,
 )
 from ._solvers import _maximize_likelihood, _solve, solve_global
@@ -142,20 +147,25 @@ __all__ = [
     "_ShortRunObjective",
     "_SmoothTransitionFit",
     "_SmoothTransitionModel",
+    "_SmoothTransitionVectorAutoRegressionModel",
     "_StabilityResult",
     "_StabilityTest",
     "_StationarityMixin",
     "_SummaryMixin",
     "_ThresholdFit",
     "_ThresholdModel",
+    "_ThresholdVectorAutoRegressionModel",
     "_VectorAutoRegressionFit",
     "_VectorAutoRegressionModel",
     "_VectorErrorCorrectionFit",
     "_VectorErrorCorrectionModel",
     "_VectorInferenceMixin",
     "_VectorMoments",
+    "_VectorObservedRegimeResult",
     "_VectorPropagationMixin",
     "_VectorResult",
+    "_VectorSmoothTransitionFit",
+    "_VectorThresholdFit",
     "_WaldTest",
     "_WaldTestResult",
     "_maximize_likelihood",

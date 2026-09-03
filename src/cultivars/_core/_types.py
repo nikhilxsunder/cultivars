@@ -123,3 +123,6 @@ is fitted to.
 """
 
 type FunctionalBasis = Literal["fpca", "nelson-siegel", "bspline"]
+
+type Regime = Literal["lower", "upper"]
+"""Which regime of an observed-regime model an operation reads."""

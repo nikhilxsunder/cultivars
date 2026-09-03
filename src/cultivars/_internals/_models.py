@@ -124,6 +124,8 @@ from ._fits import (
     _ThresholdFit,
     _VectorAutoRegressionFit,
     _VectorErrorCorrectionFit,
+    _VectorSmoothTransitionFit,
+    _VectorThresholdFit,
 )
 from ._inferences import _CoefficientInference
 from ._layouts import _ParameterLayout
@@ -136,6 +138,7 @@ from ._objectives import (
     _FractionalIntegrationObjective,
     _FractionalVarianceObjective,
     _SmoothTransitionObjective,
+    _VectorSmoothTransitionObjective,
 )
 from ._priors import _NoPrior, _Prior, _PriorContext
 from ._results import (
@@ -3823,6 +3826,410 @@ class _ExogenousVectorErrorCorrectionModel[R](_VectorErrorCorrectionModel[R]):
             contemporaneous=contemporaneous,
             names=names,
             exog_names=exog_names,
+        )
+
+
+class _ObservedRegimeVectorModel[R](_VectorAutoRegressionModel[R]):
+    """Shared specification surface for observed-regime vector models.
+
+    Adds one thing to the linear specification: the transition variable and
+    its delay. The variable is named rather than defaulted -- a univariate
+    threshold model can plausibly self-excite on its own past, but a system
+    has ``k`` candidate drivers and choosing one is economics, not a default
+    the estimator should quietly make.
+
+    Args:
+        endog: The observed panel.
+        order: Autoregressive order within each regime, at least one.
+        transition_variable: A variable name from ``names`` (the regime is
+            driven by that variable's own lag -- self-exciting) or an aligned
+            external series.
+        delay: Delay of the transition variable.
+        trend: Deterministic terms per regime.
+        names: One label per variable.
+
+    Raises:
+        SpecificationError: If the specification is malformed or the named
+            transition variable is unknown.
+        DimensionError: If the sample cannot support two regimes.
+    """
+
+    __slots__ = ("_delays", "_threshold_name", "_transition_series")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        transition_variable: str | npt.ArrayLike,
+        delay: int | None,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the linear specification, then the transition driver."""
+        super().__init__(endog, order=order, trend=trend, names=names)
+        if self._order < 1:
+            raise SpecificationError(
+                f"an observed-regime model needs order >= 1; got {self._order}."
+            )
+        if isinstance(transition_variable, str):
+            if transition_variable not in self._names:
+                raise SpecificationError(
+                    f"unknown transition variable {transition_variable!r}; "
+                    f"expected one of {self._names} or an aligned external series."
+                )
+            self._threshold_name = transition_variable
+            self._transition_series = self._endog[:, self._names.index(transition_variable)]
+        else:
+            self._threshold_name = "external"
+            self._transition_series = validate_aligned(
+                transition_variable, self._endog.shape[0], "transition_variable"
+            )
+        if delay is None:
+            if not self.self_exciting:
+                raise SpecificationError(
+                    "the delay is searched only for a self-exciting model; with an "
+                    "external transition variable the lag is a modelling choice "
+                    "with economic content, so state it: pass delay explicitly."
+                )
+            self._delays = list(range(1, self._order + 1))
+        else:
+            self._delays = [validate_order(delay, "delay", minimum=1)]
+        burn = self._rows_lost(self._order) + max(self._delays) - self._order
+        need = 2 * (self.n_regressors + 1) + burn
+        if self._endog.shape[0] < need:
+            raise DimensionError(
+                f"a sample of {self._endog.shape[0]} rows is too short for two "
+                f"{type(self).__name__} regimes of order {self._order}; it needs "
+                f"at least {need}."
+            )
+
+    @property
+    def self_exciting(self) -> bool:
+        """Whether the transition variable is a column of the system itself."""
+        return self._threshold_name != "external"
+
+    @property
+    def transition_name(self) -> str:
+        """The transition variable's label."""
+        return self._threshold_name
+
+    @property
+    def transition_series(self) -> npt.NDArray[np.float64]:
+        """The raw transition series, aligned with ``endog``."""
+        return self._transition_series
+
+    @property
+    def delay(self) -> int | None:
+        """The fixed delay, or ``None`` when the delay is searched."""
+        return self._delays[0] if len(self._delays) == 1 else None
+
+    def _regime_design(
+        self, delay: int
+    ) -> tuple[
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        int,
+    ]:
+        """Target, design, and aligned transition values at one delay.
+
+        Args:
+            delay: Candidate delay.
+
+        Returns:
+            The ``(n_eff, k)`` target, the ``(n_eff, width)`` design, the
+            aligned delayed transition values, and the start row.
+        """
+        y, order = self._endog, self._order
+        n = y.shape[0]
+        start = max(order, delay)
+        n_eff = n - start
+        det = deterministic_columns(self._trend, n_eff, start=start + 1)
+        design = np.column_stack([det, lag_matrix(y, order, start=start)])
+        z = self._transition_series[start - delay : n - delay]
+        return y[start:], design, z, start
+
+    def _split_moments(
+        self,
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+    ) -> (
+        tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64], float]
+        | None
+    ):
+        """One regime's least squares and its Gaussian log-likelihood.
+
+        Args:
+            target: The regime's rows of the target block.
+            design: The regime's rows of the design.
+
+        Returns:
+            ``(coef, resid, sigma_ml, llf)``, or ``None`` when the residual
+            covariance is singular and the split must be skipped.
+        """
+        nobs, k = target.shape
+        coef, resid = self._least_squares(target, design)
+        sigma_ml = resid.T @ resid / nobs
+        sign, logdet = np.linalg.slogdet(sigma_ml)
+        if sign <= 0:
+            return None
+        llf = -0.5 * nobs * k * _LOG_2PI - 0.5 * nobs * float(logdet) - 0.5 * nobs * k
+        return coef, resid, sigma_ml, float(llf)
+
+
+class _ThresholdVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R]):
+    """Specification and grid-search engine of a two-regime threshold VAR.
+
+    The sum-of-squares surface is a step function of the threshold --
+    piecewise constant, nowhere differentiable in it -- so the estimator is
+    an exhaustive grid over trimmed quantiles of the transition variable,
+    with regime-wise multivariate least squares at each candidate. The
+    criterion is the total Gaussian log-likelihood with a separate innovation
+    covariance per regime, which is the multivariate replacement for total
+    SSR: it weights the equations by their own noise rather than letting the
+    noisiest series choose the split, and it lets the covariance itself
+    switch, which for financial-conditions regimes is half the point.
+
+    Args:
+        endog: The observed panel.
+        order: Autoregressive order within each regime.
+        transition_variable: A variable name (self-exciting) or an aligned
+            external series.
+        delay: Threshold delay; ``None`` searches ``1..order`` jointly with
+            the threshold, and is allowed only when self-exciting.
+        trim: Fraction trimmed from each tail of the quantile grid, so that
+            neither regime is estimated from a handful of extreme points.
+        n_grid: Candidate thresholds per delay.
+        trend: Deterministic terms per regime.
+        names: One label per variable.
+    """
+
+    __slots__ = ("_n_grid", "_trim")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        transition_variable: str | npt.ArrayLike,
+        delay: int | None = None,
+        trim: float = _DEFAULT_TRIM,
+        n_grid: int = _DEFAULT_GRID,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(
+            endog,
+            order=order,
+            transition_variable=transition_variable,
+            delay=delay,
+            trend=trend,
+            names=names,
+        )
+        self._trim = validate_open_interval(trim, "trim", low=0.0, high=0.5)
+        self._n_grid = validate_order(n_grid, "n_grid", minimum=1)
+
+    def _fit_regimes(self) -> _VectorThresholdFit:
+        """Fit both regimes and the split by exhaustive grid search.
+
+        Returns:
+            The packed :class:`_VectorThresholdFit`.
+
+        Raises:
+            NumericalError: If no admissible split exists.
+        """
+        k = self.k_endog
+        width = self.n_regressors
+        min_regime = width + 1
+        best_llf = -np.inf
+        best: tuple[int, float] | None = None
+        for d in self._delays:
+            target, design, z, _ = self._regime_design(d)
+            n_eff = target.shape[0]
+            grid = np.quantile(z, np.linspace(self._trim, 1.0 - self._trim, self._n_grid))
+            for r in np.unique(grid):
+                lower = z <= r
+                n_lo = int(lower.sum())
+                if n_lo < min_regime or n_eff - n_lo < min_regime:
+                    continue
+                lo = self._split_moments(target[lower], design[lower])
+                hi = self._split_moments(target[~lower], design[~lower])
+                if lo is None or hi is None:
+                    continue
+                llf = lo[3] + hi[3]
+                if llf > best_llf:
+                    best_llf = llf
+                    best = (d, float(r))
+        if best is None:
+            raise NumericalError(
+                "threshold grid search found no admissible split; relax trim, "
+                "shorten the order, or supply a longer sample."
+            )
+        d_star, r_star = best
+        target, design, z, _ = self._regime_design(d_star)
+        lower = z <= r_star
+        lo = self._split_moments(target[lower], design[lower])
+        hi = self._split_moments(target[~lower], design[~lower])
+        assert lo is not None and hi is not None
+        n_lo, n_hi = int(lower.sum()), int((~lower).sum())
+        fitted = np.empty_like(target)
+        fitted[lower] = design[lower] @ lo[0]
+        fitted[~lower] = design[~lower] @ hi[0]
+        offset = self._n_deterministic_columns
+        return _VectorThresholdFit(
+            delay=d_star,
+            threshold=r_star,
+            threshold_values=z,
+            lower_coefficients=self._lag_blocks(lo[0]),
+            upper_coefficients=self._lag_blocks(hi[0]),
+            lower_deterministic=lo[0][:offset],
+            upper_deterministic=hi[0][:offset],
+            lower_sigma_u=lo[1].T @ lo[1] / max(n_lo - width, 1),
+            upper_sigma_u=hi[1].T @ hi[1] / max(n_hi - width, 1),
+            n_lower=n_lo,
+            n_upper=n_hi,
+            resid=target - fitted,
+            fittedvalues=fitted,
+            llf=lo[3] + hi[3],
+            nobs=target.shape[0],
+            n_params=2.0 * k * width + float(k * (k + 1)) + 1.0,
+        )
+
+
+class _SmoothTransitionVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R]):
+    """Specification and estimation engine of a smooth-transition VAR.
+
+    Conditional on the transition speed and location the model is linear, so
+    the regime coefficients are concentrated out by one multivariate solve and
+    only ``(gamma, c)`` is searched, on the log-determinant criterion of
+    :class:`_VectorSmoothTransitionObjective`.
+
+    Args:
+        endog: The observed panel.
+        order: Autoregressive order within each regime.
+        transition_variable: A variable name (self-exciting) or an aligned
+            external series.
+        transition: ``"logistic"`` or ``"exponential"``.
+        delay: Delay of the transition variable.
+        trend: Deterministic terms per regime.
+        names: One label per variable.
+    """
+
+    __slots__ = ("_transition",)
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        transition_variable: str | npt.ArrayLike,
+        transition: Transition = "logistic",
+        delay: int = 1,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(
+            endog,
+            order=order,
+            transition_variable=transition_variable,
+            delay=delay,
+            trend=trend,
+            names=names,
+        )
+        self._transition: str = validate_choice(transition, Transition, "transition")
+
+    @property
+    def transition(self) -> str:
+        """The transition function family."""
+        return self._transition
+
+    def _build_objective(self) -> _VectorSmoothTransitionObjective:
+        """Assemble the concentrated surface, seeded near the best hard split.
+
+        Returns:
+            The configured objective.
+
+        Raises:
+            NumericalError: If the transition variable has zero variance.
+        """
+        delay = self._delays[0]
+        target, design, z, _ = self._regime_design(delay)
+        scale = float(np.std(z))
+        if scale == 0.0:
+            raise NumericalError("the transition variable has zero variance.")
+        width = design.shape[1]
+        min_regime = width + 1
+        n_eff = target.shape[0]
+        c_seed = float(np.median(z))
+        best_hard = -np.inf
+        for candidate in np.quantile(z, np.linspace(0.15, 0.85, 50)):
+            lower = z <= candidate
+            n_lo = int(lower.sum())
+            if n_lo < min_regime or n_eff - n_lo < min_regime:
+                continue
+            lo = self._split_moments(target[lower], design[lower])
+            hi = self._split_moments(target[~lower], design[~lower])
+            if lo is None or hi is None:
+                continue
+            if lo[3] + hi[3] > best_hard:
+                best_hard, c_seed = lo[3] + hi[3], float(candidate)
+        seeds = tuple(
+            np.array([np.log(gamma0), c0])
+            for c0 in (c_seed, float(np.median(z)))
+            for gamma0 in (2.0, 5.0, 10.0, 25.0)
+        )
+        return _VectorSmoothTransitionObjective(
+            target=target,
+            design=design,
+            z=z,
+            scale=scale,
+            transition=self._transition,
+            seeds=seeds,
+        )
+
+    def _fit_regimes(self) -> _VectorSmoothTransitionFit:
+        """Fit the transition by concentrated maximum likelihood.
+
+        Returns:
+            The packed :class:`_VectorSmoothTransitionFit`.
+
+        Raises:
+            NumericalError: If the transition variable has zero variance or
+                every start lands on a singular covariance.
+        """
+        k = self.k_endog
+        delay = self._delays[0]
+        objective = self._build_objective()
+        parameters, logdet = _solve(objective)
+        if not np.isfinite(logdet):
+            raise NumericalError(
+                "every start of the smooth-transition search produced a singular "
+                "residual covariance; the regimes are not separable on this sample."
+            )
+        _, coef, resid = objective.concentrated(parameters)
+        n_eff = objective.target.shape[0]
+        width = objective.design.shape[1]
+        offset = self._n_deterministic_columns
+        llf = -0.5 * n_eff * k * _LOG_2PI - 0.5 * n_eff * logdet - 0.5 * n_eff * k
+        return _VectorSmoothTransitionFit(
+            delay=delay,
+            threshold=parameters.threshold,
+            threshold_values=objective.z,
+            gamma=parameters.gamma,
+            transition_scale=objective.scale,
+            lower_coefficients=self._lag_blocks(coef[:width]),
+            upper_coefficients=self._lag_blocks(coef[width:]),
+            lower_deterministic=coef[:width][:offset],
+            upper_deterministic=coef[width:][:offset],
+            sigma_u=resid.T @ resid / max(n_eff - 2 * width, 1),
+            resid=resid,
+            fittedvalues=objective.target - resid,
+            llf=float(llf),
+            nobs=n_eff,
+            n_params=2.0 * k * width + k * (k + 1) / 2.0 + 2.0,
         )
 
 
