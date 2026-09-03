@@ -67,6 +67,7 @@ References:
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -75,6 +76,7 @@ import numpy.typing as npt
 from ..._core import (
     InformationCriteria,
     ProbabilityType,
+    StructuralResult,
     SummaryTable,
     companion_matrix,
     validate_choice,
@@ -87,6 +89,7 @@ from ..._internals import (
     _VectorMarkovSwitchingFit,
 )
 from ...exceptions import SpecificationError
+from ..structural import RecursiveSVAR
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -595,3 +598,238 @@ class MSVAR(_MarkovSwitchingVectorAutoRegressionModel[MSVARResult]):
             ),
             self,
         )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class MSSVARResult(_SummaryMixin):
+    """An identified Markov-switching system, one structural result per regime.
+
+    Composition on both sides: :attr:`msvar` is the reduced form with its
+    chain, posteriors, and regime views, and :attr:`structurals` holds each
+    regime's identification with its whole surface -- impact matrix,
+    responses, diagnostics. This object owns the join: the guarantee of a
+    common identifying declaration, and per-regime answers under one roof.
+
+    Attributes:
+        msvar: The fitted Markov-switching reduced form.
+        structurals: One structural result per regime, in label order.
+    """
+
+    msvar: MSVARResult = field(repr=False)
+    structurals: tuple[StructuralResult, ...] = field(repr=False)
+
+    @property
+    def n_regimes(self) -> int:
+        """Number of regimes."""
+        return self.msvar.n_regimes
+
+    @property
+    def names(self) -> tuple[str, ...]:
+        """Variable labels, in column order."""
+        return self.msvar.names
+
+    @property
+    def shock_names(self) -> tuple[str, ...]:
+        """Labels of the identified shocks, common across regimes."""
+        names = getattr(self.structurals[0], "shock_names", None)
+        if names is None:
+            return tuple(f"shock{j + 1}" for j in range(len(self.names)))
+        return tuple(names)
+
+    def structural(self, regime: int) -> StructuralResult:
+        """One regime's structural result, with its full scheme surface.
+
+        Args:
+            regime: Regime label in ``0..M-1``.
+
+        Returns:
+            The :class:`StructuralResult` identified from that regime.
+
+        Raises:
+            SpecificationError: If ``regime`` is out of range.
+        """
+        if not 0 <= regime < self.n_regimes:
+            raise SpecificationError(f"regime must be in 0..{self.n_regimes - 1}; got {regime}.")
+        return self.structurals[regime]
+
+    def impact(self, regime: int) -> npt.NDArray[np.float64]:
+        """One regime's structural impact matrix.
+
+        Args:
+            regime: Regime label in ``0..M-1``.
+
+        Returns:
+            The ``(k, s)`` impact matrix of that regime's identification.
+        """
+        return self.structural(regime).irf(0)[0]
+
+    def irf(
+        self, horizon: int = 20, *, regime: int, cumulative: bool = False
+    ) -> npt.NDArray[np.float64]:
+        """Structural impulse responses within one regime, held frozen.
+
+        Freezing the regime is the same linearization it is for the
+        observed-regime families, with the latent twist stated plainly: the
+        response assumes the chain *stays* in this regime over the horizon,
+        so read it against that regime's expected duration -- a 20-period
+        response in a regime that lasts 5 is an extrapolation.
+
+        Args:
+            horizon: Largest lead to return.
+            regime: Which regime's identified system to propagate.
+            cumulative: Return running sums.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, s)``; entry ``[h, i, j]`` is
+            the response of variable ``i`` at lead ``h`` to identified shock
+            ``j``, in that regime.
+        """
+        return self.structural(regime).irf(horizon, cumulative=cumulative)
+
+    def _summary_table(self) -> SummaryTable:
+        """Build the structured summary."""
+        scheme = getattr(self.structurals[0], "scheme", "supplied")
+        restriction = getattr(self.structurals[0], "restriction", "")
+        shocks = self.shock_names
+        rows = tuple(
+            (
+                f"regime {m}",
+                *(f"{np.abs(np.diag(self.impact(m)))[j]:.4f}" for j in range(len(shocks))),
+            )
+            for m in range(self.n_regimes)
+        )
+        notes = [
+            restriction,
+            "The identifying restriction is common across regimes; the "
+            "parameters it is applied to switch. Per-regime impact diagonals "
+            "above show how the identified shocks' sizes move with the "
+            "regime.",
+            "irf(regime=m) holds the chain frozen in regime m, so read it "
+            "against that regime's expected duration (regime_table() on the "
+            "reduced form).",
+            "Regime labels follow the reduced form's ordering convention "
+            f"({self.msvar.label_ordering}); the likelihood is invariant to "
+            "relabelling.",
+        ]
+        return SummaryTable(
+            title=f"MS-SVAR ({scheme}) Results",
+            metadata=(
+                ("Scheme", str(scheme)),
+                ("Regimes", f"{self.n_regimes}"),
+                ("Identified shocks", f"{len(shocks)}"),
+                ("Reduced form", self.msvar.specification),
+                ("Observations", f"{self.msvar.nobs}"),
+                ("Converged", f"{self.msvar.converged}"),
+            ),
+            columns=("impact |diag| of", *shocks),
+            rows=rows,
+            notes=tuple(note for note in notes if note),
+        )
+
+
+class MarkovSwitchingSVAR:
+    """Per-regime structural identification of an MS-VAR, Sims-Waggoner-Zha.
+
+    Constructs with a fitted :class:`~cultivars.multivariate.regime_switching.MSVAR`
+    result. Not an ``_IdentificationModel``: that contract is one closed
+    system, and an MS-VAR has ``M`` of them -- the regime views, each of
+    which any scheme in this package already accepts directly. What this
+    model adds is the discipline of one declaration for all regimes, and a
+    packaged per-regime answer.
+
+    Args:
+        msvar: The fitted Markov-switching reduced form.
+        structurals: Optional per-regime identifications to package, one per
+            regime in label order, each produced by a point-identified model
+            applied to the corresponding ``msvar.regime(m)``. When given,
+            ``order`` must be omitted.
+        order: The recursive ordering for the default scheme, applied
+            identically in every regime. ``None`` orders the system as
+            ``names`` stands.
+
+    Raises:
+        SpecificationError: If ``msvar`` is not a fitted MS-VAR result, both
+            ``structurals`` and ``order`` are given, the count is wrong, or a
+            supplied identification was not built from this MS-VAR's own
+            regime view.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> from cultivars.multivariate.regime_switching import MSVAR
+        >>> p = np.array([[0.97, 0.03], [0.05, 0.95]])
+        >>> mu = np.array([[-1.0, -0.5], [1.5, 1.0]])
+        >>> s = np.zeros(600, dtype=int)
+        >>> y = np.zeros((600, 2))
+        >>> for t in range(1, 600):
+        ...     s[t] = np.searchsorted(np.cumsum(p[s[t - 1]]), rng.random())
+        ...     y[t] = mu[s[t]] + 0.3 * y[t - 1] + 0.4 * rng.standard_normal(2)
+        >>> res = MSVAR(y, order=1, n_regimes=2).fit(seed=0, n_init=3)
+        >>> svar = MarkovSwitchingSVAR(res).identify()
+        >>> svar.impact(0).shape
+        (2, 2)
+    """
+
+    __slots__ = ("_msvar", "_order", "_structurals")
+
+    def __init__(
+        self,
+        msvar: MSVARResult,
+        structurals: Sequence[StructuralResult] | None = None,
+        *,
+        order: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the reduced form and the identification route."""
+        if not isinstance(msvar, MSVARResult):
+            raise SpecificationError(
+                "MarkovSwitchingSVAR constructs with a fitted MSVAR result; "
+                f"got {type(msvar).__name__}. Fit "
+                "cultivars.multivariate.regime_switching.MSVAR first."
+            )
+        self._msvar = msvar
+        if structurals is not None:
+            if order is not None:
+                raise SpecificationError(
+                    "pass either per-regime identifications to package or an "
+                    "ordering for the default recursive scheme, not both."
+                )
+            resolved = tuple(structurals)
+            if len(resolved) != msvar.n_regimes:
+                raise SpecificationError(
+                    f"structurals must supply one identification per regime "
+                    f"({msvar.n_regimes}); got {len(resolved)}."
+                )
+            for m, structural in enumerate(resolved):
+                if structural.source is not msvar.regimes[m]:
+                    raise SpecificationError(
+                        f"structurals[{m}] was not built from this MS-VAR's "
+                        f"own regime {m} view; identify msvar.regime({m}) and "
+                        "pass what that returns, in label order."
+                    )
+            self._structurals: tuple[StructuralResult, ...] | None = resolved
+        else:
+            self._structurals = None
+        self._order = None if order is None else tuple(str(name) for name in order)
+
+    def identify(self) -> MSSVARResult:
+        """Identify every regime under one declaration and package the answers.
+
+        Returns:
+            The per-regime structural result. When no identifications were
+            supplied, each regime is factorized recursively under the same
+            ordering -- the restriction pattern held fixed while the
+            parameters switch.
+
+        Raises:
+            SpecificationError: If a declared ordering is not a permutation
+                of ``names``.
+            NumericalError: If a regime's innovation covariance is not
+                positive definite.
+        """
+        structurals: tuple[StructuralResult, ...] = (
+            self._structurals
+            if self._structurals is not None
+            else tuple(
+                RecursiveSVAR(view, order=self._order).identify() for view in self._msvar.regimes
+            )
+        )
+        return MSSVARResult(msvar=self._msvar, structurals=structurals)
