@@ -277,6 +277,55 @@ class _SmoothTransitionFit(_BaseFit):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
+class _TimeVaryingFit:
+    """Raw posterior output of a time-varying-parameter VAR sampler.
+
+    Not a :class:`_BaseFit`: a Gibbs posterior has no maximized likelihood
+    or parameter count to report, and pretending otherwise would feed
+    information criteria numbers they do not mean.
+
+    Attributes:
+        beta_mean: ``(n, D)`` posterior mean coefficient path.
+        beta_low: ``(n, D)`` posterior 16th percentile path.
+        beta_high: ``(n, D)`` posterior 84th percentile path.
+        beta_draws: ``(S, n, D)`` kept coefficient-path draws.
+        state_cov: ``(D, D)`` posterior mean of the drift covariance ``Q``.
+        sigma_u: ``(k, k)`` posterior mean innovation covariance -- constant
+            for the homoskedastic model, the time average under stochastic
+            volatility.
+        impact_draws: ``(S, k, k)`` draws of the inverse contemporaneous
+            matrix ``A^{-1}``, or ``None`` for the homoskedastic model.
+        h_draws: ``(S, n, k)`` kept log-variance path draws, or ``None``.
+        vol_of_vol: ``(k,)`` posterior mean random-walk variances of the log
+            volatilities, or ``None``.
+        resid: Residuals at the posterior mean path.
+        fittedvalues: One-step means at the posterior mean path.
+        nobs: Estimation sample after the training split.
+        training: Rows consumed by the training prior.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in iterations discarded.
+        thin: Keep-every-``thin`` thinning applied after burn-in.
+    """
+
+    beta_mean: npt.NDArray[np.float64]
+    beta_low: npt.NDArray[np.float64]
+    beta_high: npt.NDArray[np.float64]
+    beta_draws: npt.NDArray[np.float64]
+    state_cov: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    impact_draws: npt.NDArray[np.float64] | None
+    h_draws: npt.NDArray[np.float64] | None
+    vol_of_vol: npt.NDArray[np.float64] | None
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    nobs: int
+    training: int
+    n_draws: int
+    n_burn: int
+    thin: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _VectorMarkovSwitchingFit(_BaseFit):
     """Raw outputs of a Markov-switching vector autoregression fit.
 

@@ -69,6 +69,7 @@ from ._models import (
     _SmoothTransitionVectorAutoRegressionModel,
     _ThresholdModel,
     _ThresholdVectorAutoRegressionModel,
+    _TimeVaryingVectorAutoRegressionModel,
     _VectorAutoRegressionModel,
     _VectorErrorCorrectionModel,
 )
@@ -160,6 +161,7 @@ __all__ = [
     "_ThresholdFit",
     "_ThresholdModel",
     "_ThresholdVectorAutoRegressionModel",
+    "_TimeVaryingVectorAutoRegressionModel",
     "_VectorAutoRegressionFit",
     "_VectorAutoRegressionModel",
     "_VectorErrorCorrectionFit",

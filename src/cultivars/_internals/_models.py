@@ -77,6 +77,8 @@ from .._core import (
     Transition,
     Trend,
     Vol,
+    _draw_inverse_gamma,
+    _draw_inverse_wishart,
     _ForwardPass,
     aggregation_weights,
     combined_difference,
@@ -122,6 +124,7 @@ from ._fits import (
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
     _ThresholdFit,
+    _TimeVaryingFit,
     _VectorAutoRegressionFit,
     _VectorErrorCorrectionFit,
     _VectorMarkovSwitchingFit,
@@ -150,6 +153,7 @@ from ._results import (
     _KimSmootherResult,
     _SmootherResult,
 )
+from ._samplers import _draw_volatility_path
 from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
 from ._solvers import _maximize_likelihood, _solve, posterior_coefficients
@@ -4703,4 +4707,274 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
             + (m if self._sw_var else 1) * k * (k + 1) / 2.0,
             n_iter=state.n_iter,
             converged=state.converged,
+        )
+
+
+class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """Specification and Gibbs engine of a time-varying-parameter VAR.
+
+    The coefficient vector follows a random walk, which puts the model one
+    representation away from the linear-Gaussian substrate: the state is the
+    stacked coefficient vector, the observation matrix is the lagged design,
+    and every coefficient-path draw is one call to the Durbin-Koopman
+    simulation smoother. The homoskedastic sampler is two conjugate blocks on
+    top of that (drift covariance and innovation covariance, both
+    inverse-Wishart); the stochastic-volatility sampler replaces the constant
+    covariance with Primiceri's triangular factorization ``Sigma_t = A^{-1}
+    H_t A^{-T}`` and adds the KSC volatility block from :mod:`._samplers`.
+
+    Priors follow Primiceri: a training sample is split off the front, its
+    OLS estimates calibrate the coefficient prior and the drift-covariance
+    scale, and it is then *discarded* from the estimation sample rather than
+    used twice.
+
+    Args:
+        endog: The observed panel.
+        order: Autoregressive order.
+        training: Rows consumed by the training prior. ``None`` uses
+            ``max(width + k + 2, min(40, a third of the effective sample))``.
+        trend: Deterministic terms.
+        names: One label per variable.
+
+    Raises:
+        SpecificationError: If the specification or training split is
+            malformed.
+        DimensionError: If the sample cannot support the split.
+    """
+
+    __slots__ = ("_training",)
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        training: int | None = None,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the specification and the training split."""
+        super().__init__(endog, order=order, trend=trend, names=names)
+        n_eff = self._endog.shape[0] - self._order
+        floor = self.n_regressors + self.k_endog + 2
+        if training is None:
+            resolved = max(floor, min(40, n_eff // 3))
+        else:
+            resolved = validate_order(training, "training", minimum=1)
+        if resolved < floor:
+            raise SpecificationError(
+                f"a training sample of {resolved} rows cannot identify the "
+                f"prior; it needs at least {floor}."
+            )
+        if n_eff - resolved < 2 * self.n_regressors:
+            raise DimensionError(
+                f"after a training split of {resolved} rows, {n_eff - resolved} "
+                "estimation rows remain; the time-varying model needs at least "
+                f"{2 * self.n_regressors}."
+            )
+        self._training = resolved
+
+    @property
+    def training(self) -> int:
+        """Rows consumed by the training prior."""
+        return self._training
+
+    def _stacked_design(self, design: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The ``(n, k, D)`` observation matrices ``I_k (x) x_t'``."""
+        n, w = design.shape
+        k = self.k_endog
+        z = np.zeros((n, k, k * w), dtype=np.float64)
+        for i in range(k):
+            z[:, i, i * w : (i + 1) * w] = design
+        return z
+
+    def _training_prior(
+        self,
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """OLS on the training rows: prior mean, prior covariance, and Sigma.
+
+        Returns:
+            ``(b0, v0, sigma0)``: the stacked coefficient prior mean ``(D,)``,
+            its covariance ``(D, D)`` as ``kron(Sigma, (X'X)^{-1})``, and the
+            training innovation covariance.
+        """
+        moments = self._gaussian_moments(target, design)
+        b0 = moments.coef.T.ravel()
+        xtx_inv = np.linalg.inv(design.T @ design)
+        v0 = np.kron(moments.sigma_u, xtx_inv)
+        v0 = 0.5 * (v0 + v0.T)
+        return b0, v0, np.asarray(moments.sigma_u, dtype=np.float64)
+
+    @staticmethod
+    def _triangularize(
+        sigma: npt.NDArray[np.float64],
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Split a covariance as ``A^{-1} D A^{-T}`` with unit-lower ``A^{-1}``.
+
+        Returns:
+            ``(a, log_diag)``: the unit-lower-triangular ``A`` whose rows
+            orthogonalize the residuals, and the log of the diagonal
+            variances.
+        """
+        chol = np.linalg.cholesky(sigma)
+        scale = np.diagonal(chol)
+        lower = chol / scale[None, :]
+        a = np.linalg.inv(lower)
+        return a, np.log(scale**2)
+
+    def _fit_tvp(
+        self,
+        *,
+        sv: bool,
+        n_draws: int,
+        n_burn: int,
+        thin: int,
+        k_drift: float,
+        k_vol: float,
+        seed: int | np.random.Generator | None,
+    ) -> _TimeVaryingFit:
+        """Run the Gibbs sampler and summarize the posterior.
+
+        Args:
+            sv: Whether the innovation covariance carries stochastic
+                volatility through the triangular factorization.
+            n_draws: Total sampler iterations.
+            n_burn: Burn-in iterations discarded.
+            thin: Keep every ``thin``-th post-burn draw.
+            k_drift: Primiceri's ``k_Q``: the prior scale of coefficient
+                drift, as a fraction of the training coefficient uncertainty.
+            k_vol: Primiceri's ``k_W``: the prior scale of the log-volatility
+                random walk.
+            seed: Seed or generator.
+
+        Returns:
+            The packed :class:`_TimeVaryingFit`.
+
+        Raises:
+            SpecificationError: If the draw bookkeeping is inconsistent.
+            NumericalError: If a conditional draw collapses.
+        """
+        if n_draws <= n_burn:
+            raise SpecificationError(f"n_draws ({n_draws}) must exceed n_burn ({n_burn}).")
+        if thin < 1:
+            raise SpecificationError(f"thin must be at least 1; got {thin}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        full_target, full_design, _ = self._design()
+        tau = self._training
+        b0, v0, sigma0 = self._training_prior(full_target[:tau], full_design[:tau])
+        target = full_target[tau:]
+        design = full_design[tau:]
+        n, k = target.shape
+        d_state = b0.shape[0]
+        z = self._stacked_design(design)
+
+        df_q = float(max(tau, d_state + 2))
+        q_scale0 = k_drift**2 * df_q * v0
+        df_h = float(k + 2)
+        h_scale0 = sigma0 * df_h
+
+        q = 25.0 * q_scale0 / df_q
+        sigma = sigma0.copy()
+        a_mat, log_diag0 = self._triangularize(sigma0)
+        h_path = np.tile(log_diag0, (n, 1))
+        vol_of_vol = np.full(k, 2.0 * k_vol**2)
+        a_prior_prec = 0.1
+
+        keep = (n_draws - n_burn + thin - 1) // thin
+        beta_kept = np.zeros((keep, n, d_state))
+        impact_kept = np.zeros((keep, k, k)) if sv else None
+        h_kept = np.zeros((keep, n, k)) if sv else None
+        q_sum = np.zeros_like(q)
+        sigma_sum = np.zeros((k, k))
+        w_sum = np.zeros(k)
+        kept = 0
+
+        identity = np.eye(d_state)
+        for it in range(n_draws):
+            if sv:
+                a_inv = np.linalg.inv(a_mat)
+                obs_cov = np.einsum("ij,tj,kj->tik", a_inv, np.exp(h_path), a_inv)
+            else:
+                obs_cov = sigma
+            space = _LinearGaussianStateSpaceModel(
+                z,
+                obs_cov,
+                identity,
+                identity,
+                q,
+                initial_state=b0,
+                initial_state_cov=4.0 * v0,
+            )
+            beta = space.simulation_smoother(target, n_sims=1, seed=rng)[0]
+
+            drift = np.diff(beta, axis=0)
+            q = _draw_inverse_wishart(q_scale0 + drift.T @ drift, df_q + n - 1.0, rng)
+
+            resid = target - np.einsum("tkd,td->tk", z, beta)
+            if sv:
+                for i in range(1, k):
+                    weights = np.exp(-h_path[:, i])
+                    x_reg = -resid[:, :i]
+                    precision = x_reg.T @ (x_reg * weights[:, None]) + a_prior_prec * np.eye(i)
+                    mean = np.linalg.solve(precision, x_reg.T @ (resid[:, i] * weights))
+                    root = np.linalg.cholesky(np.linalg.inv(precision))
+                    a_mat[i, :i] = mean + root @ rng.standard_normal(i)
+                ortho = resid @ a_mat.T
+                for i in range(k):
+                    h_path[:, i] = _draw_volatility_path(
+                        ortho[:, i],
+                        h_path[:, i],
+                        float(vol_of_vol[i]),
+                        prior_mean=float(log_diag0[i]),
+                        prior_var=4.0,
+                        rng=rng,
+                    )
+                    delta = np.diff(h_path[:, i])
+                    vol_of_vol[i] = _draw_inverse_gamma(
+                        2.0 + 0.5 * (n - 1),
+                        2.0 * k_vol**2 + 0.5 * float(delta @ delta),
+                        rng,
+                    )
+            else:
+                sigma = _draw_inverse_wishart(h_scale0 + resid.T @ resid, df_h + n, rng)
+
+            if it >= n_burn and (it - n_burn) % thin == 0:
+                beta_kept[kept] = beta
+                q_sum += q
+                if sv:
+                    a_inv = np.linalg.inv(a_mat)
+                    assert impact_kept is not None and h_kept is not None
+                    impact_kept[kept] = a_inv
+                    h_kept[kept] = h_path
+                    average = np.einsum("ij,j,kj->ik", a_inv, np.exp(h_path).mean(axis=0), a_inv)
+                    sigma_sum += average
+                    w_sum += vol_of_vol
+                else:
+                    sigma_sum += sigma
+                kept += 1
+
+        beta_kept = beta_kept[:kept]
+        beta_mean = beta_kept.mean(axis=0)
+        beta_low = np.quantile(beta_kept, 0.16, axis=0)
+        beta_high = np.quantile(beta_kept, 0.84, axis=0)
+        fitted = np.einsum("tkd,td->tk", z, beta_mean)
+        return _TimeVaryingFit(
+            beta_mean=beta_mean,
+            beta_low=beta_low,
+            beta_high=beta_high,
+            beta_draws=beta_kept,
+            state_cov=q_sum / max(kept, 1),
+            sigma_u=sigma_sum / max(kept, 1),
+            impact_draws=None if impact_kept is None else impact_kept[:kept],
+            h_draws=None if h_kept is None else h_kept[:kept],
+            vol_of_vol=(w_sum / max(kept, 1)) if sv else None,
+            resid=target - fitted,
+            fittedvalues=fitted,
+            nobs=n,
+            training=tau,
+            n_draws=n_draws,
+            n_burn=n_burn,
+            thin=thin,
         )

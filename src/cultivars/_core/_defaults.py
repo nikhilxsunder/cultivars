@@ -32,6 +32,7 @@ from __future__ import annotations
 from typing import Final
 
 import numpy as np
+import numpy.typing as npt
 
 _SCHEMA_VERSION: int = 1
 """Serialization schema version stamped onto every result object."""
@@ -105,3 +106,21 @@ _DEFAULT_ALPHA: Final[float] = 0.05
 
 _RANK_TOL: float = 1e-10
 """Tolerance for determining the numerical rank of a matrix."""
+
+_KSC_PROB: npt.NDArray[np.float64] = np.array(
+    [0.00730, 0.10556, 0.00002, 0.04395, 0.34001, 0.24566, 0.25750]
+)
+"""Mixture weights of the KSC seven-component log chi-squared approximation."""
+
+_KSC_MEAN: npt.NDArray[np.float64] = (
+    np.array([-10.12999, -3.97281, -8.56686, 2.77786, 0.61942, 1.79518, -1.08819]) - 1.2704
+)
+"""Component means, already shifted by the log chi-squared mean of -1.2704."""
+
+_KSC_VAR: npt.NDArray[np.float64] = np.array(
+    [5.79596, 2.61369, 5.17950, 0.16735, 0.64009, 0.34023, 1.26261]
+)
+"""Component variances."""
+
+_OFFSET = 1e-6
+"""Offset inside ``log(e**2 + offset)``, guarding the log at exact zeros."""
