@@ -56,6 +56,8 @@ from typing import ClassVar, cast
 import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
+import scipy.sparse as sps
+from scipy.optimize import linprog
 
 from .._core import (
     _D_MAX,
@@ -67,6 +69,7 @@ from .._core import (
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
     _ROW_SUM_ATOL,
+    _TINY,
     _UNRESTRICTED_TREND,
     ClosedSystemResult,
     CointegrationTrend,
@@ -127,7 +130,9 @@ from ._fits import (
     _TimeVaryingFit,
     _VectorAutoRegressionFit,
     _VectorErrorCorrectionFit,
+    _VectorFunctionalFit,
     _VectorMarkovSwitchingFit,
+    _VectorQuantileFit,
     _VectorSmoothTransitionFit,
     _VectorThresholdFit,
 )
@@ -4235,6 +4240,469 @@ class _SmoothTransitionVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R
             llf=float(llf),
             nobs=n_eff,
             n_params=2.0 * k * width + k * (k + 1) / 2.0 + 2.0,
+        )
+
+
+class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R]):
+    """Specification and local-linear engine of a functional-coefficient VAR.
+
+    Subclassing :class:`_ObservedRegimeVectorModel` is deliberate: what that
+    base actually contributes is the observed-transition-driver surface --
+    the named-or-external state variable, its delay, and the aligned design
+    construction -- and this model is the nonparametric limit of the family
+    built on it. A threshold VAR gives every state value one of two systems
+    and a smooth-transition VAR a blend of two anchors; here every state
+    value gets its own system, with smoothness in the state the only
+    restriction. Nothing regime-shaped is inherited beyond the driver.
+
+    Estimation is local-linear kernel regression (Cai, Fan & Yao 2000): at
+    each evaluation point the coefficients and their state-derivatives are
+    solved from one Epanechnikov-weighted least squares on the augmented
+    design ``[x_t, x_t (z_t - u)]``, all equations sharing the weights. The
+    bandwidth -- the model's one tuning constant -- is chosen by exact
+    leave-one-out cross-validation unless the caller states it.
+
+    Args:
+        endog: The observed panel.
+        order: Autoregressive order, at least one.
+        transition_variable: A variable name from ``names`` (the state is
+            that variable's own lag) or an aligned external series.
+        delay: Delay of the state variable. Defaults to one; there is no
+            delay search here, because the bandwidth is this model's tuning
+            axis and searching both would let the smoother trade one against
+            the other invisibly.
+        trend: Deterministic terms.
+        names: One label per variable.
+
+    Raises:
+        SpecificationError: If the specification is malformed.
+        DimensionError: If the sample cannot support local-linear fits.
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        transition_variable: str | npt.ArrayLike,
+        delay: int = 1,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the linear and driver specification, then the sample length."""
+        super().__init__(
+            endog,
+            order=order,
+            transition_variable=transition_variable,
+            delay=delay,
+            trend=trend,
+            names=names,
+        )
+        n_eff = self._endog.shape[0] - max(self._order, delay)
+        need = 3 * 2 * self.n_regressors
+        if n_eff < need:
+            raise DimensionError(
+                f"an effective sample of {n_eff} rows is too short for "
+                f"local-linear estimation with {2 * self.n_regressors} "
+                f"coefficients per window; it needs at least {need}."
+            )
+
+    @staticmethod
+    def _epanechnikov(scaled: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The Epanechnikov kernel on already-bandwidth-scaled distances."""
+        return np.where(np.abs(scaled) < 1.0, 0.75 * (1.0 - scaled**2), 0.0)
+
+    @property
+    def _state_in_design(self) -> bool:
+        """Whether the state variable is exactly a column of the design.
+
+        True for a self-exciting model whose delay does not exceed the
+        order: the state ``z_t`` is then the design's own lag column
+        ``name.L{delay}``, and the intercept's local-linear interaction
+        ``1 * (z - u) = name.L{delay} - u`` is *exactly* collinear with the
+        design. This is a structural fact about the model, not a numerical
+        accident -- with the state among the regressors, the intercept
+        function and the state's own coefficient function are only jointly
+        identified at first order -- so the redundant regressor is dropped
+        by construction rather than left to a pseudoinverse to resolve
+        silently.
+        """
+        return (
+            self._n_deterministic_columns > 0
+            and self.self_exciting
+            and self._delays[0] <= self._order
+        )
+
+    def _interaction_columns(self, design: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The design columns whose state-derivatives are identified.
+
+        The intercept column is excluded when the state is a design column
+        (see :attr:`_state_in_design`); its coefficient is then fitted
+        local-constant while every other coefficient stays local-linear.
+        """
+        return design[:, 1:] if self._state_in_design else design
+
+    def _local_fit(
+        self,
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+        interactions: npt.NDArray[np.float64],
+        z: npt.NDArray[np.float64],
+        u: float,
+        bandwidth: float,
+    ) -> (
+        tuple[
+            npt.NDArray[np.float64],
+            npt.NDArray[np.float64],
+            npt.NDArray[np.float64],
+            npt.NDArray[np.float64],
+        ]
+        | None
+    ):
+        """One local-linear weighted least squares, at one evaluation point.
+
+        Args:
+            target: The ``(n, k)`` target block.
+            design: The ``(n, w)`` linear design.
+            interactions: The design columns given state-derivatives, from
+                :meth:`_interaction_columns`.
+            z: The aligned state values.
+            u: Evaluation point.
+            bandwidth: Kernel bandwidth.
+
+        Returns:
+            ``(coef, gram, weights, augmented)`` -- the coefficients with
+            the ``w`` levels leading, the weighted Gram matrix, the kernel
+            weights, and the augmented design -- or ``None`` when the window
+            holds too few points to identify the local system, or holds them
+            in a numerically degenerate arrangement.
+        """
+        weights = self._epanechnikov((z - u) / bandwidth)
+        width = design.shape[1] + interactions.shape[1]
+        if int(np.count_nonzero(weights)) <= width:
+            return None
+        augmented = np.column_stack([design, interactions * (z - u)[:, None]])
+        weighted = augmented * weights[:, None]
+        gram = weighted.T @ augmented
+        eigenvalues = np.linalg.eigvalsh(gram)
+        if eigenvalues[0] <= 1e-9 * max(float(eigenvalues[-1]), _TINY):
+            return None
+        coef = np.linalg.solve(gram, weighted.T @ target)
+        return coef, gram, weights, augmented
+
+    def _cross_validation_score(
+        self,
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+        interactions: npt.NDArray[np.float64],
+        z: npt.NDArray[np.float64],
+        scored: npt.NDArray[np.bool_],
+        bandwidth: float,
+    ) -> float:
+        """Exact leave-one-out squared error of one candidate bandwidth.
+
+        The deletion residual is computed from the full-sample local fit via
+        the smoother diagonal, ``(y_t - yhat_t) / (1 - H_tt)`` -- exact for a
+        linear smoother, so no refit per left-out point is needed. Only the
+        ``scored`` points -- those inside the trimmed state range, where the
+        curves will actually be read -- enter the criterion, so an isolated
+        extreme state neither vetoes every candidate nor drags the selection
+        toward the oversmoothing that lone point would demand.
+
+        Args:
+            target: The ``(n, k)`` target block.
+            design: The ``(n, w)`` linear design.
+            interactions: The design columns given state-derivatives.
+            z: The aligned state values.
+            scored: Which observations enter the criterion.
+            bandwidth: Candidate bandwidth.
+
+        Returns:
+            The summed squared deletion residuals over the scored points, or
+            ``inf`` when any scored local system is unidentified or
+            interpolates its own point.
+        """
+        total = 0.0
+        for t in range(target.shape[0]):
+            if not scored[t]:
+                continue
+            out = self._local_fit(target, design, interactions, z, float(z[t]), bandwidth)
+            if out is None:
+                return float("inf")
+            coef, gram, weights, augmented = out
+            row = augmented[t]
+            try:
+                leverage = float(weights[t] * (row @ np.linalg.solve(gram, row)))
+            except np.linalg.LinAlgError:
+                return float("inf")
+            if leverage >= 1.0 - 1e-8:
+                return float("inf")
+            deletion = (target[t] - row @ coef) / (1.0 - leverage)
+            total += float(deletion @ deletion)
+        return total
+
+    def _fit_functional(
+        self,
+        *,
+        bandwidth: float | None,
+        n_grid: int,
+        trim: float,
+    ) -> _VectorFunctionalFit:
+        """Estimate the coefficient curves, selecting the bandwidth if unstated.
+
+        Args:
+            bandwidth: Kernel bandwidth in the state variable's units, or
+                ``None`` to select by leave-one-out cross-validation on a
+                grid around the Silverman-scaled rule of thumb.
+            n_grid: Evaluation points for the reported curves.
+            trim: Quantile trimmed from each end of the state range before
+                the curve grid is laid down, so the curves are not read into
+                regions the kernel cannot populate.
+
+        Everything local is anchored to the trimmed state range: the
+        curves are evaluated on it, the cross-validation criterion is scored
+        on it, and observations whose state falls outside it -- or whose
+        window is degenerate -- take the nearest estimated system for their
+        fitted value rather than vetoing the whole fit, which is what one
+        isolated state excursion would otherwise do at any honest bandwidth.
+
+        Returns:
+            The packed :class:`_VectorFunctionalFit`.
+
+        Raises:
+            SpecificationError: If the grid or trim is malformed, or a
+                stated bandwidth is not positive.
+            NumericalError: If no candidate bandwidth identifies every local
+                system on the trimmed range, or the stated one does not.
+        """
+        if n_grid < 2:
+            raise SpecificationError(f"n_grid must be at least 2; got {n_grid}.")
+        if not 0.0 <= trim < 0.5:
+            raise SpecificationError(f"trim must lie in [0, 0.5); got {trim}.")
+        delay = self._delays[0]
+        target, design, z, _ = self._regime_design(delay)
+        interactions = self._interaction_columns(design)
+        n_eff, k = target.shape
+        width = design.shape[1]
+        low, high = (float(q) for q in np.quantile(z, (trim, 1.0 - trim)))
+        scored = (z >= low) & (z <= high)
+        searched = bandwidth is None
+        if bandwidth is None:
+            rule = 2.34 * float(np.std(z)) * n_eff ** (-0.2)
+            candidates = rule * np.geomspace(0.3, 3.0, 13)
+            scores = [
+                self._cross_validation_score(target, design, interactions, z, scored, float(h))
+                for h in candidates
+            ]
+            best = int(np.argmin(scores))
+            if not np.isfinite(scores[best]):
+                raise NumericalError(
+                    "no candidate bandwidth identified every local system on "
+                    "the trimmed state range; the state variable is too "
+                    "sparse for local-linear estimation at this order. State "
+                    "a larger bandwidth."
+                )
+            bandwidth = float(candidates[best])
+        elif bandwidth <= 0.0:
+            raise SpecificationError(f"bandwidth must be positive; got {bandwidth}.")
+        grid = np.linspace(low, high, n_grid)
+        curves = np.empty((n_grid, width, k))
+        curve_se = np.empty((n_grid, width, k))
+        for g, u in enumerate(grid):
+            out = self._local_fit(target, design, interactions, z, float(u), bandwidth)
+            if out is None:
+                raise NumericalError(
+                    f"the local system at state value {u:.6g} is unidentified "
+                    f"at bandwidth {bandwidth:.6g}; widen the bandwidth or "
+                    "raise trim."
+                )  # inside the trimmed range, so this is a genuine gap
+            coef, gram, weights, augmented = out
+            curves[g] = coef[:width]
+            inverse = np.linalg.inv(gram)
+            core = inverse @ (augmented.T @ (augmented * (weights**2)[:, None])) @ inverse
+            local_resid = target - augmented @ coef
+            variance = (weights[:, None] * local_resid**2).sum(axis=0) / weights.sum()
+            curve_se[g] = np.sqrt(np.outer(np.maximum(np.diag(core)[:width], 0.0), variance))
+        fitted = np.empty_like(target)
+        effective = 0.0
+        for t in range(n_eff):
+            out = (
+                self._local_fit(target, design, interactions, z, float(z[t]), bandwidth)
+                if scored[t]
+                else None
+            )
+            if out is None:
+                position = int(np.clip(np.searchsorted(grid, z[t]), 1, n_grid - 1))
+                left, right = grid[position - 1], grid[position]
+                share = float(np.clip((z[t] - left) / (right - left), 0.0, 1.0))
+                blended = (1.0 - share) * curves[position - 1] + share * curves[position]
+                fitted[t] = design[t] @ blended
+                continue
+            coef, gram, weights, augmented = out
+            row = augmented[t]
+            fitted[t] = row @ coef
+            effective += float(weights[t] * (row @ np.linalg.solve(gram, row)))
+        resid = target - fitted
+        dof = max(n_eff - effective, 1.0)
+        return _VectorFunctionalFit(
+            delay=delay,
+            state_values=z,
+            grid=grid,
+            curves=curves,
+            curve_se=curve_se,
+            bandwidth=float(bandwidth),
+            bandwidth_searched=searched,
+            effective_params=effective,
+            sigma_u=resid.T @ resid / dof,
+            resid=resid,
+            fittedvalues=fitted,
+            nobs=n_eff,
+        )
+
+
+class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """Specification and estimation engine of a quantile VAR.
+
+    Each equation's coefficient vector minimizes the check loss at each
+    requested quantile level -- an exact linear program (Koenker & Bassett
+    1978), solved by HiGHS in its standard primal form: split the residual
+    into its positive and negative parts, price them at ``tau`` and
+    ``1 - tau``, and constrain ``X beta + u - v = y``. Equations share one
+    design and separate at estimation because the check loss is additive
+    across them; quantile levels separate for the same reason, so the fit is
+    ``k * Q`` independent programs over one design.
+
+    Args:
+        endog: The observed panel.
+        order: Autoregressive order.
+        trend: Deterministic terms.
+        names: One label per variable.
+
+    Raises:
+        SpecificationError: If the specification is malformed.
+        DimensionError: If the sample cannot support the specification.
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the linear specification, without the prior surface.
+
+        A quantile VAR is re-specified here rather than inherited verbatim
+        because the base's shrinkage prior is a Gaussian belief about
+        conditional-mean coefficients; it has no meaning for a check-loss
+        program, so the surface refuses it by not offering it.
+        """
+        super().__init__(endog, order=order, trend=trend, names=names)
+
+    @staticmethod
+    def _check_loss(resid: npt.NDArray[np.float64], quantile: float) -> npt.NDArray[np.float64]:
+        """Total check loss per column of a residual block."""
+        return np.where(resid >= 0.0, quantile * resid, (quantile - 1.0) * resid).sum(axis=0)
+
+    @staticmethod
+    def _quantile_regression(
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+        quantile: float,
+    ) -> npt.NDArray[np.float64]:
+        """One equation's exact quantile regression, as a linear program.
+
+        Args:
+            target: The ``(n,)`` regressand.
+            design: The ``(n, w)`` regressor matrix.
+            quantile: The quantile level, strictly inside ``(0, 1)``.
+
+        Returns:
+            The ``(w,)`` coefficient vector.
+
+        Raises:
+            NumericalError: If the program does not solve to optimality.
+        """
+        n, width = design.shape
+        cost = np.concatenate([np.zeros(width), np.full(n, quantile), np.full(n, 1.0 - quantile)])
+        identity = sps.eye_array(n, format="csc")
+        equality = sps.hstack([sps.csc_array(design), identity, -identity], format="csc")
+        bounds: list[tuple[float | None, float | None]] = [(None, None)] * width + [(0.0, None)] * (
+            2 * n
+        )
+        # HiGHS accepts a sparse A_eq at runtime (scipy documents this); the
+        # published stubs admit only dense inputs, so the cast records a stub
+        # gap, not a type weakening -- densifying here would cost O(n^2)
+        # memory for a constraint matrix that is (w + 2) / (w + 2n) dense.
+        solution = linprog(
+            cost,
+            A_eq=cast("npt.NDArray[np.float64]", equality),
+            b_eq=target,
+            bounds=bounds,
+            method="highs",
+        )
+        if not solution.success or solution.x is None:
+            raise NumericalError(
+                f"the quantile regression program at tau={quantile} did not "
+                f"solve to optimality: {solution.message}"
+            )
+        return np.asarray(solution.x[:width], dtype=np.float64)
+
+    def _fit_quantile(self, quantiles: Sequence[float]) -> _VectorQuantileFit:
+        """Estimate every equation at every requested quantile level.
+
+        Args:
+            quantiles: Distinct quantile levels, each strictly inside
+                ``(0, 1)``.
+
+        Returns:
+            The packed :class:`_VectorQuantileFit`, quantiles ascending.
+
+        Raises:
+            SpecificationError: If the levels are empty, repeated, or
+                outside the open unit interval.
+            NumericalError: If any program does not solve.
+        """
+        raw = tuple(
+            validate_open_interval(float(q), "quantiles", low=0.0, high=1.0) for q in quantiles
+        )
+        if not raw:
+            raise SpecificationError("quantiles must name at least one level.")
+        if len(set(raw)) != len(raw):
+            raise SpecificationError(f"quantiles must be distinct; got {raw}.")
+        taus = tuple(sorted(raw))
+        target, design, n_eff = self._design()
+        k, width, offset = self.k_endog, self.n_regressors, self._n_deterministic_columns
+        n_taus = len(taus)
+        stacks = np.empty((n_taus, self._order, k, k))
+        deterministics = np.empty((n_taus, offset, k))
+        fitted = np.empty((n_taus, n_eff, k))
+        loss = np.empty((n_taus, k))
+        loss_location = np.empty((n_taus, k))
+        for qi, tau in enumerate(taus):
+            coef = np.empty((width, k))
+            for i in range(k):
+                coef[:, i] = self._quantile_regression(target[:, i], design, tau)
+            fitted[qi] = design @ coef
+            stacks[qi] = self._lag_blocks(coef)
+            deterministics[qi] = coef[:offset]
+            loss[qi] = self._check_loss(target - fitted[qi], tau)
+            location = np.quantile(target, tau, axis=0)
+            loss_location[qi] = self._check_loss(target - location, tau)
+        return _VectorQuantileFit(
+            quantiles=taus,
+            coefficient_stacks=stacks,
+            deterministics=deterministics,
+            fittedvalues=fitted,
+            resid=target[None] - fitted,
+            loss=loss,
+            loss_location=loss_location,
+            nobs=n_eff,
         )
 
 

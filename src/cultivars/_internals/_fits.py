@@ -529,3 +529,75 @@ class _VectorErrorCorrectionFit(_VectorAutoRegressionFit):
     def cointegrating_matrix(self) -> npt.NDArray[np.float64]:
         """The long-run impact matrix ``Pi = alpha beta'``, over the variables only."""
         return self.alpha @ self.beta[: self.k_endog].T
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorQuantileFit:
+    """Raw outputs of a quantile VAR fit, one system per quantile.
+
+    Not a :class:`_BaseFit`: check-loss minimization has no likelihood, so
+    there is no ``llf`` to carry and no information criteria to derive, and a
+    record that pretended otherwise would feed comparison machinery numbers
+    that do not mean what it assumes.
+
+    Attributes:
+        quantiles: The estimated quantile levels, ascending.
+        coefficient_stacks: ``(Q, p, k, k)`` lag stacks, one per quantile.
+        deterministics: ``(Q, n_det, k)`` deterministic coefficients.
+        fittedvalues: ``(Q, n, k)`` conditional quantile paths.
+        resid: ``(Q, n, k)`` quantile residuals ``y - fitted``.
+        loss: ``(Q, k)`` total check loss per equation at the optimum.
+        loss_location: ``(Q, k)`` check loss of the unconditional quantile,
+            the intercept-only benchmark the pseudo-``R``:sup:`1` is read
+            against (Koenker & Machado 1999).
+        nobs: Effective sample size.
+    """
+
+    quantiles: tuple[float, ...]
+    coefficient_stacks: npt.NDArray[np.float64]
+    deterministics: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    loss: npt.NDArray[np.float64]
+    loss_location: npt.NDArray[np.float64]
+    nobs: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorFunctionalFit:
+    """Raw outputs of a functional-coefficient VAR fit.
+
+    Not a :class:`_BaseFit`: a kernel estimator maximizes no likelihood and
+    has no integer parameter count -- its complexity is the trace of the
+    smoother matrix, carried here as ``effective_params``.
+
+    Attributes:
+        delay: Delay of the state variable.
+        state_values: The delayed state ``z_t``, aligned with ``resid``.
+        grid: ``(G,)`` state values the coefficient curves are evaluated on.
+        curves: ``(G, w, k)`` local-linear level coefficients, design-major:
+            ``curves[g, :, i]`` is equation ``i``'s coefficient vector at
+            ``grid[g]``.
+        curve_se: ``(G, w, k)`` pointwise standard errors of ``curves``.
+        bandwidth: The bandwidth the curves were estimated at.
+        bandwidth_searched: Whether the bandwidth came from cross-validation.
+        effective_params: Trace of the smoother matrix at that bandwidth.
+        sigma_u: ``(k, k)`` innovation covariance, corrected by the effective
+            degrees of freedom.
+        resid: Residuals of the local fits at the observed states.
+        fittedvalues: One-step conditional means at the observed states.
+        nobs: Effective sample size.
+    """
+
+    delay: int
+    state_values: npt.NDArray[np.float64]
+    grid: npt.NDArray[np.float64]
+    curves: npt.NDArray[np.float64]
+    curve_se: npt.NDArray[np.float64]
+    bandwidth: float
+    bandwidth_searched: bool
+    effective_params: float
+    sigma_u: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    nobs: int
