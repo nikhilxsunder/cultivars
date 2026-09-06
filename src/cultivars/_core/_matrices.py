@@ -620,3 +620,24 @@ def _sphere_extrema(
         out[position, 0] = best_lower
         out[position, 1] = best_upper
     return out
+
+
+def _companion_spectral_radius(stack: npt.NDArray[np.float64]) -> float:
+    """Largest companion-root modulus of a lag stack, computed exactly.
+
+    Dense eigendecomposition, deliberately: Krylov methods for the single
+    largest-modulus root misconverge silently on companion matrices whose
+    moduli cluster near the spectral edge -- exactly the spectra posterior
+    draws produce -- and a wrong stability verdict is worse than a slow one.
+    The cost is ``O((kp)^3)`` per call, about a second for a hundred-variable
+    monthly system, which is why summaries defer this check at that scale
+    rather than approximate it.
+
+    Args:
+        stack: ``(p, k, k)`` lag stack, ``p`` at least one.
+
+    Returns:
+        The spectral radius of the companion matrix.
+    """
+    eigenvalues = np.linalg.eigvals(companion_matrix(stack))
+    return float(np.abs(eigenvalues).max(initial=0.0))

@@ -73,6 +73,7 @@ from ._mappings import (
     _UNRESTRICTED_TREND,
 )
 from ._matrices import (
+    _companion_spectral_radius,
     _face_projectors,
     _long_run_matrix,
     _lower_cholesky,
@@ -221,6 +222,7 @@ __all__ = [
     "_aggregation_weights",
     "_arch_infinity_variance",
     "_arch_infinity_weights",
+    "_companion_spectral_radius",
     "_cumulant_slices",
     "_draw_inverse_gamma",
     "_draw_inverse_wishart",

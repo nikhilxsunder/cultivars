@@ -19,7 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -31,6 +33,7 @@ from .._core import (
     CointegrationTrend,
     InformationCriteria,
     Regime,
+    _companion_spectral_radius,
     companion_matrix,
     deterministic_columns,
     validate_choice,
@@ -1329,26 +1332,66 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
             [beta[offset + lag * k : offset + (lag + 1) * k].T for lag in range(self.order)]
         )
 
-    def _irf_draws(self, horizon: int, *, orthogonalized: bool) -> npt.NDArray[np.float64]:
-        """Impulse responses of every retained draw, ``(S, horizon + 1, k, k)``."""
+    def _resolve_subset(self, chosen: Sequence[str] | None, label: str) -> npt.NDArray[np.intp]:
+        """Column indices for a subset of variables, all of them when omitted.
+
+        Args:
+            chosen: Variable names to keep, in the order given.
+            label: Argument name, for error messages.
+
+        Returns:
+            Index array into ``names``.
+
+        Raises:
+            SpecificationError: If a name is unknown.
+        """
+        if chosen is None:
+            return np.arange(self.k_endog)
+        for name in chosen:
+            if name not in self.names:
+                raise SpecificationError(
+                    f"unknown variable {name!r} in {label}; expected names from {self.names}."
+                )
+        return np.asarray([self.names.index(name) for name in chosen], dtype=np.intp)
+
+    def _irf_draws(
+        self,
+        horizon: int,
+        *,
+        orthogonalized: bool,
+        response_index: npt.NDArray[np.intp] | None = None,
+        shock_index: npt.NDArray[np.intp] | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Impulse responses of every retained draw.
+
+        Propagation runs the moving-average recursion ``Psi_h = sum_l A_l
+        Psi_{h-l}`` directly on the ``(k, k)`` lag matrices rather than
+        powering the ``(kp, kp)`` companion -- identical numbers, and the
+        difference between seconds and an hour for a hundred-variable
+        monthly system. Each draw's full response is computed and only the
+        requested block stored, so subsetting bounds the memory of the
+        returned array without changing any number in it.
+
+        Returns:
+            ``(S, horizon + 1, len(response_index), len(shock_index))``.
+        """
         if horizon < 0:
             raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
         k, p, n_kept = self.k_endog, self.order, self.n_kept
-        out = np.empty((n_kept, horizon + 1, k, k))
+        rows = np.arange(k) if response_index is None else response_index
+        columns = np.arange(k) if shock_index is None else shock_index
+        out = np.empty((n_kept, horizon + 1, rows.size, columns.size))
         for s in range(n_kept):
+            stack = self._stack_of(self.beta_draws[s])
             psi = np.empty((horizon + 1, k, k))
-            if p == 0:
-                psi[:] = 0.0
-                psi[0] = np.eye(k)
-            else:
-                selector = np.zeros((k, k * p))
-                selector[:, :k] = np.eye(k)
-                power = np.eye(k * p)
-                companion = companion_matrix(self._stack_of(self.beta_draws[s]))
-                for h in range(horizon + 1):
-                    psi[h] = selector @ power @ selector.T
-                    power = power @ companion
-            out[s] = psi @ np.linalg.cholesky(self.sigma_draws[s]) if orthogonalized else psi
+            psi[0] = np.eye(k)
+            for h in range(1, horizon + 1):
+                step = np.zeros((k, k))
+                for lag in range(1, min(h, p) + 1):
+                    step += stack[lag - 1] @ psi[h - lag]
+                psi[h] = step
+            full = psi @ np.linalg.cholesky(self.sigma_draws[s]) if orthogonalized else psi
+            out[s] = full[:, rows[:, None], columns[None, :]]
         return out
 
     def irf(
@@ -1357,6 +1400,8 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
         *,
         orthogonalized: bool = True,
         cumulative: bool = False,
+        shocks: Sequence[str] | None = None,
+        responses: Sequence[str] | None = None,
     ) -> npt.NDArray[np.float64]:
         """Posterior mean impulse responses.
 
@@ -1370,15 +1415,26 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
             horizon: Largest lead to return.
             orthogonalized: Rotate each draw by its own Cholesky factor.
             cumulative: Return running sums.
+            shocks: Shock variables to keep, in the order given; all when
+                omitted. Subsetting changes what is stored, not what is
+                computed, so it bounds memory for large systems.
+            responses: Responding variables to keep; all when omitted.
 
         Returns:
-            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]``
-            is the response of variable ``i`` at lead ``h`` to shock ``j``.
+            An array of shape ``(horizon + 1, n_responses, n_shocks)``;
+            entry ``[h, i, j]`` is the response of variable ``i`` at lead
+            ``h`` to shock ``j``.
 
         Raises:
-            SpecificationError: If ``horizon`` is negative.
+            SpecificationError: If ``horizon`` is negative or a name is
+                unknown.
         """
-        out = self._irf_draws(horizon, orthogonalized=orthogonalized).mean(axis=0)
+        out = self._irf_draws(
+            horizon,
+            orthogonalized=orthogonalized,
+            response_index=self._resolve_subset(responses, "responses"),
+            shock_index=self._resolve_subset(shocks, "shocks"),
+        ).mean(axis=0)
         return np.cumsum(out, axis=0) if cumulative else out
 
     def irf_bands(
@@ -1387,6 +1443,8 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
         *,
         orthogonalized: bool = True,
         cumulative: bool = False,
+        shocks: Sequence[str] | None = None,
+        responses: Sequence[str] | None = None,
     ) -> npt.NDArray[np.float64]:
         """Posterior bands of the impulse responses.
 
@@ -1394,15 +1452,27 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
             horizon: Largest lead to return.
             orthogonalized: Rotate each draw by its own Cholesky factor.
             cumulative: Band the running sums instead.
+            shocks: Shock variables to keep, in the order given; all when
+                omitted. Subsetting bounds the memory of the per-draw
+                response array, which is the binding constraint for large
+                systems.
+            responses: Responding variables to keep; all when omitted.
 
         Returns:
-            An array of shape ``(horizon + 1, k, k, 3)`` whose last axis is
-            ``(16th percentile, mean, 84th percentile)`` across draws.
+            An array of shape ``(horizon + 1, n_responses, n_shocks, 3)``
+            whose last axis is ``(16th percentile, mean, 84th percentile)``
+            across draws.
 
         Raises:
-            SpecificationError: If ``horizon`` is negative.
+            SpecificationError: If ``horizon`` is negative or a name is
+                unknown.
         """
-        draws = self._irf_draws(horizon, orthogonalized=orthogonalized)
+        draws = self._irf_draws(
+            horizon,
+            orthogonalized=orthogonalized,
+            response_index=self._resolve_subset(responses, "responses"),
+            shock_index=self._resolve_subset(shocks, "shocks"),
+        )
         if cumulative:
             draws = np.cumsum(draws, axis=1)
         return np.stack(
@@ -1479,6 +1549,27 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
             axis=-1,
         )
 
+    def _stability_note(self) -> str:
+        """The summary's stability sentence, deferring the eigenwork at scale.
+
+        A summary must be cheap to print, and the exact stability share
+        costs a dense eigendecomposition of the companion per draw. Past a
+        500-dimensional companion the summary says so and defers instead of
+        stalling; :attr:`stable_share` computes the exact number on demand.
+        """
+        if self.order and self.order * self.k_endog > 500:
+            return (
+                "Stability share not computed here: the companion is "
+                f"{self.order * self.k_endog}-dimensional and the exact check "
+                "costs a dense eigendecomposition per draw. stable_share "
+                "computes it on demand."
+            )
+        return (
+            f"Posterior probability of stability: {self.stable_share:.2f}. "
+            "Mass near the unit circle is the random-walk prior speaking, "
+            "not a defect."
+        )
+
     @property
     def stable_share(self) -> float:
         """Posterior probability that the system is stable.
@@ -1493,6 +1584,6 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
             return 1.0
         stable = 0
         for s in range(self.n_kept):
-            eigs = np.linalg.eigvals(companion_matrix(self._stack_of(self.beta_draws[s])))
-            stable += int(float(np.abs(eigs).max(initial=0.0)) < 1.0)
+            radius = _companion_spectral_radius(self._stack_of(self.beta_draws[s]))
+            stable += int(radius < 1.0)
         return stable / self.n_kept
