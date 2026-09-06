@@ -27,12 +27,14 @@ from collections.abc import Sequence
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
+from scipy.special import multigammaln
 
 from .._core import link_matrix
 from ..exceptions import DimensionError, NumericalError
 from ._covariances import _PosteriorCovariance
 from ._levels import _ConditionalLevels
 from ._objectives import _Objective
+from ._posteriors import _ConjugatePosterior
 from ._priors import _Prior, _PriorContext
 
 
@@ -229,3 +231,82 @@ def posterior_coefficients(
         blocks[index] = posterior
         effective += float(np.trace(posterior @ cross)) / scale
     return _PosteriorCovariance(coefficients=out, blocks=blocks, effective_parameters=effective)
+
+
+def _conjugate_posterior(
+    target: npt.NDArray[np.float64],
+    design: npt.NDArray[np.float64],
+    *,
+    omega: npt.NDArray[np.float64],
+    mean: npt.NDArray[np.float64],
+    scale0: npt.NDArray[np.float64],
+    df0: float,
+) -> _ConjugatePosterior:
+    """One exact Normal-inverse-Wishart update, with its marginal likelihood.
+
+    The conjugate counterpart of :func:`posterior_coefficients`, and the two
+    agree exactly at their overlap: with a Kronecker prior the per-equation
+    solve and this joint update produce the same posterior mean, and the
+    difference is what each can report -- the per-equation path keeps
+    Litterman's cross-equation weight, this path keeps the joint posterior
+    over ``(B, Sigma)`` and the closed-form marginal likelihood that
+    hierarchical shrinkage optimizes.
+
+    The prior is ``Sigma ~ IW(scale0, df0)`` and ``B | Sigma`` matrix normal
+    with mean ``mean`` and covariance ``Sigma x diag(omega)``; the update is
+    the standard one, and the marginal likelihood is the matrix-variate-t
+    normalizing-constant ratio, exact rather than simulated.
+
+    Args:
+        target: The ``(n, k)`` rows to update on -- possibly zero rows, in
+            which case the posterior is the prior and ``log_ml`` is zero.
+        design: The ``(n, width)`` regressors for those rows.
+        omega: The ``(width,)`` shared prior variance profile, positive and
+            finite.
+        mean: The ``(width, k)`` prior mean of the coefficient matrix.
+        scale0: The ``(k, k)`` inverse-Wishart prior scale.
+        df0: Inverse-Wishart prior degrees of freedom, above ``k - 1``.
+
+    Returns:
+        The :class:`_ConjugatePosterior`.
+
+    Raises:
+        NumericalError: If a posterior scale matrix is not positive definite,
+            which means the prior and the rows jointly degenerate.
+    """
+    n, k = target.shape
+    precision = 1.0 / omega
+    key = design.T @ design + np.diag(precision)
+    key = 0.5 * (key + key.T)
+    coefficients = np.linalg.solve(key, precision[:, None] * mean + design.T @ target)
+    scale = (
+        scale0
+        + target.T @ target
+        + mean.T @ (precision[:, None] * mean)
+        - coefficients.T @ key @ coefficients
+    )
+    scale = 0.5 * (scale + scale.T)
+    df = df0 + float(n)
+    sign_key, logdet_key = np.linalg.slogdet(key)
+    sign_zero, logdet_zero = np.linalg.slogdet(scale0)
+    sign_scale, logdet_scale = np.linalg.slogdet(scale)
+    if min(sign_key, sign_zero, sign_scale) <= 0:
+        raise NumericalError(
+            "a Normal-inverse-Wishart update produced a non-positive-definite "
+            "scale; the prior and the sample jointly degenerate."
+        )
+    log_ml = (
+        -0.5 * n * k * np.log(np.pi)
+        + 0.5 * k * (-float(logdet_key) - float(np.log(omega).sum()))
+        + 0.5 * df0 * float(logdet_zero)
+        - 0.5 * df * float(logdet_scale)
+        + float(multigammaln(0.5 * df, k))
+        - float(multigammaln(0.5 * df0, k))
+    )
+    return _ConjugatePosterior(
+        coefficients=coefficients,
+        row_precision=key,
+        scale=scale,
+        df=df,
+        log_ml=float(log_ml),
+    )

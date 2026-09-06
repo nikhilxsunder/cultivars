@@ -601,3 +601,160 @@ class _VectorFunctionalFit:
     resid: npt.NDArray[np.float64]
     fittedvalues: npt.NDArray[np.float64]
     nobs: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorConjugateFit:
+    """Raw posterior output of a conjugate Bayesian VAR.
+
+    Not a :class:`_BaseFit`: the honest scalar here is the log marginal
+    likelihood, not a maximized log likelihood, and information criteria
+    derived from a posterior would rank nothing meaningful.
+
+    Attributes:
+        coefficient_stack: ``(p, k, k)`` lag stack at the posterior mean.
+        deterministic: ``(n_det, k)`` deterministic block at the posterior
+            mean.
+        beta_mean: ``(w, k)`` full posterior mean coefficient matrix.
+        sigma_u: ``(k, k)`` posterior mean innovation covariance.
+        beta_draws: ``(S, w, k)`` coefficient draws.
+        sigma_draws: ``(S, k, k)`` covariance draws.
+        log_marginal_likelihood: Log marginal likelihood of the *sample*,
+            with the dummy-observation contribution divided out.
+        posterior_df: Inverse-Wishart posterior degrees of freedom.
+        resid: Residuals at the posterior mean, over the sample rows only.
+        fittedvalues: One-step means at the posterior mean.
+        nobs: Effective sample size, dummy rows excluded.
+        n_dummy: Artificial rows the prior contributed.
+    """
+
+    coefficient_stack: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    beta_mean: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    beta_draws: npt.NDArray[np.float64]
+    sigma_draws: npt.NDArray[np.float64]
+    log_marginal_likelihood: float
+    posterior_df: float
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    nobs: int
+    n_dummy: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorHierarchicalFit(_VectorConjugateFit):
+    """Raw output of the hierarchical (Giannone-Lenza-Primiceri) sampler.
+
+    Everything the conjugate record carries -- with ``beta_mean`` and
+    ``sigma_u`` now means over the retained draws, marginal over the
+    hyperparameters under the full method -- plus the hyperparameter layer.
+    ``log_marginal_likelihood`` is the value at the hyperparameter mode,
+    conditional on it; the full model evidence would integrate over the
+    hyperprior and is deliberately not estimated here.
+
+    Attributes:
+        hyper_names: One label per hyperparameter, in draw-column order.
+        hyper_mode: Posterior-mode hyperparameter vector.
+        hyper_draws: ``(S, d)`` kept hyperparameter draws -- empty under
+            empirical Bayes.
+        acceptance: Metropolis acceptance rate over the kept span; ``nan``
+            under empirical Bayes.
+        method: ``"full"`` or ``"empirical"``.
+    """
+
+    hyper_names: tuple[str, ...]
+    hyper_mode: npt.NDArray[np.float64]
+    hyper_draws: npt.NDArray[np.float64]
+    acceptance: float
+    method: str
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorStudentFit:
+    """Raw posterior output of the Student-t Bayesian VAR sampler.
+
+    Not a :class:`_BaseFit` and carrying no marginal likelihood: the t
+    likelihood breaks the conjugacy that made the Gaussian model's evidence
+    a closed form, and a simulated stand-in would not deserve the name.
+
+    Attributes:
+        coefficient_stack: ``(p, k, k)`` lag stack at the posterior mean.
+        deterministic: ``(n_det, k)`` deterministic block at the posterior
+            mean.
+        beta_mean: ``(w, k)`` posterior mean coefficient matrix.
+        sigma_u: ``(k, k)`` posterior mean *scale* matrix -- the innovation
+            covariance is ``sigma_u * df / (df - 2)``.
+        beta_draws: ``(S, w, k)`` kept coefficient draws.
+        sigma_draws: ``(S, k, k)`` kept scale draws.
+        df: Posterior mean degrees of freedom (the stated value when fixed).
+        df_draws: ``(S,)`` kept degrees-of-freedom draws; empty when fixed.
+        weight_mean: ``(n,)`` posterior mean latent precision weights --
+            small values mark the dates the t distribution treats as
+            outliers.
+        resid: Residuals at the posterior mean.
+        fittedvalues: One-step means at the posterior mean.
+        nobs: Effective sample size.
+        n_dummy: Artificial rows the prior contributed.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    coefficient_stack: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    beta_mean: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    beta_draws: npt.NDArray[np.float64]
+    sigma_draws: npt.NDArray[np.float64]
+    df: float
+    df_draws: npt.NDArray[np.float64]
+    weight_mean: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    nobs: int
+    n_dummy: int
+    n_draws: int
+    n_burn: int
+    thin: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorVolatilityFit:
+    """Raw posterior output of the stochastic-volatility Bayesian VAR sampler.
+
+    Attributes:
+        coefficient_stack: ``(p, k, k)`` lag stack at the posterior mean.
+        deterministic: ``(n_det, k)`` deterministic block at the posterior
+            mean.
+        beta_mean: ``(w, k)`` posterior mean coefficient matrix.
+        sigma_u: ``(k, k)`` posterior mean *end-of-sample* covariance.
+        beta_draws: ``(S, w, k)`` kept coefficient draws.
+        sigma_draws: ``(S, k, k)`` kept end-of-sample covariance draws.
+        h_draws: ``(S, n, k)`` kept log-variance path draws.
+        impact_draws: ``(S, k, k)`` kept draws of ``A^{-1}``.
+        vol_of_vol: ``(k,)`` posterior mean random-walk variances of the
+            log volatilities.
+        resid: Residuals at the posterior mean.
+        fittedvalues: One-step means at the posterior mean.
+        nobs: Effective sample size.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    coefficient_stack: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    beta_mean: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    beta_draws: npt.NDArray[np.float64]
+    sigma_draws: npt.NDArray[np.float64]
+    h_draws: npt.NDArray[np.float64]
+    impact_draws: npt.NDArray[np.float64]
+    vol_of_vol: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    nobs: int
+    n_draws: int
+    n_burn: int
+    thin: int

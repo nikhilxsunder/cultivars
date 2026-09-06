@@ -209,3 +209,179 @@ class MinnesotaPrior(_Prior):
             f"minnesota(l1={self.tightness:g}, l2={self.cross_equation:g}, "
             f"l3={self.decay:g}, l4={self.exogenous:g}{tail})"
         )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class NormalInverseWishartPrior(_Prior):
+    """The conjugate Minnesota prior: Litterman's variances with the one weight pinned.
+
+    Exactly :class:`MinnesotaPrior` with ``cross_equation`` fixed at one --
+    and that is not a simplification but a purchase. Pinning the weight makes
+    the prior variance factor as ``Sigma x Omega``, which is the condition
+    for Normal-inverse-Wishart conjugacy (Banbura, Giannone & Reichlin 2010):
+    the joint posterior over coefficients *and* covariance is then exact, its
+    marginal likelihood has a closed form, and hierarchical shrinkage a la
+    Giannone-Lenza-Primiceri becomes optimization of that closed form rather
+    than simulation. What is given up is Litterman's claim that cross-variable
+    coefficients deserve extra shrinkage; a caller who wants that claim back
+    passes a :class:`MinnesotaPrior` to the point-estimate path instead, and
+    the Bayesian model refuses it by construction rather than approximating.
+
+    Attributes:
+        tightness: Overall confidence, ``lambda_1``.
+        decay: Lag decay, ``lambda_3``.
+        exogenous: Looseness of the intercept and exogenous block,
+            ``lambda_4``. Large but finite: the marginal likelihood requires
+            a proper prior, so "flat" is not on offer here.
+        persistence: Prior mean of each variable's own first lag. One is the
+            random-walk prior for levels; zero suits differenced data.
+    """
+
+    tightness: float = 0.2
+    decay: float = 1.0
+    exogenous: float = 100.0
+    persistence: float | Sequence[float] = 1.0
+
+    def _minnesota(self) -> MinnesotaPrior:
+        """The equivalent Minnesota prior with the cross-equation weight pinned."""
+        return MinnesotaPrior(
+            tightness=self.tightness,
+            cross_equation=1.0,
+            decay=self.decay,
+            exogenous=self.exogenous,
+            sum_of_coefficients=None,
+            persistence=self.persistence,
+        )
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Each variable's own first lag at ``persistence``, everything else zero."""
+        return self._minnesota().coefficient_mean(context)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Litterman's variances with the cross-equation weight at one."""
+        return self._minnesota().coefficient_variance(context)
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"niw(l1={self.tightness:g}, l3={self.decay:g}, l4={self.exogenous:g})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class SumOfCoefficientsPrior(_Prior):
+    """The no-cointegration dummies of Doan, Litterman & Sims.
+
+    One artificial observation per variable, each saying that a series
+    sitting at its pre-sample average forever should stay there -- a
+    restriction on the *sum* of a variable's lag coefficients, which no
+    diagonal variance can state, and which therefore enters as rows rather
+    than as moments. At the limit it pushes every equation toward a unit
+    root with no cross-variable error correction, which is why the
+    literature reads it as a no-cointegration prior.
+
+    This is the standalone, composable form of what
+    :attr:`MinnesotaPrior.sum_of_coefficients` embeds: written separately it
+    can be stacked onto the conjugate prior with ``+``, given its own
+    tightness, and later carried into the hierarchical layer as its own
+    hyperparameter, which is exactly how Giannone-Lenza-Primiceri treat it.
+
+    Attributes:
+        tightness: How hard the restriction binds -- larger is tighter,
+            matching the package's ``lambda_5`` convention; the
+            Giannone-Lenza-Primiceri ``mu`` is its reciprocal.
+    """
+
+    tightness: float = 1.0
+
+    def _check(self) -> None:
+        """Reject a non-positive tightness.
+
+        Raises:
+            SpecificationError: If ``tightness`` is not positive.
+        """
+        if self.tightness <= 0.0:
+            raise SpecificationError(f"tightness must be positive; got {self.tightness}.")
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Zero: this prior's content is entirely in its rows."""
+        return np.zeros((context.width, context.k_endog), dtype=np.float64)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Infinite: no diagonal opinion about any coefficient."""
+        return np.full((context.width, context.k_endog), np.inf, dtype=np.float64)
+
+    def dummy_observations(
+        self, context: _PriorContext
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """One row per variable, centred on its pre-sample mean."""
+        self._check()
+        size = context.k_endog
+        centre = np.diag(context.presample_mean) * self.tightness
+        block = np.hstack(
+            [
+                context._lead(size),
+                np.kron(np.ones((1, context.order)), centre),
+                np.zeros((size, context.k_exog), dtype=np.float64),
+            ]
+        )
+        return centre, block
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"soc({self.tightness:g})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class DummyInitialObservationPrior(_Prior):
+    """Sims' co-persistence dummy, the single-unit-root prior.
+
+    One artificial observation in which every variable sits at its
+    pre-sample mean and the deterministic terms at one. Where the
+    sum-of-coefficients rows allow each variable its own unit root, this
+    single row says that if the system is that persistent, it is persistent
+    *jointly* -- a common stochastic trend rather than one per series -- and
+    it is what keeps the sum-of-coefficients restriction from ruling out
+    cointegration entirely. The pair is standard equipment in the
+    Giannone-Lenza-Primiceri hierarchy, each with its own tightness.
+
+    Attributes:
+        tightness: How hard the restriction binds -- larger is tighter; the
+            Giannone-Lenza-Primiceri ``delta`` is its reciprocal.
+    """
+
+    tightness: float = 1.0
+
+    def _check(self) -> None:
+        """Reject a non-positive tightness.
+
+        Raises:
+            SpecificationError: If ``tightness`` is not positive.
+        """
+        if self.tightness <= 0.0:
+            raise SpecificationError(f"tightness must be positive; got {self.tightness}.")
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Zero: this prior's content is entirely in its row."""
+        return np.zeros((context.width, context.k_endog), dtype=np.float64)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Infinite: no diagonal opinion about any coefficient."""
+        return np.full((context.width, context.k_endog), np.inf, dtype=np.float64)
+
+    def dummy_observations(
+        self, context: _PriorContext
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """A single artificial observation at the pre-sample means."""
+        self._check()
+        mean = context.presample_mean * self.tightness
+        block = np.hstack(
+            [
+                context._lead(1, self.tightness),
+                np.kron(np.ones((1, context.order)), mean[None, :]),
+                np.zeros((1, context.k_exog), dtype=np.float64),
+            ]
+        )
+        return mean[None, :], block
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"dio({self.tightness:g})"

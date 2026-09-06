@@ -50,14 +50,16 @@ duck-typed, so the relationship is checked by ``isinstance`` at runtime and by
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import ClassVar, cast
 
 import numpy as np
 import numpy.typing as npt
 import scipy.linalg as sla
 import scipy.sparse as sps
-from scipy.optimize import linprog
+import scipy.stats as sst
+from scipy.optimize import linprog, minimize
+from scipy.special import gammaln
 
 from .._core import (
     _D_MAX,
@@ -69,6 +71,7 @@ from .._core import (
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
     _ROW_SUM_ATOL,
+    _STUDENT_DF_GRID,
     _TINY,
     _UNRESTRICTED_TREND,
     ClosedSystemResult,
@@ -129,12 +132,16 @@ from ._fits import (
     _ThresholdFit,
     _TimeVaryingFit,
     _VectorAutoRegressionFit,
+    _VectorConjugateFit,
     _VectorErrorCorrectionFit,
     _VectorFunctionalFit,
+    _VectorHierarchicalFit,
     _VectorMarkovSwitchingFit,
     _VectorQuantileFit,
     _VectorSmoothTransitionFit,
+    _VectorStudentFit,
     _VectorThresholdFit,
+    _VectorVolatilityFit,
 )
 from ._inferences import _CoefficientInference
 from ._layouts import _ParameterLayout
@@ -149,6 +156,9 @@ from ._objectives import (
     _SmoothTransitionObjective,
     _VectorSmoothTransitionObjective,
 )
+from ._posteriors import (
+    _ConjugatePosterior,
+)
 from ._priors import _NoPrior, _Prior, _PriorContext
 from ._results import (
     _DurbinKoopmanSmootherResult,
@@ -161,7 +171,7 @@ from ._results import (
 from ._samplers import _draw_volatility_path
 from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
-from ._solvers import _maximize_likelihood, _solve, posterior_coefficients
+from ._solvers import _conjugate_posterior, _maximize_likelihood, _solve, posterior_coefficients
 from ._states import _ExpectationMaximizationState, _VectorExpectationMaximizationState
 from ._tests import _JohansenRankTest, _StabilityTest
 
@@ -5442,6 +5452,671 @@ class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             fittedvalues=fitted,
             nobs=n,
             training=tau,
+            n_draws=n_draws,
+            n_burn=n_burn,
+            thin=thin,
+        )
+
+
+class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """Estimation engine of the conjugate Normal-inverse-Wishart VAR.
+
+    The same specification surface as the linear base -- including the prior
+    argument, which here is load-bearing rather than optional -- with a
+    posterior instead of a point estimate. Conjugacy is a property of the
+    prior, not of this class, and it is *verified* rather than assumed: the
+    prior's stated variances must factor as ``sigma_i^2 * omega_col``, which
+    is exactly Litterman's structure with the cross-equation weight at one.
+    A prior that breaks the factorization (a Minnesota prior with
+    ``cross_equation != 1``) is refused with directions to the per-equation
+    point path, because approximating it here would silently change what the
+    hyperparameter means.
+
+    The marginal likelihood is the sample's, not the stacked pseudo-sample's:
+    dummy observations are part of the *prior*, so their contribution is
+    divided out (Giannone, Lenza & Primiceri 2015), and the number reported
+    is comparable across priors with different dummy rows.
+    """
+
+    __slots__ = ()
+
+    def _conjugate_inputs(
+        self,
+        prior: _Prior | None = None,
+    ) -> tuple[
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+    ]:
+        """Validate a prior's conjugacy and extract its Kronecker pieces.
+
+        Args:
+            prior: The prior to decompose; the model's own when omitted.
+                The hierarchical sampler passes a fresh prior per
+                hyperparameter value through this hook.
+
+        Returns:
+            ``(omega, mean, scale0, dummy_target, dummy_design)`` -- the
+            shared row-variance profile, the prior mean, the inverse-Wishart
+            prior scale, and the prior's artificial rows.
+
+        Raises:
+            SpecificationError: If the prior is absent, improper, or not
+                Kronecker-factorable.
+        """
+        context = self._prior_context()
+        prior = self._prior if prior is None else prior
+        if not prior._components():
+            raise SpecificationError(
+                "a Bayesian VAR needs a proper prior; construct with "
+                "prior=NormalInverseWishartPrior(...) or a composition, not "
+                "with no prior at all -- an improper prior has no marginal "
+                "likelihood and no posterior to draw from."
+            )
+        variance = prior.coefficient_variance(context)
+        if not np.all(np.isfinite(variance)) or np.any(variance <= 0.0):
+            raise SpecificationError(
+                "the prior leaves some coefficient variances infinite or "
+                "non-positive, so it is improper and has no marginal "
+                "likelihood. Give every coefficient a finite prior variance "
+                "-- NormalInverseWishartPrior does."
+            )
+        scales = context.scales
+        ratio = variance / scales[None, :] ** 2
+        omega = np.asarray(ratio.mean(axis=1), dtype=np.float64)
+        spread = float(np.max(np.abs(ratio - omega[:, None]) / omega[:, None]))
+        if spread > 1e-8:
+            raise SpecificationError(
+                "the prior variance does not factor as sigma_i^2 * omega_col, "
+                "so Normal-inverse-Wishart conjugacy does not hold -- a "
+                "Minnesota prior with cross_equation != 1 does this by "
+                "design. Either pin cross_equation to one (that is "
+                "NormalInverseWishartPrior), or keep the weight and use the "
+                "per-equation point path VAR(..., prior=...) instead."
+            )
+        mean = prior.coefficient_mean(context)
+        scale0 = np.diag(scales**2)
+        dummy_target, dummy_design = prior.dummy_observations(context)
+        return omega, mean, scale0, dummy_target, dummy_design
+
+    def _conjugate_pieces(
+        self,
+        target: npt.NDArray[np.float64],
+        design: npt.NDArray[np.float64],
+        prior: _Prior | None = None,
+    ) -> tuple[_ConjugatePosterior, float, int]:
+        """Posterior, dummy-corrected log marginal likelihood, and dummy count.
+
+        Args:
+            target: The effective-sample target block.
+            design: The effective-sample design.
+            prior: The prior to update under; the model's own when omitted.
+
+        Returns:
+            ``(posterior, log_ml, n_dummy)``.
+
+        Raises:
+            SpecificationError: If the prior is unusable.
+            NumericalError: If a posterior scale degenerates.
+        """
+        omega, mean, scale0, dummy_target, dummy_design = self._conjugate_inputs(prior)
+        df0 = float(self.k_endog + 2)
+        n_dummy = int(dummy_target.shape[0])
+        if n_dummy:
+            full_target = np.vstack([target, dummy_target])
+            full_design = np.vstack([design, dummy_design])
+        else:
+            full_target, full_design = target, design
+        posterior = _conjugate_posterior(
+            full_target, full_design, omega=omega, mean=mean, scale0=scale0, df0=df0
+        )
+        log_ml = posterior.log_ml
+        if n_dummy:
+            log_ml -= _conjugate_posterior(
+                dummy_target, dummy_design, omega=omega, mean=mean, scale0=scale0, df0=df0
+            ).log_ml
+        return posterior, float(log_ml), n_dummy
+
+    @staticmethod
+    def _draw_conjugate(
+        posterior: _ConjugatePosterior,
+        n_draws: int,
+        rng: np.random.Generator,
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Independent draws of ``(B, Sigma)`` from one exact posterior.
+
+        Args:
+            posterior: The Normal-inverse-Wishart posterior to draw from.
+            n_draws: Draws to produce.
+            rng: Random generator.
+
+        Returns:
+            ``(beta_draws, sigma_draws)`` of shapes ``(S, w, k)`` and
+            ``(S, k, k)``.
+        """
+        width = int(posterior.row_precision.shape[0])
+        k = int(posterior.scale.shape[0])
+        key_chol = np.linalg.cholesky(posterior.row_precision)
+        row_factor = np.linalg.solve(key_chol, np.eye(width)).T
+        beta_draws = np.empty((n_draws, width, k))
+        sigma_draws = np.empty((n_draws, k, k))
+        for s in range(n_draws):
+            sigma = _draw_inverse_wishart(posterior.scale, posterior.df, rng)
+            sigma_draws[s] = sigma
+            shock = np.asarray(rng.standard_normal((width, k)), dtype=np.float64)
+            beta_draws[s] = (
+                posterior.coefficients + row_factor @ shock @ np.linalg.cholesky(sigma).T
+            )
+        return beta_draws, sigma_draws
+
+    def _fit_conjugate(
+        self,
+        *,
+        n_draws: int,
+        seed: int | np.random.Generator | None,
+    ) -> _VectorConjugateFit:
+        """Update the Normal-inverse-Wishart posterior exactly, then draw.
+
+        Args:
+            n_draws: Posterior draws of ``(B, Sigma)`` to retain.
+            seed: Seed or generator, for reproducibility.
+
+        Returns:
+            The packed :class:`_VectorConjugateFit`.
+
+        Raises:
+            SpecificationError: If the prior is unusable or the draw count
+                is not positive.
+            NumericalError: If a posterior scale degenerates.
+        """
+        if n_draws < 1:
+            raise SpecificationError(f"n_draws must be positive; got {n_draws}.")
+        target, design, n_eff = self._design()
+        posterior, log_ml, n_dummy = self._conjugate_pieces(target, design)
+        rng = np.random.default_rng(seed)
+        beta_draws, sigma_draws = self._draw_conjugate(posterior, n_draws, rng)
+        coef = posterior.coefficients
+        fitted = design @ coef
+        return _VectorConjugateFit(
+            coefficient_stack=self._lag_blocks(coef),
+            deterministic=coef[: self._n_deterministic_columns],
+            beta_mean=coef,
+            sigma_u=posterior.sigma_mean,
+            beta_draws=beta_draws,
+            sigma_draws=sigma_draws,
+            log_marginal_likelihood=log_ml,
+            posterior_df=posterior.df,
+            resid=target - fitted,
+            fittedvalues=fitted,
+            nobs=n_eff,
+            n_dummy=n_dummy,
+        )
+
+    def _fit_hierarchical(
+        self,
+        *,
+        factory: Callable[[npt.NDArray[np.float64]], _Prior],
+        hyper_names: tuple[str, ...],
+        hyper_shapes: npt.NDArray[np.float64],
+        hyper_scales: npt.NDArray[np.float64],
+        start: npt.NDArray[np.float64],
+        method: str,
+        n_draws: int,
+        n_burn: int,
+        seed: int | np.random.Generator | None,
+    ) -> _VectorHierarchicalFit:
+        """Giannone-Lenza-Primiceri: treat the tightnesses as unknowns too.
+
+        The hyperparameter posterior is ``p(theta | Y) proportional to
+        p(Y | theta) p(theta)``, with ``p(Y | theta)`` the closed-form
+        marginal likelihood and independent Gamma hyperpriors on the
+        positive hyperparameters. Both treatments start from the posterior
+        mode, found by direct optimization in log space. Empirical Bayes
+        stops there and draws ``(B, Sigma)`` conditional on the mode; the
+        full treatment runs an adaptive random-walk Metropolis chain over
+        ``log theta`` and draws one ``(B, Sigma)`` from the exact
+        conditional posterior at every kept state, so the retained draws
+        marginalize over the hyperparameters and the bands stop pretending
+        the tightness was known.
+
+        Args:
+            factory: Maps a hyperparameter vector to the prior it names.
+            hyper_names: One label per hyperparameter.
+            hyper_shapes: Gamma hyperprior shape per hyperparameter.
+            hyper_scales: Gamma hyperprior scale per hyperparameter.
+            start: Initial hyperparameter vector, positive.
+            method: ``"full"`` or ``"empirical"``.
+            n_draws: Kept ``(B, Sigma)`` draws.
+            n_burn: Burn-in Metropolis iterations (full method only).
+            seed: Seed or generator.
+
+        Returns:
+            The packed :class:`_VectorHierarchicalFit`.
+
+        Raises:
+            SpecificationError: If the method is unknown or the counts are
+                not positive.
+            NumericalError: If the mode search fails outright.
+        """
+        if method not in ("full", "empirical"):
+            raise SpecificationError(f"method must be 'full' or 'empirical'; got {method!r}.")
+        if n_draws < 1 or n_burn < 0:
+            raise SpecificationError(
+                f"n_draws must be positive and n_burn non-negative; got {n_draws}, {n_burn}."
+            )
+        target, design, n_eff = self._design()
+        d = len(hyper_names)
+
+        def pieces(theta: npt.NDArray[np.float64]) -> tuple[_ConjugatePosterior, float, int]:
+            return self._conjugate_pieces(target, design, factory(theta))
+
+        def log_posterior(
+            theta: npt.NDArray[np.float64],
+        ) -> tuple[float, _ConjugatePosterior | None, int]:
+            try:
+                posterior, log_ml, n_dummy = pieces(theta)
+            except NumericalError:
+                return -np.inf, None, 0
+            log_hyper = float(np.sum(sst.gamma.logpdf(theta, hyper_shapes, scale=hyper_scales)))
+            return log_ml + log_hyper, posterior, n_dummy
+
+        def negative(log_theta: npt.NDArray[np.float64]) -> float:
+            value, _, _ = log_posterior(np.exp(log_theta))
+            return -value if np.isfinite(value) else 1e12
+
+        search = minimize(negative, np.log(start), method="Nelder-Mead")
+        mode = np.asarray(np.exp(search.x), dtype=np.float64)
+        mode_value, mode_posterior, mode_dummy = log_posterior(mode)
+        if mode_posterior is None:
+            raise NumericalError(
+                "the hyperparameter mode search ended at a degenerate point; "
+                "the sample cannot support this hierarchy."
+            )
+        _, mode_lml, _ = pieces(mode)
+        rng = np.random.default_rng(seed)
+        if method == "empirical":
+            beta_draws, sigma_draws = self._draw_conjugate(mode_posterior, n_draws, rng)
+            hyper_draws = np.zeros((0, d))
+            acceptance = float("nan")
+        else:
+            current = np.log(mode)
+            current_value = mode_value
+            current_posterior = mode_posterior
+            step = 0.2
+            accepted = 0
+            proposed = 0
+            beta_draws = np.empty((n_draws, self.n_regressors, self.k_endog))
+            sigma_draws = np.empty((n_draws, self.k_endog, self.k_endog))
+            hyper_draws = np.empty((n_draws, d))
+            kept = 0
+            for iteration in range(n_burn + n_draws):
+                candidate = current + step * np.asarray(rng.standard_normal(d), dtype=np.float64)
+                value, posterior, _ = log_posterior(np.exp(candidate))
+                proposed += 1
+                if np.log(rng.random()) < value - current_value:
+                    current, current_value = candidate, value
+                    assert posterior is not None
+                    current_posterior = posterior
+                    accepted += 1
+                if iteration < n_burn:
+                    if (iteration + 1) % 50 == 0:
+                        rate = accepted / proposed
+                        step *= 1.1 if rate > 0.3 else 0.9
+                        accepted = proposed = 0
+                    continue
+                block, cov = self._draw_conjugate(current_posterior, 1, rng)
+                beta_draws[kept] = block[0]
+                sigma_draws[kept] = cov[0]
+                hyper_draws[kept] = np.exp(current)
+                kept += 1
+            acceptance = accepted / proposed if proposed else float("nan")
+        beta_mean = beta_draws.mean(axis=0)
+        fitted = design @ beta_mean
+        return _VectorHierarchicalFit(
+            coefficient_stack=self._lag_blocks(beta_mean),
+            deterministic=beta_mean[: self._n_deterministic_columns],
+            beta_mean=beta_mean,
+            sigma_u=sigma_draws.mean(axis=0),
+            beta_draws=beta_draws,
+            sigma_draws=sigma_draws,
+            log_marginal_likelihood=mode_lml,
+            posterior_df=mode_posterior.df,
+            resid=target - fitted,
+            fittedvalues=fitted,
+            nobs=n_eff,
+            n_dummy=mode_dummy,
+            hyper_names=hyper_names,
+            hyper_mode=mode,
+            hyper_draws=hyper_draws,
+            acceptance=float(acceptance),
+            method=method,
+        )
+
+
+class _StudentBayesianVectorAutoRegressionModel[R](_BayesianVectorAutoRegressionModel[R]):
+    """Estimation engine of the Bayesian VAR with Student-t innovations.
+
+    The t distribution enters as its scale mixture of normals: each
+    observation carries a latent precision weight ``w_t ~ Gamma(nu/2,
+    nu/2)``, and conditional on the weights the model is exactly the
+    conjugate Normal-inverse-Wishart VAR on rescaled rows. The Gibbs sampler
+    therefore alternates three exact conditionals: ``(B, Sigma)`` from the
+    weighted conjugate update, the weights from their Gamma conditionals,
+    and -- when the degrees of freedom are not stated -- ``nu`` from its
+    conditional on a fixed grid, which is exact and immune to tuning.
+
+    Conjugacy of the prior is required and verified exactly as in the
+    Gaussian model: the weighted update is still a Normal-inverse-Wishart
+    update. Dummy observations ride along unweighted -- they are prior
+    content, and the tails belong to the data.
+    """
+
+    __slots__ = ()
+
+    def _draw_degrees(
+        self,
+        weights: npt.NDArray[np.float64],
+        rng: np.random.Generator,
+    ) -> float:
+        """Draw the degrees of freedom from their exact grid conditional.
+
+        ``p(nu | w)`` is a product of Gamma densities in the weights with a
+        flat prior on the grid; evaluating it on a fixed grid and sampling
+        the normalized probabilities is an exact Gibbs step, trades no
+        correctness for tuning, and caps the tail index at the grid's top --
+        beyond which the t and the Gaussian are indistinguishable anyway.
+
+        Args:
+            weights: The current latent precision weights.
+            rng: Random generator.
+
+        Returns:
+            The drawn degrees of freedom.
+        """
+        n = weights.shape[0]
+        log_sum = float(np.log(weights).sum())
+        total = float(weights.sum())
+        half = 0.5 * _STUDENT_DF_GRID
+        log_kernel = (
+            n * (half * np.log(half) - gammaln(half)) + (half - 1.0) * log_sum - half * total
+        )
+        log_kernel -= log_kernel.max()
+        probability = np.exp(log_kernel)
+        probability /= probability.sum()
+        return float(rng.choice(_STUDENT_DF_GRID, p=probability))
+
+    def _fit_student(
+        self,
+        *,
+        df: float | None,
+        n_draws: int,
+        n_burn: int,
+        thin: int,
+        seed: int | np.random.Generator | None,
+    ) -> _VectorStudentFit:
+        """Gibbs on the scale-mixture representation of the t likelihood.
+
+        Args:
+            df: Degrees of freedom, above two -- or ``None`` to give the
+                tail index a posterior of its own on a fixed grid.
+            n_draws: Total sampler iterations.
+            n_burn: Burn-in iterations discarded.
+            thin: Keep every ``thin``-th post-burn draw.
+            seed: Seed or generator.
+
+        Returns:
+            The packed :class:`_VectorStudentFit`.
+
+        Raises:
+            SpecificationError: If the draw bookkeeping is inconsistent, the
+                stated degrees of freedom do not admit a covariance, or the
+                prior is unusable.
+            NumericalError: If a conditional draw collapses.
+        """
+        if n_draws <= n_burn:
+            raise SpecificationError(f"n_draws ({n_draws}) must exceed n_burn ({n_burn}).")
+        if thin < 1:
+            raise SpecificationError(f"thin must be at least 1; got {thin}.")
+        if df is not None and df <= 2.0:
+            raise SpecificationError(
+                f"df must exceed 2 for the innovations to have a covariance; "
+                f"got {df}. Pass df=None to give the tail index a posterior."
+            )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        target, design, n_eff = self._design()
+        omega, mean, scale0, dummy_target, dummy_design = self._conjugate_inputs()
+        k = self.k_endog
+        width = self.n_regressors
+        df0 = float(k + 2)
+        n_dummy = int(dummy_target.shape[0])
+        weights = np.ones(n_eff)
+        nu = float(df) if df is not None else 10.0
+        keep = (n_draws - n_burn + thin - 1) // thin
+        beta_kept = np.empty((keep, width, k))
+        sigma_kept = np.empty((keep, k, k))
+        df_kept = np.empty(keep)
+        weight_sum = np.zeros(n_eff)
+        kept = 0
+        for iteration in range(n_draws):
+            root = np.sqrt(weights)
+            rows_target = target * root[:, None]
+            rows_design = design * root[:, None]
+            if n_dummy:
+                rows_target = np.vstack([rows_target, dummy_target])
+                rows_design = np.vstack([rows_design, dummy_design])
+            posterior = _conjugate_posterior(
+                rows_target, rows_design, omega=omega, mean=mean, scale0=scale0, df0=df0
+            )
+            beta_block, sigma_block = self._draw_conjugate(posterior, 1, rng)
+            beta, sigma = beta_block[0], sigma_block[0]
+            resid = target - design @ beta
+            quadratic = np.einsum("ti,ij,tj->t", resid, np.linalg.inv(sigma), resid)
+            weights = np.asarray(
+                rng.gamma(0.5 * (nu + k), 2.0 / (nu + quadratic)), dtype=np.float64
+            )
+            if df is None:
+                nu = self._draw_degrees(weights, rng)
+            if iteration >= n_burn and (iteration - n_burn) % thin == 0:
+                beta_kept[kept] = beta
+                sigma_kept[kept] = sigma
+                df_kept[kept] = nu
+                weight_sum += weights
+                kept += 1
+        beta_mean = beta_kept.mean(axis=0)
+        fitted = design @ beta_mean
+        return _VectorStudentFit(
+            coefficient_stack=self._lag_blocks(beta_mean),
+            deterministic=beta_mean[: self._n_deterministic_columns],
+            beta_mean=beta_mean,
+            sigma_u=sigma_kept.mean(axis=0),
+            beta_draws=beta_kept,
+            sigma_draws=sigma_kept,
+            df=float(df_kept.mean()),
+            df_draws=df_kept if df is None else np.zeros(0),
+            weight_mean=weight_sum / max(kept, 1),
+            resid=target - fitted,
+            fittedvalues=fitted,
+            nobs=n_eff,
+            n_dummy=n_dummy,
+            n_draws=n_draws,
+            n_burn=n_burn,
+            thin=thin,
+        )
+
+
+class _VolatilityBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """Estimation engine of the Bayesian VAR with stochastic volatility.
+
+    Constant coefficients, drifting covariance: ``Sigma_t = A^{-1} H_t
+    A^{-T}`` with a constant unit-lower ``A`` and random-walk log variances
+    -- the Carriero-Clark-Marcellino object, assembled from the same blocks
+    as the Primiceri sampler with the coefficient drift switched off. The
+    coefficient draw is the *joint* generalized-least-squares conditional
+    over all equations, exact by construction, which sidesteps the
+    equation-at-a-time factorization whose original ordering required the
+    2022 corrigendum.
+
+    Conjugacy is not needed here and not demanded: the GLS draw handles any
+    diagonal prior variance, so Litterman's cross-equation weight is
+    admissible again. What is refused is dummy-observation content -- an
+    artificial row has no date, so under time-varying volatility it has no
+    covariance to be weighted by.
+    """
+
+    __slots__ = ()
+
+    def _volatility_inputs(
+        self,
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Validate the prior and return its moments.
+
+        Returns:
+            ``(mean, variance)``, each ``(w, k)``.
+
+        Raises:
+            SpecificationError: If the prior is absent, improper, or
+                contributes dummy observations.
+        """
+        context = self._prior_context()
+        prior = self._prior
+        if not prior._components():
+            raise SpecificationError(
+                "a stochastic-volatility BVAR needs a proper prior; construct "
+                "with prior=MinnesotaPrior(...) or another finite-variance "
+                "prior."
+            )
+        variance = prior.coefficient_variance(context)
+        if not np.all(np.isfinite(variance)) or np.any(variance <= 0.0):
+            raise SpecificationError(
+                "the prior leaves some coefficient variances infinite or "
+                "non-positive; give every coefficient a finite prior "
+                "variance."
+            )
+        dummy_target, _ = prior.dummy_observations(context)
+        if dummy_target.shape[0]:
+            raise SpecificationError(
+                "dummy observations have no date, so under time-varying "
+                "volatility they have no covariance to be weighted by; state "
+                "this prior entirely in moments (drop sum-of-coefficients "
+                "and dummy-initial-observation components)."
+            )
+        return prior.coefficient_mean(context), variance
+
+    def _fit_volatility(
+        self,
+        *,
+        n_draws: int,
+        n_burn: int,
+        thin: int,
+        k_vol: float,
+        seed: int | np.random.Generator | None,
+    ) -> _VectorVolatilityFit:
+        """Gibbs over coefficients, orthogonalization, and volatility paths.
+
+        Args:
+            n_draws: Total sampler iterations.
+            n_burn: Burn-in iterations discarded.
+            thin: Keep every ``thin``-th post-burn draw.
+            k_vol: Prior scale of the log-volatility random walk.
+            seed: Seed or generator.
+
+        Returns:
+            The packed :class:`_VectorVolatilityFit`.
+
+        Raises:
+            SpecificationError: If the draw bookkeeping is inconsistent or
+                the prior is unusable.
+            NumericalError: If a conditional draw collapses.
+        """
+        if n_draws <= n_burn:
+            raise SpecificationError(f"n_draws ({n_draws}) must exceed n_burn ({n_burn}).")
+        if thin < 1:
+            raise SpecificationError(f"thin must be at least 1; got {thin}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        target, design, n_eff = self._design()
+        prior_mean, prior_variance = self._volatility_inputs()
+        k, width = self.k_endog, self.n_regressors
+        context = self._prior_context()
+        point = posterior_coefficients(target, design, self._prior, context).coefficients
+        resid0 = target - design @ point
+        sigma0 = resid0.T @ resid0 / max(n_eff - width, 1)
+        a_mat, log_diag0 = _TimeVaryingVectorAutoRegressionModel._triangularize(sigma0)
+        h_path = np.tile(log_diag0, (n_eff, 1))
+        vol_of_vol = np.full(k, k_vol**2)
+        a_prior_prec = 0.1
+        beta = point
+        prior_precision_vector = (1.0 / prior_variance).T.ravel()
+        prior_mean_vector = prior_mean.T.ravel()
+        keep = (n_draws - n_burn + thin - 1) // thin
+        beta_kept = np.empty((keep, width, k))
+        sigma_kept = np.empty((keep, k, k))
+        h_kept = np.empty((keep, n_eff, k))
+        impact_kept = np.empty((keep, k, k))
+        vol_kept = np.empty((keep, k))
+        kept = 0
+        for iteration in range(n_draws):
+            inverse_sigmas = np.einsum("ji,tj,jl->til", a_mat, np.exp(-h_path), a_mat)
+            precision = np.einsum("tij,ta,tb->iajb", inverse_sigmas, design, design).reshape(
+                k * width, k * width
+            )
+            precision[np.diag_indices_from(precision)] += prior_precision_vector
+            moment = np.einsum("til,tl,ta->ia", inverse_sigmas, target, design).ravel()
+            moment = moment + prior_precision_vector * prior_mean_vector
+            solution = np.linalg.solve(precision, moment)
+            chol = np.linalg.cholesky(precision)
+            shock = np.asarray(rng.standard_normal(k * width), dtype=np.float64)
+            draw = solution + np.linalg.solve(chol.T, shock)
+            beta = draw.reshape(k, width).T
+
+            resid = target - design @ beta
+            for i in range(1, k):
+                weights = np.exp(-h_path[:, i])
+                x_reg = -resid[:, :i]
+                row_precision = x_reg.T @ (x_reg * weights[:, None]) + a_prior_prec * np.eye(i)
+                row_mean = np.linalg.solve(row_precision, x_reg.T @ (resid[:, i] * weights))
+                root = np.linalg.cholesky(np.linalg.inv(row_precision))
+                a_mat[i, :i] = row_mean + root @ rng.standard_normal(i)
+            ortho = resid @ a_mat.T
+            for i in range(k):
+                h_path[:, i] = _draw_volatility_path(
+                    ortho[:, i],
+                    h_path[:, i],
+                    float(vol_of_vol[i]),
+                    prior_mean=float(log_diag0[i]),
+                    prior_var=4.0,
+                    rng=rng,
+                )
+                steps = np.diff(h_path[:, i])
+                vol_of_vol[i] = _draw_inverse_gamma(
+                    2.0 + 0.5 * (n_eff - 1.0),
+                    2.0 * k_vol**2 + 0.5 * float(steps @ steps),
+                    rng,
+                )
+            if iteration >= n_burn and (iteration - n_burn) % thin == 0:
+                a_inv = np.linalg.inv(a_mat)
+                beta_kept[kept] = beta
+                impact_kept[kept] = a_inv
+                h_kept[kept] = h_path
+                vol_kept[kept] = vol_of_vol
+                sigma_kept[kept] = (a_inv * np.exp(h_path[-1])[None, :]) @ a_inv.T
+                kept += 1
+        beta_mean = beta_kept.mean(axis=0)
+        fitted = design @ beta_mean
+        return _VectorVolatilityFit(
+            coefficient_stack=self._lag_blocks(beta_mean),
+            deterministic=beta_mean[: self._n_deterministic_columns],
+            beta_mean=beta_mean,
+            sigma_u=sigma_kept.mean(axis=0),
+            beta_draws=beta_kept,
+            sigma_draws=sigma_kept,
+            h_draws=h_kept,
+            impact_draws=impact_kept,
+            vol_of_vol=vol_kept.mean(axis=0),
+            resid=target - fitted,
+            fittedvalues=fitted,
+            nobs=n_eff,
             n_draws=n_draws,
             n_burn=n_burn,
             thin=thin,

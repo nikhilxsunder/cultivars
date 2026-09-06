@@ -54,6 +54,7 @@ from ._defaults import (
     _ROW_SUM_ATOL,
     _SCHEMA_VERSION,
     _SQRT_2_OVER_PI,
+    _STUDENT_DF_GRID,
     _TINY,
 )
 from ._estimators import (
@@ -191,6 +192,7 @@ __all__ = [
     "_SET_BOUNDS_NOTE",
     "_SIGN_QUANTILE_NOTE",
     "_SQRT_2_OVER_PI",
+    "_STUDENT_DF_GRID",
     "_TINY",
     "_UNIT_SHOCK_NOTE",
     "_UNRESTRICTED_TREND",

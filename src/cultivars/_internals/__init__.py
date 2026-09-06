@@ -33,12 +33,15 @@ from ._fits import (
     _SmoothTransitionFit,
     _ThresholdFit,
     _VectorAutoRegressionFit,
+    _VectorConjugateFit,
     _VectorErrorCorrectionFit,
     _VectorFunctionalFit,
     _VectorMarkovSwitchingFit,
     _VectorQuantileFit,
     _VectorSmoothTransitionFit,
+    _VectorStudentFit,
     _VectorThresholdFit,
+    _VectorVolatilityFit,
 )
 from ._levels import _ConditionalLevels
 from ._mixins import (
@@ -53,6 +56,7 @@ from ._mixins import (
 )
 from ._models import (
     _AutoRegressionModel,
+    _BayesianVectorAutoRegressionModel,
     _BoxJenkinsModel,
     _ExogenousVectorAutoRegressionModel,
     _ExogenousVectorErrorCorrectionModel,
@@ -71,11 +75,13 @@ from ._models import (
     _ShortMemoryVarianceModel,
     _SmoothTransitionModel,
     _SmoothTransitionVectorAutoRegressionModel,
+    _StudentBayesianVectorAutoRegressionModel,
     _ThresholdModel,
     _ThresholdVectorAutoRegressionModel,
     _TimeVaryingVectorAutoRegressionModel,
     _VectorAutoRegressionModel,
     _VectorErrorCorrectionModel,
+    _VolatilityBayesianVectorAutoRegressionModel,
 )
 from ._moments import _VectorMoments
 from ._objectives import (
@@ -97,6 +103,7 @@ from ._results import (
     _ObservedRegimeResult,
     _RegimeSystemResult,
     _VectorObservedRegimeResult,
+    _VectorPosteriorDrawsResult,
     _VectorResult,
 )
 from ._solvers import _maximize_likelihood, _solve, solve_global
@@ -110,6 +117,7 @@ __all__ = [
     "MeanPredictor",
     "_AutoRegressionFit",
     "_AutoRegressionModel",
+    "_BayesianVectorAutoRegressionModel",
     "_BoxJenkinsFit",
     "_BoxJenkinsModel",
     "_CoDiagonalObjective",
@@ -163,6 +171,7 @@ __all__ = [
     "_StabilityResult",
     "_StabilityTest",
     "_StationarityMixin",
+    "_StudentBayesianVectorAutoRegressionModel",
     "_SummaryMixin",
     "_ThresholdFit",
     "_ThresholdModel",
@@ -170,6 +179,7 @@ __all__ = [
     "_TimeVaryingVectorAutoRegressionModel",
     "_VectorAutoRegressionFit",
     "_VectorAutoRegressionModel",
+    "_VectorConjugateFit",
     "_VectorErrorCorrectionFit",
     "_VectorErrorCorrectionModel",
     "_VectorFunctionalFit",
@@ -177,11 +187,15 @@ __all__ = [
     "_VectorMarkovSwitchingFit",
     "_VectorMoments",
     "_VectorObservedRegimeResult",
+    "_VectorPosteriorDrawsResult",
     "_VectorPropagationMixin",
     "_VectorQuantileFit",
     "_VectorResult",
     "_VectorSmoothTransitionFit",
+    "_VectorStudentFit",
     "_VectorThresholdFit",
+    "_VectorVolatilityFit",
+    "_VolatilityBayesianVectorAutoRegressionModel",
     "_WaldTest",
     "_WaldTestResult",
     "_maximize_likelihood",

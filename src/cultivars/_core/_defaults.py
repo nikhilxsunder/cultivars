@@ -124,3 +124,9 @@ _KSC_VAR: npt.NDArray[np.float64] = np.array(
 
 _OFFSET = 1e-6
 """Offset inside ``log(e**2 + offset)``, guarding the log at exact zeros."""
+
+
+_STUDENT_DF_GRID: npt.NDArray[np.float64] = np.concatenate(
+    [np.arange(2.0, 30.0), np.array([30.0, 35.0, 40.0, 50.0, 60.0, 80.0, 100.0])]
+)
+"""Grid of candidate degrees of freedom for the Student-t innovations."""

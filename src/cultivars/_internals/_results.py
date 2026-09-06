@@ -1224,3 +1224,275 @@ class _RegimeSystemResult:
             out[h] = selector @ power @ selector.T
             power = power @ companion
         return out
+
+
+class _VectorPosteriorDrawsResult(_SummaryMixin):
+    """What every fitted Bayesian VAR with retained ``(B, Sigma)`` draws reports.
+
+    The shared propagation surface of the conjugate family: point summaries
+    are posterior means, and every method that propagates -- impulse
+    responses, the predictive -- propagates draw by draw, so its bands are
+    the posterior of the propagated object rather than the propagation of a
+    point. Concrete results add what distinguishes their posteriors: the
+    conjugate model its marginal likelihood, the hierarchical model its
+    hyperparameter draws, the Student-t model its tail draws, the
+    stochastic-volatility model its volatility paths.
+
+    Deliberately absent everywhere in the family: ``llf``, ``n_params``,
+    information criteria. A posterior has none of them.
+
+    Attributes:
+        endog: The observed panel.
+        names: Variable labels, in column order.
+        order: Autoregressive order.
+        trend: Deterministic specification.
+        coefficients: ``(p, k, k)`` lag stack at the posterior mean.
+        deterministic: ``(n_det, k)`` deterministic block at the posterior
+            mean.
+        beta_mean: ``(w, k)`` full posterior mean coefficient matrix.
+        sigma_u: ``(k, k)`` posterior mean innovation covariance -- for a
+            heteroskedastic member, the covariance its own docstring names.
+        beta_draws: ``(S, w, k)`` coefficient draws.
+        sigma_draws: ``(S, k, k)`` covariance draws, one per kept draw.
+        resid: Residuals at the posterior mean.
+        fittedvalues: One-step means at the posterior mean.
+        nobs: Effective sample size.
+    """
+
+    endog: npt.NDArray[np.float64]
+    names: tuple[str, ...]
+    order: int
+    trend: str
+    coefficients: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    beta_mean: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    beta_draws: npt.NDArray[np.float64]
+    sigma_draws: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    nobs: int
+
+    @property
+    def k_endog(self) -> int:
+        """Number of endogenous variables."""
+        return len(self.names)
+
+    @property
+    def n_kept(self) -> int:
+        """Posterior draws retained."""
+        return int(self.beta_draws.shape[0])
+
+    @property
+    def _n_deterministic(self) -> int:
+        """Deterministic columns per equation."""
+        return {"n": 0, "c": 1, "ct": 2}[self.trend]
+
+    def _regressor_labels(self) -> tuple[str, ...]:
+        """Per-equation regressor labels, in design order."""
+        det = ("const", "trend")[: self._n_deterministic]
+        lags = tuple(f"{source}.L{lag + 1}" for lag in range(self.order) for source in self.names)
+        return (*det, *lags)
+
+    def credible_interval(self, equation: str, regressor: str) -> npt.NDArray[np.float64]:
+        """One coefficient's posterior summary: 16th percentile, mean, 84th.
+
+        Args:
+            equation: An endogenous variable.
+            regressor: A per-equation regressor label -- ``"const"``,
+                ``"trend"``, or ``"{name}.L{lag}"``.
+
+        Returns:
+            A ``(3,)`` array ``(low, mean, high)``.
+
+        Raises:
+            SpecificationError: If the equation or regressor is unknown.
+        """
+        if equation not in self.names:
+            raise SpecificationError(
+                f"unknown variable {equation!r}; expected one of {self.names}."
+            )
+        labels = self._regressor_labels()
+        if regressor not in labels:
+            raise SpecificationError(f"unknown regressor {regressor!r}; expected one of {labels}.")
+        draws = self.beta_draws[:, labels.index(regressor), self.names.index(equation)]
+        return np.array(
+            [float(np.quantile(draws, 0.16)), float(draws.mean()), float(np.quantile(draws, 0.84))]
+        )
+
+    def _stack_of(self, beta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Slice one ``(w, k)`` draw into its ``(p, k, k)`` lag stack."""
+        k, offset = self.k_endog, self._n_deterministic
+        if not self.order:
+            return np.zeros((0, k, k))
+        return np.stack(
+            [beta[offset + lag * k : offset + (lag + 1) * k].T for lag in range(self.order)]
+        )
+
+    def _irf_draws(self, horizon: int, *, orthogonalized: bool) -> npt.NDArray[np.float64]:
+        """Impulse responses of every retained draw, ``(S, horizon + 1, k, k)``."""
+        if horizon < 0:
+            raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
+        k, p, n_kept = self.k_endog, self.order, self.n_kept
+        out = np.empty((n_kept, horizon + 1, k, k))
+        for s in range(n_kept):
+            psi = np.empty((horizon + 1, k, k))
+            if p == 0:
+                psi[:] = 0.0
+                psi[0] = np.eye(k)
+            else:
+                selector = np.zeros((k, k * p))
+                selector[:, :k] = np.eye(k)
+                power = np.eye(k * p)
+                companion = companion_matrix(self._stack_of(self.beta_draws[s]))
+                for h in range(horizon + 1):
+                    psi[h] = selector @ power @ selector.T
+                    power = power @ companion
+            out[s] = psi @ np.linalg.cholesky(self.sigma_draws[s]) if orthogonalized else psi
+        return out
+
+    def irf(
+        self,
+        horizon: int = 20,
+        *,
+        orthogonalized: bool = True,
+        cumulative: bool = False,
+    ) -> npt.NDArray[np.float64]:
+        """Posterior mean impulse responses.
+
+        The mean of each draw's response, not the response of the mean draw
+        -- the distinction matters because propagation is nonlinear in the
+        coefficients. Orthogonalization applies each draw's own Cholesky
+        factor, so the ordering of ``names`` is an identifying assumption,
+        as for any recursive scheme.
+
+        Args:
+            horizon: Largest lead to return.
+            orthogonalized: Rotate each draw by its own Cholesky factor.
+            cumulative: Return running sums.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]``
+            is the response of variable ``i`` at lead ``h`` to shock ``j``.
+
+        Raises:
+            SpecificationError: If ``horizon`` is negative.
+        """
+        out = self._irf_draws(horizon, orthogonalized=orthogonalized).mean(axis=0)
+        return np.cumsum(out, axis=0) if cumulative else out
+
+    def irf_bands(
+        self,
+        horizon: int = 20,
+        *,
+        orthogonalized: bool = True,
+        cumulative: bool = False,
+    ) -> npt.NDArray[np.float64]:
+        """Posterior bands of the impulse responses.
+
+        Args:
+            horizon: Largest lead to return.
+            orthogonalized: Rotate each draw by its own Cholesky factor.
+            cumulative: Band the running sums instead.
+
+        Returns:
+            An array of shape ``(horizon + 1, k, k, 3)`` whose last axis is
+            ``(16th percentile, mean, 84th percentile)`` across draws.
+
+        Raises:
+            SpecificationError: If ``horizon`` is negative.
+        """
+        draws = self._irf_draws(horizon, orthogonalized=orthogonalized)
+        if cumulative:
+            draws = np.cumsum(draws, axis=1)
+        return np.stack(
+            [
+                np.quantile(draws, 0.16, axis=0),
+                draws.mean(axis=0),
+                np.quantile(draws, 0.84, axis=0),
+            ],
+            axis=-1,
+        )
+
+    def _predictive_noise(
+        self, draw: int, steps: int, rng: np.random.Generator
+    ) -> npt.NDArray[np.float64]:
+        """One draw's future innovations, ``(steps, k)``.
+
+        The hook a heteroskedastic member overrides: the base draws i.i.d.
+        Gaussian innovations from the draw's covariance, which is exact for
+        every homoskedastic member of the family.
+        """
+        chol = np.linalg.cholesky(self.sigma_draws[draw])
+        return np.asarray(rng.standard_normal((steps, self.k_endog)) @ chol.T, dtype=np.float64)
+
+    def forecast(
+        self,
+        steps: int = 8,
+        *,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """The posterior predictive: parameter *and* shock uncertainty.
+
+        Each retained draw simulates its own future -- its coefficients, its
+        covariance, its innovations -- so the bands are bands of the
+        predictive distribution, which is the object a forecast evaluation
+        actually scores.
+
+        Args:
+            steps: Horizons ahead.
+            seed: Seed or generator for the predictive shocks.
+
+        Returns:
+            An array of shape ``(steps, k, 3)`` whose last axis is
+            ``(16th percentile, mean, 84th percentile)``.
+
+        Raises:
+            SpecificationError: If ``steps`` is not positive.
+        """
+        if steps < 1:
+            raise SpecificationError(f"steps must be positive; got {steps}.")
+        rng = np.random.default_rng(seed)
+        k, p, n = self.k_endog, self.order, self.endog.shape[0]
+        offset = self._n_deterministic
+        paths = np.empty((self.n_kept, steps, k))
+        for s in range(self.n_kept):
+            beta = self.beta_draws[s]
+            stack = self._stack_of(beta)
+            noise = self._predictive_noise(s, steps, rng)
+            history = list(self.endog[n - p :][::-1]) if p else []
+            for h in range(steps):
+                det = {"n": [], "c": [1.0], "ct": [1.0, float(n + h + 1)]}[self.trend]
+                value = np.asarray(det, dtype=np.float64) @ beta[:offset]
+                for lag in range(p):
+                    value = value + stack[lag] @ history[lag]
+                value = value + noise[h]
+                paths[s, h] = value
+                if p:
+                    history = [value, *history[:-1]]
+        return np.stack(
+            [
+                np.quantile(paths, 0.16, axis=0),
+                paths.mean(axis=0),
+                np.quantile(paths, 0.84, axis=0),
+            ],
+            axis=-1,
+        )
+
+    @property
+    def stable_share(self) -> float:
+        """Posterior probability that the system is stable.
+
+        The share of retained draws whose companion matrix has every root
+        strictly inside the unit circle. Under a random-walk-centred prior
+        this is routinely well below one, and that is information about the
+        posterior, not a defect: near-unit-root mass is what the prior
+        asserts.
+        """
+        if self.order == 0:
+            return 1.0
+        stable = 0
+        for s in range(self.n_kept):
+            eigs = np.linalg.eigvals(companion_matrix(self._stack_of(self.beta_draws[s])))
+            stable += int(float(np.abs(eigs).max(initial=0.0)) < 1.0)
+        return stable / self.n_kept
