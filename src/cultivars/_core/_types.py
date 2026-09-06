@@ -123,6 +123,11 @@ is fitted to.
 """
 
 type FunctionalBasis = Literal["fpca", "nelson-siegel", "bspline"]
+"""Functional bases for representing curves: functional principal components, Nelson-Siegel, or
+B-splines."""
 
 type Regime = Literal["lower", "upper"]
 """Which regime of an observed-regime model an operation reads."""
+
+type Penalty = Literal["lasso", "adaptive", "scad", "mcp", "group"]
+"""Sparse-VAR penalty families: elementwise, reweighted, nonconvex, and lag-group."""

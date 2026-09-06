@@ -66,6 +66,7 @@ from ._estimators import (
     local_whittle_d,
     minnesota_scales,
     ols,
+    principal_components,
     simulate_cointegration_null,
 )
 from ._mappings import (
@@ -135,6 +136,7 @@ from ._types import (
     OptimizerMethod,
     OptimizerOptions,
     PanelEffects,
+    Penalty,
     ProbabilityType,
     Regime,
     Transition,
@@ -210,6 +212,7 @@ __all__ = [
     "OptimizerMethod",
     "OptimizerOptions",
     "PanelEffects",
+    "Penalty",
     "ProbabilityType",
     "Regime",
     "StructuralResult",
@@ -275,6 +278,7 @@ __all__ = [
     "null_basis",
     "ols",
     "pack_stationary",
+    "principal_components",
     "psd_sqrt",
     "sigmoid",
     "simulate_cointegration_null",

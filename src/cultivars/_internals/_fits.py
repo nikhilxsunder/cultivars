@@ -758,3 +758,60 @@ class _VectorVolatilityFit:
     n_draws: int
     n_burn: int
     thin: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorSparseFit:
+    """Raw outputs of a penalized (sparse) VAR fit.
+
+    Not a :class:`_BaseFit`: a penalized objective maximizes no likelihood,
+    and the honest complexity number is the nonzero count, not a parameter
+    count an information criterion could charge for.
+
+    Attributes:
+        coefficient_stack: ``(p, k, k)`` lag stack at the selected penalty.
+        deterministic: ``(n_det, k)`` unpenalized deterministic block.
+        sigma_u: ``(k, k)`` residual covariance, corrected by the average
+            per-equation nonzero count.
+        resid: Residuals over the effective sample.
+        fittedvalues: One-step means over the effective sample.
+        penalty: The penalty family estimated under.
+        lam: The penalty level estimated at.
+        lambda_path: The candidate path, descending; empty when the caller
+            stated ``lam``.
+        cv_errors: Rolling one-step squared forecast error summed over the
+            validation span, aligned with ``lambda_path``; empty when the
+            caller stated ``lam``.
+        n_nonzero: Nonzero penalized coefficients at the solution.
+        nobs: Effective sample size.
+    """
+
+    coefficient_stack: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    penalty: str
+    lam: float
+    lambda_path: npt.NDArray[np.float64]
+    cv_errors: npt.NDArray[np.float64]
+    n_nonzero: int
+    nobs: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorGraphicalFit(_VectorSparseFit):
+    """Raw outputs of a graphical VAR fit: the sparse fit plus the precision.
+
+    Attributes:
+        precision: ``(k, k)`` sparse residual precision from symmetrized
+            nodewise regressions.
+        partial_correlations: ``(k, k)`` partial correlations implied by
+            the precision, unit diagonal.
+        lam_nodes: ``(k,)`` the per-node penalty levels cross-validation
+            selected.
+    """
+
+    precision: npt.NDArray[np.float64]
+    partial_correlations: npt.NDArray[np.float64]
+    lam_nodes: npt.NDArray[np.float64]

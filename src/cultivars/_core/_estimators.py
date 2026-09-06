@@ -453,3 +453,30 @@ def _cumulant_slices(
             slice_fourth = raw - correction
             out.append((slice_fourth + slice_fourth.T) / 2.0)
     return tuple(out)
+
+
+def principal_components(
+    standardized: npt.NDArray[np.float64], count: int
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Principal-component scores, loadings, and variance shares of a panel.
+
+    The normalization is the plain one: loadings are the orthonormal right
+    singular vectors, scores are the panel's projection onto them, so
+    ``standardized ~ scores @ loadings.T`` and the approximation is exact
+    when ``count`` spans the panel. Factor models built on top are
+    identified only up to rotation, and consumers say so rather than
+    pretending the basis is unique.
+
+    Args:
+        standardized: The ``(nobs, n_series)`` panel, already standardized.
+        count: Components to keep, at least one.
+
+    Returns:
+        ``(scores, loadings, shares)``: the ``(nobs, count)`` scores, the
+        ``(n_series, count)`` orthonormal loadings, and the ``(count,)``
+        explained-variance shares.
+    """
+    _, singular, vt = np.linalg.svd(standardized, full_matrices=False)
+    shares = singular**2 / float(np.sum(singular**2))
+    loadings = vt[:count].T
+    return standardized @ loadings, loadings, shares[:count]

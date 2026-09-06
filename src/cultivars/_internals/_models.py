@@ -80,6 +80,7 @@ from .._core import (
     Mean,
     Method,
     PanelEffects,
+    Penalty,
     Transition,
     Trend,
     Vol,
@@ -135,10 +136,12 @@ from ._fits import (
     _VectorConjugateFit,
     _VectorErrorCorrectionFit,
     _VectorFunctionalFit,
+    _VectorGraphicalFit,
     _VectorHierarchicalFit,
     _VectorMarkovSwitchingFit,
     _VectorQuantileFit,
     _VectorSmoothTransitionFit,
+    _VectorSparseFit,
     _VectorStudentFit,
     _VectorThresholdFit,
     _VectorVolatilityFit,
@@ -171,7 +174,13 @@ from ._results import (
 from ._samplers import _draw_volatility_path
 from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
-from ._solvers import _conjugate_posterior, _maximize_likelihood, _solve, posterior_coefficients
+from ._solvers import (
+    _conjugate_posterior,
+    _fista_penalized,
+    _maximize_likelihood,
+    _solve,
+    posterior_coefficients,
+)
 from ._states import _ExpectationMaximizationState, _VectorExpectationMaximizationState
 from ._tests import _JohansenRankTest, _StabilityTest
 
@@ -4713,6 +4722,344 @@ class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             loss=loss,
             loss_location=loss_location,
             nobs=n_eff,
+        )
+
+
+class _SparseVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """Estimation engine of the penalized (sparse) VAR family.
+
+    One solver serves five penalties. The lasso and the lag-group penalty
+    are solved directly by accelerated proximal gradient on the whole
+    coefficient matrix at once; the adaptive lasso reweights from a ridge
+    pilot; SCAD and MCP are solved by local linear approximation (Zou & Li
+    2008) -- a short sequence of weighted lasso solves whose weights are the
+    nonconvex penalty's derivative at the current solution, which is the
+    standard route to their oracle behavior without nonconvex optimization
+    folklore. Deterministic terms are never penalized, and both the design
+    and the targets are standardized internally so one penalty level means
+    the same thing in every equation.
+
+    The penalty level, when unstated, is chosen by rolling-origin one-step
+    forecast cross-validation with refitting at every origin (the
+    Nicholson-Matteson-Bien scheme): genuine out-of-sample errors, warm
+    starts along the path keeping the cost civil.
+    """
+
+    __slots__ = ()
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        order: int,
+        trend: Trend = "c",
+        names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the linear specification, without the prior surface.
+
+        A penalized VAR is re-specified here rather than inherited verbatim
+        because shrinkage arrives through the penalty, not through a
+        Gaussian prior; offering both would make one silently modify the
+        other.
+        """
+        super().__init__(endog, order=order, trend=trend, names=names)
+
+    def _lag_groups(self) -> tuple[npt.NDArray[np.intp], ...]:
+        """Row blocks of the lag-group penalty: one block per lag matrix."""
+        offset, k = self._n_deterministic_columns, self.k_endog
+        return tuple(
+            np.arange(offset + lag * k, offset + (lag + 1) * k, dtype=np.intp)
+            for lag in range(self._order)
+        )
+
+    @staticmethod
+    def _nonconvex_weights(
+        beta: npt.NDArray[np.float64],
+        lam: float,
+        penalty: str,
+        mask: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        """Local-linear-approximation weights at the current solution.
+
+        The derivative of the SCAD (``a = 3.7``) or MCP (``gamma = 3``)
+        penalty at each coefficient's magnitude, scaled to the unit-weight
+        convention of the solver, and masked so free rows stay free.
+        """
+        magnitude = np.abs(beta)
+        if penalty == "scad":
+            a = 3.7
+            slope = np.where(
+                magnitude <= lam,
+                1.0,
+                np.maximum(a * lam - magnitude, 0.0) / ((a - 1.0) * lam),
+            )
+        else:
+            gamma = 3.0
+            slope = np.maximum(1.0 - magnitude / (gamma * lam), 0.0)
+        return slope * mask[:, None]
+
+    def _solve_penalized(
+        self,
+        gram: npt.NDArray[np.float64],
+        moment: npt.NDArray[np.float64],
+        *,
+        penalty: str,
+        lam: float,
+        mask: npt.NDArray[np.float64],
+        groups: tuple[npt.NDArray[np.intp], ...] | None,
+        start: npt.NDArray[np.float64] | None,
+    ) -> npt.NDArray[np.float64]:
+        """One penalized solve at one penalty level, penalty family dispatched.
+
+        Args:
+            gram: ``(w, w)`` standardized Gram matrix.
+            moment: ``(w, k)`` standardized cross-moment.
+            penalty: The penalty family.
+            lam: Penalty level.
+            mask: ``(w,)`` ones on penalized rows, zeros on free rows.
+            groups: Lag-group blocks, for the group penalty only.
+            start: Warm start.
+
+        Returns:
+            The ``(w, k)`` standardized solution.
+        """
+        if penalty in ("lasso", "group"):
+            return _fista_penalized(
+                gram,
+                moment,
+                lam=lam,
+                weights=mask,
+                groups=groups if penalty == "group" else None,
+                start=start,
+            )
+        if penalty == "adaptive":
+            ridge = np.linalg.solve(gram + 0.01 * np.eye(gram.shape[0]), moment)
+            weights = mask[:, None] / np.maximum(np.abs(ridge), 1e-3)
+            return _fista_penalized(gram, moment, lam=lam, weights=weights, start=start)
+        beta = _fista_penalized(gram, moment, lam=lam, weights=mask, start=start)
+        for _ in range(2):
+            weights = self._nonconvex_weights(beta, lam, penalty, mask)
+            beta = _fista_penalized(gram, moment, lam=lam, weights=weights, start=beta)
+        return beta
+
+    def _fit_sparse(
+        self,
+        *,
+        penalty: str,
+        lam: float | None,
+        n_lambdas: int,
+        lambda_min_ratio: float,
+    ) -> _VectorSparseFit:
+        """Estimate the penalized system, selecting the level if unstated.
+
+        Args:
+            penalty: One of ``lasso``, ``adaptive``, ``scad``, ``mcp``,
+                ``group``.
+            lam: Penalty level, or ``None`` for rolling-origin selection.
+            n_lambdas: Candidate levels on the geometric path.
+            lambda_min_ratio: Smallest candidate as a fraction of the level
+                that zeroes everything.
+
+        Returns:
+            The packed :class:`_VectorSparseFit`.
+
+        Raises:
+            SpecificationError: If the penalty name, level, or path
+                specification is malformed, or the sample cannot support
+                the rolling validation.
+        """
+        choice = validate_choice(penalty, Penalty, "penalty")
+        if lam is not None and lam <= 0.0:
+            raise SpecificationError(f"lam must be positive when given; got {lam}.")
+        if n_lambdas < 2 or not 0.0 < lambda_min_ratio < 1.0:
+            raise SpecificationError(
+                f"the path needs n_lambdas >= 2 and lambda_min_ratio in "
+                f"(0, 1); got {n_lambdas}, {lambda_min_ratio}."
+            )
+        if choice == "group" and self._order == 0:
+            raise SpecificationError("the lag-group penalty needs order >= 1.")
+        target, design, n_eff = self._design()
+        offset, k, width = self._n_deterministic_columns, self.k_endog, self.n_regressors
+        x_scale = design.std(axis=0, ddof=0)
+        x_scale[:offset] = 1.0
+        x_scale = np.where(x_scale > 0.0, x_scale, 1.0)
+        y_scale = target.std(axis=0, ddof=0)
+        y_scale = np.where(y_scale > 0.0, y_scale, 1.0)
+        xs = design / x_scale
+        ys = target / y_scale
+        mask = np.ones(width)
+        mask[:offset] = 0.0
+        groups = self._lag_groups() if choice == "group" else None
+        if lam is None:
+            held_out = min(40, max(20, n_eff // 5))
+            if n_eff - held_out < width // 2 + 5:
+                held_out = n_eff - (width // 2 + 5)
+            if held_out < 5:
+                raise SpecificationError(
+                    "the sample is too short for rolling-origin penalty "
+                    "selection; state lam explicitly."
+                )
+            origin = n_eff - held_out
+            gram_sum = xs[:origin].T @ xs[:origin]
+            moment_sum = xs[:origin].T @ ys[:origin]
+            reference = np.abs(moment_sum / origin)[mask > 0.0]
+            lam_max = float(reference.max()) * 1.05
+            path = np.geomspace(lam_max, lam_max * lambda_min_ratio, n_lambdas)
+            errors = np.zeros(n_lambdas)
+            warm: list[npt.NDArray[np.float64] | None] = [None] * n_lambdas
+            for t in range(origin, n_eff):
+                gram = gram_sum / t
+                moment = moment_sum / t
+                for position, level in enumerate(path):
+                    warm[position] = self._solve_penalized(
+                        gram,
+                        moment,
+                        penalty=choice,
+                        lam=float(level),
+                        mask=mask,
+                        groups=groups,
+                        start=warm[position],
+                    )
+                    forecast_error = ys[t] - xs[t] @ warm[position]
+                    errors[position] += float(forecast_error @ forecast_error)
+                gram_sum += np.outer(xs[t], xs[t])
+                moment_sum += np.outer(xs[t], ys[t])
+            best = int(np.argmin(errors))
+            lam = float(path[best])
+        else:
+            path = np.zeros(0)
+            errors = np.zeros(0)
+        gram = xs.T @ xs / n_eff
+        moment = xs.T @ ys / n_eff
+        solution = self._solve_penalized(
+            gram, moment, penalty=choice, lam=lam, mask=mask, groups=groups, start=None
+        )
+        coef = solution * y_scale[None, :] / x_scale[:, None]
+        fitted = design @ coef
+        resid = target - fitted
+        nonzero = int(np.count_nonzero(solution[offset:]))
+        spent = offset * k + nonzero
+        return _VectorSparseFit(
+            coefficient_stack=self._lag_blocks(coef),
+            deterministic=coef[:offset],
+            sigma_u=resid.T @ resid / max(n_eff - spent / k, 1.0),
+            resid=resid,
+            fittedvalues=fitted,
+            penalty=choice,
+            lam=float(lam),
+            lambda_path=path,
+            cv_errors=errors,
+            n_nonzero=nonzero,
+            nobs=n_eff,
+        )
+
+    def _fit_graphical(
+        self,
+        *,
+        lam: float | None,
+        n_lambdas: int,
+        lambda_min_ratio: float,
+        n_folds: int,
+        seed: int | np.random.Generator | None,
+    ) -> _VectorGraphicalFit:
+        """Sparse dynamics, then a sparse residual precision by nodewise lasso.
+
+        Stage one is the lasso VAR of :meth:`_fit_sparse`; stage two runs
+        Meinshausen-Buhlmann nodewise regressions on its residuals -- each
+        residual on all the others, lasso-penalized, penalty chosen by plain
+        K-fold cross-validation, which is legitimate here precisely because
+        residual rows carry no serial ordering worth respecting once the
+        dynamics are removed. The precision follows from the nodewise slopes
+        and is symmetrized by averaging.
+
+        Args:
+            lam: Stage-one penalty level, or ``None`` for rolling selection.
+            n_lambdas: Candidate levels for both stages' paths.
+            lambda_min_ratio: Path floor as a fraction of the zeroing level.
+            n_folds: Cross-validation folds for the nodewise stage.
+            seed: Seed or generator for the fold shuffle.
+
+        Returns:
+            The packed :class:`_VectorGraphicalFit`.
+
+        Raises:
+            SpecificationError: If a stage's specification is malformed.
+        """
+        if n_folds < 2:
+            raise SpecificationError(f"n_folds must be at least 2; got {n_folds}.")
+        stage_one = self._fit_sparse(
+            penalty="lasso",
+            lam=lam,
+            n_lambdas=n_lambdas,
+            lambda_min_ratio=lambda_min_ratio,
+        )
+        resid = stage_one.resid
+        n, k = resid.shape
+        rng = np.random.default_rng(seed)
+        assignment = rng.permutation(n) % n_folds
+        slopes = np.zeros((k, k))
+        node_variance = np.empty(k)
+        lam_nodes = np.empty(k)
+        ones = np.ones(1)
+        for i in range(k):
+            others = np.delete(np.arange(k), i)
+            x_node = resid[:, others]
+            scale = x_node.std(axis=0, ddof=0)
+            scale = np.where(scale > 0.0, scale, 1.0)
+            x_node = x_node / scale
+            y_node = resid[:, i][:, None]
+            lam_max = float(np.abs(x_node.T @ y_node / n).max()) * 1.05
+            path = np.geomspace(lam_max, lam_max * lambda_min_ratio, n_lambdas)
+            errors = np.zeros(n_lambdas)
+            for fold in range(n_folds):
+                train = assignment != fold
+                rows = int(train.sum())
+                gram = x_node[train].T @ x_node[train] / rows
+                moment = x_node[train].T @ y_node[train] / rows
+                start = None
+                for position, level in enumerate(path):
+                    start = _fista_penalized(
+                        gram,
+                        moment,
+                        lam=float(level),
+                        weights=ones.repeat(k - 1),
+                        start=start,
+                    )
+                    held = y_node[~train] - x_node[~train] @ start
+                    errors[position] += float((held**2).sum())
+            best = int(np.argmin(errors))
+            lam_nodes[i] = float(path[best])
+            gram = x_node.T @ x_node / n
+            moment = x_node.T @ y_node / n
+            gamma = _fista_penalized(gram, moment, lam=lam_nodes[i], weights=ones.repeat(k - 1))[
+                :, 0
+            ]
+            node_resid = resid[:, i] - (x_node * gamma[None, :]).sum(axis=1)
+            node_variance[i] = float(np.mean(node_resid**2))
+            slopes[i, others] = gamma / scale
+        precision = np.diag(1.0 / np.maximum(node_variance, 1e-12))
+        for i in range(k):
+            precision[i, :] -= slopes[i, :] / max(node_variance[i], 1e-12)
+            precision[i, i] = 1.0 / max(node_variance[i], 1e-12)
+        precision = 0.5 * (precision + precision.T)
+        diagonal = np.sqrt(np.diag(precision))
+        partial = -precision / np.outer(diagonal, diagonal)
+        np.fill_diagonal(partial, 1.0)
+        return _VectorGraphicalFit(
+            coefficient_stack=stage_one.coefficient_stack,
+            deterministic=stage_one.deterministic,
+            sigma_u=stage_one.sigma_u,
+            resid=stage_one.resid,
+            fittedvalues=stage_one.fittedvalues,
+            penalty=stage_one.penalty,
+            lam=stage_one.lam,
+            lambda_path=stage_one.lambda_path,
+            cv_errors=stage_one.cv_errors,
+            n_nonzero=stage_one.n_nonzero,
+            nobs=stage_one.nobs,
+            precision=precision,
+            partial_correlations=partial,
+            lam_nodes=lam_nodes,
         )
 
 

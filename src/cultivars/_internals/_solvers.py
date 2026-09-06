@@ -310,3 +310,81 @@ def _conjugate_posterior(
         df=df,
         log_ml=float(log_ml),
     )
+
+
+def _fista_penalized(
+    gram: npt.NDArray[np.float64],
+    moment: npt.NDArray[np.float64],
+    *,
+    lam: float,
+    weights: npt.NDArray[np.float64],
+    groups: tuple[npt.NDArray[np.intp], ...] | None = None,
+    start: npt.NDArray[np.float64] | None = None,
+    max_iter: int = 500,
+    tol: float = 1e-8,
+) -> npt.NDArray[np.float64]:
+    """Penalized multivariate least squares by accelerated proximal gradient.
+
+    Minimizes ``sum_i [ b_i' G b_i / 2 - c_i' b_i ] + lam * P(B)`` over the
+    ``(w, k)`` coefficient matrix, where ``P`` is a weighted elementwise
+    L1 penalty -- or, when ``groups`` is given, a group penalty whose blocks
+    are rows shared by every equation, shrunk by Frobenius norm. FISTA with
+    adaptive restart, fully vectorized across coordinates and equations: one
+    iteration is one Gram product, which is what makes a cross-validation
+    path over hundreds of refits affordable in NumPy. A weight of zero
+    exempts a row from the penalty, which is how deterministic terms stay
+    unshrunk.
+
+    Args:
+        gram: ``(w, w)`` Gram matrix ``X'X / n`` of the (standardized)
+            design.
+        moment: ``(w, k)`` cross-moment ``X'Y / n``.
+        lam: Penalty level, non-negative.
+        weights: ``(w,)`` per-row or ``(w, k)`` per-coefficient penalty
+            weights; zeros are free. Per-coefficient weights are what the
+            adaptive and local-linear-approximation reweightings produce.
+        groups: Row-index blocks for the group penalty; ``None`` for the
+            elementwise penalty. Blocks must cover only penalized rows.
+        start: Warm start, ``(w, k)``; zeros when omitted.
+        max_iter: Iteration cap.
+        tol: Relative change below which the iteration stops.
+
+    Returns:
+        The ``(w, k)`` minimizer.
+
+    Raises:
+        NumericalError: If the Gram matrix has no positive curvature.
+    """
+    width, k = moment.shape
+    lipschitz = float(np.linalg.eigvalsh(gram)[-1])
+    if not lipschitz > 0.0:
+        raise NumericalError("the Gram matrix has no positive curvature.")
+    beta = np.zeros((width, k)) if start is None else start.copy()
+    point = beta.copy()
+    momentum = 1.0
+    step = 1.0 / lipschitz
+    for _ in range(max_iter):
+        gradient = gram @ point - moment
+        candidate = point - step * gradient
+        if groups is None:
+            threshold = lam * step * (weights if weights.ndim == 2 else weights[:, None])
+            updated = np.sign(candidate) * np.maximum(np.abs(candidate) - threshold, 0.0)
+        else:
+            updated = candidate.copy()
+            for block in groups:
+                norm = float(np.sqrt(np.sum(candidate[block] ** 2)))
+                cut = lam * step * np.sqrt(block.size * k)
+                updated[block] = (
+                    candidate[block] * max(0.0, 1.0 - cut / norm) if norm > 0.0 else 0.0
+                )
+        momentum_next = 0.5 * (1.0 + np.sqrt(1.0 + 4.0 * momentum**2))
+        accel = updated + ((momentum - 1.0) / momentum_next) * (updated - beta)
+        if float(np.sum((updated - beta) * (point - updated))) > 0.0:
+            accel = updated
+            momentum_next = 1.0
+        shift = float(np.abs(updated - beta).max())
+        scale_ref = max(float(np.abs(updated).max()), 1.0)
+        beta, point, momentum = updated, accel, momentum_next
+        if shift <= tol * scale_ref:
+            break
+    return beta

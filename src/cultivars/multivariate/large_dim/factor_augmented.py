@@ -74,6 +74,7 @@ from ..._core import (
     SummaryTable,
     Trend,
     _validate_wide_panel,
+    principal_components,
     validate_exog_matrix,
 )
 from ..._internals import _SummaryMixin
@@ -315,10 +316,8 @@ class FAVAR:
         standardized: npt.NDArray[np.float64], count: int
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         """Principal-component scores and variance shares of a panel."""
-        _, singular, vt = np.linalg.svd(standardized, full_matrices=False)
-        shares = singular**2 / float(np.sum(singular**2))
-        scores = standardized @ vt[:count].T
-        return scores, shares[:count]
+        scores, _, shares = principal_components(standardized, count)
+        return scores, shares
 
     def fit(self) -> FAVARResult:
         """Extract the factors, clean them, and estimate the augmented VAR.
