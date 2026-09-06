@@ -94,7 +94,7 @@ from ._objectives import (
     _ShortRunObjective,
 )
 from ._predictors import MeanPredictor
-from ._priors import _NoPrior, _Prior, _PriorContext
+from ._priors import _AdaptivePrior, _NoPrior, _Prior, _PriorContext
 from ._results import (
     _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
@@ -118,6 +118,7 @@ from ._tests import (
 
 __all__ = [
     "MeanPredictor",
+    "_AdaptivePrior",
     "_AutoRegressionFit",
     "_AutoRegressionModel",
     "_BayesianVectorAutoRegressionModel",

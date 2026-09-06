@@ -8,11 +8,23 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from .._core import _draw_generalized_inverse_gaussian
+from .._internals import _AdaptivePrior, _Prior, _PriorContext
 from .._internals import _NoPrior as NoPrior
-from .._internals import _Prior, _PriorContext
 from ..exceptions import DimensionError, SpecificationError
 
-__all__ = ["MinnesotaPrior", "NoPrior"]
+__all__ = [
+    "DirichletLaplacePrior",
+    "DummyInitialObservationPrior",
+    "HorseshoePrior",
+    "IndependentNormalWishartPrior",
+    "MinnesotaPrior",
+    "NoPrior",
+    "NormalGammaPrior",
+    "NormalInverseWishartPrior",
+    "SpikeAndSlabPrior",
+    "SumOfCoefficientsPrior",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -385,3 +397,540 @@ class DummyInitialObservationPrior(_Prior):
     def _label(self) -> str:
         """Short description for a summary table."""
         return f"dio({self.tightness:g})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class IndependentNormalWishartPrior(_Prior):
+    """Litterman's full prior under an independent inverse-Wishart pairing.
+
+    The variances are exactly :class:`MinnesotaPrior`'s, cross-equation
+    weight included -- and that is the point. The conjugate
+    Normal-inverse-Wishart pairing had to pin that weight to one because it
+    ties the coefficient variance to ``Sigma`` through a Kronecker product;
+    stating the prior on the coefficients *independently* of ``Sigma``
+    drops the factorization requirement, at the price of the closed form:
+    the posterior is reached by Gibbs sampling (coefficients given
+    covariance by generalized least squares, covariance given coefficients
+    by inverse-Wishart) rather than exactly, and there is no closed-form
+    marginal likelihood to report. That trade -- Litterman's economics
+    back, the evidence gone -- is the standard one (Koop & Korobilis 2010),
+    and this class is its name.
+
+    Attributes:
+        tightness: Overall confidence, ``lambda_1``.
+        cross_equation: How much harder cross-variable coefficients shrink,
+            ``lambda_2`` -- the hyperparameter this pairing exists to keep.
+        decay: Lag decay, ``lambda_3``.
+        exogenous: Looseness of the intercept and exogenous block,
+            ``lambda_4``.
+        sum_of_coefficients: The no-cointegration restriction, ``lambda_5``;
+            ``None`` omits it.
+        persistence: Prior mean of each variable's own first lag.
+    """
+
+    tightness: float = 0.2
+    cross_equation: float = 0.5
+    decay: float = 1.0
+    exogenous: float = 100.0
+    sum_of_coefficients: float | None = None
+    persistence: float | Sequence[float] = 1.0
+
+    def _minnesota(self) -> MinnesotaPrior:
+        """The Minnesota prior whose moments this prior states."""
+        return MinnesotaPrior(
+            tightness=self.tightness,
+            cross_equation=self.cross_equation,
+            decay=self.decay,
+            exogenous=self.exogenous,
+            sum_of_coefficients=self.sum_of_coefficients,
+            persistence=self.persistence,
+        )
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Each variable's own first lag at ``persistence``, everything else zero."""
+        return self._minnesota().coefficient_mean(context)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Litterman's variances, the cross-equation weight kept."""
+        return self._minnesota().coefficient_variance(context)
+
+    def dummy_observations(
+        self, context: _PriorContext
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """The sum-of-coefficients rows, when that restriction is asked for."""
+        return self._minnesota().dummy_observations(context)
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        tail = "" if self.sum_of_coefficients is None else f", l5={self.sum_of_coefficients:g}"
+        return (
+            f"inw(l1={self.tightness:g}, l2={self.cross_equation:g}, "
+            f"l3={self.decay:g}, l4={self.exogenous:g}{tail})"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class HorseshoePrior(_AdaptivePrior):
+    """The horseshoe: aggressive shrinkage that lets large signals through.
+
+    Each standardized coefficient gets a half-Cauchy local scale and the
+    whole lag block shares a half-Cauchy global one (Carvalho, Polson &
+    Scott 2010). The Cauchy tails are the substance: mass piles up at zero
+    hard enough to wipe out noise coefficients, while the poles let a
+    genuinely large coefficient escape shrinkage almost entirely -- the
+    behavior the Minnesota family cannot produce, because a Gaussian
+    variance shrinks everything proportionally. No hyperparameters to tune
+    is the other selling point, and it is real: the global scale learns the
+    overall sparsity from the data.
+
+    Sampling uses the Makalic-Schmidt inverse-Gamma augmentation, under
+    which every conditional in the hierarchy is inverse-Gamma -- exact
+    draws, no tuning, no rejection.
+
+    Attributes:
+        deterministic_scale: Looseness of the unshrunk deterministic and
+            exogenous rows, in units of each equation's residual scale.
+
+    References:
+        Carvalho, C. M., Polson, N. G., & Scott, J. G. (2010). The horseshoe
+            estimator for sparse signals. *Biometrika*, 97(2), 465-480.
+        Makalic, E., & Schmidt, D. F. (2016). A simple sampler for the
+            horseshoe estimator. *IEEE Signal Processing Letters*, 23(1),
+            179-182.
+    """
+
+    deterministic_scale: float = 10.0
+
+    def _check(self) -> None:
+        """Reject a non-positive deterministic scale.
+
+        Raises:
+            SpecificationError: If ``deterministic_scale`` is not positive.
+        """
+        if self.deterministic_scale <= 0.0:
+            raise SpecificationError(
+                f"deterministic_scale must be positive; got {self.deterministic_scale}."
+            )
+
+    def _initial_scales(
+        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """Unit local scales, unit global scale."""
+        self._check()
+        shape = (context.k_endog * context.order, context.k_endog)
+        return {
+            "lam2": np.ones(shape, dtype=np.float64),
+            "nu": np.ones(shape, dtype=np.float64),
+            "tau2": np.ones(1, dtype=np.float64),
+            "xi": np.ones(1, dtype=np.float64),
+        }
+
+    def _draw_scales(
+        self,
+        standardized: npt.NDArray[np.float64],
+        context: _PriorContext,
+        rng: np.random.Generator,
+        scales: dict[str, npt.NDArray[np.float64]],
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """Makalic-Schmidt: four inverse-Gamma blocks, all exact."""
+        offset = context.lag_offset
+        block = standardized[offset : offset + context.k_endog * context.order]
+        squared = block**2
+        count = block.size
+        tau2 = float(scales["tau2"][0])
+        lam2 = (1.0 / scales["nu"] + squared / (2.0 * tau2)) / rng.standard_gamma(
+            1.0, size=squared.shape
+        )
+        nu = (1.0 + 1.0 / lam2) / rng.standard_gamma(1.0, size=squared.shape)
+        rate = float(scales["xi"][0]) ** -1 + float(np.sum(squared / lam2)) / 2.0
+        tau2 = rate / float(rng.standard_gamma((count + 1.0) / 2.0))
+        xi = (1.0 + 1.0 / tau2) / float(rng.standard_gamma(1.0))
+        return {
+            "lam2": lam2,
+            "nu": nu,
+            "tau2": np.array([tau2]),
+            "xi": np.array([xi]),
+        }
+
+    def _scale_variance(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """``ratio**2 * tau**2 * lambda**2`` on the lag block, loose elsewhere."""
+        ratio = self._unit_ratio(context)
+        out = (self.deterministic_scale * ratio) ** 2
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        out[offset:stop] = ratio[offset:stop] ** 2 * float(scales["tau2"][0]) * scales["lam2"]
+        return out
+
+    def _tracked(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The local-global scale ``tau * lambda`` per lag coefficient."""
+        out = np.zeros((context.width, context.k_endog), dtype=np.float64)
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        out[offset:stop] = np.sqrt(float(scales["tau2"][0]) * scales["lam2"])
+        return out
+
+    def _tracked_label(self) -> str:
+        """What the averaged diagnostic is."""
+        return "posterior mean local-global scale of the standardized coefficient"
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return "horseshoe"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class SpikeAndSlabPrior(_AdaptivePrior):
+    """Stochastic search variable selection: exclusion as a latent state.
+
+    George, Sun and Ni's (2008) BVAR prior. Each lag coefficient carries a
+    Bernoulli indicator choosing between a spike -- a normal tight enough
+    around zero that the coefficient is effectively excluded -- and a slab
+    loose enough that it is effectively free; the Gibbs sweep redraws the
+    indicators from their exact conditionals, and their average over kept
+    sweeps is a posterior inclusion probability per coefficient, which is
+    this prior's distinctive output and what
+    :meth:`~cultivars.multivariate.large_dim.GibbsBVARResult.inclusion_probabilities`
+    reports. SSVS is this object's sampler, not a second prior; the two
+    names in the literature name one thing.
+
+    The spike and slab widths follow the semiautomatic default: each
+    coefficient's least-squares standard error, times ``spike`` and
+    ``slab``. The inclusion probability is a fixed hyperparameter rather
+    than being given its own Beta layer, matching the reference treatment.
+
+    Attributes:
+        spike: Spike width as a multiple of the coefficient's reference
+            standard error; small is a harder exclusion.
+        slab: Slab width on the same scale; large is freer.
+        inclusion: Prior inclusion probability of each lag coefficient.
+        deterministic_scale: Looseness of the unshrunk deterministic and
+            exogenous rows, in units of each equation's residual scale.
+
+    References:
+        George, E. I., Sun, D., & Ni, S. (2008). Bayesian stochastic search
+            for VAR model restrictions. *Journal of Econometrics*, 142(1),
+            553-580.
+    """
+
+    spike: float = 0.1
+    slab: float = 10.0
+    inclusion: float = 0.5
+    deterministic_scale: float = 10.0
+
+    def _check(self) -> None:
+        """Reject widths and probabilities that do not describe a prior.
+
+        Raises:
+            SpecificationError: If the widths are not ordered and positive
+                or the inclusion probability is not interior.
+        """
+        if not 0.0 < self.spike < self.slab:
+            raise SpecificationError(
+                f"spike and slab must satisfy 0 < spike < slab; got {self.spike}, {self.slab}."
+            )
+        if not 0.0 < self.inclusion < 1.0:
+            raise SpecificationError(
+                f"inclusion must be strictly between 0 and 1; got {self.inclusion}."
+            )
+        if self.deterministic_scale <= 0.0:
+            raise SpecificationError(
+                f"deterministic_scale must be positive; got {self.deterministic_scale}."
+            )
+
+    def _initial_scales(
+        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """Anchor both widths to the reference scale; start everything in."""
+        self._check()
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        anchor = np.maximum(reference[offset:stop] / self._unit_ratio(context)[offset:stop], 1e-8)
+        return {
+            "tau0": self.spike * anchor,
+            "tau1": self.slab * anchor,
+            "gamma": np.ones_like(anchor),
+            "prob": np.full_like(anchor, self.inclusion),
+        }
+
+    def _draw_scales(
+        self,
+        standardized: npt.NDArray[np.float64],
+        context: _PriorContext,
+        rng: np.random.Generator,
+        scales: dict[str, npt.NDArray[np.float64]],
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """Exact Bernoulli conditionals for the indicators."""
+        offset = context.lag_offset
+        block = standardized[offset : offset + context.k_endog * context.order]
+        tau0, tau1 = scales["tau0"], scales["tau1"]
+        gap = (
+            np.log(self.inclusion / (1.0 - self.inclusion))
+            + np.log(tau0 / tau1)
+            + block**2 / 2.0 * (1.0 / tau0**2 - 1.0 / tau1**2)
+        )
+        prob = 1.0 / (1.0 + np.exp(-np.clip(gap, -700.0, 700.0)))
+        gamma = (np.asarray(rng.random(block.shape), dtype=np.float64) < prob).astype(np.float64)
+        return {"tau0": tau0, "tau1": tau1, "gamma": gamma, "prob": prob}
+
+    def _scale_variance(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """Spike or slab variance per the current indicators, loose elsewhere."""
+        ratio = self._unit_ratio(context)
+        out = (self.deterministic_scale * ratio) ** 2
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        chosen = np.where(scales["gamma"] > 0.5, scales["tau1"] ** 2, scales["tau0"] ** 2)
+        out[offset:stop] = ratio[offset:stop] ** 2 * chosen
+        return out
+
+    def _tracked(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The Rao-Blackwellized inclusion probability per lag coefficient."""
+        out = np.zeros((context.width, context.k_endog), dtype=np.float64)
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        out[offset:stop] = scales["prob"]
+        return out
+
+    def _tracked_label(self) -> str:
+        """What the averaged diagnostic is."""
+        return "posterior inclusion probability"
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"ssvs(spike={self.spike:g}, slab={self.slab:g}, p={self.inclusion:g})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class DirichletLaplacePrior(_AdaptivePrior):
+    """Dirichlet-Laplace shrinkage: a simplex rations the prior's attention.
+
+    Bhattacharya, Pati, Pillai and Dunson's (2015) global-local prior. Each
+    standardized coefficient is Laplace-distributed with its own scale, the
+    scales are a global magnitude times a point on the simplex drawn from a
+    ``Dirichlet(concentration)``, and a small concentration makes the
+    simplex spiky: the prior can only pay attention to a few coefficients
+    at once, which is a budget constraint the horseshoe does not impose.
+    Among the continuous shrinkage priors it carries the strongest
+    theoretical warrant -- posterior contraction at the minimax rate for
+    sparse means when the concentration is set near ``1/m``.
+
+    Every conditional is exact: inverse-Gaussian for the local mixing
+    scales, generalized-inverse-Gaussian for the global magnitude and the
+    simplex.
+
+    Attributes:
+        concentration: The Dirichlet concentration; ``0.5`` is the paper's
+            default, and values near ``1 / (k**2 * order)`` are its
+            theory's.
+        deterministic_scale: Looseness of the unshrunk deterministic and
+            exogenous rows, in units of each equation's residual scale.
+
+    References:
+        Bhattacharya, A., Pati, D., Pillai, N. S., & Dunson, D. B. (2015).
+            Dirichlet-Laplace priors for optimal shrinkage. *Journal of the
+            American Statistical Association*, 110(512), 1479-1490.
+    """
+
+    concentration: float = 0.5
+    deterministic_scale: float = 10.0
+
+    def _check(self) -> None:
+        """Reject hyperparameters that do not describe a prior.
+
+        Raises:
+            SpecificationError: If the concentration or the deterministic
+                scale is not positive.
+        """
+        if self.concentration <= 0.0:
+            raise SpecificationError(f"concentration must be positive; got {self.concentration}.")
+        if self.deterministic_scale <= 0.0:
+            raise SpecificationError(
+                f"deterministic_scale must be positive; got {self.deterministic_scale}."
+            )
+
+    def _initial_scales(
+        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """Uniform simplex, unit local scales, unit global magnitude."""
+        self._check()
+        shape = (context.k_endog * context.order, context.k_endog)
+        count = shape[0] * shape[1]
+        return {
+            "psi": np.ones(shape, dtype=np.float64),
+            "phi": np.full(shape, 1.0 / count, dtype=np.float64),
+            "tau": np.ones(1, dtype=np.float64),
+        }
+
+    def _draw_scales(
+        self,
+        standardized: npt.NDArray[np.float64],
+        context: _PriorContext,
+        rng: np.random.Generator,
+        scales: dict[str, npt.NDArray[np.float64]],
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """The exact conditionals of Bhattacharya et al. (2015)."""
+        offset = context.lag_offset
+        block = standardized[offset : offset + context.k_endog * context.order]
+        magnitude = np.maximum(np.abs(block), 1e-10)
+        count = block.size
+        a = self.concentration
+        phi, tau = scales["phi"], float(scales["tau"][0])
+        mean = np.minimum(phi * tau / magnitude, 1e8)
+        psi = 1.0 / np.maximum(np.asarray(rng.wald(mean, 1.0), dtype=np.float64), 1e-300)
+        tau = float(
+            _draw_generalized_inverse_gaussian(
+                count * (a - 1.0),
+                1.0,
+                2.0 * float(np.sum(magnitude / phi)),
+                rng,
+            )
+        )
+        raw = _draw_generalized_inverse_gaussian(a - 1.0, 1.0, 2.0 * magnitude, rng)
+        phi = raw / float(np.sum(raw))
+        return {"psi": psi, "phi": phi, "tau": np.array([tau])}
+
+    def _scale_variance(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """``ratio**2 * psi * (phi * tau)**2`` on the lag block, loose elsewhere."""
+        ratio = self._unit_ratio(context)
+        out = (self.deterministic_scale * ratio) ** 2
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        out[offset:stop] = (
+            ratio[offset:stop] ** 2 * scales["psi"] * (scales["phi"] * float(scales["tau"][0])) ** 2
+        )
+        return out
+
+    def _tracked(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The local-global scale per lag coefficient."""
+        out = np.zeros((context.width, context.k_endog), dtype=np.float64)
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        out[offset:stop] = np.sqrt(scales["psi"]) * scales["phi"] * float(scales["tau"][0])
+        return out
+
+    def _tracked_label(self) -> str:
+        """What the averaged diagnostic is."""
+        return "posterior mean local-global scale of the standardized coefficient"
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"dl(a={self.concentration:g})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class NormalGammaPrior(_AdaptivePrior):
+    """Normal-Gamma shrinkage: the Bayesian lasso's adjustable-kurtosis parent.
+
+    Griffin and Brown's (2010) prior: each standardized coefficient is
+    normal with its own variance, and the variances are Gamma with shape
+    ``shape``. At ``shape = 1`` the marginal is exactly the Laplace of the
+    Bayesian lasso; pushing the shape below one puts more mass near zero
+    and fattens the tails simultaneously, which is the knob the lasso
+    lacks. The Gamma rate is the global tightness and gets its own Gamma
+    hyperprior, so overall shrinkage is learned rather than tuned. The
+    variance conditionals are generalized-inverse-Gaussian, drawn exactly.
+
+    Attributes:
+        shape: The Gamma shape of the local variances; ``1`` is the
+            Bayesian lasso, smaller is spikier with fatter tails.
+        deterministic_scale: Looseness of the unshrunk deterministic and
+            exogenous rows, in units of each equation's residual scale.
+
+    References:
+        Griffin, J. E., & Brown, P. J. (2010). Inference with normal-gamma
+            prior distributions in regression problems. *Bayesian
+            Analysis*, 5(1), 171-188.
+    """
+
+    shape: float = 0.1
+    deterministic_scale: float = 10.0
+
+    def _check(self) -> None:
+        """Reject hyperparameters that do not describe a prior.
+
+        Raises:
+            SpecificationError: If the shape or the deterministic scale is
+                not positive.
+        """
+        if self.shape <= 0.0:
+            raise SpecificationError(f"shape must be positive; got {self.shape}.")
+        if self.deterministic_scale <= 0.0:
+            raise SpecificationError(
+                f"deterministic_scale must be positive; got {self.deterministic_scale}."
+            )
+
+    def _initial_scales(
+        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """Minnesota-tightness local variances; the rate that implies them."""
+        self._check()
+        shape = (context.k_endog * context.order, context.k_endog)
+        start = 0.04
+        return {
+            "psi": np.full(shape, start, dtype=np.float64),
+            "rate": np.array([self.shape / start]),
+        }
+
+    def _draw_scales(
+        self,
+        standardized: npt.NDArray[np.float64],
+        context: _PriorContext,
+        rng: np.random.Generator,
+        scales: dict[str, npt.NDArray[np.float64]],
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """GIG conditionals for the variances, Gamma for the global rate.
+
+        Squared deviations are floored at ``1e-11``: at an exact zero the
+        variance conditional is improper for ``shape < 1/2`` (a known
+        boundary of the hierarchy), and the floor -- three parts per
+        million on the standardized scale -- restores it without moving
+        anything statistically visible.
+        """
+        offset = context.lag_offset
+        block = standardized[offset : offset + context.k_endog * context.order]
+        count = block.size
+        rate = float(scales["rate"][0])
+        squared = np.maximum(block**2, 1e-11)
+        psi = _draw_generalized_inverse_gaussian(self.shape - 0.5, 2.0 * rate, squared, rng)
+        rate = float(rng.gamma(2.0 + count * self.shape, 1.0 / (1.0 + float(np.sum(psi)))))
+        return {"psi": psi, "rate": np.array([rate])}
+
+    def _scale_variance(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """``ratio**2 * psi`` on the lag block, loose elsewhere."""
+        ratio = self._unit_ratio(context)
+        out = (self.deterministic_scale * ratio) ** 2
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        out[offset:stop] = ratio[offset:stop] ** 2 * scales["psi"]
+        return out
+
+    def _tracked(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The local scale per lag coefficient."""
+        out = np.zeros((context.width, context.k_endog), dtype=np.float64)
+        offset = context.lag_offset
+        stop = offset + context.k_endog * context.order
+        out[offset:stop] = np.sqrt(scales["psi"])
+        return out
+
+    def _tracked_label(self) -> str:
+        """What the averaged diagnostic is."""
+        return "posterior mean local-global scale of the standardized coefficient"
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"ng(theta={self.shape:g})"

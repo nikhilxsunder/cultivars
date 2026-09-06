@@ -233,3 +233,138 @@ class _NoPrior(_Prior):
     def _components(self) -> tuple[_Prior, ...]:
         """Contribute nothing to a composition."""
         return ()
+
+
+class _AdaptivePrior(_Prior):
+    """A prior whose coefficient variances are Gibbs conditionals, not constants.
+
+    The global-local and selection priors -- horseshoe, spike-and-slab,
+    Dirichlet-Laplace, Normal-Gamma -- have no fixed variance to state: each
+    coefficient's variance is a product of latent scales with their own full
+    conditionals, redrawn every sweep. This class is the moments interface's
+    promise kept: the static hooks report the variance *at the initial
+    scales* (which is what admissibility checks need), and the sampler
+    drives the three adaptive hooks -- initialize the scales, redraw them
+    given the current coefficients, and read the variance they imply.
+
+    The latent state travels as a plain mapping of named arrays owned by the
+    sampler, so the prior object itself stays frozen and reusable across
+    fits. Two conventions keep every subclass unit-honest and aligned with
+    the family's grammar: shrinkage applies to the *standardized* coefficient
+    -- the raw coefficient divided by the Minnesota scale ratio
+    ``s_i / s_j``, so one latent scale means the same thing whatever the
+    variables' units -- and only the endogenous lag block is shrunk, with
+    deterministic and exogenous columns held at a fixed loose variance,
+    exactly where the Minnesota prior leaves them.
+
+    Adaptive priors do not compose: ``+`` builds a :class:`_CompositePrior`,
+    which has no conditionals to expose, and the sampler refuses the result
+    rather than silently freezing the scales.
+    """
+
+    __slots__ = ()
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Zero everywhere: sparsity's claim is that coefficients are zero.
+
+        There is no persistence hyperparameter here on purpose. Centering a
+        selection prior away from zero would change what an exclusion means,
+        so a caller who wants random-walk centering should difference the
+        data or use the Minnesota family instead.
+        """
+        return np.zeros((context.width, context.k_endog), dtype=np.float64)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """The variance at the initial scales -- finite, so shrunk-admissible."""
+        return self._scale_variance(
+            self._initial_scales(context, self._unit_ratio(context)), context
+        )
+
+    def _unit_ratio(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Minnesota's unit fix as a matrix: ``s_i / s_j`` on the lag block.
+
+        Entry ``[column, i]`` scales equation ``i``'s coefficient on that
+        design column: ``s_i / s_j`` when the column is a lag of variable
+        ``j``, and ``s_i`` on the deterministic and exogenous columns, where
+        the coefficient itself carries the equation's units.
+        """
+        scales = context.scales
+        out = np.tile(scales[None, :], (context.width, 1)).astype(np.float64)
+        offset = context.lag_offset
+        for lag in range(context.order):
+            for source in range(context.k_endog):
+                column = offset + lag * context.k_endog + source
+                out[column] = scales / scales[source]
+        return out
+
+    def _penalized_mask(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Ones on the endogenous lag rows, zeros elsewhere."""
+        mask = np.zeros(context.width, dtype=np.float64)
+        offset = context.lag_offset
+        mask[offset : offset + context.k_endog * context.order] = 1.0
+        return mask
+
+    @abstractmethod
+    def _initial_scales(
+        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """The latent scales the sampler starts from.
+
+        Args:
+            context: What the prior needs to know about the sample.
+            reference: ``(width, k)`` data-driven reference scales for each
+                coefficient -- least-squares standard errors when the
+                sampler can compute them, the unit ratio otherwise. The
+                spike-and-slab prior anchors its two variances here
+                (George-Sun-Ni's semiautomatic default); the global-local
+                priors ignore it.
+
+        Returns:
+            Named arrays, owned by the sampler and passed back verbatim.
+        """
+
+    @abstractmethod
+    def _draw_scales(
+        self,
+        standardized: npt.NDArray[np.float64],
+        context: _PriorContext,
+        rng: np.random.Generator,
+        scales: dict[str, npt.NDArray[np.float64]],
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """One sweep of the latent scales' full conditionals.
+
+        Args:
+            standardized: ``(width, k)`` current coefficients divided by the
+                unit ratio, so the conditionals see unit-free magnitudes.
+            context: What the prior needs to know about the sample.
+            rng: Random generator.
+            scales: The current latent state.
+
+        Returns:
+            The refreshed latent state.
+        """
+
+    @abstractmethod
+    def _scale_variance(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The ``(width, k)`` coefficient variance the current scales imply.
+
+        On the raw-coefficient scale: the unit ratio squared multiplies the
+        latent variance on the lag block, and the deterministic and
+        exogenous rows carry their fixed loose variance.
+        """
+
+    @abstractmethod
+    def _tracked(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The ``(width, k)`` per-coefficient diagnostic worth averaging.
+
+        Inclusion probabilities for a selection prior, local scales for a
+        global-local one; the sampler averages this over kept sweeps.
+        """
+
+    @abstractmethod
+    def _tracked_label(self) -> str:
+        """What the averaged diagnostic *is*, for the result's summary."""

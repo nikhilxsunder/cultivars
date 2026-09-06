@@ -46,7 +46,10 @@ from ._defaults import (
     _DEFAULT_TOL,
     _DEFAULT_TRIM,
     _DEFAULT_TRUNCATION,
+    _GIG_MAX_ROUNDS,
+    _GIG_TINY,
     _KSC_MEAN,
+    _KSC_PROB,
     _KSC_VAR,
     _LOG_2PI,
     _OFFSET,
@@ -125,7 +128,12 @@ from ._recursions import (
 from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
 from ._resolvers import _resolve_ordering
 from ._rotations import _accepted_rotations, _haar_rotation, _narrative_rotations
-from ._samplers import _draw_inverse_gamma, _draw_inverse_wishart, _draw_mixture_indicators
+from ._samplers import (
+    _draw_generalized_inverse_gaussian,
+    _draw_inverse_gamma,
+    _draw_inverse_wishart,
+    _draw_mixture_indicators,
+)
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
     CointegrationTrend,
@@ -179,8 +187,11 @@ __all__ = [
     "_DEFAULT_TRIM",
     "_DEFAULT_TRUNCATION",
     "_D_MAX",
+    "_GIG_MAX_ROUNDS",
+    "_GIG_TINY",
     "_HR_CONDITIONAL_NOTE",
     "_KSC_MEAN",
+    "_KSC_PROB",
     "_KSC_VAR",
     "_LEVELS_TREND",
     "_LOG_2PI",
@@ -227,6 +238,7 @@ __all__ = [
     "_arch_infinity_weights",
     "_companion_spectral_radius",
     "_cumulant_slices",
+    "_draw_generalized_inverse_gaussian",
     "_draw_inverse_gamma",
     "_draw_inverse_wishart",
     "_draw_mixture_indicators",

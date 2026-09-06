@@ -136,6 +136,7 @@ from ._fits import (
     _VectorConjugateFit,
     _VectorErrorCorrectionFit,
     _VectorFunctionalFit,
+    _VectorGibbsFit,
     _VectorGraphicalFit,
     _VectorHierarchicalFit,
     _VectorMarkovSwitchingFit,
@@ -162,7 +163,7 @@ from ._objectives import (
 from ._posteriors import (
     _ConjugatePosterior,
 )
-from ._priors import _NoPrior, _Prior, _PriorContext
+from ._priors import _AdaptivePrior, _NoPrior, _Prior, _PriorContext
 from ._results import (
     _DurbinKoopmanSmootherResult,
     _FilterResult,
@@ -2765,6 +2766,7 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
             scales=minnesota_scales(self._endog, self._order),
             presample_mean=self._endog[: self._order].mean(axis=0),
             k_exog=self.n_regressors - self._n_deterministic_columns - self.k_endog * self._order,
+            n_deterministic=self._n_deterministic_columns,
             include_constant=self._n_deterministic_columns > 0,
         )
 
@@ -4722,6 +4724,201 @@ class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             loss=loss,
             loss_location=loss_location,
             nobs=n_eff,
+        )
+
+
+class _GibbsBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
+    """Estimation engine of the non-conjugate Gibbs-sampled BVAR.
+
+    The coefficient prior here is stated *independently* of the innovation
+    covariance -- the independent Normal-Wishart pairing -- which is what
+    admits every prior the conjugate model must refuse: Litterman's
+    cross-equation weight, and the adaptive shrinkage hierarchies whose
+    variances are latent states rather than constants. The price is paid
+    honestly. The posterior is reached by Gibbs sampling instead of exactly
+    -- coefficients given covariance by one *joint* generalized-least-squares
+    draw across all equations (exact, ordering-free), covariance given
+    coefficients by inverse-Wishart, and, for an adaptive prior, its scale
+    hierarchy by its own exact conditionals -- and no marginal likelihood is
+    reported, because with the prior independent of the covariance the
+    evidence has no closed form and a simulated stand-in would not deserve
+    the name.
+
+    The joint coefficient draw factorizes nothing, so each sweep costs a
+    Cholesky of the ``(k * w, k * w)`` conditional precision. That is the
+    known cost of exactness at this generality (the corrigendum literature
+    is the cautionary tale for shortcuts), and it bounds the comfortable
+    system size well below the conjugate model's.
+
+    Dummy-observation rows from a static prior are stacked under the sample
+    and weighted by ``Sigma`` like any other row, which is exactly the
+    conjugate model's treatment; adaptive priors state no dummies by
+    construction.
+    """
+
+    __slots__ = ()
+
+    def _gibbs_static_inputs(
+        self, context: _PriorContext
+    ) -> tuple[
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+    ]:
+        """Validate a static prior and return its moments and dummy rows.
+
+        Returns:
+            ``(mean, variance, dummy_target, dummy_design)``.
+
+        Raises:
+            SpecificationError: If the prior is improper or mixes an
+                adaptive component into a composition.
+        """
+        prior = self._prior
+        if any(isinstance(part, _AdaptivePrior) for part in prior._components()):
+            raise SpecificationError(
+                "adaptive shrinkage priors do not compose: a composition has "
+                "no scale conditionals to sample. Pass the adaptive prior "
+                "alone, or compose only moment-and-dummy priors."
+            )
+        variance = prior.coefficient_variance(context)
+        if not np.all(np.isfinite(variance)) or np.any(variance <= 0.0):
+            raise SpecificationError(
+                "the prior leaves some coefficient variances infinite or "
+                "non-positive, so it is improper and has no posterior to "
+                "sample from; give every coefficient a finite prior variance."
+            )
+        dummy_target, dummy_design = prior.dummy_observations(context)
+        return prior.coefficient_mean(context), variance, dummy_target, dummy_design
+
+    def _fit_gibbs(
+        self,
+        *,
+        n_draws: int,
+        n_burn: int,
+        thin: int,
+        seed: int | np.random.Generator | None,
+    ) -> _VectorGibbsFit:
+        """Gibbs over coefficients, covariance, and any adaptive scale layer.
+
+        Args:
+            n_draws: Total sampler iterations.
+            n_burn: Burn-in iterations discarded.
+            thin: Keep every ``thin``-th post-burn draw.
+            seed: Seed or generator.
+
+        Returns:
+            The packed :class:`_VectorGibbsFit`.
+
+        Raises:
+            SpecificationError: If the draw bookkeeping is inconsistent or
+                the prior is unusable.
+            NumericalError: If a conditional draw collapses.
+        """
+        if n_draws <= n_burn:
+            raise SpecificationError(f"n_draws ({n_draws}) must exceed n_burn ({n_burn}).")
+        if thin < 1:
+            raise SpecificationError(f"thin must be at least 1; got {thin}.")
+        prior = self._prior
+        if not prior._components():
+            raise SpecificationError(
+                "a Bayesian VAR needs a proper prior; construct with "
+                "prior=IndependentNormalWishartPrior(...), an adaptive "
+                "shrinkage prior, or a composition -- an improper prior has "
+                "no posterior to sample from."
+            )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        target, design, n_eff = self._design()
+        context = self._prior_context()
+        k, width = self.k_endog, self.n_regressors
+        adaptive = prior if isinstance(prior, _AdaptivePrior) else None
+        if adaptive is not None:
+            gram_raw = design.T @ design
+            ridge = 1e-8 * float(np.trace(gram_raw)) / width
+            inverse = np.linalg.inv(gram_raw + ridge * np.eye(width))
+            reference = (
+                np.sqrt(np.maximum(np.diag(inverse), 0.0))[:, None] * context.scales[None, :]
+            )
+            ratio = adaptive._unit_ratio(context)
+            state = adaptive._initial_scales(context, reference)
+            mean = adaptive.coefficient_mean(context)
+            variance = adaptive._scale_variance(state, context)
+            dummy_target = np.zeros((0, k), dtype=np.float64)
+            dummy_design = np.zeros((0, width), dtype=np.float64)
+        else:
+            mean, variance, dummy_target, dummy_design = self._gibbs_static_inputs(context)
+            ratio = np.ones((width, k), dtype=np.float64)
+            state = {}
+        n_dummy = int(dummy_target.shape[0])
+        if n_dummy:
+            full_target = np.vstack([target, dummy_target])
+            full_design = np.vstack([design, dummy_design])
+        else:
+            full_target, full_design = target, design
+        n_samp = n_eff + n_dummy
+        gram = full_design.T @ full_design
+        moment = full_design.T @ full_target
+        scale0 = np.diag(context.scales**2)
+        df0 = float(k + 2)
+        sigma = scale0.copy()
+        mean_vector = mean.T.ravel()
+        keep = (n_draws - n_burn + thin - 1) // thin
+        beta_kept = np.empty((keep, width, k))
+        sigma_kept = np.empty((keep, k, k))
+        tracked_sum = np.zeros((width, k))
+        kept = 0
+        for iteration in range(n_draws):
+            precision_vector = (1.0 / variance).T.ravel()
+            sigma_inv = np.linalg.inv(sigma)
+            big = np.kron(sigma_inv, gram)
+            big[np.diag_indices_from(big)] += precision_vector
+            rhs = (sigma_inv @ moment.T).ravel() + precision_vector * mean_vector
+            try:
+                chol = np.linalg.cholesky(big)
+            except np.linalg.LinAlgError as error:
+                raise NumericalError(
+                    "the joint coefficient conditional lost positive "
+                    "definiteness; the sampler has collapsed."
+                ) from error
+            solution = np.linalg.solve(big, rhs)
+            shock = np.asarray(rng.standard_normal(k * width), dtype=np.float64)
+            beta = (solution + np.linalg.solve(chol.T, shock)).reshape(k, width).T
+            resid_all = full_target - full_design @ beta
+            sigma = _draw_inverse_wishart(scale0 + resid_all.T @ resid_all, df0 + n_samp, rng)
+            if adaptive is not None:
+                state = adaptive._draw_scales(beta / ratio, context, rng, state)
+                variance = adaptive._scale_variance(state, context)
+            if iteration >= n_burn and (iteration - n_burn) % thin == 0:
+                beta_kept[kept] = beta
+                sigma_kept[kept] = sigma
+                if adaptive is not None:
+                    tracked_sum += adaptive._tracked(state, context)
+                kept += 1
+        beta_mean = beta_kept.mean(axis=0)
+        fitted = design @ beta_mean
+        if adaptive is not None:
+            shrinkage = tracked_sum / keep
+            shrinkage_label = adaptive._tracked_label()
+        else:
+            shrinkage = np.zeros((0, 0), dtype=np.float64)
+            shrinkage_label = ""
+        return _VectorGibbsFit(
+            coefficient_stack=self._lag_blocks(beta_mean),
+            deterministic=beta_mean[: self._n_deterministic_columns],
+            beta_mean=beta_mean,
+            sigma_u=sigma_kept.mean(axis=0),
+            beta_draws=beta_kept,
+            sigma_draws=sigma_kept,
+            shrinkage=shrinkage,
+            shrinkage_label=shrinkage_label,
+            resid=target - fitted,
+            fittedvalues=fitted,
+            nobs=n_eff,
+            n_dummy=n_dummy,
+            n_draws=n_draws,
+            n_burn=n_burn,
+            thin=thin,
         )
 
 

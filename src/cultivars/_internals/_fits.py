@@ -815,3 +815,52 @@ class _VectorGraphicalFit(_VectorSparseFit):
     precision: npt.NDArray[np.float64]
     partial_correlations: npt.NDArray[np.float64]
     lam_nodes: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VectorGibbsFit:
+    """Raw posterior output of the non-conjugate Gibbs BVAR sampler.
+
+    Not a :class:`_BaseFit`, and -- unlike the conjugate record -- carrying
+    no marginal likelihood at all: with the coefficient prior independent of
+    the covariance, the evidence has no closed form, and a simulated
+    stand-in (harmonic means and their relatives) would not deserve the
+    name.
+
+    Attributes:
+        coefficient_stack: ``(p, k, k)`` lag stack at the posterior mean.
+        deterministic: ``(n_det, k)`` deterministic block at the posterior
+            mean.
+        beta_mean: ``(w, k)`` posterior mean coefficient matrix.
+        sigma_u: ``(k, k)`` posterior mean innovation covariance.
+        beta_draws: ``(S, w, k)`` kept coefficient draws.
+        sigma_draws: ``(S, k, k)`` kept covariance draws.
+        shrinkage: ``(w, k)`` posterior mean of the adaptive prior's
+            per-coefficient diagnostic -- inclusion probabilities for a
+            selection prior, local-global scales for a global-local one --
+            empty for a static prior.
+        shrinkage_label: What ``shrinkage`` is; empty for a static prior.
+        resid: Residuals at the posterior mean, over the sample rows only.
+        fittedvalues: One-step means at the posterior mean.
+        nobs: Effective sample size, dummy rows excluded.
+        n_dummy: Artificial rows the prior contributed.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    coefficient_stack: npt.NDArray[np.float64]
+    deterministic: npt.NDArray[np.float64]
+    beta_mean: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
+    beta_draws: npt.NDArray[np.float64]
+    sigma_draws: npt.NDArray[np.float64]
+    shrinkage: npt.NDArray[np.float64]
+    shrinkage_label: str
+    resid: npt.NDArray[np.float64]
+    fittedvalues: npt.NDArray[np.float64]
+    nobs: int
+    n_dummy: int
+    n_draws: int
+    n_burn: int
+    thin: int

@@ -130,3 +130,10 @@ _STUDENT_DF_GRID: npt.NDArray[np.float64] = np.concatenate(
     [np.arange(2.0, 30.0), np.array([30.0, 35.0, 40.0, 50.0, 60.0, 80.0, 100.0])]
 )
 """Grid of candidate degrees of freedom for the Student-t innovations."""
+
+
+_GIG_TINY = 1e-12
+"""Parameter floor below which a GIG boundary face is drawn as its limit."""
+
+_GIG_MAX_ROUNDS = 500
+"""Vectorized rejection rounds before a conditional is declared degenerate."""
