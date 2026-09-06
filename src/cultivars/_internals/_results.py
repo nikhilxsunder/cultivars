@@ -1496,26 +1496,26 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
         chol = np.linalg.cholesky(self.sigma_draws[draw])
         return np.asarray(rng.standard_normal((steps, self.k_endog)) @ chol.T, dtype=np.float64)
 
-    def forecast(
+    def forecast_paths(
         self,
         steps: int = 8,
         *,
         seed: int | np.random.Generator | None = None,
     ) -> npt.NDArray[np.float64]:
-        """The posterior predictive: parameter *and* shock uncertainty.
+        """The posterior predictive's raw simulated paths, one per kept draw.
 
         Each retained draw simulates its own future -- its coefficients, its
-        covariance, its innovations -- so the bands are bands of the
-        predictive distribution, which is the object a forecast evaluation
-        actually scores.
+        covariance, its innovations -- and this method hands the paths over
+        unsummarized: the object a forecast evaluation actually scores, and
+        what a fan chart takes quantiles of. :meth:`forecast` is these
+        paths' three-number summary.
 
         Args:
             steps: Horizons ahead.
             seed: Seed or generator for the predictive shocks.
 
         Returns:
-            An array of shape ``(steps, k, 3)`` whose last axis is
-            ``(16th percentile, mean, 84th percentile)``.
+            An array of shape ``(n_kept, steps, k)``.
 
         Raises:
             SpecificationError: If ``steps`` is not positive.
@@ -1540,6 +1540,32 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
                 paths[s, h] = value
                 if p:
                     history = [value, *history[:-1]]
+        return paths
+
+    def forecast(
+        self,
+        steps: int = 8,
+        *,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """The posterior predictive: parameter *and* shock uncertainty.
+
+        The three-number summary of :meth:`forecast_paths` -- the bands are
+        bands of the predictive distribution, which is the object a
+        forecast evaluation actually scores through the raw paths.
+
+        Args:
+            steps: Horizons ahead.
+            seed: Seed or generator for the predictive shocks.
+
+        Returns:
+            An array of shape ``(steps, k, 3)`` whose last axis is
+            ``(16th percentile, mean, 84th percentile)``.
+
+        Raises:
+            SpecificationError: If ``steps`` is not positive.
+        """
+        paths = self.forecast_paths(steps, seed=seed)
         return np.stack(
             [
                 np.quantile(paths, 0.16, axis=0),

@@ -5,6 +5,7 @@ from typing import Self
 
 import numpy as np
 import numpy.typing as npt
+import scipy.stats as sst
 
 from .._core import _DEFAULT_ALPHA, SummaryTable, companion_matrix
 from ..exceptions import DimensionError, NumericalError, SpecificationError
@@ -171,6 +172,33 @@ class _LikelihoodRatioTest:
         return (
             f"LikelihoodRatioTest(statistic={self.statistic:.4f}, df={self.df}, "
             f"pvalue={self.pvalue:.4g})"
+        )
+
+    @classmethod
+    def _berkowitz_test(cls, transformed: npt.NDArray[np.float64]) -> _LikelihoodRatioTest:
+        """Berkowitz's likelihood ratio on the normal-quantile transforms.
+
+        The unrestricted model is a Gaussian AR(1) with free mean, slope, and
+        variance, estimated by exact conditional maximum likelihood; the null
+        restricts to zero mean, zero slope, unit variance -- what a calibrated,
+        independent PIT series must look like on this scale.
+        """
+        z = transformed
+        lagged = z[:-1]
+        current = z[1:]
+        count = current.shape[0]
+        design = np.column_stack([np.ones(count), lagged])
+        coefficients, *_ = np.linalg.lstsq(design, current, rcond=None)
+        residual = current - design @ coefficients
+        variance = float(residual @ residual) / count
+        variance = max(variance, 1e-12)
+        llf_free = -0.5 * count * (np.log(2.0 * np.pi * variance) + 1.0)
+        llf_null = -0.5 * count * np.log(2.0 * np.pi) - 0.5 * float(current @ current)
+        statistic = max(2.0 * (llf_free - llf_null), 0.0)
+        return cls(
+            statistic=float(statistic),
+            df=3,
+            pvalue=float(sst.chi2.sf(statistic, 3)),
         )
 
 

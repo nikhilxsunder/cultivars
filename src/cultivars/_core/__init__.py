@@ -134,6 +134,7 @@ from ._samplers import (
     _draw_inverse_wishart,
     _draw_mixture_indicators,
 )
+from ._scores import crps_from_draws, energy_score, pit_from_draws
 from ._spectra import (
     _ideal_weights,
     _pairwise_measure,
@@ -284,7 +285,9 @@ __all__ = [
     "companion_matrix",
     "concentrated_gaussian",
     "conditional_design",
+    "crps_from_draws",
     "deterministic_columns",
+    "energy_score",
     "ergodic_distribution",
     "ewma_mean_square",
     "expand_ar",
@@ -302,6 +305,7 @@ __all__ = [
     "null_basis",
     "ols",
     "pack_stationary",
+    "pit_from_draws",
     "principal_components",
     "psd_sqrt",
     "sigmoid",
