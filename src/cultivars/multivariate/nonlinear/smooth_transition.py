@@ -76,6 +76,8 @@ from ..._internals import (
     _VectorSmoothTransitionFit,
 )
 
+__all__ = ["STVAR", "STVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class STVARResult(_VectorObservedRegimeResult):

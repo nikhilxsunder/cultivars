@@ -72,6 +72,8 @@ from ..._internals import (
 from ...bayes.priors import NormalInverseWishartPrior
 from ...exceptions import SpecificationError
 
+__all__ = ["StudentBVAR", "StudentBVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class StudentBVARResult(_VectorPosteriorDrawsResult):

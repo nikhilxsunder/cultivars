@@ -76,6 +76,8 @@ from ..._internals import (
 )
 from ...exceptions import SpecificationError
 
+__all__ = ["FunctionalCoefficientVAR", "FunctionalCoefficientVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class FunctionalCoefficientVARResult(_SummaryMixin):

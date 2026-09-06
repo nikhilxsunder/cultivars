@@ -73,6 +73,8 @@ from ..._internals import _SummaryMixin
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from .vector_autoregression import VAR, VARResult
 
+__all__ = ["FunctionalVAR", "FunctionalVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class FunctionalVARResult(_SummaryMixin):

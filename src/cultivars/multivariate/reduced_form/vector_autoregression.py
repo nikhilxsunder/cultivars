@@ -55,6 +55,8 @@ from ..._internals import (
 )
 from ...exceptions import DimensionError, SpecificationError
 
+__all__ = ["VAR", "VARX", "VARResult", "VARXResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class VARResult(

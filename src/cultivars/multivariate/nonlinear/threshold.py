@@ -72,6 +72,8 @@ from ..._internals import (
     _VectorThresholdFit,
 )
 
+__all__ = ["TVAR", "TVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class TVARResult(_VectorObservedRegimeResult):

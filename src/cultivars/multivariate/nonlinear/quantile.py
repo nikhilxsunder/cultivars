@@ -79,6 +79,8 @@ from ..._internals import (
 )
 from ...exceptions import SpecificationError
 
+__all__ = ["QVAR", "QVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class QVARResult(_SummaryMixin):

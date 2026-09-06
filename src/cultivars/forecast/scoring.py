@@ -65,6 +65,8 @@ from .._core import SummaryTable, crps_from_draws, energy_score
 from .._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError
 
+__all__ = ["DensityScore", "DensityScoreResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class DensityScoreResult(_SummaryMixin):

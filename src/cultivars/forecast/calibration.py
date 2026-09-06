@@ -62,6 +62,8 @@ from .._core import SummaryTable, pit_from_draws
 from .._internals import _LikelihoodRatioTest, _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
+__all__ = ["Calibration", "CalibrationResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class CalibrationResult(_SummaryMixin):

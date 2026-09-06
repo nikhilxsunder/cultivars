@@ -133,6 +133,7 @@ from ._samplers import (
     _draw_inverse_gamma,
     _draw_inverse_wishart,
     _draw_mixture_indicators,
+    _gamma_from_mode,
 )
 from ._scores import crps_from_draws, energy_score, pit_from_draws
 from ._spectra import (
@@ -252,6 +253,7 @@ __all__ = [
     "_draw_inverse_wishart",
     "_draw_mixture_indicators",
     "_face_projectors",
+    "_gamma_from_mode",
     "_gaussian_negloglik",
     "_haar_rotation",
     "_ideal_weights",

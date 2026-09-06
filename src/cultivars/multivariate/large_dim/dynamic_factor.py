@@ -74,6 +74,8 @@ from ...exceptions import DimensionError, SpecificationError
 from ..reduced_form import VAR
 from ..reduced_form.vector_autoregression import VARResult
 
+__all__ = ["DFM", "DFMResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class DFMResult(_SummaryMixin):

@@ -35,6 +35,8 @@ import numpy.typing as npt
 
 from ..exceptions import DimensionError, SpecificationError
 
+__all__ = ["fan_chart"]
+
 
 def fan_chart(
     paths: npt.ArrayLike,

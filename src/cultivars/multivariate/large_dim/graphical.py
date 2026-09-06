@@ -65,6 +65,8 @@ from ..._internals import (
 )
 from .sparse import SparseVARResult
 
+__all__ = ["GraphicalVAR", "GraphicalVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class GraphicalVARResult(SparseVARResult):

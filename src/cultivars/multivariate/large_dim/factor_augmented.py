@@ -81,6 +81,8 @@ from ..._internals import _SummaryMixin
 from ...exceptions import SpecificationError
 from ..reduced_form.vector_autoregression import VAR, VARResult
 
+__all__ = ["FAVAR", "FAVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class FAVARResult(_SummaryMixin):

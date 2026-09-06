@@ -15,6 +15,8 @@ from ...exceptions import SpecificationError
 from .error_correction import VECMXResult
 from .vector_autoregression import VARXResult
 
+__all__ = ["GVAR", "GVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class GVARResult(_SummaryMixin, _VectorPropagationMixin):

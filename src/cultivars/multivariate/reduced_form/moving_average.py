@@ -82,6 +82,8 @@ from ..._internals import (
 )
 from ...exceptions import SpecificationError
 
+__all__ = ["VARMA", "VARMAResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class VARMAResult(

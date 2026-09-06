@@ -77,6 +77,8 @@ from ..._internals import (
 from ...bayes.priors import NormalInverseWishartPrior
 from ...exceptions import SpecificationError
 
+__all__ = ["BVAR", "BVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class BVARResult(_SummaryMixin):

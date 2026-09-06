@@ -69,6 +69,8 @@ from ..._core import ClosedSystemResult, SummaryTable
 from ..._internals import _SummaryMixin
 from ...exceptions import SpecificationError
 
+__all__ = ["Spillover", "SpilloverResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class SpilloverResult(_SummaryMixin):

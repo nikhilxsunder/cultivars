@@ -81,6 +81,8 @@ from ..._internals import (
 from ...bayes.priors import MinnesotaPrior
 from ...exceptions import SpecificationError
 
+__all__ = ["BVARSV", "BVARSVResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class BVARSVResult(_VectorPosteriorDrawsResult):

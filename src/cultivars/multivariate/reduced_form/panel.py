@@ -25,6 +25,8 @@ from ..._internals import (
 )
 from ...exceptions import SpecificationError
 
+__all__ = ["PanelVAR", "PanelVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class PanelVARResult(

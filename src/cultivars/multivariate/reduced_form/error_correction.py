@@ -34,6 +34,8 @@ from ..._internals import (
 )
 from ...exceptions import DimensionError, SpecificationError
 
+__all__ = ["VECM", "VECMX", "VECMResult", "VECMXResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class VECMResult(

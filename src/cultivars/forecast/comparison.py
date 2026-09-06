@@ -77,6 +77,8 @@ from .._core import SummaryTable
 from .._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
+__all__ = ["ForecastComparison", "ForecastComparisonResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class ForecastComparisonResult(_SummaryMixin):

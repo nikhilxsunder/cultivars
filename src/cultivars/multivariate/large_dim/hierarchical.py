@@ -64,7 +64,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable, Trend
+from ..._core import SummaryTable, Trend, _gamma_from_mode
 from ..._internals import (
     _BayesianVectorAutoRegressionModel,
     _Prior,
@@ -77,23 +77,7 @@ from ...bayes.priors import (
 from ...exceptions import SpecificationError
 from .bayesian import BVARResult
 
-
-def _gamma_from_mode(mode: float, sd: float) -> tuple[float, float]:
-    """Gamma shape and scale matching a stated mode and standard deviation.
-
-    The parameterization Giannone-Lenza-Primiceri state their hyperpriors
-    in. With mode ``m = (a - 1) b`` and variance ``a b^2``, the scale solves
-    ``b^2 + m b - sd^2 = 0``.
-
-    Args:
-        mode: The distribution's mode, non-negative.
-        sd: The distribution's standard deviation, positive.
-
-    Returns:
-        ``(shape, scale)``.
-    """
-    scale = 0.5 * (np.sqrt(mode**2 + 4.0 * sd**2) - mode)
-    return mode / scale + 1.0, float(scale)
+__all__ = ["HierarchicalBVAR", "HierarchicalBVARResult"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
