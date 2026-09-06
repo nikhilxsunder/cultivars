@@ -109,7 +109,7 @@ from ._results import (
     _VectorPosteriorDrawsResult,
     _VectorResult,
 )
-from ._solvers import _maximize_likelihood, _solve, solve_global
+from ._solvers import _maximize_likelihood, _solve, _spectral_factor, solve_global
 from ._tests import (
     _LikelihoodRatioTest,
     _StabilityTest,
@@ -207,5 +207,6 @@ __all__ = [
     "_WaldTestResult",
     "_maximize_likelihood",
     "_solve",
+    "_spectral_factor",
     "solve_global",
 ]

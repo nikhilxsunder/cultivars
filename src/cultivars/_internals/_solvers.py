@@ -388,3 +388,81 @@ def _fista_penalized(
         if shift <= tol * scale_ref:
             break
     return beta
+
+
+def _spectral_factor(
+    density: npt.NDArray[np.complex128],
+    *,
+    max_iter: int = 200,
+    tol: float = 1e-10,
+) -> tuple[npt.NDArray[np.complex128], npt.NDArray[np.float64]]:
+    """Canonical spectral factorization by Wilson's (1972) algorithm.
+
+    Given a Hermitian positive-definite spectral density sampled on the
+    *full* circle ``omega_m = 2 pi m / M``, finds the minimum-phase factor
+    ``psi`` with ``2 pi S(omega) = psi(omega) psi(omega)*`` and only
+    non-negative-lag Fourier content, and reads off the innovation
+    representation: transfer ``H = psi psi_0**(-1)`` and covariance
+    ``Sigma = psi_0 psi_0*``. This is what turns a *marginal* spectral
+    density -- a sub-block of a larger system's, which is generally VARMA
+    and matches no finite lag stack -- back into the (transfer, covariance)
+    pair Geweke's causality formulas need, and it is the standard route
+    (Dhamala-Rangarajan-Ding 2008). The constant-unitary ambiguity of the
+    factorization cancels in ``H`` and ``Sigma``, so no triangularization
+    of ``psi_0`` is enforced.
+
+    Args:
+        density: ``(M, k, k)`` spectral density on the full circle, with
+            the ``1 / (2 pi)`` normalization of :func:`spectral_matrix`.
+        max_iter: Iteration cap.
+        tol: Relative factorization error below which iteration stops.
+
+    Returns:
+        ``(transfer, sigma)``: the ``(M, k, k)`` causal transfer function
+        and the ``(k, k)`` innovation covariance.
+
+    Raises:
+        NumericalError: If the iteration fails to converge, which for a
+            smooth stable-model density means the input is degenerate.
+    """
+    target = np.asarray(density, dtype=np.complex128) * (2.0 * np.pi)
+    m, k = int(target.shape[0]), int(target.shape[-1])
+    half = m // 2
+    gamma0 = np.real(target.mean(axis=0))
+    try:
+        psi = np.tile(np.linalg.cholesky(gamma0).astype(np.complex128), (m, 1, 1))
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            "the spectral density's mean is not positive definite; there is nothing to factorize."
+        ) from error
+
+    def causal_part(values: npt.NDArray[np.complex128]) -> npt.NDArray[np.complex128]:
+        coefficients = np.fft.ifft(values, axis=0)
+        coefficients[0] *= 0.5
+        coefficients[half:] = 0.0
+        return np.asarray(np.fft.fft(coefficients, axis=0), dtype=np.complex128)
+
+    identity = np.eye(k, dtype=np.complex128)
+    for _ in range(max_iter):
+        inverse = np.linalg.inv(psi)
+        inner = inverse @ target @ np.conj(np.swapaxes(inverse, -1, -2)) + identity
+        updated = psi @ causal_part(inner)
+        gap = float(np.abs(updated - psi).max())
+        scale = float(np.abs(updated).max())
+        psi = updated
+        if gap <= tol * max(scale, 1.0):
+            break
+    else:
+        raise NumericalError(
+            "Wilson spectral factorization failed to converge; the density "
+            "is degenerate or too close to singular at some frequency."
+        )
+    residual_gap = float(np.abs(psi @ np.conj(np.swapaxes(psi, -1, -2)) - target).max())
+    if residual_gap > 1e-6 * max(float(np.abs(target).max()), 1.0):
+        raise NumericalError(
+            "Wilson spectral factorization converged to a non-factor; the density is degenerate."
+        )
+    psi0 = np.asarray(np.fft.ifft(psi, axis=0)[0], dtype=np.complex128)
+    transfer = psi @ np.linalg.inv(psi0)
+    sigma = np.real(psi0 @ np.conj(psi0.T))
+    return transfer, sigma

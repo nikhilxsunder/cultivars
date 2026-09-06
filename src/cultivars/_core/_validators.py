@@ -927,3 +927,17 @@ def _validate_wide_panel(panel: npt.ArrayLike, *, label: str = "panel") -> npt.N
     if not np.all(np.isfinite(arr)):
         raise NumericalError(f"{label} must be finite.")
     return arr
+
+
+def _validate_band(low: float, high: float) -> None:
+    """Reject a band that does not describe periods.
+
+    Raises:
+        SpecificationError: If the band is malformed.
+    """
+    if not 2.0 <= low < high:
+        raise SpecificationError(
+            f"the band needs 2 <= low < high in periods (observations per "
+            f"cycle); got {low}, {high}. Two observations per cycle is the "
+            "shortest period the sampling can represent."
+        )

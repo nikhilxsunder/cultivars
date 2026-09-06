@@ -134,6 +134,13 @@ from ._samplers import (
     _draw_inverse_wishart,
     _draw_mixture_indicators,
 )
+from ._spectra import (
+    _ideal_weights,
+    _pairwise_measure,
+    frequency_grid,
+    spectral_matrix,
+    transfer_function,
+)
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
     CointegrationTrend,
@@ -152,6 +159,7 @@ from ._types import (
     Vol,
 )
 from ._validators import (
+    _validate_band,
     _validate_curves,
     _validate_impact_pattern,
     _validate_narrative_events,
@@ -245,6 +253,7 @@ __all__ = [
     "_face_projectors",
     "_gaussian_negloglik",
     "_haar_rotation",
+    "_ideal_weights",
     "_linear_variance_recursion",
     "_log_variance_recursion",
     "_long_run_matrix",
@@ -257,9 +266,11 @@ __all__ = [
     "_nelson_siegel_loadings",
     "_null_basis",
     "_orthogonal_from_angles",
+    "_pairwise_measure",
     "_projection_scores",
     "_resolve_ordering",
     "_sphere_extrema",
+    "_validate_band",
     "_validate_curves",
     "_validate_impact_pattern",
     "_validate_narrative_events",
@@ -281,6 +292,7 @@ __all__ = [
     "face_projectors",
     "fractional_difference",
     "fractional_difference_weights",
+    "frequency_grid",
     "inv_softplus",
     "lag_matrix",
     "link_matrix",
@@ -295,10 +307,12 @@ __all__ = [
     "sigmoid",
     "simulate_cointegration_null",
     "softplus",
+    "spectral_matrix",
     "sphere_extrema",
     "to_pandas_frame",
     "to_polars_frame",
     "trailing_lag",
+    "transfer_function",
     "unpack_stationary",
     "validate_aligned",
     "validate_choice",
