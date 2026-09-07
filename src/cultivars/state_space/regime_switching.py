@@ -65,10 +65,26 @@ from .._internals import (
     _HamiltonFilterResult as HamiltonFilterResult,
 )
 from .._internals import (
+    _KimFilterResult as KimFilterResult,
+)
+from .._internals import (
     _KimSmootherResult as KimSmootherResult,
 )
 from .._internals import (
-    _MarkovSwitchingStateSpaceModel as MarkovSwitchingStateSpaceModel,
+    _MarkovSwitchingStateSpaceModel as MarkovSwitchingSSM,
+)
+from .._internals import (
+    _ParticleFilterResult as ParticleFilterResult,
+)
+from .._internals import (
+    _RegimeSwitchingLinearStateSpaceModel as RegimeSwitchingLinearSSM,
 )
 
-__all__ = ["HamiltonFilterResult", "KimSmootherResult", "MarkovSwitchingStateSpaceModel"]
+__all__ = [
+    "HamiltonFilterResult",
+    "KimFilterResult",
+    "KimSmootherResult",
+    "MarkovSwitchingSSM",
+    "ParticleFilterResult",
+    "RegimeSwitchingLinearSSM",
+]

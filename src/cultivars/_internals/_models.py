@@ -169,7 +169,11 @@ from ._results import (
     _FilterResult,
     _HamiltonFilterResult,
     _KalmanFilterResult,
+    _KimFilterResult,
     _KimSmootherResult,
+    _ParticleFilterResult,
+    _ParticleSmootherResult,
+    _RtsSmootherResult,
     _SmootherResult,
 )
 from ._samplers import _draw_volatility_path
@@ -1935,8 +1939,23 @@ class _MarkovSwitchingStateSpaceModel(_StateSpaceModel[_HamiltonFilterResult, _K
         Returns:
             A :class:`_HamiltonFilterResult` whose probability arrays have
             ``len(y) - order`` rows.
+
+        Raises:
+            SpecificationError: If the series contains non-finite values
+                -- the switching autoregression conditions on lagged
+                observations, so a hole poisons every density whose lag
+                window covers it.
         """
-        target, lags = self.effective_sample(y)
+        series = np.asarray(y, dtype=np.float64)
+        if not np.all(np.isfinite(series)):
+            raise SpecificationError(
+                "the series contains non-finite values, and the switching "
+                "autoregression conditions on lagged observations, so a "
+                "missing value poisons every density whose lag window "
+                "covers it. Interpolate first, or move to the switching "
+                "state-space engine, which handles missing rows."
+            )
+        target, lags = self.effective_sample(series)
         return self.filter_densities(self.density_matrix(target, lags))
 
     def smooth(self, y: npt.ArrayLike) -> _KimSmootherResult:
@@ -6665,3 +6684,1149 @@ class _VolatilityBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel
             n_burn=n_burn,
             thin=thin,
         )
+
+
+class _NonlinearStateSpaceModel:
+    """A nonlinear (and optionally non-Gaussian) state-space model.
+
+    The additive-Gaussian core is::
+
+        y_t = g(alpha_t) + eps_t,      eps_t ~ N(0, R)
+        alpha_{t+1} = f(alpha_t) + eta_t,   eta_t ~ N(0, Q)
+
+    with ``f`` and ``g`` arbitrary *batched* maps: each takes a
+    ``(n, m)`` block of states and returns ``(n, m)`` or ``(n, p)``
+    rows, which is what lets sigma points and particle clouds move
+    through them without Python loops. Three filters read it, in
+    increasing generality and decreasing exactness-of-assumptions:
+    the extended filter linearizes ``f`` and ``g`` by central-difference
+    Jacobians; the unscented filter propagates deterministic sigma
+    points (Julier-Uhlmann), exact through linear maps and third-order
+    accurate through smooth ones; the particle filter (bootstrap, or
+    auxiliary in the Pitt-Shephard form) makes no smoothness or
+    Gaussianity assumption at all and returns an unbiased likelihood
+    *estimate* rather than a likelihood.
+
+    Non-Gaussian models enter through two hooks. ``transition_sampler``
+    replaces the additive-Gaussian state draw, and ``observation_loglik``
+    replaces the Gaussian measurement density -- a stochastic-volatility
+    model, whose measurement noise is multiplicative, is the canonical
+    customer. A model carrying either hook is outside the additive form,
+    so the extended and unscented filters *refuse* it rather than
+    linearizing an assumption that no longer holds; the particle filter
+    is the honest tool there, and the refusal says so.
+
+    Missing observations are ``numpy.nan`` rows: every filter skips the
+    update and carries the prediction, matching the linear substrate's
+    convention.
+    """
+
+    def __init__(
+        self,
+        transition: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+        observation: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+        *,
+        state_cov: npt.ArrayLike,
+        obs_cov: npt.ArrayLike,
+        initial_state: npt.ArrayLike,
+        initial_state_cov: npt.ArrayLike,
+        transition_sampler: Callable[
+            [npt.NDArray[np.float64], np.random.Generator], npt.NDArray[np.float64]
+        ]
+        | None = None,
+        observation_loglik: Callable[
+            [npt.NDArray[np.float64], npt.NDArray[np.float64]], npt.NDArray[np.float64]
+        ]
+        | None = None,
+    ) -> None:
+        """Validate the system and probe the callables' shape contract.
+
+        Args:
+            transition: Batched state map ``f``: ``(n, m) -> (n, m)``.
+            observation: Batched measurement map ``g``: ``(n, m) -> (n, p)``.
+            state_cov: State noise covariance ``Q``, ``(m, m)``.
+            obs_cov: Measurement noise covariance ``R``, ``(p, p)``. Ignored
+                by the particle filter when ``observation_loglik`` is given.
+            initial_state: Prior mean ``a_1``, ``(m,)``.
+            initial_state_cov: Prior covariance ``P_1``, ``(m, m)``.
+            transition_sampler: Optional replacement for the additive state
+                draw: ``(particles (n, m), rng) -> (n, m)``.
+            observation_loglik: Optional replacement for the Gaussian
+                measurement density: ``(y (p,), particles (n, m)) -> (n,)``
+                log-densities.
+
+        Raises:
+            DimensionError: If a matrix or a probed callable's output has
+                an inconsistent shape.
+            NumericalError: If a covariance is not finite or not symmetric
+                positive semidefinite.
+        """
+        self._Q = np.asarray(state_cov, dtype=np.float64)
+        self._R_cov = np.asarray(obs_cov, dtype=np.float64)
+        self._a1 = np.asarray(initial_state, dtype=np.float64).ravel()
+        self._P1 = np.asarray(initial_state_cov, dtype=np.float64)
+        m = self._a1.shape[0]
+        if self._Q.shape != (m, m) or self._P1.shape != (m, m):
+            raise DimensionError(
+                f"state_cov and initial_state_cov must be ({m}, {m}) to match "
+                f"the state; got {self._Q.shape} and {self._P1.shape}."
+            )
+        for label, matrix in (
+            ("state_cov", self._Q),
+            ("obs_cov", self._R_cov),
+            ("initial_state_cov", self._P1),
+        ):
+            if not np.all(np.isfinite(matrix)):
+                raise NumericalError(f"{label} must be finite.")
+            if float(np.abs(matrix - matrix.T).max()) > 1e-10:
+                raise NumericalError(f"{label} must be symmetric.")
+            if matrix.size and float(np.linalg.eigvalsh(matrix)[0]) < -1e-10:
+                raise NumericalError(f"{label} must be positive semidefinite.")
+        probe = np.vstack([self._a1, self._a1])
+        moved = np.asarray(transition(probe), dtype=np.float64)
+        if moved.shape != (2, m):
+            raise DimensionError(
+                f"transition must map (n, {m}) states to (n, {m}); a probe "
+                f"batch of 2 returned shape {moved.shape}."
+            )
+        seen = np.asarray(observation(probe), dtype=np.float64)
+        p = int(self._R_cov.shape[0])
+        if seen.ndim != 2 or seen.shape[0] != 2 or seen.shape[1] != p:
+            raise DimensionError(
+                f"observation must map (n, {m}) states to (n, {p}) to match "
+                f"obs_cov; a probe batch of 2 returned shape {seen.shape}."
+            )
+        self._f = transition
+        self._g = observation
+        self._m = m
+        self._p = p
+        self._sampler = transition_sampler
+        self._obs_loglik = observation_loglik
+
+    @property
+    def k_states(self) -> int:
+        """State dimension."""
+        return self._m
+
+    @property
+    def k_endog(self) -> int:
+        """Observation dimension."""
+        return self._p
+
+    @property
+    def is_additive_gaussian(self) -> bool:
+        """Whether the model is in the additive-Gaussian form all filters accept."""
+        return self._sampler is None and self._obs_loglik is None
+
+    def _prepare(self, y: npt.ArrayLike) -> npt.NDArray[np.float64]:
+        """Coerce data to ``(n, p)``, promoting a 1-D series when ``p`` is one.
+
+        Raises:
+            DimensionError: If the data cannot match the observation
+                dimension.
+            SpecificationError: If a row is partially observed -- this
+                engine treats missingness whole-row, and silently
+                discarding the observed elements would misstate the
+                likelihood.
+        """
+        data = np.asarray(y, dtype=np.float64)
+        if data.ndim == 1 and self._p == 1:
+            data = data[:, None]
+        if data.ndim != 2 or data.shape[1] != self._p:
+            raise DimensionError(f"data must be (n, {self._p}); got shape {np.asarray(y).shape}.")
+        finite = np.isfinite(data)
+        partial = finite.any(axis=1) & ~finite.all(axis=1)
+        if bool(partial.any()):
+            raise SpecificationError(
+                f"{int(partial.sum())} row(s) (first at index "
+                f"{int(np.flatnonzero(partial)[0])}) are partially "
+                "observed; this engine treats missingness whole-row, and "
+                "silently discarding the observed elements would misstate "
+                "the likelihood. Pass fully observed or fully missing "
+                "rows, or use the linear-Gaussian substrate, whose filter "
+                "supports element-wise missingness."
+            )
+        return data
+
+    def _refuse_hooks(self, filter_name: str) -> None:
+        """Refuse a linearizing filter on a model outside the additive form.
+
+        Raises:
+            SpecificationError: If a custom hook is present.
+        """
+        if not self.is_additive_gaussian:
+            raise SpecificationError(
+                f"the {filter_name} filter is defined only for the "
+                "additive-Gaussian form, and this model carries a custom "
+                "transition sampler or observation likelihood; linearizing "
+                "an assumption that no longer holds would return confident "
+                "nonsense. Use particle_filter, which assumes neither."
+            )
+
+    def _jacobian(
+        self,
+        func: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+        point: npt.NDArray[np.float64],
+        out_dim: int,
+    ) -> npt.NDArray[np.float64]:
+        """Central-difference Jacobian of a batched map at one point."""
+        m = self._m
+        steps = np.sqrt(np.finfo(np.float64).eps) * np.maximum(np.abs(point), 1.0)
+        forward = np.tile(point, (m, 1)) + np.diag(steps)
+        backward = np.tile(point, (m, 1)) - np.diag(steps)
+        high = np.asarray(func(forward), dtype=np.float64)
+        low = np.asarray(func(backward), dtype=np.float64)
+        return np.asarray((high - low).T / (2.0 * steps)[None, :], dtype=np.float64).reshape(
+            out_dim, m
+        )
+
+    def _gaussian_update(
+        self,
+        y_row: npt.NDArray[np.float64],
+        predicted_obs: npt.NDArray[np.float64],
+        innovation_cov: npt.NDArray[np.float64],
+        cross_cov: npt.NDArray[np.float64],
+        mean: npt.NDArray[np.float64],
+        cov: npt.NDArray[np.float64],
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], float]:
+        """One Gaussian measurement update from moment inputs.
+
+        Returns:
+            ``(filtered_mean, filtered_cov, log_contribution)``.
+
+        Raises:
+            NumericalError: If the innovation covariance degenerates.
+        """
+        try:
+            chol = np.linalg.cholesky(innovation_cov)
+        except np.linalg.LinAlgError as error:
+            raise NumericalError(
+                "the innovation covariance lost positive definiteness; the filter has diverged."
+            ) from error
+        gain = sla.cho_solve((chol, True), cross_cov.T).T
+        residual = y_row - predicted_obs
+        white = sla.solve_triangular(chol, residual, lower=True)
+        contribution = -0.5 * (
+            self._p * _LOG_2PI + 2.0 * float(np.sum(np.log(np.diag(chol)))) + float(white @ white)
+        )
+        filtered_mean = mean + gain @ residual
+        filtered_cov = cov - gain @ innovation_cov @ gain.T
+        filtered_cov = 0.5 * (filtered_cov + filtered_cov.T)
+        return filtered_mean, filtered_cov, contribution
+
+    def extended_filter(self, y: npt.ArrayLike) -> _KalmanFilterResult:
+        """The extended Kalman filter: linearize, then filter exactly.
+
+        First-order accurate in the nonlinearity; exact when ``f`` and
+        ``g`` are linear, in which case it *is* the Kalman filter.
+        Jacobians come from central differences, so the maps need to be
+        smooth at the working point but need not expose derivatives.
+
+        Args:
+            y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
+
+        Returns:
+            The standard filter record; the log-likelihood is the
+            linearized approximation.
+
+        Raises:
+            SpecificationError: If the model carries custom hooks.
+            NumericalError: If the filter diverges.
+        """
+        self._refuse_hooks("extended")
+        data = self._prepare(y)
+        n, m = data.shape[0], self._m
+        predicted = np.empty((n, m))
+        predicted_cov = np.empty((n, m, m))
+        filtered = np.empty((n, m))
+        filtered_cov = np.empty((n, m, m))
+        contributions = np.zeros(n)
+        mean, cov = self._a1.copy(), self._P1.copy()
+        for t in range(n):
+            predicted[t], predicted_cov[t] = mean, cov
+            if np.all(np.isfinite(data[t])):
+                jac = self._jacobian(self._g, mean, self._p)
+                center = np.asarray(self._g(mean[None, :]), dtype=np.float64)[0]
+                innovation_cov = jac @ cov @ jac.T + self._R_cov
+                mean, cov, contributions[t] = self._gaussian_update(
+                    data[t], center, innovation_cov, cov @ jac.T, mean, cov
+                )
+            filtered[t], filtered_cov[t] = mean, cov
+            jac_f = self._jacobian(self._f, mean, m)
+            mean = np.asarray(self._f(mean[None, :]), dtype=np.float64)[0]
+            cov = jac_f @ cov @ jac_f.T + self._Q
+        return _KalmanFilterResult(
+            loglikelihood=float(contributions.sum()),
+            loglikelihood_contributions=contributions,
+            predicted_state=predicted,
+            predicted_state_cov=predicted_cov,
+            filtered_state=filtered,
+            filtered_state_cov=filtered_cov,
+        )
+
+    def _sigma_points(
+        self, mean: npt.NDArray[np.float64], cov: npt.NDArray[np.float64], scale: float
+    ) -> npt.NDArray[np.float64]:
+        """The ``2m + 1`` unscented points around one moment pair."""
+        root = psd_sqrt((self._m + scale) * cov)
+        return np.vstack([mean[None, :], mean + root.T, mean - root.T])
+
+    def _unscented_weights(
+        self, alpha: float, beta: float, kappa: float
+    ) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Scaling constant and mean/covariance sigma-point weights.
+
+        Raises:
+            SpecificationError: If the spread is not positive.
+        """
+        if alpha <= 0.0:
+            raise SpecificationError(f"alpha must be positive; got {alpha}.")
+        m = self._m
+        lam = alpha**2 * (m + kappa) - m
+        mean_weights = np.full(2 * m + 1, 1.0 / (2.0 * (m + lam)))
+        mean_weights[0] = lam / (m + lam)
+        cov_weights = mean_weights.copy()
+        cov_weights[0] += 1.0 - alpha**2 + beta
+        return lam, mean_weights, cov_weights
+
+    @staticmethod
+    def _smoother_gain(
+        cross: npt.NDArray[np.float64], predicted_cov: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
+        """The Rauch gain ``C P_{t+1|t}^{-1}`` from a cross-covariance.
+
+        Raises:
+            NumericalError: If the predicted covariance degenerates.
+        """
+        try:
+            chol = np.linalg.cholesky(predicted_cov)
+        except np.linalg.LinAlgError as error:
+            raise NumericalError(
+                "a predicted state covariance lost positive definiteness; "
+                "the backward pass cannot form the smoother gain."
+            ) from error
+        return sla.cho_solve((chol, True), cross.T).T
+
+    def unscented_filter(
+        self,
+        y: npt.ArrayLike,
+        *,
+        alpha: float = 1e-1,
+        beta: float = 2.0,
+        kappa: float = 0.0,
+    ) -> _KalmanFilterResult:
+        """The unscented Kalman filter: deterministic sigma points, no Jacobians.
+
+        Exact through linear maps for any parameter setting, and accurate
+        to third order in the Taylor sense through smooth nonlinear ones
+        (Julier-Uhlmann); the standard additive-noise form.
+
+        Args:
+            y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
+            alpha: Sigma-point spread; small values keep the points near
+                the mean.
+            beta: Prior-distribution weighting; ``2`` is optimal for a
+                Gaussian.
+            kappa: Secondary scaling; ``0`` is the standard default.
+
+        Returns:
+            The standard filter record; the log-likelihood is the
+            unscented approximation.
+
+        Raises:
+            SpecificationError: If the model carries custom hooks or the
+                spread is not positive.
+            NumericalError: If the filter diverges.
+        """
+        self._refuse_hooks("unscented")
+        lam, mean_weights, cov_weights = self._unscented_weights(alpha, beta, kappa)
+        data = self._prepare(y)
+        n, m = data.shape[0], self._m
+        predicted = np.empty((n, m))
+        predicted_cov = np.empty((n, m, m))
+        filtered = np.empty((n, m))
+        filtered_cov = np.empty((n, m, m))
+        contributions = np.zeros(n)
+        mean, cov = self._a1.copy(), self._P1.copy()
+        for t in range(n):
+            predicted[t], predicted_cov[t] = mean, cov
+            if np.all(np.isfinite(data[t])):
+                points = self._sigma_points(mean, cov, lam)
+                seen = np.asarray(self._g(points), dtype=np.float64)
+                center = mean_weights @ seen
+                gap_obs = seen - center[None, :]
+                gap_state = points - mean[None, :]
+                innovation_cov = gap_obs.T @ (cov_weights[:, None] * gap_obs) + self._R_cov
+                cross = gap_state.T @ (cov_weights[:, None] * gap_obs)
+                mean, cov, contributions[t] = self._gaussian_update(
+                    data[t], center, innovation_cov, cross, mean, cov
+                )
+            filtered[t], filtered_cov[t] = mean, cov
+            points = self._sigma_points(mean, cov, lam)
+            moved = np.asarray(self._f(points), dtype=np.float64)
+            mean = mean_weights @ moved
+            gap = moved - mean[None, :]
+            cov = gap.T @ (cov_weights[:, None] * gap) + self._Q
+            cov = 0.5 * (cov + cov.T)
+        return _KalmanFilterResult(
+            loglikelihood=float(contributions.sum()),
+            loglikelihood_contributions=contributions,
+            predicted_state=predicted,
+            predicted_state_cov=predicted_cov,
+            filtered_state=filtered,
+            filtered_state_cov=filtered_cov,
+        )
+
+    def _rts_backward(
+        self,
+        outcome: _KalmanFilterResult,
+        cross_at: Callable[[int], npt.NDArray[np.float64]],
+        method: str,
+    ) -> _RtsSmootherResult:
+        """Rauch's backward recursion from a forward pass and a gain rule."""
+        n, m = outcome.filtered_state.shape
+        smoothed = np.empty((n, m))
+        smoothed_cov = np.empty((n, m, m))
+        smoothed[-1] = outcome.filtered_state[-1]
+        smoothed_cov[-1] = outcome.filtered_state_cov[-1]
+        for t in range(n - 2, -1, -1):
+            gain = self._smoother_gain(cross_at(t), outcome.predicted_state_cov[t + 1])
+            smoothed[t] = outcome.filtered_state[t] + gain @ (
+                smoothed[t + 1] - outcome.predicted_state[t + 1]
+            )
+            shrink = smoothed_cov[t + 1] - outcome.predicted_state_cov[t + 1]
+            cov = outcome.filtered_state_cov[t] + gain @ shrink @ gain.T
+            smoothed_cov[t] = 0.5 * (cov + cov.T)
+        return _RtsSmootherResult(
+            smoothed_state=smoothed,
+            smoothed_state_cov=smoothed_cov,
+            method=method,
+        )
+
+    def extended_smoother(self, y: npt.ArrayLike) -> _RtsSmootherResult:
+        """The extended Rauch-Tung-Striebel smoother.
+
+        Runs the extended filter, then Rauch's backward recursion with the
+        transition Jacobian evaluated at each filtered mean. The
+        linearization error therefore compounds through both passes: exact
+        when ``f`` and ``g`` are linear, degrading faster than the forward
+        filter as curvature grows. When this and the unscented smoother
+        disagree materially, trust the unscented one.
+
+        Args:
+            y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
+
+        Returns:
+            The :class:`_RtsSmootherResult` with ``method="extended"``.
+
+        Raises:
+            SpecificationError: If the model carries custom hooks.
+            NumericalError: If either pass degenerates.
+        """
+        outcome = self.extended_filter(y)
+
+        def cross_at(t: int) -> npt.NDArray[np.float64]:
+            jac = self._jacobian(self._f, outcome.filtered_state[t], self._m)
+            return np.asarray(outcome.filtered_state_cov[t] @ jac.T, dtype=np.float64)
+
+        return self._rts_backward(outcome, cross_at, "extended")
+
+    def unscented_smoother(
+        self,
+        y: npt.ArrayLike,
+        *,
+        alpha: float = 1e-1,
+        beta: float = 2.0,
+        kappa: float = 0.0,
+    ) -> _RtsSmootherResult:
+        """The unscented Rauch-Tung-Striebel smoother.
+
+        Runs the unscented filter, then Rauch's backward recursion with
+        the filtered-to-predicted cross-covariance rebuilt from sigma
+        points at each filtered moment pair -- the same deterministic
+        points the forward pass used, so the two passes share one
+        approximation rather than stacking two different ones. Exact
+        through linear maps, like its filter.
+
+        Args:
+            y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
+            alpha: Sigma-point spread; must match the intended filter's.
+            beta: Prior-distribution weighting.
+            kappa: Secondary scaling.
+
+        Returns:
+            The :class:`_RtsSmootherResult` with ``method="unscented"``.
+
+        Raises:
+            SpecificationError: If the model carries custom hooks or the
+                spread is not positive.
+            NumericalError: If either pass degenerates.
+        """
+        self._refuse_hooks("unscented")
+        lam, mean_weights, cov_weights = self._unscented_weights(alpha, beta, kappa)
+        outcome = self.unscented_filter(y, alpha=alpha, beta=beta, kappa=kappa)
+
+        def cross_at(t: int) -> npt.NDArray[np.float64]:
+            points = self._sigma_points(
+                outcome.filtered_state[t], outcome.filtered_state_cov[t], lam
+            )
+            moved = np.asarray(self._f(points), dtype=np.float64)
+            center = mean_weights @ moved
+            return np.asarray(
+                (points - outcome.filtered_state[t][None, :]).T
+                @ (cov_weights[:, None] * (moved - center[None, :])),
+                dtype=np.float64,
+            )
+
+        return self._rts_backward(outcome, cross_at, "unscented")
+
+    def _draw_states(
+        self, particles: npt.NDArray[np.float64], rng: np.random.Generator
+    ) -> npt.NDArray[np.float64]:
+        """One transition draw per particle."""
+        if self._sampler is not None:
+            return np.asarray(self._sampler(particles, rng), dtype=np.float64)
+        noise = rng.standard_normal(particles.shape) @ psd_sqrt(self._Q).T
+        return np.asarray(self._f(particles), dtype=np.float64) + noise
+
+    def _measure(
+        self, y_row: npt.NDArray[np.float64], particles: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
+        """Per-particle measurement log-density."""
+        if self._obs_loglik is not None:
+            return np.asarray(self._obs_loglik(y_row, particles), dtype=np.float64)
+        residual = y_row[None, :] - np.asarray(self._g(particles), dtype=np.float64)
+        chol = np.linalg.cholesky(self._R_cov)
+        white = sla.solve_triangular(chol, residual.T, lower=True)
+        return np.asarray(
+            -0.5
+            * (
+                self._p * _LOG_2PI
+                + 2.0 * float(np.sum(np.log(np.diag(chol))))
+                + np.sum(white**2, axis=0)
+            ),
+            dtype=np.float64,
+        )
+
+    @staticmethod
+    def _systematic_resample(
+        weights: npt.NDArray[np.float64], rng: np.random.Generator
+    ) -> npt.NDArray[np.intp]:
+        """Systematic resampling indices for normalized weights."""
+        count = weights.shape[0]
+        positions = (rng.random() + np.arange(count)) / count
+        return np.asarray(np.searchsorted(np.cumsum(weights), positions), dtype=np.intp).clip(
+            0, count - 1
+        )
+
+    def particle_filter(
+        self,
+        y: npt.ArrayLike,
+        *,
+        n_particles: int = 2000,
+        method: str = "bootstrap",
+        ess_threshold: float = 0.5,
+        seed: int | np.random.Generator | None = None,
+    ) -> _ParticleFilterResult:
+        """Sequential Monte Carlo: the filter that assumes nothing smooth.
+
+        The bootstrap filter (Gordon-Salmond-Smith 1993) propagates
+        particles through the transition and reweights by the measurement
+        density, resampling systematically when the effective sample size
+        falls below the stated fraction. The auxiliary variant
+        (Pitt-Shephard 1999) pre-selects particles by where the transition
+        *expects* them to land -- worthwhile when the measurement is
+        informative *and* the transition is tight enough that the
+        expectation predicts the landing point. When transition noise
+        dominates, the point anchors mispredict, the second-stage weights
+        degenerate, and the bootstrap filter is the better tool; watch the
+        effective sample size. Both return an unbiased
+        *estimate* of the likelihood; its Monte Carlo noise is real, and
+        seed-to-seed spread is the honest error bar.
+
+        Both methods observe the substrate's initial-state convention: the
+        cloud at the first period is drawn from ``N(a_1, P_1)`` and
+        weighted directly, with no transition applied before the first
+        observation (the auxiliary look-ahead therefore starts at the
+        second).
+
+        Args:
+            y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
+            n_particles: Cloud size, at least 2.
+            method: ``"bootstrap"`` or ``"auxiliary"``. The auxiliary
+                variant needs the additive-Gaussian transition or a
+                ``transition`` map to anchor its look-ahead.
+            ess_threshold: Resample when the effective sample size falls
+                below this fraction of the cloud (bootstrap only; the
+                auxiliary filter resamples every step by construction).
+            seed: Seed or generator.
+
+        Returns:
+            The :class:`_ParticleFilterResult`.
+
+        Raises:
+            SpecificationError: If the method or bookkeeping is malformed.
+            NumericalError: If every particle's weight underflows -- the
+                cloud has degenerated and the estimate is meaningless.
+        """
+        if method not in ("bootstrap", "auxiliary"):
+            raise SpecificationError(f"method must be 'bootstrap' or 'auxiliary'; got {method!r}.")
+        if n_particles < 2:
+            raise SpecificationError(f"n_particles must be at least 2; got {n_particles}.")
+        if not 0.0 < ess_threshold <= 1.0:
+            raise SpecificationError(f"ess_threshold must be in (0, 1]; got {ess_threshold}.")
+        data = self._prepare(y)
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        n, m, count = data.shape[0], self._m, int(n_particles)
+        particles = self._a1[None, :] + rng.standard_normal((count, m)) @ psd_sqrt(self._P1).T
+        log_weights = np.full(count, -np.log(count))
+        filtered = np.empty((n, m))
+        spread = np.empty((n, m))
+        ess = np.empty(n)
+        contributions = np.zeros(n)
+        for t in range(n):
+            observed = bool(np.all(np.isfinite(data[t])))
+            if method == "auxiliary" and observed and t > 0:
+                anchors = np.asarray(self._f(particles), dtype=np.float64)
+                first = log_weights + self._measure(data[t], anchors)
+                peak = float(first.max())
+                if not np.isfinite(peak):
+                    raise NumericalError(
+                        "every particle's look-ahead weight underflowed; the cloud has degenerated."
+                    )
+                stage = np.exp(first - peak)
+                total = float(stage.sum())
+                indices = self._systematic_resample(stage / total, rng)
+                particles = self._draw_states(particles[indices], rng)
+                second = self._measure(data[t], particles) - self._measure(
+                    data[t], anchors[indices]
+                )
+                peak2 = float(second.max())
+                if not np.isfinite(peak2):
+                    raise NumericalError(
+                        "every particle's second-stage weight underflowed; "
+                        "the cloud has degenerated."
+                    )
+                contributions[t] = (
+                    peak + np.log(total) + peak2 + float(np.log(np.mean(np.exp(second - peak2))))
+                )
+                scaled = np.exp(second - peak2)
+                normalized = scaled / float(scaled.sum())
+                log_weights = np.log(np.maximum(normalized, 1e-300))
+            else:
+                if t > 0:
+                    particles = self._draw_states(particles, rng)
+                if observed:
+                    log_weights = log_weights + self._measure(data[t], particles)
+                peak = float(log_weights.max())
+                if not np.isfinite(peak):
+                    raise NumericalError(
+                        "every particle's weight underflowed; the cloud has degenerated."
+                    )
+                scaled = np.exp(log_weights - peak)
+                total = float(scaled.sum())
+                if observed:
+                    contributions[t] = peak + np.log(total)
+                normalized = scaled / total
+                log_weights = np.log(np.maximum(normalized, 1e-300))
+            filtered[t] = normalized @ particles
+            gap = particles - filtered[t][None, :]
+            spread[t] = np.sqrt(np.maximum(normalized @ gap**2, 0.0))
+            ess[t] = 1.0 / float(np.sum(normalized**2))
+            if method == "bootstrap" and ess[t] < ess_threshold * count:
+                indices = self._systematic_resample(normalized, rng)
+                particles = particles[indices]
+                log_weights = np.full(count, -np.log(count))
+        return _ParticleFilterResult(
+            loglikelihood=float(contributions.sum()),
+            loglikelihood_contributions=contributions,
+            filtered_state=filtered,
+            filtered_state_std=spread,
+            effective_sample_size=ess,
+            n_particles=count,
+            method=method,
+        )
+
+    def particle_smoother(
+        self,
+        y: npt.ArrayLike,
+        *,
+        n_particles: int = 500,
+        ess_threshold: float = 0.5,
+        seed: int | np.random.Generator | None = None,
+    ) -> _ParticleSmootherResult:
+        """Forward-filtering backward-smoothing (Doucet-Godsill-Andrieu).
+
+        A bootstrap forward pass stores every weighted cloud, and the
+        backward recursion reweights each of them through the transition
+        density ``N(f(x), Q)``. That density is why the method's reach
+        differs from the particle filter's: a custom ``observation_loglik``
+        is fine (it only enters the forward weights), but a custom
+        ``transition_sampler`` exposes draws without a density and is
+        refused, as is a singular ``Q``.
+
+        The costs are quadratic and stated rather than hidden: time is
+        ``O(n_particles**2)`` per period and the forward clouds are held
+        in full, so the default cloud is smaller than the filter's --
+        raise it only knowing both bills scale with its square and its
+        size respectively.
+
+        Args:
+            y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
+            n_particles: Cloud size, at least 2.
+            ess_threshold: Forward-pass resampling trigger, as in the
+                bootstrap filter.
+            seed: Seed or generator.
+
+        Returns:
+            The :class:`_ParticleSmootherResult`.
+
+        Raises:
+            SpecificationError: If the model carries a transition sampler
+                hook or the bookkeeping is malformed.
+            NumericalError: If ``Q`` is singular or the cloud degenerates.
+        """
+        if self._sampler is not None:
+            raise SpecificationError(
+                "the particle smoother reweights through the transition "
+                "*density*, and a model with a custom transition sampler "
+                "exposes only draws; without the density the backward "
+                "weights are undefined. Filtering remains available."
+            )
+        if n_particles < 2:
+            raise SpecificationError(f"n_particles must be at least 2; got {n_particles}.")
+        if not 0.0 < ess_threshold <= 1.0:
+            raise SpecificationError(f"ess_threshold must be in (0, 1]; got {ess_threshold}.")
+        try:
+            chol_q = np.linalg.cholesky(self._Q)
+        except np.linalg.LinAlgError as error:
+            raise NumericalError(
+                "state_cov is singular, so the transition density the "
+                "backward weights need is degenerate; the particle "
+                "smoother requires a nondegenerate transition."
+            ) from error
+        data = self._prepare(y)
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        n, m, count = data.shape[0], self._m, int(n_particles)
+        log_det_q = 2.0 * float(np.sum(np.log(np.diag(chol_q))))
+        particles = self._a1[None, :] + rng.standard_normal((count, m)) @ psd_sqrt(self._P1).T
+        log_weights = np.full(count, -np.log(count))
+        clouds = np.empty((n, count, m))
+        weights = np.empty((n, count))
+        for t in range(n):
+            if t > 0:
+                particles = self._draw_states(particles, rng)
+            if np.all(np.isfinite(data[t])):
+                log_weights = log_weights + self._measure(data[t], particles)
+            peak = float(log_weights.max())
+            if not np.isfinite(peak):
+                raise NumericalError(
+                    "every particle's weight underflowed; the cloud has degenerated."
+                )
+            scaled = np.exp(log_weights - peak)
+            normalized = scaled / float(scaled.sum())
+            clouds[t] = particles
+            weights[t] = normalized
+            if 1.0 / float(np.sum(normalized**2)) < ess_threshold * count:
+                indices = self._systematic_resample(normalized, rng)
+                particles = particles[indices]
+                log_weights = np.full(count, -np.log(count))
+            else:
+                log_weights = np.log(np.maximum(normalized, 1e-300))
+        smoothed = np.empty((n, m))
+        spread = np.empty((n, m))
+        backward = weights[n - 1]
+        smoothed[-1] = backward @ clouds[-1]
+        gap = clouds[-1] - smoothed[-1][None, :]
+        spread[-1] = np.sqrt(np.maximum(backward @ gap**2, 0.0))
+        for t in range(n - 2, -1, -1):
+            anchors = np.asarray(self._f(clouds[t]), dtype=np.float64)
+            diff = clouds[t + 1][:, None, :] - anchors[None, :, :]
+            white = sla.solve_triangular(chol_q, diff.reshape(-1, m).T, lower=True)
+            log_density = -0.5 * (
+                m * _LOG_2PI + log_det_q + np.sum(white**2, axis=0).reshape(count, count)
+            )
+            log_filtered = np.log(np.maximum(weights[t], 1e-300))
+            joint = log_filtered[None, :] + log_density
+            peak_rows = joint.max(axis=1, keepdims=True)
+            log_predictive = peak_rows[:, 0] + np.log(np.sum(np.exp(joint - peak_rows), axis=1))
+            log_backward = np.log(np.maximum(backward, 1e-300))
+            carry = log_backward[:, None] + log_density - log_predictive[:, None]
+            peak_cols = carry.max(axis=0, keepdims=True)
+            folded = peak_cols[0] + np.log(np.sum(np.exp(carry - peak_cols), axis=0))
+            log_smoothed = log_filtered + folded
+            peak = float(log_smoothed.max())
+            if not np.isfinite(peak):
+                raise NumericalError(
+                    "every backward weight underflowed; the smoothed cloud has degenerated."
+                )
+            scaled = np.exp(log_smoothed - peak)
+            backward = scaled / float(scaled.sum())
+            smoothed[t] = backward @ clouds[t]
+            gap = clouds[t] - smoothed[t][None, :]
+            spread[t] = np.sqrt(np.maximum(backward @ gap**2, 0.0))
+        return _ParticleSmootherResult(
+            smoothed_state=smoothed,
+            smoothed_state_std=spread,
+            n_particles=count,
+        )
+
+    @classmethod
+    def _lag_stack_state_space(
+        cls,
+        mean_map: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+        *,
+        order: int,
+        sigma2: float,
+        measurement_variance: float,
+        center: float,
+        spread: float,
+    ) -> _NonlinearStateSpaceModel:
+        """Wrap a nonlinear autoregressive mean as a noisily observed state space.
+
+        The shared emitter behind the observation-driven nonlinear models
+        (threshold, smooth-transition, neural): the latent state is the
+        ``order``-deep lag stack of the *true* series, the transition applies
+        the fitted conditional mean to the stack and shifts it, and the
+        observation reads the stack's first component through Gaussian
+        measurement error. With zero measurement error the model is
+        observation-driven and filtering is vacuous, which is why the variance
+        is required and must be strictly positive -- the emitted object is the
+        errors-in-variables reading of the fit, not a restatement of it.
+
+        State noise enters only the first stack component, so the state
+        covariance is singular whenever ``order > 1``; the three filters and
+        both Rauch smoothers accept that, and the particle smoother's
+        nondegenerate-transition refusal fires honestly.
+
+        Args:
+            mean_map: Batched conditional mean: an ``(n, order)`` block of lag
+                rows ``[y_{t-1}, ..., y_{t-order}]`` to ``(n,)`` means.
+            order: Depth of the lag stack, at least 1.
+            sigma2: Fitted innovation variance, strictly positive.
+            measurement_variance: Observation noise variance, strictly
+                positive.
+            center: Initial state mean, applied to every stack component
+                (typically the sample mean).
+            spread: Initial per-component state variance (typically the sample
+                variance).
+
+        Returns:
+            The :class:`_NonlinearStateSpaceModel`.
+
+        Raises:
+            SpecificationError: If the variances are not strictly positive or
+                the order is not at least 1.
+        """
+        if order < 1:
+            raise SpecificationError(f"order must be at least 1; got {order}.")
+        if not sigma2 > 0.0:
+            raise SpecificationError(f"sigma2 must be strictly positive; got {sigma2}.")
+        if not measurement_variance > 0.0:
+            raise SpecificationError(
+                "measurement_variance must be strictly positive: with no "
+                "measurement error the model is observation-driven, its state "
+                "is the data, and filtering it is vacuous. State the noise "
+                "the emitted system is observed through."
+            )
+
+        def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            block = np.asarray(states, dtype=np.float64)
+            head = np.asarray(mean_map(block), dtype=np.float64).reshape(-1, 1)
+            if order == 1:
+                return head
+            return np.hstack([head, block[:, : order - 1]])
+
+        def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            return np.asarray(states, dtype=np.float64)[:, :1]
+
+        state_cov = np.zeros((order, order))
+        state_cov[0, 0] = float(sigma2)
+        return cls(
+            transition,
+            observation,
+            state_cov=state_cov,
+            obs_cov=[[float(measurement_variance)]],
+            initial_state=np.full(order, float(center)),
+            initial_state_cov=np.eye(order) * max(float(spread), 1e-8),
+        )
+
+
+class _RegimeSwitchingLinearStateSpaceModel(_StateSpaceModel[_KimFilterResult, _KimSmootherResult]):
+    """A linear-Gaussian state space whose system matrices switch by regime.
+
+    The continuous-state half of the regime-switching layer -- the
+    :class:`_MarkovSwitchingStateSpaceModel` docstring's promised
+    extension. Each regime ``j`` of a ``K``-state Markov chain carries its
+    own linear-Gaussian system::
+
+        y_t         = Z_j alpha_t + d_j + eps_t,   eps_t ~ N(0, H_j)
+        alpha_{t+1} = T_j alpha_t + c_j + eta_t,   eta_t ~ N(0, Q_j)
+
+    Exact filtering requires tracking every regime *path* -- ``K**t``
+    Kalman filters by period ``t`` -- so Kim (1994) collapses: run the
+    ``K * K`` per-pair Kalman updates, mix by the Hamilton regime
+    probabilities, and collapse each regime's mixture back to one moment
+    pair by moment matching. The likelihood is therefore an
+    *approximation*, and is labeled one; it is exact in the two limits
+    that matter for verification -- identical regimes (it is the Kalman
+    filter) and no state persistence (it is the Hamilton filter) -- and
+    the build measures its gap against brute-force path enumeration where
+    that is affordable.
+
+    Missing observations are ``numpy.nan`` rows: the update is skipped and
+    regime probabilities evolve by the chain alone.
+    """
+
+    def __init__(
+        self,
+        *,
+        design: npt.ArrayLike,
+        obs_cov: npt.ArrayLike,
+        transition: npt.ArrayLike,
+        state_cov: npt.ArrayLike,
+        regime_transition: npt.ArrayLike,
+        obs_intercept: npt.ArrayLike | None = None,
+        state_intercept: npt.ArrayLike | None = None,
+        initial_state: npt.ArrayLike | None = None,
+        initial_state_cov: npt.ArrayLike | None = None,
+        initial_regime_prob: npt.ArrayLike | None = None,
+    ) -> None:
+        """Validate the per-regime systems and the chain.
+
+        Args:
+            design: Per-regime observation matrices ``Z``, ``(K, p, m)``.
+            obs_cov: Per-regime observation covariances ``H``, ``(K, p, p)``.
+            transition: Per-regime state transitions ``T``, ``(K, m, m)``.
+            state_cov: Per-regime state covariances ``Q``, ``(K, m, m)``.
+            regime_transition: Row-stochastic chain matrix ``P``, ``(K, K)``,
+                with ``P[i, j] = Pr(S_t = j | S_{t-1} = i)``.
+            obs_intercept: Per-regime ``d``, ``(K, p)``; zero by default.
+            state_intercept: Per-regime ``c``, ``(K, m)``; zero by default.
+            initial_state: Prior state mean, ``(m,)``; zero by default.
+            initial_state_cov: Prior state covariance, ``(m, m)``; identity
+                scaled large by default.
+            initial_regime_prob: Initial regime distribution, ``(K,)``; the
+                chain's stationary distribution by default.
+
+        Raises:
+            DimensionError: If shapes disagree.
+            NumericalError: If the chain matrix is not row-stochastic.
+        """
+        self._Z = np.asarray(design, dtype=np.float64)
+        if self._Z.ndim != 3:
+            raise DimensionError(f"design must be (K, p, m); got shape {self._Z.shape}.")
+        k_regimes, p, m = self._Z.shape
+        self._H = np.asarray(obs_cov, dtype=np.float64)
+        self._T = np.asarray(transition, dtype=np.float64)
+        self._Q = np.asarray(state_cov, dtype=np.float64)
+        for label, matrix, shape in (
+            ("obs_cov", self._H, (k_regimes, p, p)),
+            ("transition", self._T, (k_regimes, m, m)),
+            ("state_cov", self._Q, (k_regimes, m, m)),
+        ):
+            if matrix.shape != shape:
+                raise DimensionError(f"{label} must be {shape}; got {matrix.shape}.")
+        self._P = np.asarray(regime_transition, dtype=np.float64)
+        if self._P.shape != (k_regimes, k_regimes):
+            raise DimensionError(
+                f"regime_transition must be ({k_regimes}, {k_regimes}); got {self._P.shape}."
+            )
+        if not np.allclose(self._P.sum(axis=1), 1.0, atol=1e-8) or np.any(self._P < -1e-12):
+            raise NumericalError(
+                "regime_transition must be row-stochastic with non-negative entries."
+            )
+        self._d = (
+            np.zeros((k_regimes, p))
+            if obs_intercept is None
+            else np.asarray(obs_intercept, dtype=np.float64).reshape(k_regimes, p)
+        )
+        self._c = (
+            np.zeros((k_regimes, m))
+            if state_intercept is None
+            else np.asarray(state_intercept, dtype=np.float64).reshape(k_regimes, m)
+        )
+        self._a1 = (
+            np.zeros(m)
+            if initial_state is None
+            else np.asarray(initial_state, dtype=np.float64).reshape(m)
+        )
+        self._P1 = (
+            np.eye(m) * 1e2
+            if initial_state_cov is None
+            else np.asarray(initial_state_cov, dtype=np.float64).reshape(m, m)
+        )
+        if initial_regime_prob is None:
+            values, vectors = np.linalg.eig(self._P.T)
+            pick = int(np.argmin(np.abs(values - 1.0)))
+            stationary = np.real(vectors[:, pick])
+            stationary = np.abs(stationary) / float(np.abs(stationary).sum())
+            self._pi1 = stationary
+        else:
+            self._pi1 = np.asarray(initial_regime_prob, dtype=np.float64).reshape(k_regimes)
+        self._k = k_regimes
+        self._p = p
+        self._m = m
+
+    @property
+    def k_regimes(self) -> int:
+        """Number of regimes."""
+        return self._k
+
+    @property
+    def k_states(self) -> int:
+        """State dimension."""
+        return self._m
+
+    @property
+    def k_endog(self) -> int:
+        """Observation dimension."""
+        return self._p
+
+    @property
+    def regime_transition(self) -> npt.NDArray[np.float64]:
+        """The row-stochastic regime chain matrix ``P``, as a copy."""
+        return self._P.copy()
+
+    def filter(self, y: npt.ArrayLike) -> _KimFilterResult:
+        """Kim's (1994) approximate forward pass.
+
+        Args:
+            y: Data, ``(n, p)``; a 1-D series is promoted when ``p`` is
+                one, and ``numpy.nan`` rows are missing.
+
+        Returns:
+            The :class:`_KimFilterResult`; its log-likelihood is the
+            collapse approximation.
+
+        Raises:
+            NumericalError: If an innovation covariance degenerates.
+        """
+        data = np.asarray(y, dtype=np.float64)
+        if data.ndim == 1 and self._p == 1:
+            data = data[:, None]
+        if data.ndim != 2 or data.shape[1] != self._p:
+            raise DimensionError(f"data must be (n, {self._p}); got shape {np.asarray(y).shape}.")
+        finite = np.isfinite(data)
+        partial = finite.any(axis=1) & ~finite.all(axis=1)
+        if bool(partial.any()):
+            raise SpecificationError(
+                f"{int(partial.sum())} row(s) (first at index "
+                f"{int(np.flatnonzero(partial)[0])}) are partially "
+                "observed; this engine treats missingness whole-row, and "
+                "silently discarding the observed elements would misstate "
+                "the likelihood. Pass fully observed or fully missing "
+                "rows, or use the linear-Gaussian substrate, whose filter "
+                "supports element-wise missingness."
+            )
+        n, k, m, p = data.shape[0], self._k, self._m, self._p
+        means = np.tile(self._a1, (k, 1))
+        covs = np.tile(self._P1, (k, 1, 1))
+        probs = self._pi1.copy()
+        filtered_prob = np.empty((n, k))
+        predicted_prob = np.empty((n, k))
+        filtered_state = np.empty((n, m))
+        filtered_cov = np.empty((n, m, m))
+        regime_state = np.empty((n, k, m))
+        contributions = np.zeros(n)
+        for t in range(n):
+            observed = bool(np.all(np.isfinite(data[t])))
+            pair_mean = np.empty((k, k, m))
+            pair_cov = np.empty((k, k, m, m))
+            pair_log = np.full((k, k), -np.inf)
+            for i in range(k):
+                for j in range(k):
+                    if t == 0:
+                        mean = self._a1.copy()
+                        cov = self._P1.copy()
+                    else:
+                        mean = self._c[j] + self._T[j] @ means[i]
+                        cov = self._T[j] @ covs[i] @ self._T[j].T + self._Q[j]
+                    loglik = 0.0
+                    if observed:
+                        center = self._Z[j] @ mean + self._d[j]
+                        innovation_cov = self._Z[j] @ cov @ self._Z[j].T + self._H[j]
+                        try:
+                            chol = np.linalg.cholesky(innovation_cov)
+                        except np.linalg.LinAlgError as error:
+                            raise NumericalError(
+                                "an innovation covariance lost positive "
+                                "definiteness; the filter has diverged."
+                            ) from error
+                        residual = data[t] - center
+                        white = sla.solve_triangular(chol, residual, lower=True)
+                        loglik = -0.5 * (
+                            p * _LOG_2PI
+                            + 2.0 * float(np.sum(np.log(np.diag(chol))))
+                            + float(white @ white)
+                        )
+                        gain = sla.cho_solve((chol, True), self._Z[j] @ cov).T
+                        mean = mean + gain @ residual
+                        cov = cov - gain @ innovation_cov @ gain.T
+                        cov = 0.5 * (cov + cov.T)
+                    pair_mean[i, j] = mean
+                    pair_cov[i, j] = cov
+                    prior = self._pi1[j] / k if t == 0 else self._P[i, j] * probs[i]
+                    pair_log[i, j] = np.log(max(prior, 1e-300)) + loglik
+            predicted_prob[t] = self._pi1 if t == 0 else probs @ self._P
+            peak = float(pair_log.max())
+            weights = np.exp(pair_log - peak)
+            total = float(weights.sum())
+            contributions[t] = peak + np.log(total)
+            weights /= total
+            probs = weights.sum(axis=0)
+            for j in range(k):
+                share = max(float(probs[j]), 1e-300)
+                mixed = (weights[:, j, None] * pair_mean[:, j]).sum(axis=0) / share
+                spread = np.zeros((m, m))
+                for i in range(k):
+                    gap = pair_mean[i, j] - mixed
+                    spread += weights[i, j] * (pair_cov[i, j] + np.outer(gap, gap))
+                means[j] = mixed
+                covs[j] = spread / share
+            filtered_prob[t] = probs
+            regime_state[t] = means
+            filtered_state[t] = probs @ means
+            overall = np.zeros((m, m))
+            for j in range(k):
+                gap = means[j] - filtered_state[t]
+                overall += probs[j] * (covs[j] + np.outer(gap, gap))
+            filtered_cov[t] = overall
+        return _KimFilterResult(
+            loglikelihood=float(contributions.sum()),
+            loglikelihood_contributions=contributions,
+            filtered_prob=filtered_prob,
+            predicted_prob=predicted_prob,
+            filtered_state=filtered_state,
+            filtered_state_cov=filtered_cov,
+            regime_state=regime_state,
+        )
+
+    def smooth(self, y: npt.ArrayLike) -> _KimSmootherResult:
+        """Kim's backward pass over the regime probabilities.
+
+        Runs the forward filter, then the discrete backward recursion the
+        package already owns for Hamilton-filter models, applied to the
+        collapse-approximate filtered probabilities. Smoothing the
+        *continuous* state of a switching model requires a second collapse
+        approximation on the backward pass and is deliberately not
+        offered; the regime chronology is what smoothing is for here.
+
+        Args:
+            y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
+
+        Returns:
+            The :class:`_KimSmootherResult` over regimes.
+        """
+        forward = self.filter(y)
+        record = _HamiltonFilterResult(
+            loglikelihood=forward.loglikelihood,
+            loglikelihood_contributions=forward.loglikelihood_contributions,
+            filtered_prob=forward.filtered_prob,
+            predicted_prob=forward.predicted_prob,
+        )
+        return kim_smoother(record, self._P)
+
+    def loglikelihood(self, y: npt.ArrayLike) -> float:
+        """The collapse-approximate log-likelihood."""
+        return self.filter(y).loglikelihood

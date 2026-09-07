@@ -203,6 +203,55 @@ class _KimSmootherResult(_SmootherResult):
     smoothed_joint_prob: npt.NDArray[np.float64]
 
 
+@dataclass(frozen=True, kw_only=True)
+class _ParticleFilterResult(_FilterResult):
+    """Output of a sequential-Monte-Carlo forward pass.
+
+    The state distribution is carried as moments of the particle cloud
+    rather than as the cloud itself, which at ``(T, n_particles, m)`` would
+    dwarf everything else a session holds; a caller who needs the full
+    cloud runs the filter step by step.
+
+    Attributes:
+        filtered_state: Particle-cloud means ``E[alpha_t | y_{1..t}]``,
+            shape ``(n, m)``.
+        filtered_state_std: Per-component cloud standard deviations,
+            shape ``(n, m)``.
+        effective_sample_size: The weight-degeneracy diagnostic per period,
+            in ``(0, n_particles]``; values collapsing toward one mean the
+            likelihood estimate is untrustworthy at that period.
+        n_particles: Particles carried.
+        method: ``"bootstrap"`` or ``"auxiliary"``.
+    """
+
+    filtered_state: npt.NDArray[np.float64]
+    filtered_state_std: npt.NDArray[np.float64]
+    effective_sample_size: npt.NDArray[np.float64]
+    n_particles: int
+    method: str
+
+
+@dataclass(frozen=True, kw_only=True)
+class _KimFilterResult(_FilterResult):
+    """Output of the Kim (1994) regime-switching Kalman forward pass.
+
+    Attributes:
+        filtered_prob: Contemporaneous regime probabilities, ``(n, K)``.
+        predicted_prob: One-step-ahead regime probabilities, ``(n, K)``.
+        filtered_state: Regime-marginal filtered state means, ``(n, m)``.
+        filtered_state_cov: Regime-marginal filtered covariances,
+            ``(n, m, m)`` -- mixture covariances, including the
+            between-regime spread.
+        regime_state: Per-regime collapsed state means, ``(n, K, m)``.
+    """
+
+    filtered_prob: npt.NDArray[np.float64]
+    predicted_prob: npt.NDArray[np.float64]
+    filtered_state: npt.NDArray[np.float64]
+    filtered_state_cov: npt.NDArray[np.float64]
+    regime_state: npt.NDArray[np.float64]
+
+
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class _ConditionalVarianceResult(
     _SummaryMixin, _SeriesMixin, _ComparisonMixin, _ConditionalVarianceMixin
@@ -1613,3 +1662,44 @@ class _VectorPosteriorDrawsResult(_SummaryMixin):
             radius = _companion_spectral_radius(self._stack_of(self.beta_draws[s]))
             stable += int(radius < 1.0)
         return stable / self.n_kept
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _RtsSmootherResult(_SmootherResult):
+    """Output of a Rauch-Tung-Striebel backward pass on a nonlinear model.
+
+    Emitted by both the extended and the unscented smoother -- the
+    backward recursion is Rauch's in each case; what differs is how the
+    forward moments and the smoother gain were approximated, which
+    ``method`` records.
+
+    Attributes:
+        smoothed_state: Smoothed state means ``a_{t|n}``, shape ``(n, m)``.
+        smoothed_state_cov: Smoothed covariances ``V_{t|n}``, ``(n, m, m)``.
+        method: ``"extended"`` or ``"unscented"``.
+    """
+
+    smoothed_state: npt.NDArray[np.float64]
+    smoothed_state_cov: npt.NDArray[np.float64]
+    method: str
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _ParticleSmootherResult(_SmootherResult):
+    """Output of a forward-filtering backward-smoothing particle pass.
+
+    As with the particle filter, the state distribution is carried as
+    cloud moments; the smoothed weights themselves are quadratic-cost
+    intermediates and are not retained.
+
+    Attributes:
+        smoothed_state: Smoothed cloud means ``E[alpha_t | y_{1..n}]``,
+            shape ``(n, m)``.
+        smoothed_state_std: Per-component smoothed cloud standard
+            deviations, shape ``(n, m)``.
+        n_particles: Particles carried through the forward pass.
+    """
+
+    smoothed_state: npt.NDArray[np.float64]
+    smoothed_state_std: npt.NDArray[np.float64]
+    n_particles: int

@@ -91,6 +91,8 @@ from .._internals import (
     _ThresholdFit,
     _ThresholdModel,
 )
+from ..exceptions import SpecificationError
+from ..state_space import NonlinearSSM
 
 __all__ = ["SETAR", "TAR", "SETARResult"]
 
@@ -152,6 +154,64 @@ class SETARResult(_ObservedRegimeResult):
         when the coefficients were solved for.
         """
         return (self.threshold_values > self.threshold).astype(np.float64)
+
+    def nonlinear_state_space(self, measurement_variance: float) -> NonlinearSSM:
+        """The fitted threshold mean as a noisily observed state space.
+
+        The errors-in-variables reading of the fit: the latent state is
+        the lag stack of the *true* series, the transition applies the
+        estimated regime-wise autoregression (hard switch at the fitted
+        threshold, ``z <= r`` to the lower regime as in estimation), and
+        the observation reads the current level through Gaussian
+        measurement error of the stated variance. That variance is
+        required and strictly positive because with none the model is
+        observation-driven and filtering it is vacuous. The particle
+        filter is the natural reader -- the hard switch makes the
+        transition non-smooth, so the extended filter's Jacobians are
+        untrustworthy near the threshold; the initial state is diffuse at
+        the sample mean and variance.
+
+        Args:
+            measurement_variance: Observation noise variance the emitted
+                system is read through, strictly positive.
+
+        Returns:
+            The :class:`NonlinearSSM`.
+
+        Raises:
+            SpecificationError: If the transition variable is external
+                (a TAR fit) -- the emitted transition can depend only on
+                the state, so only self-exciting fits have a closed
+                state-space form -- or if the variance is not strictly
+                positive.
+        """
+        if not self.self_exciting:
+            raise SpecificationError(
+                "the transition variable is an external series, so the "
+                "regime at each step depends on something outside the "
+                "state and the transition map has no closed form; only "
+                "self-exciting fits emit a state space."
+            )
+        lower = np.asarray(self.lower_params, dtype=np.float64)
+        upper = np.asarray(self.upper_params, dtype=np.float64)
+        order, delay, threshold = self.order, self.delay, self.threshold
+        depth = max(order, delay)
+
+        def mean_map(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            base = np.column_stack([np.ones(states.shape[0]), states[:, :order]])
+            return np.asarray(
+                np.where(states[:, delay - 1] > threshold, base @ upper, base @ lower),
+                dtype=np.float64,
+            )
+
+        return NonlinearSSM._lag_stack_state_space(
+            mean_map,
+            order=depth,
+            sigma2=self.sigma2,
+            measurement_variance=float(measurement_variance),
+            center=float(np.mean(self.endog)),
+            spread=float(np.var(self.endog)),
+        )
 
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""

@@ -34,6 +34,7 @@ from .._internals import (
     _SmoothTransitionFit,
     _SmoothTransitionModel,
 )
+from ..state_space import NonlinearSSM
 
 __all__ = ["ESTAR", "LSTAR", "STARResult"]
 
@@ -107,6 +108,60 @@ class STARResult(_ObservedRegimeResult):
         rather than mistaken for a converged estimate.
         """
         return self.transition == "logistic" and self.gamma > 100.0
+
+    def nonlinear_state_space(self, measurement_variance: float) -> NonlinearSSM:
+        """The fitted smooth-transition mean as a noisily observed state space.
+
+        The errors-in-variables reading of the fit: the latent state is
+        the lag stack of the *true* series (deep enough to hold both the
+        autoregression and the transition lag), the transition blends the
+        two regime autoregressions by the fitted weight function --
+        reproduced exactly, exponent clipping included -- and the
+        observation reads the current level through Gaussian measurement
+        error of the stated variance, which is required and strictly
+        positive because with none the model is observation-driven and
+        filtering it is vacuous. Unlike the hard-threshold emitter this
+        transition is smooth, so the extended and unscented filters are
+        trustworthy readers alongside the particle filter; the initial
+        state is diffuse at the sample mean and variance.
+
+        Args:
+            measurement_variance: Observation noise variance the emitted
+                system is read through, strictly positive.
+
+        Returns:
+            The :class:`_NonlinearStateSpaceModel`.
+
+        Raises:
+            SpecificationError: If the variance is not strictly positive.
+        """
+        lower = np.asarray(self.lower_params, dtype=np.float64)
+        upper = np.asarray(self.upper_params, dtype=np.float64)
+        order, delay = self.order, self.delay
+        threshold, gamma = self.threshold, self.gamma
+        scale, kind = self.transition_scale, self.transition
+        depth = max(order, delay)
+
+        def mean_map(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            base = np.column_stack([np.ones(states.shape[0]), states[:, :order]])
+            u = (states[:, delay - 1] - threshold) / scale
+            if kind == "logistic":
+                weight = 1.0 / (1.0 + np.exp(-np.clip(gamma * u, -50.0, 50.0)))
+            else:
+                weight = 1.0 - np.exp(-np.clip(gamma * u**2, 0.0, 50.0))
+            return np.asarray(
+                (1.0 - weight) * (base @ lower) + weight * (base @ upper),
+                dtype=np.float64,
+            )
+
+        return NonlinearSSM._lag_stack_state_space(
+            mean_map,
+            order=depth,
+            sigma2=self.sigma2,
+            measurement_variance=float(measurement_variance),
+            center=float(np.mean(self.endog)),
+            spread=float(np.var(self.endog)),
+        )
 
     def _transition_params(self) -> dict[str, float]:
         """The transition speed, inserted between the threshold and the variance."""

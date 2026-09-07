@@ -104,7 +104,8 @@ from .._internals import (
     _NeuralThresholdFit,
     _NeuralThresholdModel,
 )
-from ..exceptions import DimensionError
+from ..exceptions import DimensionError, SpecificationError
+from ..state_space import NonlinearSSM
 
 __all__ = ["ARNN", "TARNN", "ARNNResult", "TARNNResult"]
 
@@ -172,6 +173,46 @@ class ARNNResult(_MeanFunctionResult):
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""
         return f"AR-NN({self.order})"
+
+    def nonlinear_state_space(self, measurement_variance: float) -> NonlinearSSM:
+        """The learned mean as a noisily observed state space.
+
+        The errors-in-variables reading of the fit: the latent state is
+        the ``order``-deep lag stack of the *true* series, the transition
+        applies the trained network to the stack, and the observation
+        reads the current level through Gaussian measurement error of the
+        stated variance -- required and strictly positive, because with
+        none the model is observation-driven and filtering it is vacuous.
+        The network is smooth, so all three filters are available; the
+        unscented filter avoids differencing through the network. The
+        initial state is diffuse at the sample mean and variance. One
+        caveat is the network's own: outside the range of states seen in
+        training, the learned mean is extrapolation, and so is every
+        filtered path that wanders there.
+
+        Args:
+            measurement_variance: Observation noise variance the emitted
+                system is read through, strictly positive.
+
+        Returns:
+            The :class:`NonlinearSSM`.
+
+        Raises:
+            SpecificationError: If the variance is not strictly positive.
+        """
+        predictor = self.predictor
+
+        def mean_map(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            return np.asarray(predictor.predict(states), dtype=np.float64)
+
+        return NonlinearSSM._lag_stack_state_space(
+            mean_map,
+            order=self.order,
+            sigma2=self.sigma2,
+            measurement_variance=float(measurement_variance),
+            center=float(np.mean(self.endog)),
+            spread=float(np.var(self.endog)),
+        )
 
     def _summary_table(self) -> SummaryTable:
         """Structured summary rendered by every display path.
@@ -335,6 +376,60 @@ class TARNNResult(_MeanFunctionResult):
         if (~lower).any():
             out[~lower] = self.upper_predictor.predict(x[~lower])
         return out
+
+    def nonlinear_state_space(self, measurement_variance: float) -> NonlinearSSM:
+        """The fitted two-network threshold mean as a noisily observed state space.
+
+        The errors-in-variables reading of the fit: the latent state is
+        the lag stack of the *true* series (deep enough to hold both the
+        feature lags and the transition lag), the transition routes each
+        state to its regime's network by the fitted threshold (``z <= r``
+        to the lower, as in training), and the observation reads the
+        current level through Gaussian measurement error of the stated
+        variance, required and strictly positive because with none the
+        model is observation-driven and filtering it is vacuous. The hard
+        switch makes the transition non-smooth at the threshold, so the
+        particle filter is the natural reader; the extrapolation caveat of
+        the single-network emitter applies to each regime's network on its
+        own training subsample.
+
+        Args:
+            measurement_variance: Observation noise variance the emitted
+                system is read through, strictly positive.
+
+        Returns:
+            The :class:`NonlinearSSM`.
+
+        Raises:
+            SpecificationError: If the threshold variable is external --
+                the emitted transition can depend only on the state, so
+                only self-exciting fits have a closed state-space form --
+                or if the variance is not strictly positive.
+        """
+        if not self.self_exciting:
+            raise SpecificationError(
+                "the threshold variable is an external series, so the "
+                "regime at each step depends on something outside the "
+                "state and the transition map has no closed form; only "
+                "self-exciting fits emit a state space."
+            )
+        order, delay = self.order, self.delay
+        depth = max(order, delay)
+
+        def mean_map(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            return np.asarray(
+                self.predict(states[:, :order], states[:, delay - 1]),
+                dtype=np.float64,
+            )
+
+        return NonlinearSSM._lag_stack_state_space(
+            mean_map,
+            order=depth,
+            sigma2=self.sigma2,
+            measurement_variance=float(measurement_variance),
+            center=float(np.mean(self.endog)),
+            spread=float(np.var(self.endog)),
+        )
 
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""
