@@ -76,6 +76,8 @@ from ..._internals import _CoDiagonalObjective, _IdentificationModel, _solve
 from ...exceptions import SpecificationError
 from .zero_restrictions import SVARResult
 
+__all__ = ["NonGaussianSVAR"]
+
 
 class NonGaussianSVAR(_IdentificationModel[SVARResult]):
     """Identification from shock independence and non-Gaussianity, Comon (1994).

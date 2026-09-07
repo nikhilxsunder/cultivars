@@ -78,6 +78,8 @@ from ..._internals import (
 )
 from ...exceptions import SpecificationError
 
+__all__ = ["SetIdentifiedSVAR", "SetIdentifiedSVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class SetIdentifiedSVARResult(_SummaryMixin):

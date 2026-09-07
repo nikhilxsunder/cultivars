@@ -62,6 +62,8 @@ from ...exceptions import SpecificationError
 from ..large_dim import FAVARResult
 from .zero_restrictions import RecursiveSVAR
 
+__all__ = ["FactorAugmentedSVAR", "FactorAugmentedSVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class FactorAugmentedSVARResult(_SummaryMixin):

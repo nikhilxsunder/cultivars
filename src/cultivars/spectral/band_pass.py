@@ -60,6 +60,8 @@ from .._core import SummaryTable, _ideal_weights, _validate_band, validate_endog
 from .._internals import _SummaryMixin
 from ..exceptions import SpecificationError
 
+__all__ = ["BandPassResult", "BaxterKingFilter", "ChristianoFitzgeraldFilter"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class BandPassResult(_SummaryMixin):
@@ -139,7 +141,7 @@ class BandPassResult(_SummaryMixin):
         )
 
 
-class BaxterKing:
+class BaxterKingFilter:
     """The Baxter-King symmetric truncated band-pass filter.
 
     Args:
@@ -221,7 +223,7 @@ class BaxterKing:
         )
 
 
-class ChristianoFitzgerald:
+class ChristianoFitzgeraldFilter:
     """The Christiano-Fitzgerald asymmetric full-sample band-pass filter.
 
     The random-walk variant -- their recommended default -- which keeps

@@ -100,6 +100,8 @@ from .._internals import (
 )
 from ..exceptions import SpecificationError
 
+__all__ = ["MSAR", "MSARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class MSARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):

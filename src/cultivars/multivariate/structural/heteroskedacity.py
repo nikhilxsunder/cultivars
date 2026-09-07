@@ -71,6 +71,8 @@ from ..._internals import _CoDiagonalObjective, _IdentificationModel, _solve
 from ...exceptions import NumericalError, SpecificationError
 from .zero_restrictions import SVARResult
 
+__all__ = ["HeteroskedasticSVAR"]
+
 
 class HeteroskedasticSVAR(_IdentificationModel[SVARResult]):
     """Identification from declared variance regimes, Rigobon (2003).

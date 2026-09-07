@@ -64,6 +64,8 @@ from .._internals import (
     _SummaryMixin,
 )
 
+__all__ = ["AR", "ARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class ARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin, _StationarityMixin):

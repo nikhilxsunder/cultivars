@@ -92,6 +92,8 @@ from .._internals import (
     _ThresholdModel,
 )
 
+__all__ = ["SETAR", "TAR", "SETARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class SETARResult(_ObservedRegimeResult):

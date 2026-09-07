@@ -1,6 +1,6 @@
 """Frequency-domain views of fitted systems, and band-pass utilities."""
 
-from .band_pass import BandPassResult, BaxterKing, ChristianoFitzgerald
+from .band_pass import BandPassResult, BaxterKingFilter, ChristianoFitzgeraldFilter
 from .causality import (
     ConditionalSpectralCausality,
     ConditionalSpectralCausalityResult,
@@ -11,8 +11,8 @@ from .density import SpectralDensity, SpectralDensityResult
 
 __all__ = [
     "BandPassResult",
-    "BaxterKing",
-    "ChristianoFitzgerald",
+    "BaxterKingFilter",
+    "ChristianoFitzgeraldFilter",
     "ConditionalSpectralCausality",
     "ConditionalSpectralCausalityResult",
     "SpectralCausality",

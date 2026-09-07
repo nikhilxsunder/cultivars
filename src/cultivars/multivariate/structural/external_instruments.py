@@ -52,6 +52,8 @@ from ..._internals import _IdentificationModel
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from .zero_restrictions import SVARResult
 
+__all__ = ["ProxySVAR"]
+
 
 class ProxySVAR(_IdentificationModel[SVARResult]):
     """External-instrument identification, Mertens-Ravn (2013).

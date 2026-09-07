@@ -90,6 +90,8 @@ from ..._internals import (
 from ...exceptions import SpecificationError
 from ..structural import RecursiveSVAR
 
+__all__ = ["MSVAR", "MSVARResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class MSVARResult(_SummaryMixin, _ComparisonMixin):

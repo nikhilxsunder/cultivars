@@ -63,6 +63,8 @@ from .._internals import (
     _SummaryMixin,
 )
 
+__all__ = ["ARFIMA", "ARFIMAResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class ARFIMAResult(

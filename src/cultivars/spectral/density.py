@@ -65,6 +65,8 @@ from .._core import (
 from .._internals import _SummaryMixin
 from ..exceptions import SpecificationError
 
+__all__ = ["SpectralDensity", "SpectralDensityResult"]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class SpectralDensityResult(_SummaryMixin):
