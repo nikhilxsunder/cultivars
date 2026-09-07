@@ -92,7 +92,7 @@ from ..._internals import (
     _ComparisonMixin,
     _DurbinKoopmanSmootherResult,
     _KalmanFilterResult,
-    _LinearGaussianStateSpaceModel,
+    _LinearGaussianStateSpace,
     _maximize_likelihood,
     _MidasProfileObjective,
     _SummaryMixin,
@@ -450,7 +450,7 @@ class MFVAR:
         """Latent autoregressive order."""
         return int(self._coefficients.shape[0])
 
-    def _state_space(self) -> _LinearGaussianStateSpaceModel:
+    def _state_space(self) -> _LinearGaussianStateSpace:
         """Assemble the observable form."""
         design, obs_cov, transition, selection, state_cov, state_intercept = (
             _mixed_frequency_system(
@@ -462,7 +462,7 @@ class MFVAR:
                 intercept=self._intercept,
             )
         )
-        return _LinearGaussianStateSpaceModel(
+        return _LinearGaussianStateSpace(
             design,
             obs_cov,
             transition,

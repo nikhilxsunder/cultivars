@@ -31,6 +31,10 @@ what lets ``mypy`` reject a misspelled option at the call site.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
+from collections.abc import Callable
+
+import numpy as np
+import numpy.typing as npt
 
 if TYPE_CHECKING:
     from scipy.optimize._minimize import _MinimizeOptions as OptimizerOptions
@@ -131,3 +135,13 @@ type Regime = Literal["lower", "upper"]
 
 type Penalty = Literal["lasso", "adaptive", "scad", "mcp", "group"]
 """Sparse-VAR penalty families: elementwise, reweighted, nonconvex, and lag-group."""
+
+type _Residuals = Callable[
+    [
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+    ],
+    npt.NDArray[np.float64],
+]

@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 
 from .._core import _KSC_MEAN, _KSC_VAR, _OFFSET, _draw_mixture_indicators
-from ._models import _LinearGaussianStateSpaceModel
+from ._substrates import _LinearGaussianStateSpace
 
 
 def _draw_volatility_path(
@@ -37,7 +37,7 @@ def _draw_volatility_path(
     n = residual.shape[0]
     star = np.log(residual**2 + _OFFSET)
     components = _draw_mixture_indicators(star, log_variance, rng)
-    space = _LinearGaussianStateSpaceModel(
+    space = _LinearGaussianStateSpace(
         np.ones((1, 1)),
         _KSC_VAR[components].reshape(n, 1, 1),
         np.eye(1),

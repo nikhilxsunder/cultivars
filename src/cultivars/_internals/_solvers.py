@@ -30,12 +30,14 @@ from scipy.optimize import minimize
 from scipy.special import multigammaln
 
 from .._core import link_matrix
-from ..exceptions import DimensionError, NumericalError
+from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._covariances import _PosteriorCovariance
 from ._levels import _ConditionalLevels
 from ._objectives import _Objective
 from ._posteriors import _ConjugatePosterior
 from ._priors import _Prior, _PriorContext
+from ._solvers import _LinearGaussianStateSpace, _NonlinearStateSpace
+from ._solutions import _PerturbationSolution
 
 
 def _solve[P](objective: _Objective[P]) -> tuple[P, float]:
@@ -466,3 +468,178 @@ def _spectral_factor(
     transfer = psi @ np.linalg.inv(psi0)
     sigma = np.real(psi0 @ np.conj(psi0.T))
     return transfer, sigma
+
+
+def _linear_state_space(
+    solution: _PerturbationSolution,
+    design: npt.NDArray[np.float64],
+    intercept: npt.NDArray[np.float64],
+    obs_cov: npt.NDArray[np.float64],
+) -> _LinearGaussianStateSpace:
+    """The first-order solution as an exact linear-Gaussian state space.
+
+    The state is the deviation ``x - x_ss``; observables are ``design @
+    [x; y] + intercept + measurement error``.
+    """
+    n_x = solution.n_states
+    z_full = design @ np.vstack([np.eye(n_x), solution.g_x])
+    d_full = design @ np.concatenate([solution.x_ss, solution.y_ss]) + intercept
+    noise = solution.eta @ solution.eta.T
+    return _LinearGaussianStateSpace(
+        z_full,
+        obs_cov,
+        solution.h_x,
+        np.eye(n_x),
+        noise,
+        obs_intercept=d_full,
+        initial_state=np.zeros(n_x),
+        initial_state_cov=_discrete_lyapunov(solution.h_x, noise),
+    )
+
+
+def _pruned_state_space(
+    solution: _PerturbationSolution,
+    design: npt.NDArray[np.float64],
+    intercept: npt.NDArray[np.float64],
+    obs_cov: npt.NDArray[np.float64],
+) -> _NonlinearStateSpace:
+    """The pruned second-order solution as an additive-Gaussian nonlinear state space.
+
+    The state is ``(x_f, x_s)``: the first-order deviation and the
+    second-order deviation. Noise enters only ``x_f``, so the state
+    covariance is singular and the form is additive-Gaussian, which
+    every filter on the substrate accepts.
+    """
+    n_x = solution.n_states
+    h_x, h_xx, h_ss = solution.h_x, solution.h_xx, solution.h_ss
+    g_x, g_xx, g_ss = solution.g_x, solution.g_xx, solution.g_ss
+    x_ss, y_ss = solution.x_ss, solution.y_ss
+
+    def kron_square(block: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        return np.einsum("nj,nk->njk", block, block).reshape(block.shape[0], n_x * n_x)
+
+    def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        block = np.asarray(states, dtype=np.float64)
+        x_f = block[:, :n_x]
+        x_s = block[:, n_x:]
+        next_f = x_f @ h_x.T
+        next_s = x_s @ h_x.T + 0.5 * kron_square(x_f) @ h_xx.T + 0.5 * h_ss[None, :]
+        return np.hstack([next_f, next_s])
+
+    def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        block = np.asarray(states, dtype=np.float64)
+        x_f = block[:, :n_x]
+        x_s = block[:, n_x:]
+        x_dev = x_f + x_s
+        y_dev = x_dev @ g_x.T + 0.5 * kron_square(x_f) @ g_xx.T + 0.5 * g_ss[None, :]
+        full = np.hstack([x_dev + x_ss[None, :], y_dev + y_ss[None, :]])
+        return full @ design.T + intercept[None, :]
+
+    noise = solution.eta @ solution.eta.T
+    state_cov = np.zeros((2 * n_x, 2 * n_x))
+    state_cov[:n_x, :n_x] = noise
+    p_first = _discrete_lyapunov(h_x, noise)
+    mean_second = np.linalg.solve(np.eye(n_x) - h_x, 0.5 * (h_xx @ p_first.ravel() + h_ss))
+    initial_state = np.concatenate([np.zeros(n_x), mean_second])
+    initial_cov = np.zeros((2 * n_x, 2 * n_x))
+    initial_cov[:n_x, :n_x] = p_first
+    return _NonlinearStateSpace(
+        transition,
+        observation,
+        state_cov=state_cov,
+        obs_cov=obs_cov,
+        initial_state=initial_state,
+        initial_state_cov=initial_cov,
+    )
+
+
+def _solve_perturbation(
+    equations: _Residuals,
+    x_ss: npt.NDArray[np.float64],
+    y_ss: npt.NDArray[np.float64],
+    eta: npt.NDArray[np.float64],
+    *,
+    order: int,
+    residual_tolerance: float = 1e-6,
+) -> _PerturbationSolution:
+    """Solve a model to first or second order around its steady state.
+
+    Args:
+        equations: The equilibrium conditions ``(y', y, x', x) ->
+            residuals``, ``n_x + n_y`` of them.
+        x_ss: Steady-state states ``(n_x,)``.
+        y_ss: Steady-state controls ``(n_y,)``.
+        eta: Shock loading ``(n_x, n_eps)``.
+        order: ``1`` or ``2``.
+        residual_tolerance: Largest steady-state residual tolerated.
+
+    Returns:
+        The :class:`_PerturbationSolution`.
+
+    Raises:
+        SpecificationError: If the order is not 1 or 2, or the equation
+            count does not match the variable count.
+        DimensionError: If ``eta`` is not ``(n_x, n_eps)``.
+        NumericalError: If the steady state does not solve the equations
+            or the solution fails.
+    """
+    if order not in (1, 2):
+        raise SpecificationError(f"order must be 1 or 2; got {order}.")
+    x_ss = np.asarray(x_ss, dtype=np.float64).ravel()
+    y_ss = np.asarray(y_ss, dtype=np.float64).ravel()
+    eta = np.asarray(eta, dtype=np.float64)
+    n_x, n_y = x_ss.shape[0], y_ss.shape[0]
+    if eta.ndim != 2 or eta.shape[0] != n_x:
+        raise DimensionError(f"eta must be ({n_x}, n_eps); got shape {eta.shape}.")
+    point = _stack_point(y_ss, y_ss, x_ss, x_ss)
+
+    def stacked(v: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        return np.asarray(
+            equations(v[:n_y], v[n_y : 2 * n_y], v[2 * n_y : 2 * n_y + n_x], v[2 * n_y + n_x :]),
+            dtype=np.float64,
+        ).ravel()
+
+    residual = stacked(point)
+    if residual.shape[0] != n_x + n_y:
+        raise SpecificationError(
+            f"the model has {n_x} states and {n_y} controls but returns "
+            f"{residual.shape[0]} equations; need {n_x + n_y}."
+        )
+    if not np.all(np.isfinite(residual)) or float(np.abs(residual).max()) > residual_tolerance:
+        raise NumericalError(
+            "the supplied steady state does not solve the equilibrium conditions "
+            f"(largest residual {float(np.abs(residual).max()):.3g})."
+        )
+    jac = _numerical_jacobian(stacked, point)
+    f_yn = jac[:, :n_y]
+    f_y = jac[:, n_y : 2 * n_y]
+    f_xn = jac[:, 2 * n_y : 2 * n_y + n_x]
+    f_x = jac[:, 2 * n_y + n_x :]
+    h_x, g_x = _first_order(f_yn, f_y, f_xn, f_x)
+    if order == 1:
+        return _PerturbationSolution(
+            h_x=h_x,
+            g_x=g_x,
+            h_xx=np.zeros((n_x, n_x * n_x)),
+            g_xx=np.zeros((n_y, n_x * n_x)),
+            h_ss=np.zeros(n_x),
+            g_ss=np.zeros(n_y),
+            eta=eta,
+            x_ss=x_ss,
+            y_ss=y_ss,
+            order=1,
+        )
+    hess = _numerical_hessian(stacked, point)
+    h_xx, g_xx, h_ss, g_ss = _second_order(jac, hess, h_x, g_x, eta, n_x=n_x, n_y=n_y)
+    return _PerturbationSolution(
+        h_x=h_x,
+        g_x=g_x,
+        h_xx=h_xx,
+        g_xx=g_xx,
+        h_ss=h_ss,
+        g_ss=g_ss,
+        eta=eta,
+        x_ss=x_ss,
+        y_ss=y_ss,
+        order=2,
+    )

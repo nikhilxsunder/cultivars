@@ -71,13 +71,13 @@ from .._internals import (
     _KimSmootherResult as KimSmootherResult,
 )
 from .._internals import (
-    _MarkovSwitchingStateSpaceModel as MarkovSwitchingSSM,
+    _MarkovSwitchingStateSpace as MarkovSwitchingSSM,
 )
 from .._internals import (
     _ParticleFilterResult as ParticleFilterResult,
 )
 from .._internals import (
-    _RegimeSwitchingLinearStateSpaceModel as RegimeSwitchingLinearSSM,
+    _RegimeSwitchingLinearStateSpace as RegimeSwitchingLinearSSM,
 )
 
 __all__ = [

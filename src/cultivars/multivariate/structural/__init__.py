@@ -11,6 +11,7 @@ from .sign_restrictions import (
     SignRestrictedSVARResult,
 )
 from .zero_restrictions import LongRunSVAR, MixedSVAR, RecursiveSVAR, ShortRunSVAR, SVARResult
+from .perturbation import PerturbationDSGE, PerturbationDSGEResult
 
 __all__ = [
     "FactorAugmentedSVAR",
@@ -28,4 +29,6 @@ __all__ = [
     "ShortRunSVAR",
     "SignRestrictedSVAR",
     "SignRestrictedSVARResult",
+    "PerturbationDSGE",
+    "PerturbationDSGEResult",
 ]

@@ -27,7 +27,6 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError
-from ._engines import NumpyMLPEngine
 
 
 @runtime_checkable
@@ -73,6 +72,20 @@ class _FittedMLP:
         """Total weight and bias count."""
         return self._n_parameters
 
+    @staticmethod
+    def _activation(z: npt.NDArray[np.float64], kind: str) -> npt.NDArray[np.float64]:
+            """Hidden-layer activation."""
+            if kind == "tanh":
+                return np.tanh(z)
+            return np.maximum(z, 0.0)
+
+    @staticmethod
+    def _activation_grad(z: npt.NDArray[np.float64], kind: str) -> npt.NDArray[np.float64]:
+            """Derivative of :func:`_activation`."""
+            if kind == "tanh":
+                return 1.0 - np.tanh(z) ** 2
+            return (z > 0.0).astype(np.float64)
+
     def predict(self, features: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """Conditional means for ``features`` of shape ``(n, k)``.
 
@@ -83,6 +96,6 @@ class _FittedMLP:
         if x.ndim != 2 or x.shape[1] != self.w1.shape[0]:
             raise DimensionError(f"features must be (n, {self.w1.shape[0]}); got shape {x.shape}.")
         xs = (x - self.x_mean) / self.x_scale
-        hidden = NumpyMLPEngine._activation(xs @ self.w1 + self.b1, self.activation)
+        hidden = self._activation(xs @ self.w1 + self.b1, self.activation)
         out = hidden @ self.w2 + self.b2
         return np.asarray(out * self.y_scale + self.y_mean, dtype=np.float64)

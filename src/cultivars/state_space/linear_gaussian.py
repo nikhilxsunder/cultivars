@@ -60,7 +60,7 @@ from .._internals import (
     _KalmanFilterResult as KalmanFilterResult,
 )
 from .._internals import (
-    _LinearGaussianStateSpaceModel as LinearGaussianSSM,
+    _LinearGaussianStateSpace as LinearGaussianSSM,
 )
 
 __all__ = ["DurbinKoopmanSmootherResult", "KalmanFilterResult", "LinearGaussianSSM"]

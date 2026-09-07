@@ -75,7 +75,7 @@ from ..._internals import (
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from ...state_space import LinearGaussianSSM
 
-__all__ = ["DynamicNelsonSiegel", "DynamicNelsonSiegelResult"]
+__all__ = ["DynamicNelsonSiegel", "DynamicNelsonSiegelResult", "TimeVaryingNelsonSiegelResult", "TimeVaryingNelsonSiegel"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -397,3 +397,238 @@ class DynamicNelsonSiegel:
             nobs=fit.nobs,
             n_params=float(fit.n_params),
         )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class TimeVaryingNelsonSiegelResult(_SummaryMixin, _ComparisonMixin):
+    """A fitted Nelson-Siegel model with a time-varying loading decay.
+
+    Attributes:
+        panel: The observed ``(nobs, p)`` yield panel.
+        maturities: The ``(p,)`` maturities.
+        mu: ``(3,)`` factor means (level, slope, curvature).
+        ar: ``(3,)`` diagonal factor persistences.
+        state_innovation_cov: ``(3, 3)`` factor innovation covariance.
+        measurement_var: ``(p,)`` per-maturity measurement variances.
+        log_decay_mean: Unconditional mean of the log decay.
+        decay_ar: Persistence of the log decay.
+        decay_sd: Innovation standard deviation of the log decay.
+        factors: ``(nobs, 3)`` smoothed factor paths.
+        factor_cov: ``(nobs, 3, 3)`` smoothed factor covariances.
+        log_decay: ``(nobs,)`` smoothed log-decay path.
+        log_decay_std: ``(nobs,)`` smoothed log-decay standard deviations.
+        llf: The *approximate* Gaussian log-likelihood of the chosen
+            filter. Not the exact likelihood: information criteria are
+            comparable against the constant-decay model only as a
+            heuristic, and the summary says so.
+        filter: ``"extended"`` or ``"unscented"``.
+        nobs: Curve dates.
+        n_params: Free parameters the likelihood was maximized over.
+    """
+
+    panel: npt.NDArray[np.float64] = field(repr=False)
+    maturities: npt.NDArray[np.float64]
+    mu: npt.NDArray[np.float64]
+    ar: npt.NDArray[np.float64]
+    state_innovation_cov: npt.NDArray[np.float64] = field(repr=False)
+    measurement_var: npt.NDArray[np.float64] = field(repr=False)
+    log_decay_mean: float
+    decay_ar: float
+    decay_sd: float
+    factors: npt.NDArray[np.float64] = field(repr=False)
+    factor_cov: npt.NDArray[np.float64] = field(repr=False)
+    log_decay: npt.NDArray[np.float64] = field(repr=False)
+    log_decay_std: npt.NDArray[np.float64] = field(repr=False)
+    llf: float
+    filter: str
+    nobs: int
+    n_params: float
+
+    @classmethod
+    def _from_fit(
+        cls, fit: _DecayNelsonSiegelFit, model: TimeVaryingNelsonSiegel
+    ) -> TimeVaryingNelsonSiegelResult:
+        """Assemble the public result from a raw fit and its specification."""
+        p = fit.params
+        return cls(
+            panel=model.panel,
+            maturities=model.maturities,
+            mu=p.mu,
+            ar=p.ar,
+            state_innovation_cov=p.state_chol @ p.state_chol.T,
+            measurement_var=p.obs_var,
+            log_decay_mean=p.log_decay_mean,
+            decay_ar=p.decay_ar,
+            decay_sd=p.decay_sd,
+            factors=fit.factors,
+            factor_cov=fit.factor_cov,
+            log_decay=fit.log_decay,
+            log_decay_std=fit.log_decay_std,
+            llf=fit.llf,
+            filter=fit.filter,
+            nobs=fit.nobs,
+            n_params=float(fit.n_params),
+        )
+
+    @property
+    def n_maturities(self) -> int:
+        """Points on the curve."""
+        return int(self.maturities.shape[0])
+
+    @property
+    def decay(self) -> npt.NDArray[np.float64]:
+        """The smoothed decay path ``exp(log lambda_t)``, ``(nobs,)``."""
+        return np.asarray(np.exp(self.log_decay), dtype=np.float64)
+
+    @property
+    def decay_mean(self) -> float:
+        """The unconditional decay ``exp(log_decay_mean)``."""
+        return float(np.exp(self.log_decay_mean))
+
+    @property
+    def hump_maturity(self) -> npt.NDArray[np.float64]:
+        """Where the curvature loading peaks each date, ``1.79 / lambda_t``."""
+        return np.asarray(1.7916 / self.decay, dtype=np.float64)
+
+    @property
+    def level(self) -> npt.NDArray[np.float64]:
+        """The smoothed level factor, ``(nobs,)``."""
+        return np.asarray(self.factors[:, 0], dtype=np.float64)
+
+    @property
+    def slope(self) -> npt.NDArray[np.float64]:
+        """The smoothed slope factor, ``(nobs,)``."""
+        return np.asarray(self.factors[:, 1], dtype=np.float64)
+
+    @property
+    def curvature(self) -> npt.NDArray[np.float64]:
+        """The smoothed curvature factor, ``(nobs,)``."""
+        return np.asarray(self.factors[:, 2], dtype=np.float64)
+
+    def loadings(self, t: int) -> npt.NDArray[np.float64]:
+        """The ``(p, 3)`` Nelson-Siegel loadings at date ``t``'s smoothed decay."""
+        return _nelson_siegel_loadings(self.maturities, float(self.decay[t]))
+
+    @property
+    def fitted(self) -> npt.NDArray[np.float64]:
+        """Smoothed fitted curves, ``(nobs, p)``."""
+        return np.asarray(
+            np.stack([self.loadings(t) @ self.factors[t] for t in range(self.nobs)]),
+            dtype=np.float64,
+        )
+
+    @property
+    def _params(self) -> _DecayNelsonSiegelParameters:
+        """The parameter record, rebuilt for the emitter."""
+        return _DecayNelsonSiegelParameters(
+            mu=self.mu,
+            ar=self.ar,
+            state_chol=np.linalg.cholesky(self.state_innovation_cov),
+            obs_var=self.measurement_var,
+            log_decay_mean=self.log_decay_mean,
+            decay_ar=self.decay_ar,
+            decay_sd=self.decay_sd,
+        )
+
+    @property
+    def state_space(self) -> NonlinearSSM:
+        """The fitted system on the nonlinear substrate.
+
+        Additive-Gaussian, so the extended, unscented, and particle
+        filters all read it; the unscented filter on the estimation panel
+        reproduces ``llf`` when the fit used it.
+        """
+        return _decay_nelson_siegel_state_space(self._params, self.maturities)
+
+    def _comparison_label(self) -> str:
+        """Specification label used when this result appears in a ranking."""
+        return f"DNS-TV[{self.filter}]"
+
+    def _summary_table(self) -> SummaryTable:
+        """Structured summary rendered by every display path."""
+        ic = self.information_criteria
+        rows: list[tuple[str, str, str, str]] = []
+        for j, name in enumerate(("level", "slope", "curvature")):
+            rows.append(
+                (
+                    name,
+                    f"{self.mu[j]:.4f}",
+                    f"{self.ar[j]:.4f}",
+                    f"{np.sqrt(self.state_innovation_cov[j, j]):.4f}",
+                )
+            )
+        rows.append(
+            (
+                "log decay",
+                f"{self.log_decay_mean:.4f}",
+                f"{self.decay_ar:.4f}",
+                f"{self.decay_sd:.4f}",
+            )
+        )
+        notes = (
+            f"Likelihood is the {self.filter} filter's Gaussian approximation, not "
+            "the exact likelihood; treat information criteria against the "
+            "constant-decay model as heuristic.",
+            f"Unconditional decay {self.decay_mean:.4f} (curvature hump at maturity "
+            f"{1.7916 / self.decay_mean:.2f}); smoothed decay ranges "
+            f"{self.decay.min():.4f} to {self.decay.max():.4f}.",
+        )
+        return SummaryTable(
+            title="Dynamic Nelson-Siegel (time-varying decay) Results",
+            metadata=(
+                ("Filter", self.filter),
+                ("Log-likelihood", f"{self.llf:.3f}"),
+                ("Dates", f"{self.nobs}"),
+                ("AIC", f"{ic.aic:.3f}"),
+                ("Maturities", f"{self.n_maturities}"),
+                ("BIC", f"{ic.bic:.3f}"),
+            ),
+            columns=("factor", "mean", "persistence", "innovation sd"),
+            rows=tuple(rows),
+            notes=notes,
+        )
+
+
+class TimeVaryingNelsonSiegel(_DecayNelsonSiegelModel[TimeVaryingNelsonSiegelResult]):
+    """The dynamic Nelson-Siegel model with a time-varying loading decay.
+
+    The state is ``(level, slope, curvature, log lambda)``, each a diagonal
+    AR(1); the measurement is the Nelson-Siegel curve at the current
+    ``lambda_t``. Estimated by maximizing the unscented (default) or
+    extended filter's likelihood from the constant-decay exact fit.
+
+    Args:
+        panel: The ``(nobs, p)`` yield panel. Rows must be wholly observed
+            or wholly missing; a partially observed row is refused with
+            a pointer to the constant-decay model.
+        maturities: The ``(p,)`` strictly positive maturities.
+
+    Example:
+        >>> import numpy as np
+        >>> from cultivars._core import _nelson_siegel_loadings
+        >>> rng = np.random.default_rng(0)
+        >>> taus = np.array([0.25, 1.0, 2.0, 5.0, 10.0])
+        >>> f = np.zeros((120, 3))
+        >>> mu = np.array([5.0, -1.5, 0.5])
+        >>> f[0] = mu
+        >>> for t in range(1, 120):
+        ...     f[t] = mu + 0.9 * (f[t - 1] - mu) + 0.2 * rng.standard_normal(3)
+        >>> curves = f @ _nelson_siegel_loadings(taus, 0.6).T
+        >>> curves = curves + 0.05 * rng.standard_normal((120, 5))
+        >>> res = TimeVaryingNelsonSiegel(curves, taus).fit()
+        >>> bool(np.corrcoef(res.level, f[:, 0])[0, 1] > 0.95)
+        True
+    """
+
+    def fit(self, *, filter: str = "unscented") -> TimeVaryingNelsonSiegelResult:
+        """Maximize the approximate likelihood.
+
+        Args:
+            filter: ``"unscented"`` (default; exact through the linear
+                transition, third-order accurate through the loadings) or
+                ``"extended"`` (central-difference Jacobians).
+
+        Raises:
+            SpecificationError: If the filter is unknown.
+        """
+        return TimeVaryingNelsonSiegelResult._from_fit(self._fit_decay(filter_name=filter), self)

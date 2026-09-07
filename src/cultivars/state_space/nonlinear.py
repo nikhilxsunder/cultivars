@@ -24,7 +24,7 @@
 from __future__ import annotations
 
 from .._internals import (
-    _NonlinearStateSpaceModel as NonlinearSSM,
+    _NonlinearStateSpace as NonlinearSSM,
 )
 from .._internals import (
     _ParticleFilterResult as ParticleFilterResult,

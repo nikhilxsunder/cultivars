@@ -52,7 +52,11 @@ from ._inferences import _CoefficientInference
 from ._parameters import (
     _NelsonSiegelParameters,
     _StructuralParameters,
+    _DecayNelsonSiegelParameters,
+    _StochasticVolatilityParameters,
+    _TrendVolatilityParameters,
 )
+from ._solutions import _PerturbationSolution
 from ._predictors import MeanPredictor
 
 
@@ -913,3 +917,203 @@ class _NelsonSiegelFit:
     nobs: int
     factors: npt.NDArray[np.float64]
     factor_cov: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _StochasticVolatilityFit:
+    """Raw output of a point (quasi- or particle-) likelihood SV fit.
+
+    Attributes:
+        params: The maximized parameter record.
+        llf: The criterion at the optimum: the exact quasi-likelihood of
+            the linearized model under ``method="qml"``, or a particle
+            *estimate* of the exact likelihood under ``method="particle"``.
+        method: ``"qml"`` or ``"particle"``.
+        n_params: Free parameters the criterion was maximized over.
+        nobs: Observations.
+        log_variance: Smoothed log-variance path, ``(n,)``.
+        log_variance_std: Smoothed log-variance standard deviations,
+            ``(n,)``.
+    """
+
+    params: _StochasticVolatilityParameters
+    llf: float
+    method: str
+    n_params: int
+    nobs: int
+    log_variance: npt.NDArray[np.float64]
+    log_variance_std: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VolatilityDrawsFit:
+    """Raw output of the Kim-Shephard-Chib Gibbs sampler for the SV model.
+
+    Attributes:
+        mu_draws: ``(S,)`` kept draws of the log-variance mean.
+        phi_draws: ``(S,)`` kept draws of the persistence.
+        sigma2_draws: ``(S,)`` kept draws of the log-variance innovation
+            variance.
+        mean_draws: ``(S,)`` kept draws of the observation mean (all zero
+            when the mean is fixed).
+        h_draws: ``(S, n)`` kept log-variance paths.
+        nobs: Observations.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    mu_draws: npt.NDArray[np.float64]
+    phi_draws: npt.NDArray[np.float64]
+    sigma2_draws: npt.NDArray[np.float64]
+    mean_draws: npt.NDArray[np.float64]
+    h_draws: npt.NDArray[np.float64]
+    nobs: int
+    n_draws: int
+    n_burn: int
+    thin: int
+
+    @property
+    def params(self) -> _StochasticVolatilityParameters:
+        """The posterior-mean parameter record."""
+        return _StochasticVolatilityParameters(
+            mu=float(self.mu_draws.mean()),
+            phi=float(self.phi_draws.mean()),
+            sigma2=float(self.sigma2_draws.mean()),
+            mean=float(self.mean_draws.mean()),
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _ParticleChainFit:
+    """Raw output of a particle marginal Metropolis-Hastings run.
+
+    Attributes:
+        theta_draws: ``(S, d)`` kept draws in the *unconstrained* space
+            the chain moved in.
+        loglik_draws: ``(S,)`` particle log-likelihood estimates carried
+            with each kept draw.
+        log_posterior_draws: ``(S,)`` the log-prior plus log-likelihood
+            estimate at each kept draw.
+        acceptance_rate: Fraction of proposals accepted over the whole
+            run, burn-in included.
+        proposal_cov: The ``(d, d)`` proposal covariance the chain ended
+            with, after adaptation.
+        n_particles: Particles per likelihood estimate.
+        n_draws: Total iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    theta_draws: npt.NDArray[np.float64]
+    loglik_draws: npt.NDArray[np.float64]
+    log_posterior_draws: npt.NDArray[np.float64]
+    acceptance_rate: float
+    proposal_cov: npt.NDArray[np.float64]
+    n_particles: int
+    n_draws: int
+    n_burn: int
+    thin: int
+
+    @property
+    def n_kept(self) -> int:
+        """Kept draws."""
+        return int(self.theta_draws.shape[0])
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _TrendVolatilityFit:
+    """Raw output of the unobserved-components stochastic-volatility Gibbs sampler.
+
+    Attributes:
+        trend_draws: ``(S, n)`` kept trend paths ``tau_t``.
+        h_draws: ``(S, n)`` kept log variances of the irregular.
+        q_draws: ``(S, n)`` kept log variances of the trend innovation.
+        gamma2_irregular_draws: ``(S,)`` vol-of-vol draws of ``h`` (constant
+            across draws when fixed).
+        gamma2_trend_draws: ``(S,)`` vol-of-vol draws of ``q``.
+        gamma_fixed: Whether the vol-of-vol parameters were held fixed.
+        nobs: Observations.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    trend_draws: npt.NDArray[np.float64]
+    h_draws: npt.NDArray[np.float64]
+    q_draws: npt.NDArray[np.float64]
+    gamma2_irregular_draws: npt.NDArray[np.float64]
+    gamma2_trend_draws: npt.NDArray[np.float64]
+    gamma_fixed: bool
+    nobs: int
+    n_draws: int
+    n_burn: int
+    thin: int
+
+    @property
+    def params(self) -> _TrendVolatilityParameters:
+        """The posterior-mean parameter record."""
+        return _TrendVolatilityParameters(
+            gamma2_irregular=float(self.gamma2_irregular_draws.mean()),
+            gamma2_trend=float(self.gamma2_trend_draws.mean()),
+            h0=float(self.h_draws[:, 0].mean()),
+            q0=float(self.q_draws[:, 0].mean()),
+            tau0=float(self.trend_draws[:, 0].mean()),
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _DecayNelsonSiegelFit:
+    """Raw output of the time-varying-decay Nelson-Siegel fit.
+
+    Attributes:
+        params: The maximized parameter record.
+        llf: The Gaussian-approximation log-likelihood of the chosen filter
+            (extended or unscented); *not* an exact likelihood.
+        filter: ``"extended"`` or ``"unscented"``.
+        n_params: Free parameters the likelihood was maximized over.
+        nobs: Curve dates.
+        factors: Smoothed factor paths, ``(n, 3)``.
+        factor_cov: Smoothed factor covariances, ``(n, 3, 3)``.
+        log_decay: Smoothed log-decay path, ``(n,)``.
+        log_decay_std: Smoothed log-decay standard deviations, ``(n,)``.
+    """
+
+    params: _DecayNelsonSiegelParameters
+    llf: float
+    filter: str
+    n_params: int
+    nobs: int
+    factors: npt.NDArray[np.float64]
+    factor_cov: npt.NDArray[np.float64]
+    log_decay: npt.NDArray[np.float64]
+    log_decay_std: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _PerturbationFit:
+    """Raw output of a perturbation-DSGE point fit.
+
+    Attributes:
+        theta: The structural parameter vector at the optimum, in the
+            model's own (constrained) space.
+        solution: The perturbation solution at ``theta``.
+        llf: The criterion at the optimum: exact under
+            ``filter="kalman"`` (first order only), a Gaussian approximation
+            under the extended/unscented filters, a particle estimate
+            under ``filter="particle"``.
+        filter: Which filter produced ``llf``.
+        n_params: Free structural parameters.
+        nobs: Observations.
+        filtered_state: Filtered state means (pruned state, ``(n, 2 n_x)``
+            at second order, ``(n, n_x)`` at first).
+    """
+
+    theta: npt.NDArray[np.float64]
+    solution: _PerturbationSolution
+    llf: float
+    filter: str
+    n_params: int
+    nobs: int
+    filtered_state: npt.NDArray[np.float64]
+

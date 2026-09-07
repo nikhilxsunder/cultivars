@@ -44,8 +44,12 @@ from .regime_switching import MSAR, MSARResult
 from .smooth_transition import ESTAR, LSTAR, STARResult
 from .threshold import SETAR, TAR, SETARResult
 from .unobserved_components import UnobservedComponents, UnobservedComponentsResult
+from .stochastic_volatility import SV, UCSV, SVResult
 
 __all__ = [
+    "SV",
+    "UCSV",
+    "SVResult",
     "AR",
     "ARFIMA",
     "ARGARCH",

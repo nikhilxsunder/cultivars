@@ -131,9 +131,22 @@ _STUDENT_DF_GRID: npt.NDArray[np.float64] = np.concatenate(
 )
 """Grid of candidate degrees of freedom for the Student-t innovations."""
 
-
 _GIG_TINY = 1e-12
 """Parameter floor below which a GIG boundary face is drawn as its limit."""
 
 _GIG_MAX_ROUNDS = 500
 """Vectorized rejection rounds before a conditional is declared degenerate."""
+
+_LOG_CHI2_MEAN = -1.2704
+"""Mean of ``log(eps**2)`` for standard-normal ``eps``."""
+
+_LOG_CHI2_VAR = float(np.pi**2 / 2.0)
+"""Variance of ``log(eps**2)`` for standard-normal ``eps``."""
+
+_TARGET_ACCEPTANCE = 0.234
+"""Roberts-Gelman-Gilks optimal random-walk acceptance rate, the tuning target."""
+
+_ADAPT_FLOOR = 1e-8
+"""Diagonal jitter added to the adapted covariance so it never degenerates."""
+
+

@@ -213,3 +213,90 @@ class _NelsonSiegelParameters:
     ar: npt.NDArray[np.float64]
     state_chol: npt.NDArray[np.float64]
     obs_var: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _StochasticVolatilityParameters:
+    """The parameter record of the log-AR(1) stochastic-volatility model.
+
+    The log variance follows ``h_{t+1} = mu + phi (h_t - mu) + sigma eta_t``
+    and the observation is ``y_t = c + exp(h_t / 2) eps_t``.
+
+    Attributes:
+        mu: Unconditional mean of the log variance.
+        phi: Persistence of the log variance, in ``(-1, 1)``.
+        sigma2: Innovation variance of the log variance, strictly positive.
+        mean: The observation mean ``c``, or ``0.0`` when the mean is fixed
+            at zero.
+    """
+
+    mu: float
+    phi: float
+    sigma2: float
+    mean: float
+
+    @property
+    def stationary_variance(self) -> float:
+        """The unconditional variance of the log variance."""
+        return float(self.sigma2 / (1.0 - self.phi**2))
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _TrendVolatilityParameters:
+    """The parameter record of the unobserved-components stochastic-volatility model.
+
+    Stock and Watson's (2007) trend-inflation model: ``y_t = tau_t +
+    exp(h_t / 2) eps_t``, ``tau_{t+1} = tau_t + exp(q_t / 2) eta_t``, with
+    the two log variances random walks.
+
+    Attributes:
+        gamma2_irregular: Random-walk variance of the irregular's log
+            variance ``h_t``.
+        gamma2_trend: Random-walk variance of the trend innovation's log
+            variance ``q_t``.
+        h0: Initial log variance of the irregular.
+        q0: Initial log variance of the trend innovation.
+        tau0: Initial trend level.
+    """
+
+    gamma2_irregular: float
+    gamma2_trend: float
+    h0: float
+    q0: float
+    tau0: float
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _DecayNelsonSiegelParameters:
+    """The dynamic Nelson-Siegel record with a time-varying loading decay.
+
+    Extends :class:`_NelsonSiegelParameters` with an AR(1) in the log
+    decay: ``log lambda_{t+1} = log_decay_mean + decay_ar (log lambda_t -
+    log_decay_mean) + decay_sd eta_t``. The constant-decay model is the
+    limit ``decay_ar = 0``, ``decay_sd = 0``.
+
+    Attributes:
+        mu: Factor means, shape ``(3,)``.
+        ar: Diagonal factor persistences, shape ``(3,)``, each in
+            ``(-1, 1)``.
+        state_chol: Lower-Cholesky factor of the factor innovation
+            covariance, shape ``(3, 3)``.
+        obs_var: Per-maturity measurement variances, shape ``(p,)``.
+        log_decay_mean: Unconditional mean of the log decay.
+        decay_ar: Persistence of the log decay, in ``(-1, 1)``.
+        decay_sd: Innovation standard deviation of the log decay,
+            nonnegative.
+    """
+
+    mu: npt.NDArray[np.float64]
+    ar: npt.NDArray[np.float64]
+    state_chol: npt.NDArray[np.float64]
+    obs_var: npt.NDArray[np.float64]
+    log_decay_mean: float
+    decay_ar: float
+    decay_sd: float
+
+    @property
+    def decay(self) -> float:
+        """The unconditional (median) decay ``exp(log_decay_mean)``."""
+        return float(np.exp(self.log_decay_mean))

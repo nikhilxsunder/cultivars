@@ -35,6 +35,7 @@ from .._core import (
     _PENALTY,
     OptimizerMethod,
     OptimizerOptions,
+    _Residuals,
     _arch_infinity_variance,
     _arch_infinity_weights,
     _gaussian_negloglik,
@@ -51,10 +52,11 @@ from .._core import (
     sigmoid,
     softplus,
     unpack_stationary,
+    _LOG_CHI2_MEAN,
+    _LOG_CHI2_VAR,
 )
 from ..exceptions import NumericalError
 from ._means import _MeanLayer
-from ._models import _LinearGaussianStateSpaceModel
 from ._parameters import (
     _AutoRegressionParameters,
     _BoxJenkinsParameters,
@@ -66,6 +68,7 @@ from ._parameters import (
     _StructuralParameters,
     _VarianceParameters,
 )
+from ._substrates import _LinearGaussianStateSpace
 
 
 class _Objective[P](ABC):
@@ -187,7 +190,7 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
             sigma2=float(np.exp(theta[offset + p])),
         )
 
-    def state_space(self, parameters: _AutoRegressionParameters) -> _LinearGaussianStateSpaceModel:
+    def state_space(self, parameters: _AutoRegressionParameters) -> _LinearGaussianStateSpace:
         """Build the companion state-space form at the given parameters.
 
         The initial state is the stationary mean implied by the intercept, so
@@ -206,7 +209,7 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
             if self.has_const
             else np.zeros(self.order, dtype=np.float64)
         )
-        return _LinearGaussianStateSpaceModel(
+        return _LinearGaussianStateSpace(
             self.design,
             self.obs_cov,
             transition,
@@ -306,7 +309,7 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
             return np.zeros(self.w.shape[0], dtype=np.float64)
         return self.design_x @ parameters.beta
 
-    def state_space(self, parameters: _BoxJenkinsParameters) -> _LinearGaussianStateSpaceModel:
+    def state_space(self, parameters: _BoxJenkinsParameters) -> _LinearGaussianStateSpace:
         """Build the Harvey ARMA state-space form at the given parameters.
 
         Args:
@@ -317,7 +320,7 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
             ``phi(L)Phi(L**s)`` and ``theta(L)Theta(L**s)``.
         """
         s = self.seasonal_order[3]
-        return _LinearGaussianStateSpaceModel._from_arma(
+        return _LinearGaussianStateSpace._from_arma(
             expand_ar(parameters.ar_params, parameters.seasonal_ar_params, s),
             expand_ma(parameters.ma_params, parameters.seasonal_ma_params, s),
             parameters.sigma2,
@@ -403,9 +406,9 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
 
     def state_space(
         self, parameters: _FractionalIntegrationParameters
-    ) -> _LinearGaussianStateSpaceModel:
+    ) -> _LinearGaussianStateSpace:
         """Build the ARMA state-space form for the short-memory block."""
-        return _LinearGaussianStateSpaceModel._from_arma(
+        return _LinearGaussianStateSpace._from_arma(
             parameters.ar_params,
             parameters.ma_params,
             parameters.sigma2,
@@ -1177,7 +1180,7 @@ class _StructuralObjective(_Objective[_StructuralParameters]):
             return _PENALTY
         params = self.unpack(theta)
         try:
-            model, _ = _LinearGaussianStateSpaceModel._from_structural_system(
+            model, _ = _LinearGaussianStateSpace._from_structural_system(
                 params, trend=self.trend, cycle=self.cycle, seasonal=self.seasonal
             )
             value = model.loglikelihood(self.endog)
@@ -1272,10 +1275,296 @@ class _NelsonSiegelObjective(_Objective[_NelsonSiegelParameters]):
             return _PENALTY
         params = self.unpack(theta)
         try:
-            model = _LinearGaussianStateSpaceModel._from_nelson_siegel_system(
-                params, self.maturities
-            )
+            model = _LinearGaussianStateSpace._from_nelson_siegel_system(params, self.maturities)
             value = model.loglikelihood(self.panel)
         except NumericalError:
+            return _PENALTY
+        return -value if np.isfinite(value) else _PENALTY
+
+
+class _NonlinearLikelihoodObjective[P](_Objective[P]):
+    """A Gaussian-approximation likelihood surface over the nonlinear substrate.
+
+    Subclasses supply the map from a parameter record to a
+    :class:`_NonlinearStateSpaceModel` and the criterion runs the named
+    filter -- extended or unscented -- and negates its log-likelihood.
+    Both filters produce a *deterministic* surface, so the L-BFGS-B
+    default of the base class applies unchanged; what they produce is
+    not the exact likelihood, and every result built on this surface says
+    so. A system carrying non-Gaussian hooks is refused by both filters,
+    which the criterion reports as the penalty rather than swallowing.
+
+    Attributes:
+        filter_name: ``"extended"`` or ``"unscented"``.
+    """
+
+    __slots__ = ()
+
+    filter_name: str
+
+    @abstractmethod
+    def state_space(self, parameters: P) -> _NonlinearStateSpaceModel:
+        """The nonlinear system at a parameter record."""
+
+    @abstractmethod
+    def data(self) -> npt.NDArray[np.float64]:
+        """The observations the surface is evaluated on."""
+
+    def _loglikelihood(self, model: _NonlinearStateSpaceModel) -> float:
+        """Run the chosen filter and return its log-likelihood."""
+        if self.filter_name == "extended":
+            return float(model.extended_filter(self.data()).loglikelihood)
+        if self.filter_name == "unscented":
+            return float(model.unscented_filter(self.data()).loglikelihood)
+        raise SpecificationError(
+            f"filter must be 'extended' or 'unscented'; got {self.filter_name!r}."
+        )
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Negative approximate log-likelihood at this draw."""
+        if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
+            return _PENALTY
+        try:
+            value = self._loglikelihood(self.state_space(self.unpack(theta)))
+        except (NumericalError, SpecificationError, np.linalg.LinAlgError, FloatingPointError):
+            return _PENALTY
+        return -value if np.isfinite(value) else _PENALTY
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _ParticleLikelihoodObjective(_Objective[npt.NDArray[np.float64]]):
+    """A particle-likelihood surface under common random numbers.
+
+    The particle filter's likelihood estimate is stochastic; fixing the
+    generator seed across evaluations (common random numbers) makes the
+    surface a deterministic function of the parameters, but a
+    discontinuous one wherever resampling decisions flip, so the
+    optimizer is the derivative-free Nelder-Mead simplex rather than a
+    quasi-Newton method. The maximizer is a *simulated* maximum-likelihood
+    estimator whose error shrinks with the particle count; the
+    research-grade alternative on the same likelihood estimate is the
+    particle chain in :mod:`cultivars._internals._chains`, and the
+    docstrings of every public model that offers this path point there.
+
+    Attributes:
+        data: The observations.
+        build: Map from the unconstrained vector to the system. May raise
+            :class:`SpecificationError` or :class:`NumericalError`, which
+            the criterion reports as the penalty.
+        theta0: The single warm start, in the unconstrained space.
+        n_particles: Particles per evaluation.
+        filter_method: Particle filter flavor.
+        seed: The common seed.
+    """
+
+    method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    options: ClassVar[OptimizerOptions | None] = {"maxiter": 2000, "xatol": 1e-4, "fatol": 1e-3}
+
+    data: npt.NDArray[np.float64]
+    build: Callable[[npt.NDArray[np.float64]], _NonlinearStateSpaceModel]
+    theta0: npt.NDArray[np.float64]
+    n_particles: int
+    filter_method: str
+    seed: int
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """The supplied warm start."""
+        return (np.asarray(self.theta0, dtype=np.float64),)
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The unconstrained vector itself; the caller owns the mapping."""
+        return np.asarray(theta, dtype=np.float64)
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Negative particle log-likelihood at this draw, common random numbers."""
+        if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
+            return _PENALTY
+        try:
+            model = self.build(np.asarray(theta, dtype=np.float64))
+            value = model.particle_filter(
+                self.data,
+                n_particles=self.n_particles,
+                method=self.filter_method,
+                seed=np.random.default_rng(self.seed),
+            ).loglikelihood
+        except (NumericalError, SpecificationError, np.linalg.LinAlgError, FloatingPointError):
+            return _PENALTY
+        return -float(value) if np.isfinite(value) else _PENALTY
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
+    """Harvey-Ruiz-Shephard quasi-likelihood of the stochastic-volatility model.
+
+    The flat vector holds the log-variance mean, an ``arctanh`` persistence,
+    and a log innovation variance; the observation mean, when estimated,
+    is concentrated out as the sample mean, which is the QML estimator of
+    a constant under the linearization. The criterion is the exact
+    Gaussian likelihood of the *linearized* model in ``log((y - c)**2)``,
+    hence a quasi-likelihood for the true model.
+
+    Attributes:
+        endog: The observed series.
+        mean: The observation mean ``c`` used to demean, already resolved
+            (the sample mean or zero).
+    """
+
+    endog: npt.NDArray[np.float64]
+    mean: float
+
+    def _log_squared(self) -> npt.NDArray[np.float64]:
+        """``log((y - c)**2 + offset)``, the linearized observation."""
+        return np.log((self.endog - self.mean) ** 2 + 1e-6)
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Moment-based warm starts: two persistence configurations."""
+        star = self._log_squared()
+        level = float(np.mean(star)) - _LOG_CHI2_MEAN
+        centered = star - np.mean(star)
+        denominator = float(centered[:-1] @ centered[:-1])
+        rho1 = float(centered[1:] @ centered[:-1]) / denominator if denominator > 0.0 else 0.5
+        # var(star) = sigma2 / (1 - phi**2) + pi**2/2; pin phi from the lag-1 autocorrelation
+        excess = max(float(np.var(star)) - _LOG_CHI2_VAR, 0.05)
+        phi_a = float(np.clip(rho1 * float(np.var(star)) / excess, 0.5, 0.98))
+        phi_b = 0.9
+        sigma2_a = max(excess * (1.0 - phi_a**2), 1e-3)
+        sigma2_b = max(excess * (1.0 - phi_b**2), 1e-3)
+        return (
+            np.array([level, np.arctanh(phi_a), np.log(sigma2_a)]),
+            np.array([level, np.arctanh(phi_b), np.log(sigma2_b)]),
+        )
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> _StochasticVolatilityParameters:
+        """Map the flat vector to the parameter record."""
+        return _StochasticVolatilityParameters(
+            mu=float(theta[0]),
+            phi=float(np.tanh(theta[1])),
+            sigma2=float(np.exp(theta[2])),
+            mean=self.mean,
+        )
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Negative quasi-log-likelihood at this draw."""
+        if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
+            return _PENALTY
+        params = self.unpack(theta)
+        if abs(params.phi) > 0.9999:
+            return _PENALTY
+        try:
+            value = _quasi_volatility_state_space(params).loglikelihood(self._log_squared())
+        except NumericalError:
+            return _PENALTY
+        return -value if np.isfinite(value) else _PENALTY
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _DecayNelsonSiegelObjective(_NonlinearLikelihoodObjective[_DecayNelsonSiegelParameters]):
+    """Approximate likelihood of the Nelson-Siegel model with a time-varying decay.
+
+    The flat vector holds the constant-decay model's parameters (raw
+    factor means, ``tanh`` persistences, a log-diagonal lower Cholesky,
+    per-maturity log measurement variances) plus the log-decay mean, a
+    ``tanh`` decay persistence, and a log decay innovation standard
+    deviation. The warm start is the constant-decay maximum-likelihood
+    fit, handed in by the model, with the decay dynamics started at a
+    persistent, quiet AR(1).
+
+    Attributes:
+        panel: The ``(nobs, p)`` yield panel; a row with any missing entry
+            is treated as wholly missing by the nonlinear substrate.
+        maturities: Strictly positive maturities, shape ``(p,)``.
+        warm: The constant-decay parameter record used as the warm start.
+        filter_name: ``"extended"`` or ``"unscented"``.
+    """
+
+    panel: npt.NDArray[np.float64]
+    maturities: npt.NDArray[np.float64]
+    warm: _NelsonSiegelParameters
+    filter_name: str
+
+    def data(self) -> npt.NDArray[np.float64]:
+        """The panel."""
+        return self.panel
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """The constant-decay fit, with quiet decay dynamics."""
+        chol = self.warm.state_chol
+        pieces = list(self.warm.mu)
+        pieces += list(np.arctanh(np.clip(self.warm.ar, -0.99, 0.99)))
+        pieces += list(np.log(np.maximum(np.diag(chol), 1e-8)))
+        pieces += [chol[1, 0], chol[2, 0], chol[2, 1]]
+        pieces += list(np.log(np.maximum(self.warm.obs_var, 1e-10)))
+        pieces += [np.log(self.warm.decay), np.arctanh(0.9), np.log(0.05)]
+        return (np.asarray(pieces, dtype=np.float64),)
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> _DecayNelsonSiegelParameters:
+        """Map the flat vector to the parameter record."""
+        p = self.maturities.shape[0]
+        mu = np.asarray(theta[0:3], dtype=np.float64)
+        ar = np.tanh(np.asarray(theta[3:6], dtype=np.float64))
+        chol = np.zeros((3, 3))
+        chol[0, 0], chol[1, 1], chol[2, 2] = np.exp(theta[6:9])
+        chol[1, 0], chol[2, 0], chol[2, 1] = theta[9:12]
+        obs_var = np.exp(np.asarray(theta[12 : 12 + p], dtype=np.float64))
+        at = 12 + p
+        return _DecayNelsonSiegelParameters(
+            mu=mu,
+            ar=ar,
+            state_chol=chol,
+            obs_var=obs_var,
+            log_decay_mean=float(theta[at]),
+            decay_ar=float(np.tanh(theta[at + 1])),
+            decay_sd=float(np.exp(theta[at + 2])),
+        )
+
+    def state_space(self, parameters: _DecayNelsonSiegelParameters) -> _NonlinearStateSpaceModel:
+        """The nonlinear system at a parameter record."""
+        return _decay_nelson_siegel_state_space(parameters, self.maturities)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _PerturbationObjective(_Objective[npt.NDArray[np.float64]]):
+    """Deterministic-filter likelihood surface of a perturbation model.
+
+    Lives beside the engine rather than in ``_objectives`` because its
+    criterion is the engine's own ``_loglikelihood``: the surface is a
+    closure over a model specification, not over a parameter record.
+
+    Attributes:
+        engine: The perturbation engine.
+        theta0: The warm start, unconstrained.
+        filter_name: ``"kalman"``, ``"extended"``, or ``"unscented"``.
+    """
+
+    engine: _PerturbationModel[object]
+    theta0: npt.NDArray[np.float64]
+    filter_name: str
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """The supplied warm start."""
+        return (np.asarray(self.theta0, dtype=np.float64),)
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The unconstrained vector; the engine owns the mapping."""
+        return np.asarray(theta, dtype=np.float64)
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Negative log-likelihood at this draw."""
+        if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
+            return _PENALTY
+        try:
+            value = self.engine._loglikelihood(
+                self.engine._to_constrained(np.asarray(theta, dtype=np.float64)),
+                filter_name=self.filter_name,
+                n_particles=0,
+                seed=None,
+            )
+        except (
+            NumericalError,
+            SpecificationError,
+            DimensionError,
+            np.linalg.LinAlgError,
+            FloatingPointError,
+        ):
             return _PENALTY
         return -value if np.isfinite(value) else _PENALTY

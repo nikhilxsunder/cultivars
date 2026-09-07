@@ -59,6 +59,10 @@ from ._defaults import (
     _SQRT_2_OVER_PI,
     _STUDENT_DF_GRID,
     _TINY,
+    _LOG_CHI2_MEAN,
+    _LOG_CHI2_VAR,
+    _TARGET_ACCEPTANCE,
+    _ADAPT_FLOOR,
 )
 from ._estimators import (
     _cumulant_slices,
@@ -145,9 +149,11 @@ from ._spectra import (
 )
 from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
 from ._types import (
+    Activation,
     CointegrationTrend,
     Frequency,
     FunctionalBasis,
+    LongMemoryMethod,
     Mean,
     Method,
     OptimizerMethod,
@@ -159,6 +165,7 @@ from ._types import (
     Transition,
     Trend,
     Vol,
+    _Residuals,
 )
 from ._validators import (
     _validate_band,
@@ -185,6 +192,11 @@ from ._validators import (
 )
 
 __all__ = [
+    "_Residuals",
+    "_TARGET_ACCEPTANCE",
+    "_ADAPT_FLOOR",
+    "_LOG_CHI2_MEAN",
+    "_LOG_CHI2_VAR",
     "_AGGREGATION_NOTE",
     "_CAPACITY_WARNING",
     "_CHOLESKY_NOTE",
@@ -222,12 +234,14 @@ __all__ = [
     "_UNRESTRICTED_TREND",
     "_UNSTABLE_NOTE",
     "_VARMA_IDENTIFICATION_NOTE",
+    "Activation",
     "ClosedSystemResult",
     "CointegrationTrend",
     "Frequency",
     "FunctionalBasis",
     "Identification",
     "InformationCriteria",
+    "LongMemoryMethod",
     "Mean",
     "Method",
     "OptimizerMethod",

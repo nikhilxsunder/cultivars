@@ -93,7 +93,7 @@ from .._internals import (
     _ComparisonMixin,
     _MarkovSwitchingFit,
     _MarkovSwitchingModel,
-    _MarkovSwitchingStateSpaceModel,
+    _MarkovSwitchingStateSpace,
     _SeriesMixin,
     _StabilityTest,
     _SummaryMixin,
@@ -532,14 +532,14 @@ class MSARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         )
 
     @property
-    def state_space(self) -> _MarkovSwitchingStateSpaceModel:
+    def state_space(self) -> _MarkovSwitchingStateSpace:
         """The fitted system, re-applicable to data it was not estimated on.
 
         Filtering a new series through this reports what the estimated regimes
         say about observations the fit never saw -- the natural out-of-sample
         check for a regime model, and one the fitted arrays alone cannot give.
         """
-        return _MarkovSwitchingStateSpaceModel(
+        return _MarkovSwitchingStateSpace(
             self.transition, self.intercepts, self.ar_params, self.variances
         )
 
