@@ -49,6 +49,10 @@ import numpy as np
 import numpy.typing as npt
 
 from ._inferences import _CoefficientInference
+from ._parameters import (
+    _NelsonSiegelParameters,
+    _StructuralParameters,
+)
 from ._predictors import MeanPredictor
 
 
@@ -864,3 +868,48 @@ class _VectorGibbsFit:
     n_draws: int
     n_burn: int
     thin: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _StructuralFit:
+    """Raw output of the structural time-series maximum-likelihood fit.
+
+    Attributes:
+        params: The maximized parameter record.
+        llf: Exact Gaussian log-likelihood under the approximate-diffuse
+            initialization the system builder documents.
+        n_params: Free parameters the likelihood was maximized over.
+        nobs: Observations.
+        smoothed_state: Full-sample state means, ``(n, m)``.
+        smoothed_state_cov: Full-sample state covariances, ``(n, m, m)``.
+        slices: Component name to state index range.
+    """
+
+    params: _StructuralParameters
+    llf: float
+    n_params: int
+    nobs: int
+    smoothed_state: npt.NDArray[np.float64]
+    smoothed_state_cov: npt.NDArray[np.float64]
+    slices: dict[str, slice]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _NelsonSiegelFit:
+    """Raw output of the dynamic Nelson-Siegel maximum-likelihood fit.
+
+    Attributes:
+        params: The maximized parameter record.
+        llf: Exact Gaussian log-likelihood.
+        n_params: Free parameters the likelihood was maximized over.
+        nobs: Observations (curve dates).
+        factors: Smoothed factor paths, ``(n, 3)``.
+        factor_cov: Smoothed factor covariances, ``(n, 3, 3)``.
+    """
+
+    params: _NelsonSiegelParameters
+    llf: float
+    n_params: int
+    nobs: int
+    factors: npt.NDArray[np.float64]
+    factor_cov: npt.NDArray[np.float64]

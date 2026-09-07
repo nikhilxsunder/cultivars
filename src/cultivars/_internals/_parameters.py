@@ -162,3 +162,54 @@ class _SmoothTransitionParameters:
 
     gamma: float
     threshold: float
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _StructuralParameters:
+    """The variance-and-cycle parameter record of a structural model.
+
+    Fields for components the specification excludes are ``None``; the
+    builder and the objective agree on that convention, so the record is
+    the single meeting point between the flat optimizer vector and the
+    system matrices.
+
+    Attributes:
+        sigma2_irregular: Observation noise variance.
+        sigma2_level: Level innovation variance, or ``None`` when the
+            level is smooth (no own noise).
+        sigma2_slope: Slope innovation variance, or ``None`` without a
+            stochastic slope.
+        cycle_rho: Cycle damping in ``(0, 1)``, or ``None``.
+        cycle_freq: Cycle frequency in ``(0, pi)``, or ``None``.
+        sigma2_cycle: Cycle innovation variance, or ``None``.
+        sigma2_seasonal: Shared seasonal innovation variance, or ``None``.
+    """
+
+    sigma2_irregular: float
+    sigma2_level: float | None
+    sigma2_slope: float | None
+    cycle_rho: float | None
+    cycle_freq: float | None
+    sigma2_cycle: float | None
+    sigma2_seasonal: float | None
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _NelsonSiegelParameters:
+    """The parameter record of the dynamic Nelson-Siegel state space.
+
+    Attributes:
+        decay: The loading decay ``lambda``, strictly positive.
+        mu: Factor means, shape ``(3,)``.
+        ar: Diagonal factor persistences, shape ``(3,)``, each in
+            ``(-1, 1)``.
+        state_chol: Lower-Cholesky factor of the factor innovation
+            covariance, shape ``(3, 3)``.
+        obs_var: Per-maturity measurement variances, shape ``(p,)``.
+    """
+
+    decay: float
+    mu: npt.NDArray[np.float64]
+    ar: npt.NDArray[np.float64]
+    state_chol: npt.NDArray[np.float64]
+    obs_var: npt.NDArray[np.float64]

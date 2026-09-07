@@ -41,6 +41,7 @@ from .._core import (
     _linear_variance_recursion,
     _log_variance_recursion,
     _midas_weights,
+    _nelson_siegel_loadings,
     _orthogonal_from_angles,
     companion_matrix,
     expand_ar,
@@ -60,7 +61,9 @@ from ._parameters import (
     _ConditionalVarianceParameters,
     _FractionalIntegrationParameters,
     _FractionalVarianceParameters,
+    _NelsonSiegelParameters,
     _SmoothTransitionParameters,
+    _StructuralParameters,
     _VarianceParameters,
 )
 
@@ -1089,3 +1092,190 @@ class _CoDiagonalObjective(_Objective[npt.NDArray[np.float64]]):
             transformed = rotation.T @ target @ rotation
             energy += float(np.sum(transformed**2) - np.sum(np.diagonal(transformed) ** 2))
         return energy
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _StructuralObjective(_Objective[_StructuralParameters]):
+    """Exact Gaussian likelihood of a structural time-series model.
+
+    The flat vector holds log variances, a logit-damped cycle amplitude,
+    and a bounded cycle frequency; every draw maps to an admissible
+    system, so the surface is smooth and unconstrained. The likelihood is
+    the Kalman filter's, exact under the approximate-diffuse
+    initialization the builder documents.
+
+    Attributes:
+        endog: The observed series.
+        trend: ``"level"``, ``"lltrend"``, or ``"smooth"``.
+        cycle: Whether the damped stochastic cycle is present.
+        seasonal: Trigonometric seasonal period, or ``None``.
+    """
+
+    endog: npt.NDArray[np.float64]
+    trend: str
+    cycle: bool
+    seasonal: int | None
+
+    def _scale(self) -> float:
+        """A positive variance scale read off the data."""
+        step = np.diff(self.endog) if self.endog.shape[0] > 1 else self.endog
+        return max(float(np.var(step)), 1e-8)
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Data-scaled variance starts; two cycle configurations."""
+        scale = np.log(self._scale())
+        head = [scale + np.log(0.5)]
+        if self.trend in ("level", "lltrend"):
+            head.append(scale + np.log(0.1))
+        if self.trend in ("lltrend", "smooth"):
+            head.append(scale + np.log(0.01))
+        tail = [scale + np.log(0.01)] if self.seasonal is not None else []
+        if not self.cycle:
+            return (np.asarray([*head, *tail], dtype=np.float64),)
+        first = [*head, 2.2, -1.2, scale + np.log(0.1), *tail]
+        second = [*head, 0.85, 0.0, scale + np.log(0.3), *tail]
+        return (
+            np.asarray(first, dtype=np.float64),
+            np.asarray(second, dtype=np.float64),
+        )
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> _StructuralParameters:
+        """Map the flat vector to the structural parameter record."""
+        at = 0
+        sigma2_irregular = float(np.exp(theta[at]))
+        at += 1
+        sigma2_level = None
+        if self.trend in ("level", "lltrend"):
+            sigma2_level = float(np.exp(theta[at]))
+            at += 1
+        sigma2_slope = None
+        if self.trend in ("lltrend", "smooth"):
+            sigma2_slope = float(np.exp(theta[at]))
+            at += 1
+        cycle_rho = cycle_freq = sigma2_cycle = None
+        if self.cycle:
+            cycle_rho = float(sigmoid(theta[at]))
+            cycle_freq = float(0.05 + (np.pi - 0.1) * sigmoid(theta[at + 1]))
+            sigma2_cycle = float(np.exp(theta[at + 2]))
+            at += 3
+        sigma2_seasonal = None
+        if self.seasonal is not None:
+            sigma2_seasonal = float(np.exp(theta[at]))
+        return _StructuralParameters(
+            sigma2_irregular=sigma2_irregular,
+            sigma2_level=sigma2_level,
+            sigma2_slope=sigma2_slope,
+            cycle_rho=cycle_rho,
+            cycle_freq=cycle_freq,
+            sigma2_cycle=sigma2_cycle,
+            sigma2_seasonal=sigma2_seasonal,
+        )
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Negative log-likelihood at this draw."""
+        if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
+            return _PENALTY
+        params = self.unpack(theta)
+        try:
+            model, _ = _LinearGaussianStateSpaceModel._from_structural_system(
+                params, trend=self.trend, cycle=self.cycle, seasonal=self.seasonal
+            )
+            value = model.loglikelihood(self.endog)
+        except NumericalError:
+            return _PENALTY
+        return -value if np.isfinite(value) else _PENALTY
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _NelsonSiegelObjective(_Objective[_NelsonSiegelParameters]):
+    """Exact Gaussian likelihood of the dynamic Nelson-Siegel state space.
+
+    The flat vector holds the log decay (unless fixed), raw factor means,
+    tanh-bounded diagonal persistences, a log-diagonal lower Cholesky of
+    the factor innovation covariance, and per-maturity log measurement
+    variances. The warm start is Diebold-Li's two-step estimator: fix the
+    decay where the curvature loading peaks at the median maturity,
+    regress each period's curve on the loadings, and read the factor
+    dynamics off the fitted factor series.
+
+    Attributes:
+        panel: The ``(nobs, p)`` yield panel; ``numpy.nan`` entries are
+            missing and skipped element-wise by the filter.
+        maturities: Strictly positive maturities, shape ``(p,)``.
+        fixed_decay: A decay to hold fixed, or ``None`` to estimate it.
+    """
+
+    panel: npt.NDArray[np.float64]
+    maturities: npt.NDArray[np.float64]
+    fixed_decay: float | None
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """The Diebold-Li two-step warm start."""
+        decay = (
+            self.fixed_decay
+            if self.fixed_decay is not None
+            else 1.79 / float(np.median(self.maturities))
+        )
+        loadings = _nelson_siegel_loadings(self.maturities, decay)
+        filled = np.where(
+            np.isfinite(self.panel),
+            self.panel,
+            np.nanmean(self.panel, axis=0, keepdims=True),
+        )
+        factors = np.linalg.lstsq(loadings, filled.T, rcond=None)[0].T
+        residual = filled - factors @ loadings.T
+        obs_var = np.maximum(np.var(residual, axis=0), 1e-8)
+        mu = factors.mean(axis=0)
+        centered = factors - mu[None, :]
+        ar = np.empty(3)
+        for j in range(3):
+            denominator = float(centered[:-1, j] @ centered[:-1, j])
+            ar[j] = (
+                float(centered[1:, j] @ centered[:-1, j]) / denominator
+                if denominator > 0.0
+                else 0.5
+            )
+        ar = np.clip(ar, -0.97, 0.97)
+        innovations = centered[1:] - centered[:-1] * ar[None, :]
+        cov = innovations.T @ innovations / max(innovations.shape[0], 1)
+        cov += np.eye(3) * max(float(np.trace(cov)) * 1e-4, 1e-10)
+        chol = np.linalg.cholesky(cov)
+        pieces = [] if self.fixed_decay is not None else [np.log(decay)]
+        pieces += list(mu)
+        pieces += list(np.arctanh(ar))
+        pieces += list(np.log(np.diag(chol)))
+        pieces += [chol[1, 0], chol[2, 0], chol[2, 1]]
+        pieces += list(np.log(obs_var))
+        return (np.asarray(pieces, dtype=np.float64),)
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> _NelsonSiegelParameters:
+        """Map the flat vector to the Nelson-Siegel parameter record."""
+        at = 0
+        if self.fixed_decay is not None:
+            decay = float(self.fixed_decay)
+        else:
+            decay = float(np.exp(theta[at]))
+            at += 1
+        mu = np.asarray(theta[at : at + 3], dtype=np.float64)
+        ar = np.tanh(np.asarray(theta[at + 3 : at + 6], dtype=np.float64))
+        at += 6
+        chol = np.zeros((3, 3))
+        chol[0, 0], chol[1, 1], chol[2, 2] = np.exp(theta[at : at + 3])
+        chol[1, 0], chol[2, 0], chol[2, 1] = theta[at + 3 : at + 6]
+        at += 6
+        obs_var = np.exp(np.asarray(theta[at:], dtype=np.float64))
+        return _NelsonSiegelParameters(decay=decay, mu=mu, ar=ar, state_chol=chol, obs_var=obs_var)
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """Negative log-likelihood at this draw."""
+        if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
+            return _PENALTY
+        params = self.unpack(theta)
+        try:
+            model = _LinearGaussianStateSpaceModel._from_nelson_siegel_system(
+                params, self.maturities
+            )
+            value = model.loglikelihood(self.panel)
+        except NumericalError:
+            return _PENALTY
+        return -value if np.isfinite(value) else _PENALTY

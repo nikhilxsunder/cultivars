@@ -43,6 +43,7 @@ from .mean_function import ARNN, TARNN, ARNNResult, TARNNResult
 from .regime_switching import MSAR, MSARResult
 from .smooth_transition import ESTAR, LSTAR, STARResult
 from .threshold import SETAR, TAR, SETARResult
+from .unobserved_components import UnobservedComponents, UnobservedComponentsResult
 
 __all__ = [
     "AR",
@@ -80,4 +81,6 @@ __all__ = [
     "SETARResult",
     "STARResult",
     "TARNNResult",
+    "UnobservedComponents",
+    "UnobservedComponentsResult",
 ]

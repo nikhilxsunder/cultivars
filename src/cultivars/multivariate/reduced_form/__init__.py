@@ -6,6 +6,7 @@ from .functional import FunctionalVAR, FunctionalVARResult
 from .mixed_frequency import MFVAR, MIDASVAR, MFVARResult, MIDASVARResult
 from .moving_average import VARMA, VARMAResult
 from .panel import PanelVAR, PanelVARResult
+from .term_structure import DynamicNelsonSiegel, DynamicNelsonSiegelResult
 from .vector_autoregression import VAR, VARX, VARResult, VARXResult
 
 __all__ = [
@@ -17,6 +18,8 @@ __all__ = [
     "VARX",
     "VECM",
     "VECMX",
+    "DynamicNelsonSiegel",
+    "DynamicNelsonSiegelResult",
     "FunctionalVAR",
     "FunctionalVARResult",
     "GVARResult",

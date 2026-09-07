@@ -87,6 +87,7 @@ from .._core import (
     _draw_inverse_gamma,
     _draw_inverse_wishart,
     _ForwardPass,
+    _nelson_siegel_loadings,
     aggregation_weights,
     combined_difference,
     concentrated_gaussian,
@@ -130,6 +131,7 @@ from ._fits import (
     _NeuralThresholdFit,
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
+    _StructuralFit,
     _ThresholdFit,
     _TimeVaryingFit,
     _VectorAutoRegressionFit,
@@ -158,7 +160,12 @@ from ._objectives import (
     _FractionalIntegrationObjective,
     _FractionalVarianceObjective,
     _SmoothTransitionObjective,
+    _StructuralObjective,
     _VectorSmoothTransitionObjective,
+)
+from ._parameters import (
+    _NelsonSiegelParameters,
+    _StructuralParameters,
 )
 from ._posteriors import (
     _ConjugatePosterior,
@@ -187,6 +194,7 @@ from ._solvers import (
     posterior_coefficients,
 )
 from ._states import _ExpectationMaximizationState, _VectorExpectationMaximizationState
+from ._systems import _structural_matrices
 from ._tests import _JohansenRankTest, _StabilityTest
 
 
@@ -789,6 +797,66 @@ class _LinearGaussianStateSpaceModel(
                 design[index, sub * size + index] = row[sub]
         return cls(
             design, np.zeros((size, size), dtype=np.float64), transition, selection, covariance
+        )
+
+    @classmethod
+    def _from_structural_system(
+        cls, params: _StructuralParameters, *, trend: str, cycle: bool, seasonal: int | None
+    ) -> tuple[_LinearGaussianStateSpaceModel, dict[str, slice]]:
+        """The structural model as a linear-Gaussian state space.
+
+        Args:
+            params: The parameter record.
+            trend: ``"level"``, ``"lltrend"``, or ``"smooth"``.
+            cycle: Whether the cycle is present.
+            seasonal: Seasonal period, or ``None``.
+
+        Returns:
+            The state-space model and the component layout.
+        """
+        design, transition, selection, state_cov, obs_cov, initial_cov, slices = (
+            _structural_matrices(params, trend=trend, cycle=cycle, seasonal=seasonal)
+        )
+        model = cls(
+            design,
+            obs_cov,
+            transition,
+            selection,
+            state_cov,
+            initial_state_cov=initial_cov,
+        )
+        return model, slices
+
+    @classmethod
+    def _from_nelson_siegel_system(
+        cls, params: _NelsonSiegelParameters, maturities: npt.NDArray[np.float64]
+    ) -> _LinearGaussianStateSpaceModel:
+        """The dynamic Nelson-Siegel model as a linear-Gaussian state space.
+
+        The state is the factor vector (level, slope, curvature) with
+        diagonal AR(1) dynamics around its mean, observed through the
+        Nelson-Siegel loadings at the given maturities with diagonal
+        measurement noise. The factor dynamics are stationary by
+        construction, so the substrate's stationary initialization applies.
+
+        Args:
+            params: The parameter record.
+            maturities: Strictly positive maturities, shape ``(p,)``.
+
+        Returns:
+            The state-space model.
+        """
+        loadings = _nelson_siegel_loadings(maturities, params.decay)
+        transition = np.diag(params.ar)
+        state_intercept = (np.eye(3) - transition) @ params.mu
+        state_cov = params.state_chol @ params.state_chol.T
+        return cls(
+            loadings,
+            np.diag(params.obs_var),
+            transition,
+            np.eye(3),
+            state_cov,
+            state_intercept=state_intercept,
         )
 
 
@@ -7830,3 +7898,99 @@ class _RegimeSwitchingLinearStateSpaceModel(_StateSpaceModel[_KimFilterResult, _
     def loglikelihood(self, y: npt.ArrayLike) -> float:
         """The collapse-approximate log-likelihood."""
         return self.filter(y).loglikelihood
+
+
+class _UnobservedComponentsModel[R](_UnivariateModel[R]):
+    """Estimation engine for structural time-series (unobserved-components) models.
+
+    Owns the specification and the maximum-likelihood machinery: the
+    public class validates nothing further and calls
+    :meth:`_fit_structural`. The likelihood is exact Gaussian through the
+    Kalman filter under the approximate-diffuse initialization the system
+    builder documents, so the fit carries a genuine ``llf`` and supports
+    information criteria.
+
+    Args:
+        endog: The observed series.
+        trend: ``"level"`` (local level), ``"lltrend"`` (local linear
+            trend), or ``"smooth"`` (integrated random walk).
+        cycle: Whether to include a damped stochastic cycle.
+        seasonal: Trigonometric seasonal period, or ``None``.
+
+    Raises:
+        SpecificationError: If the trend or seasonal specification is
+            unrecognized or degenerate.
+        DimensionError: If the series is too short to identify the
+            specification.
+    """
+
+    __slots__ = ("_cycle", "_seasonal", "_trend")
+
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        trend: str = "level",
+        cycle: bool = False,
+        seasonal: int | None = None,
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog)
+        if trend not in ("level", "lltrend", "smooth"):
+            raise SpecificationError(
+                f"trend must be 'level', 'lltrend', or 'smooth'; got {trend!r}."
+            )
+        if seasonal is not None and seasonal < 2:
+            raise SpecificationError(f"a seasonal period must be at least 2; got {seasonal}.")
+        self._trend = trend
+        self._cycle = bool(cycle)
+        self._seasonal = None if seasonal is None else int(seasonal)
+        m = (
+            (1 if trend == "level" else 2)
+            + (2 if cycle else 0)
+            + (0 if self._seasonal is None else self._seasonal - 1)
+        )
+        self._ensure_length(3 * m + 10, f"structural model with {m} states")
+
+    @property
+    def trend(self) -> str:
+        """The trend specification."""
+        return self._trend
+
+    @property
+    def cycle(self) -> bool:
+        """Whether the damped stochastic cycle is present."""
+        return self._cycle
+
+    @property
+    def seasonal(self) -> int | None:
+        """The trigonometric seasonal period, or ``None``."""
+        return self._seasonal
+
+    @abstractmethod
+    def fit(self) -> R:
+        """Estimate the specification and return the public result."""
+
+    def _fit_structural(self) -> _StructuralFit:
+        """Maximize the exact likelihood and smooth every component."""
+        objective = _StructuralObjective(
+            endog=self._endog,
+            trend=self._trend,
+            cycle=self._cycle,
+            seasonal=self._seasonal,
+        )
+        params, llf = _maximize_likelihood(objective)
+        model, slices = _LinearGaussianStateSpaceModel._from_structural_system(
+            params, trend=self._trend, cycle=self._cycle, seasonal=self._seasonal
+        )
+        smoothed = model.smooth(self._endog)
+        n_params = objective.starts()[0].shape[0]
+        return _StructuralFit(
+            params=params,
+            llf=llf,
+            n_params=n_params,
+            nobs=int(self._endog.shape[0]),
+            smoothed_state=smoothed.smoothed_state,
+            smoothed_state_cov=smoothed.smoothed_state_cov,
+            slices=slices,
+        )

@@ -27,10 +27,12 @@ from ._fits import (
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
     _MarkovSwitchingFit,
+    _NelsonSiegelFit,
     _NeuralAutoRegressionFit,
     _NeuralThresholdFit,
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
+    _StructuralFit,
     _ThresholdFit,
     _VectorAutoRegressionFit,
     _VectorConjugateFit,
@@ -84,6 +86,7 @@ from ._models import (
     _ThresholdModel,
     _ThresholdVectorAutoRegressionModel,
     _TimeVaryingVectorAutoRegressionModel,
+    _UnobservedComponentsModel,
     _VectorAutoRegressionModel,
     _VectorErrorCorrectionModel,
     _VolatilityBayesianVectorAutoRegressionModel,
@@ -93,7 +96,12 @@ from ._objectives import (
     _CoDiagonalObjective,
     _MidasProfileObjective,
     _MixedHorizonObjective,
+    _NelsonSiegelObjective,
     _ShortRunObjective,
+)
+from ._parameters import (
+    _NelsonSiegelParameters,
+    _StructuralParameters,
 )
 from ._predictors import MeanPredictor
 from ._priors import _AdaptivePrior, _NoPrior, _Prior, _PriorContext
@@ -116,6 +124,7 @@ from ._results import (
     _VectorResult,
 )
 from ._solvers import _maximize_likelihood, _solve, _spectral_factor, solve_global
+from ._systems import _structural_matrices
 from ._tests import (
     _LikelihoodRatioTest,
     _StabilityTest,
@@ -161,6 +170,9 @@ __all__ = [
     "_MeanFunctionResult",
     "_MidasProfileObjective",
     "_MixedHorizonObjective",
+    "_NelsonSiegelFit",
+    "_NelsonSiegelObjective",
+    "_NelsonSiegelParameters",
     "_NeuralAutoRegressionFit",
     "_NeuralAutoRegressionModel",
     "_NeuralThresholdFit",
@@ -188,12 +200,15 @@ __all__ = [
     "_StabilityResult",
     "_StabilityTest",
     "_StationarityMixin",
+    "_StructuralFit",
+    "_StructuralParameters",
     "_StudentBayesianVectorAutoRegressionModel",
     "_SummaryMixin",
     "_ThresholdFit",
     "_ThresholdModel",
     "_ThresholdVectorAutoRegressionModel",
     "_TimeVaryingVectorAutoRegressionModel",
+    "_UnobservedComponentsModel",
     "_VectorAutoRegressionFit",
     "_VectorAutoRegressionModel",
     "_VectorConjugateFit",
@@ -220,5 +235,7 @@ __all__ = [
     "_maximize_likelihood",
     "_solve",
     "_spectral_factor",
+    "_structural_matrices",
+    "_structural_system",
     "solve_global",
 ]
