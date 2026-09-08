@@ -42,8 +42,8 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from .._core import _ADAPT_FLOOR, _TARGET_ACCEPTANCE
 from ..exceptions import NumericalError, SpecificationError
-from .._core import _TARGET_ACCEPTANCE, _ADAPT_FLOOR
 from ._fits import _ParticleChainFit
 from ._substrates import _NonlinearStateSpace
 

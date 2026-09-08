@@ -42,13 +42,13 @@ best -- which is why it takes a ``seed`` and reports convergence.
 
 Two facts about mixtures shape the surface. The likelihood is invariant to
 permuting regime labels, so a sorting convention is imposed and
-:attr:`MSVARResult.label_ordering` names it. And the number of regimes cannot
+:attr:`MarkovSwitchingVARResult.label_ordering` names it. And the number of regimes cannot
 be tested by a likelihood ratio -- under the null of fewer regimes the extra
 regime's parameters are unidentified and its transition probabilities sit on
 the boundary -- so that specific comparison is refused while tests holding
 ``M`` fixed remain available.
 
-The composition hook is :meth:`MSVARResult.regime`. Conditional on the chain
+The composition hook is :meth:`MarkovSwitchingVARResult.regime`. Conditional on the chain
 sitting in regime ``m``, the model *is* a linear VAR, and the regime view is
 that system dressed as a closed reduced form: every identification model in
 :mod:`cultivars.multivariate.structural` accepts it directly, which is what
@@ -72,6 +72,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from scipy.optimize import minimize
 
 from ..._core import (
     InformationCriteria,
@@ -79,22 +80,31 @@ from ..._core import (
     StructuralResult,
     SummaryTable,
     validate_choice,
+    validate_endog_matrix,
 )
 from ..._internals import (
     _ComparisonMixin,
     _MarkovSwitchingVectorAutoRegressionModel,
+    _RegimeSwitchingLinearStateSpace,
     _RegimeSystemResult,
     _SummaryMixin,
     _VectorMarkovSwitchingFit,
 )
-from ...exceptions import SpecificationError
+from ...exceptions import DimensionError, NumericalError, SpecificationError
 from ..structural import RecursiveSVAR
 
-__all__ = ["MSVAR", "MSVARResult"]
+__all__ = [
+    "MarkovSwitchingDFM",
+    "MarkovSwitchingDFMResult",
+    "MarkovSwitchingSVAR",
+    "MarkovSwitchingSVARResult",
+    "MarkovSwitchingVAR",
+    "MarkovSwitchingVARResult",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class MSVARResult(_SummaryMixin, _ComparisonMixin):
+class MarkovSwitchingVARResult(_SummaryMixin, _ComparisonMixin):
     """A fitted Markov-switching vector autoregression.
 
     Attributes:
@@ -153,8 +163,8 @@ class MSVARResult(_SummaryMixin, _ComparisonMixin):
     def _from_fit(
         cls,
         fit: _VectorMarkovSwitchingFit,
-        model: _MarkovSwitchingVectorAutoRegressionModel[MSVARResult],
-    ) -> MSVARResult:
+        model: _MarkovSwitchingVectorAutoRegressionModel[MarkovSwitchingVARResult],
+    ) -> MarkovSwitchingVARResult:
         """Assemble the public result, building one stable view per regime."""
         target = model.endog[model.order :]
         views: list[_RegimeSystemResult] = []
@@ -207,7 +217,7 @@ class MSVARResult(_SummaryMixin, _ComparisonMixin):
 
     @staticmethod
     def _conditional_mean(
-        model: _MarkovSwitchingVectorAutoRegressionModel[MSVARResult],
+        model: _MarkovSwitchingVectorAutoRegressionModel[MarkovSwitchingVARResult],
         stack: npt.NDArray[np.float64],
         deterministic: npt.NDArray[np.float64],
     ) -> npt.NDArray[np.float64]:
@@ -328,7 +338,7 @@ class MSVARResult(_SummaryMixin, _ComparisonMixin):
         counts as the one-regime case, which is exactly the classic invalid
         test.
         """
-        other = counterpart.n_regimes if isinstance(counterpart, MSVARResult) else 1
+        other = counterpart.n_regimes if isinstance(counterpart, MarkovSwitchingVARResult) else 1
         if other == self.n_regimes:
             return None
         return (
@@ -435,7 +445,7 @@ class MSVARResult(_SummaryMixin, _ComparisonMixin):
         )
 
 
-class MSVAR(_MarkovSwitchingVectorAutoRegressionModel[MSVARResult]):
+class MarkovSwitchingVAR(_MarkovSwitchingVectorAutoRegressionModel[MarkovSwitchingVARResult]):
     """Markov-switching vector autoregression with ``M`` latent regimes.
 
     Args:
@@ -459,7 +469,7 @@ class MSVAR(_MarkovSwitchingVectorAutoRegressionModel[MSVARResult]):
         >>> for t in range(1, 600):
         ...     s[t] = np.searchsorted(np.cumsum(p[s[t - 1]]), rng.random())
         ...     y[t] = mu[s[t]] + 0.3 * y[t - 1] + 0.4 * rng.standard_normal(2)
-        >>> res = MSVAR(y, order=1, n_regimes=2).fit(seed=0, n_init=3)
+        >>> res = MarkovSwitchingVAR(y, order=1, n_regimes=2).fit(seed=0, n_init=3)
         >>> bool(res.regimes[0].deterministic[0, 0] < res.regimes[1].deterministic[0, 0])
         True
     """
@@ -474,7 +484,7 @@ class MSVAR(_MarkovSwitchingVectorAutoRegressionModel[MSVARResult]):
         n_init: int = 10,
         screen_iter: int = 15,
         seed: int | np.random.Generator | None = None,
-    ) -> MSVARResult:
+    ) -> MarkovSwitchingVARResult:
         """Estimate by EM with multi-start screening.
 
         Unlike the other multivariate families, ``fit`` takes arguments,
@@ -492,14 +502,14 @@ class MSVAR(_MarkovSwitchingVectorAutoRegressionModel[MSVARResult]):
             seed: Seed or generator for the random starts.
 
         Returns:
-            The fitted :class:`MSVARResult`, regimes ordered by the
-            convention :attr:`MSVARResult.label_ordering` names.
+            The fitted :class:`MarkovSwitchingVARResult`, regimes ordered by the
+            convention :attr:`MarkovSwitchingVARResult.label_ordering` names.
 
         Raises:
             NumericalError: If every start fails to produce a finite
                 likelihood.
         """
-        return MSVARResult._from_fit(
+        return MarkovSwitchingVARResult._from_fit(
             self._fit_markov(
                 max_iter=max_iter,
                 tol=tol,
@@ -512,7 +522,7 @@ class MSVAR(_MarkovSwitchingVectorAutoRegressionModel[MSVARResult]):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class MSSVARResult(_SummaryMixin):
+class MarkovSwitchingSVARResult(_SummaryMixin):
     """An identified Markov-switching system, one structural result per regime.
 
     Composition on both sides: :attr:`msvar` is the reduced form with its
@@ -526,7 +536,7 @@ class MSSVARResult(_SummaryMixin):
         structurals: One structural result per regime, in label order.
     """
 
-    msvar: MSVARResult = field(repr=False)
+    msvar: MarkovSwitchingVARResult = field(repr=False)
     structurals: tuple[StructuralResult, ...] = field(repr=False)
 
     @property
@@ -641,7 +651,7 @@ class MSSVARResult(_SummaryMixin):
 class MarkovSwitchingSVAR:
     """Per-regime structural identification of an MS-VAR, Sims-Waggoner-Zha.
 
-    Constructs with a fitted :class:`~cultivars.multivariate.regime_switching.MSVAR`
+    Constructs with a fitted :class:`~cultivars.multivariate.regime_switching.MarkovSwitchingVAR`
     result. Not an ``_IdentificationModel``: that contract is one closed
     system, and an MS-VAR has ``M`` of them -- the regime views, each of
     which any scheme in this package already accepts directly. What this
@@ -666,7 +676,7 @@ class MarkovSwitchingSVAR:
 
     Example:
         >>> rng = np.random.default_rng(0)
-        >>> from cultivars.multivariate.regime_switching import MSVAR
+        >>> from cultivars.multivariate.regime_switching import MarkovSwitchingVAR
         >>> p = np.array([[0.97, 0.03], [0.05, 0.95]])
         >>> mu = np.array([[-1.0, -0.5], [1.5, 1.0]])
         >>> s = np.zeros(600, dtype=int)
@@ -674,7 +684,7 @@ class MarkovSwitchingSVAR:
         >>> for t in range(1, 600):
         ...     s[t] = np.searchsorted(np.cumsum(p[s[t - 1]]), rng.random())
         ...     y[t] = mu[s[t]] + 0.3 * y[t - 1] + 0.4 * rng.standard_normal(2)
-        >>> res = MSVAR(y, order=1, n_regimes=2).fit(seed=0, n_init=3)
+        >>> res = MarkovSwitchingVAR(y, order=1, n_regimes=2).fit(seed=0, n_init=3)
         >>> svar = MarkovSwitchingSVAR(res).identify()
         >>> svar.impact(0).shape
         (2, 2)
@@ -684,17 +694,17 @@ class MarkovSwitchingSVAR:
 
     def __init__(
         self,
-        msvar: MSVARResult,
+        msvar: MarkovSwitchingVARResult,
         structurals: Sequence[StructuralResult] | None = None,
         *,
         order: Sequence[str] | None = None,
     ) -> None:
         """Validate the reduced form and the identification route."""
-        if not isinstance(msvar, MSVARResult):
+        if not isinstance(msvar, MarkovSwitchingVARResult):
             raise SpecificationError(
-                "MarkovSwitchingSVAR constructs with a fitted MSVAR result; "
+                "MarkovSwitchingSVAR constructs with a fitted MarkovSwitchingVAR result; "
                 f"got {type(msvar).__name__}. Fit "
-                "cultivars.multivariate.regime_switching.MSVAR first."
+                "cultivars.multivariate.regime_switching.MarkovSwitchingVAR first."
             )
         self._msvar = msvar
         if structurals is not None:
@@ -721,7 +731,7 @@ class MarkovSwitchingSVAR:
             self._structurals = None
         self._order = None if order is None else tuple(str(name) for name in order)
 
-    def identify(self) -> MSSVARResult:
+    def identify(self) -> MarkovSwitchingSVARResult:
         """Identify every regime under one declaration and package the answers.
 
         Returns:
@@ -743,4 +753,288 @@ class MarkovSwitchingSVAR:
                 RecursiveSVAR(view, order=self._order).identify() for view in self._msvar.regimes
             )
         )
-        return MSSVARResult(msvar=self._msvar, structurals=structurals)
+        return MarkovSwitchingSVARResult(msvar=self._msvar, structurals=structurals)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class MarkovSwitchingDFMResult(_SummaryMixin):
+    """A fitted switching factor model: the factor, and the regime chronology.
+
+    Attributes:
+        panel: The observed ``(nobs, n_series)`` panel.
+        series_names: One label per series.
+        loadings: ``(n_series,)`` factor loadings on the standardized
+            panel; the first is one by the identification convention.
+        idiosyncratic_var: ``(n_series,)`` idiosyncratic variances on the
+            standardized scale.
+        phi: Factor persistence.
+        sigma_v: Factor innovation standard deviation.
+        mu: ``(2,)`` regime intercepts of the factor, low state first.
+        regime_transition: ``(2, 2)`` row-stochastic chain matrix.
+        factor: ``(nobs,)`` filtered factor estimate.
+        filtered_prob: ``(nobs, 2)`` filtered regime probabilities.
+        smoothed_prob: ``(nobs, 2)`` smoothed regime probabilities.
+        means: ``(n_series,)`` series means removed before estimation.
+        scales: ``(n_series,)`` series standard deviations divided out.
+        llf: The maximized Kim-approximate log-likelihood -- the collapse
+            approximation, reported under that name.
+        n_params: Free parameters the likelihood was maximized over.
+        converged: Whether the optimizer reported convergence.
+    """
+
+    panel: npt.NDArray[np.float64] = field(repr=False)
+    series_names: tuple[str, ...]
+    loadings: npt.NDArray[np.float64] = field(repr=False)
+    idiosyncratic_var: npt.NDArray[np.float64] = field(repr=False)
+    phi: float
+    sigma_v: float
+    mu: npt.NDArray[np.float64]
+    regime_transition: npt.NDArray[np.float64] = field(repr=False)
+    factor: npt.NDArray[np.float64] = field(repr=False)
+    filtered_prob: npt.NDArray[np.float64] = field(repr=False)
+    smoothed_prob: npt.NDArray[np.float64] = field(repr=False)
+    means: npt.NDArray[np.float64] = field(repr=False)
+    scales: npt.NDArray[np.float64] = field(repr=False)
+    llf: float
+    n_params: int
+    converged: bool
+
+    @property
+    def n_series(self) -> int:
+        """Number of series in the panel."""
+        return len(self.series_names)
+
+    @property
+    def nobs(self) -> int:
+        """Panel length."""
+        return int(self.panel.shape[0])
+
+    def recession_probabilities(self) -> npt.NDArray[np.float64]:
+        """Smoothed probability of the low-mean regime, per period.
+
+        The business-cycle chronology: with the factor built from
+        pro-cyclical indicators, the low-mean state is the contraction.
+        """
+        return self.smoothed_prob[:, 0]
+
+    def expected_durations(self) -> npt.NDArray[np.float64]:
+        """Expected regime durations ``1 / (1 - p_jj)``, low state first."""
+        staying = np.diag(self.regime_transition)
+        return np.asarray(1.0 / np.maximum(1.0 - staying, 1e-12), dtype=np.float64)
+
+    def _summary_table(self) -> SummaryTable:
+        """Build the structured summary."""
+        durations = self.expected_durations()
+        share = float(self.smoothed_prob[:, 0].mean())
+        rows = tuple(
+            (
+                name,
+                f"{float(self.loadings[index]):.4f}",
+                f"{float(self.idiosyncratic_var[index]):.4f}",
+            )
+            for index, name in enumerate(self.series_names)
+        )
+        notes = [
+            f"Factor: phi = {self.phi:.4f}, sigma_v = {self.sigma_v:.4f}; "
+            f"regime intercepts mu = ({self.mu[0]:+.4f}, {self.mu[1]:+.4f}), "
+            "low state first by the ordering convention.",
+            f"Expected durations: {durations[0]:.1f} periods (low), "
+            f"{durations[1]:.1f} (high); the sample spends "
+            f"{100.0 * share:.1f}% of its mass in the low state.",
+            "The likelihood is the Kim (1994) collapse approximation, "
+            "maximized as such and reported under that name.",
+            "Identification: the first series loads with weight one, and "
+            "loadings and variances are on the standardized panel's scale.",
+            "recession_probabilities() is the smoothed low-state "
+            "chronology -- the model's reason to exist.",
+        ]
+        return SummaryTable(
+            title="Markov-Switching Dynamic Factor Results",
+            metadata=(
+                ("Model", "MS-DFM(1)"),
+                ("Series", f"{self.n_series}"),
+                ("Observations", f"{self.nobs}"),
+                ("log L (approx)", f"{self.llf:.3f}"),
+                ("Parameters", f"{self.n_params}"),
+                ("Converged", f"{self.converged}"),
+            ),
+            columns=("series", "loading", "idiosyncratic var"),
+            rows=rows,
+            notes=tuple(notes),
+        )
+
+
+class MarkovSwitchingDFM:
+    """Markov-switching dynamic factor model, Kim-Nelson.
+
+    One factor, AR(1) with a two-state switching intercept; estimation by
+    maximum likelihood through the continuous-state Kim filter. A fit
+    costs minutes rather than seconds -- the filter runs four Kalman
+    updates per period inside the optimizer -- which is the known price of
+    the model and is stated rather than hidden.
+
+    Args:
+        panel: The observed ``(nobs, n_series)`` panel of coincident
+            indicators; each series is standardized internally.
+        series_names: One label per series. Defaults to ``x1 ... xN``.
+
+    Raises:
+        DimensionError: If the panel cannot support the model.
+
+    Example:
+        Fitting on simulated data with a recession regime takes a minute
+        or two; see the build's verification for the recovery numbers.
+    """
+
+    __slots__ = ("_panel", "_series_names")
+
+    def __init__(
+        self,
+        panel: npt.ArrayLike,
+        *,
+        series_names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the panel."""
+        self._panel = validate_endog_matrix(panel)
+        nobs, n_series = self._panel.shape
+        if n_series < 2:
+            raise DimensionError(f"a factor model needs at least 2 series; got {n_series}.")
+        if nobs < 60:
+            raise DimensionError(
+                f"a switching factor model needs at least 60 observations "
+                f"to see both regimes; got {nobs}."
+            )
+        if series_names is None:
+            self._series_names = tuple(f"x{i + 1}" for i in range(n_series))
+        else:
+            resolved = tuple(str(name) for name in series_names)
+            if len(resolved) != n_series:
+                raise SpecificationError(
+                    f"series_names must have one entry per series "
+                    f"({n_series}); got {len(resolved)}."
+                )
+            self._series_names = resolved
+
+    @staticmethod
+    def _build(theta: npt.NDArray[np.float64], n_series: int) -> _RegimeSwitchingLinearStateSpace:
+        """The state space a parameter vector names.
+
+        Layout of ``theta``: loadings 2..N, log idiosyncratic variances,
+        arctanh of the factor persistence, log factor innovation sd, the
+        low intercept, the log intercept gap, and the two staying-logits.
+        """
+        loadings = np.concatenate([[1.0], theta[: n_series - 1]])
+        psi = np.exp(theta[n_series - 1 : 2 * n_series - 1])
+        phi = float(np.tanh(theta[2 * n_series - 1]))
+        sigma_v = float(np.exp(theta[2 * n_series]))
+        mu_low = float(theta[2 * n_series + 1])
+        mu_high = mu_low + float(np.exp(theta[2 * n_series + 2]))
+        p00 = 1.0 / (1.0 + np.exp(-theta[2 * n_series + 3]))
+        p11 = 1.0 / (1.0 + np.exp(-theta[2 * n_series + 4]))
+        design = np.tile(loadings.reshape(n_series, 1), (2, 1, 1))
+        return _RegimeSwitchingLinearStateSpace(
+            design=design,
+            obs_cov=np.tile(np.diag(psi), (2, 1, 1)),
+            transition=np.full((2, 1, 1), phi),
+            state_cov=np.full((2, 1, 1), sigma_v**2),
+            state_intercept=np.array([[mu_low], [mu_high]]),
+            regime_transition=np.array([[p00, 1.0 - p00], [1.0 - p11, p11]]),
+            initial_state=np.zeros(1),
+            initial_state_cov=np.array([[10.0]]),
+        )
+
+    def fit(self, *, max_iter: int = 300) -> MarkovSwitchingDFMResult:
+        """Maximize the Kim-approximate likelihood from data-driven starts.
+
+        Starting values come from a principal-component pass -- the factor
+        space is cheap to locate; the switch is what the optimizer earns
+        -- and the parameters travel in unconstrained transforms, so the
+        optimizer never sees a boundary.
+
+        Args:
+            max_iter: Optimizer iteration cap.
+
+        Returns:
+            The fitted :class:`MarkovSwitchingDFMResult`.
+
+        Raises:
+            NumericalError: If the likelihood cannot be evaluated at the
+                starting point.
+        """
+        _, n_series = self._panel.shape
+        means = self._panel.mean(axis=0)
+        scales = self._panel.std(axis=0, ddof=0)
+        scales = np.where(scales > 0.0, scales, 1.0)
+        standardized = (self._panel - means) / scales
+        _, _, vt = np.linalg.svd(standardized, full_matrices=False)
+        pilot = standardized @ vt[0]
+        if float(np.corrcoef(pilot, standardized[:, 0])[0, 1]) < 0.0:
+            pilot = -pilot
+        raw_loadings = standardized.T @ pilot / float(pilot @ pilot)
+        pilot = pilot * raw_loadings[0]
+        raw_loadings = raw_loadings / raw_loadings[0]
+        residual = standardized - np.outer(pilot, raw_loadings)
+        psi0 = np.maximum(residual.var(axis=0), 1e-3)
+        phi0 = float(
+            np.clip(
+                (pilot[1:] @ pilot[:-1]) / max(float(pilot[:-1] @ pilot[:-1]), 1e-12),
+                -0.95,
+                0.95,
+            )
+        )
+        innovation = pilot[1:] - phi0 * pilot[:-1]
+        sigma0 = float(np.sqrt(max(np.var(innovation), 1e-4)))
+        spread = float(pilot.std())
+        theta0 = np.concatenate(
+            [
+                raw_loadings[1:],
+                np.log(psi0),
+                [np.arctanh(np.clip(phi0, -0.97, 0.97))],
+                [np.log(sigma0)],
+                [-0.8 * spread],
+                [np.log(max(1.2 * spread, 1e-3))],
+                [np.log(0.9 / 0.1), np.log(0.9 / 0.1)],
+            ]
+        )
+
+        def negative(theta: npt.NDArray[np.float64]) -> float:
+            try:
+                value = self._build(theta, n_series).loglikelihood(standardized)
+            except NumericalError:
+                return 1e12
+            return -value if np.isfinite(value) else 1e12
+
+        start_value = negative(theta0)
+        if start_value >= 1e12:
+            raise NumericalError(
+                "the switching factor likelihood cannot be evaluated at the "
+                "principal-component starting point; the panel is degenerate."
+            )
+        search = minimize(negative, theta0, method="L-BFGS-B", options={"maxiter": max_iter})
+        theta = np.asarray(search.x, dtype=np.float64)
+        space = self._build(theta, n_series)
+        outcome = space.filter(standardized)
+        transition = space.regime_transition
+        smoothed = space.smooth(standardized).smoothed_prob
+        loadings = np.concatenate([[1.0], theta[: n_series - 1]])
+        psi = np.exp(theta[n_series - 1 : 2 * n_series - 1])
+        mu_low = float(theta[2 * n_series + 1])
+        mu_high = mu_low + float(np.exp(theta[2 * n_series + 2]))
+        return MarkovSwitchingDFMResult(
+            panel=self._panel,
+            series_names=self._series_names,
+            loadings=loadings,
+            idiosyncratic_var=psi,
+            phi=float(np.tanh(theta[2 * n_series - 1])),
+            sigma_v=float(np.exp(theta[2 * n_series])),
+            mu=np.array([mu_low, mu_high]),
+            regime_transition=transition,
+            factor=outcome.filtered_state[:, 0],
+            filtered_prob=outcome.filtered_prob,
+            smoothed_prob=smoothed,
+            means=means,
+            scales=scales,
+            llf=float(outcome.loglikelihood),
+            n_params=int(theta.shape[0]),
+            converged=bool(search.success),
+        )

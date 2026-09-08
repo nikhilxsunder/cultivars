@@ -136,19 +136,6 @@ def _check_equal_length(columns: Mapping[str, npt.NDArray[Any]]) -> None:
         raise ValueError(f"columns must share a length; got {lengths}.")
 
 
-def as_sequence(values: npt.ArrayLike) -> Sequence[Any]:
-    """Coerce array-like input to a plain Python sequence for rendering.
-
-    Args:
-        values: Any array-like.
-
-    Returns:
-        A list of Python scalars, so that formatting never depends on numpy's
-        own repr rules.
-    """
-    return list(np.asarray(values).tolist())
-
-
 def _mixed_frequency_system(
     coefficients: npt.NDArray[np.float64],
     sigma_u: npt.NDArray[np.float64],

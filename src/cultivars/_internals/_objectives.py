@@ -23,8 +23,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 import numpy as np
 import numpy.typing as npt
@@ -32,10 +33,11 @@ import numpy.typing as npt
 from .._core import (
     _D_MAX,
     _LOG_2PI,
+    _LOG_CHI2_MEAN,
+    _LOG_CHI2_VAR,
     _PENALTY,
     OptimizerMethod,
     OptimizerOptions,
-    _Residuals,
     _arch_infinity_variance,
     _arch_infinity_weights,
     _gaussian_negloglik,
@@ -52,23 +54,30 @@ from .._core import (
     sigmoid,
     softplus,
     unpack_stationary,
-    _LOG_CHI2_MEAN,
-    _LOG_CHI2_VAR,
 )
-from ..exceptions import NumericalError
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._emitters import (
+    _decay_nelson_siegel_state_space,
+    _quasi_volatility_state_space,
+)
 from ._means import _MeanLayer
 from ._parameters import (
     _AutoRegressionParameters,
     _BoxJenkinsParameters,
     _ConditionalVarianceParameters,
+    _DecayNelsonSiegelParameters,
     _FractionalIntegrationParameters,
     _FractionalVarianceParameters,
     _NelsonSiegelParameters,
     _SmoothTransitionParameters,
+    _StochasticVolatilityParameters,
     _StructuralParameters,
     _VarianceParameters,
 )
-from ._substrates import _LinearGaussianStateSpace
+from ._substrates import _LinearGaussianStateSpace, _NonlinearStateSpace
+
+if TYPE_CHECKING:
+    from ._models import _PerturbationModel
 
 
 class _Objective[P](ABC):
@@ -1286,7 +1295,7 @@ class _NonlinearLikelihoodObjective[P](_Objective[P]):
     """A Gaussian-approximation likelihood surface over the nonlinear substrate.
 
     Subclasses supply the map from a parameter record to a
-    :class:`_NonlinearStateSpaceModel` and the criterion runs the named
+    :class:`_NonlinearStateSpace` and the criterion runs the named
     filter -- extended or unscented -- and negates its log-likelihood.
     Both filters produce a *deterministic* surface, so the L-BFGS-B
     default of the base class applies unchanged; what they produce is
@@ -1303,14 +1312,14 @@ class _NonlinearLikelihoodObjective[P](_Objective[P]):
     filter_name: str
 
     @abstractmethod
-    def state_space(self, parameters: P) -> _NonlinearStateSpaceModel:
+    def state_space(self, parameters: P) -> _NonlinearStateSpace:
         """The nonlinear system at a parameter record."""
 
     @abstractmethod
     def data(self) -> npt.NDArray[np.float64]:
         """The observations the surface is evaluated on."""
 
-    def _loglikelihood(self, model: _NonlinearStateSpaceModel) -> float:
+    def _loglikelihood(self, model: _NonlinearStateSpace) -> float:
         """Run the chosen filter and return its log-likelihood."""
         if self.filter_name == "extended":
             return float(model.extended_filter(self.data()).loglikelihood)
@@ -1361,7 +1370,7 @@ class _ParticleLikelihoodObjective(_Objective[npt.NDArray[np.float64]]):
     options: ClassVar[OptimizerOptions | None] = {"maxiter": 2000, "xatol": 1e-4, "fatol": 1e-3}
 
     data: npt.NDArray[np.float64]
-    build: Callable[[npt.NDArray[np.float64]], _NonlinearStateSpaceModel]
+    build: Callable[[npt.NDArray[np.float64]], _NonlinearStateSpace]
     theta0: npt.NDArray[np.float64]
     n_particles: int
     filter_method: str
@@ -1411,6 +1420,7 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
 
     endog: npt.NDArray[np.float64]
     mean: float
+    heavy_tailed: bool = False
 
     def _log_squared(self) -> npt.NDArray[np.float64]:
         """``log((y - c)**2 + offset)``, the linearized observation."""
@@ -1429,9 +1439,10 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
         phi_b = 0.9
         sigma2_a = max(excess * (1.0 - phi_a**2), 1e-3)
         sigma2_b = max(excess * (1.0 - phi_b**2), 1e-3)
+        tail = [np.log(8.0)] if self.heavy_tailed else []
         return (
-            np.array([level, np.arctanh(phi_a), np.log(sigma2_a)]),
-            np.array([level, np.arctanh(phi_b), np.log(sigma2_b)]),
+            np.array([level, np.arctanh(phi_a), np.log(sigma2_a), *tail]),
+            np.array([level, np.arctanh(phi_b), np.log(sigma2_b), *tail]),
         )
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _StochasticVolatilityParameters:
@@ -1441,6 +1452,7 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
             phi=float(np.tanh(theta[1])),
             sigma2=float(np.exp(theta[2])),
             mean=self.mean,
+            nu=2.0 + float(np.exp(theta[3])) if self.heavy_tailed else None,
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
@@ -1449,6 +1461,8 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
             return _PENALTY
         params = self.unpack(theta)
         if abs(params.phi) > 0.9999:
+            return _PENALTY
+        if params.nu is not None and not 2.05 < params.nu < 500.0:
             return _PENALTY
         try:
             value = _quasi_volatility_state_space(params).loglikelihood(self._log_squared())
@@ -1517,7 +1531,7 @@ class _DecayNelsonSiegelObjective(_NonlinearLikelihoodObjective[_DecayNelsonSieg
             decay_sd=float(np.exp(theta[at + 2])),
         )
 
-    def state_space(self, parameters: _DecayNelsonSiegelParameters) -> _NonlinearStateSpaceModel:
+    def state_space(self, parameters: _DecayNelsonSiegelParameters) -> _NonlinearStateSpace:
         """The nonlinear system at a parameter record."""
         return _decay_nelson_siegel_state_space(parameters, self.maturities)
 

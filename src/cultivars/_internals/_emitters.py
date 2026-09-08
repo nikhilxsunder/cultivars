@@ -34,16 +34,29 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
+from scipy.special import digamma, gammaln, polygamma
 
-from .._core import _LOG_2PI, _LOG_CHI2_MEAN, _LOG_CHI2_VAR
+from .._core import _LOG_2PI, _LOG_CHI2_MEAN, _LOG_CHI2_VAR, _discrete_lyapunov
+from ..exceptions import SpecificationError
 from ._parameters import (
     _DecayNelsonSiegelParameters,
     _StochasticVolatilityParameters,
     _TrendVolatilityParameters,
 )
+from ._solutions import _PerturbationSolution
 from ._substrates import _LinearGaussianStateSpace, _NonlinearStateSpace
 
 
+def _log_scale_mixture_moments(nu: float) -> tuple[float, float]:
+    """Mean and variance of ``log(lambda)`` for ``lambda ~ IG(nu/2, nu/2)``.
+
+    Under the Student-t scale mixture ``log(eps**2) = log(z**2) + log(lambda)``,
+    so the linearized measurement noise of the quasi-likelihood shifts by
+    these two moments: ``E[log lambda] = log(nu/2) - psi(nu/2)`` and
+    ``Var[log lambda] = psi'(nu/2)``.
+    """
+    half = 0.5 * nu
+    return float(np.log(half) - digamma(half)), float(polygamma(1, half))
 
 
 def _volatility_state_space(
@@ -60,13 +73,33 @@ def _volatility_state_space(
     returns the observation mean ``c`` so the shape contract is honored;
     ``obs_cov`` is a placeholder the particle filter ignores.
 
+    Heavy tails replace the Gaussian measurement density by the Student-t
+    one. Leverage enters through ``observed_transition``: given the
+    return, ``h_{t+1} = mu + phi (h_t - mu) + sigma rho eps_t`` with
+    residual noise variance ``sigma2 (1 - rho**2)``, which keeps the
+    transition density intact for the particle smoother. The two
+    departures are not combined: with heavy tails the correlated
+    innovation is the Gaussian kernel ``z_t`` rather than ``eps_t``, and
+    recovering it from the return needs the mixture variable in the
+    state, which this emitter does not carry.
+
     Args:
         params: The parameter record.
 
     Returns:
         The nonlinear state-space model.
+
+    Raises:
+        SpecificationError: If both ``nu`` and ``rho`` are set.
     """
     mu, phi, sigma2, mean = params.mu, params.phi, params.sigma2, params.mean
+    nu, rho = params.nu, params.rho
+    if nu is not None and rho != 0.0:
+        raise SpecificationError(
+            "heavy tails and leverage are not offered together: the leverage "
+            "correlation attaches to the Gaussian kernel of the t innovation, "
+            "which the return alone does not reveal. Fit one departure at a time."
+        )
 
     def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         return mu + phi * (np.asarray(states, dtype=np.float64) - mu)
@@ -74,21 +107,50 @@ def _volatility_state_space(
     def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         return np.full((np.asarray(states).shape[0], 1), mean)
 
-    def observation_loglik(
-        y: npt.NDArray[np.float64], states: npt.NDArray[np.float64]
-    ) -> npt.NDArray[np.float64]:
-        h = np.asarray(states, dtype=np.float64)[:, 0]
-        residual = float(y[0]) - mean
-        return -0.5 * (_LOG_2PI + h + residual**2 * np.exp(-h))
+    if nu is None:
+
+        def observation_loglik(
+            y: npt.NDArray[np.float64], states: npt.NDArray[np.float64]
+        ) -> npt.NDArray[np.float64]:
+            h = np.asarray(states, dtype=np.float64)[:, 0]
+            residual = float(y[0]) - mean
+            return -0.5 * (_LOG_2PI + h + residual**2 * np.exp(-h))
+
+    else:
+        constant = float(gammaln(0.5 * (nu + 1.0)) - gammaln(0.5 * nu) - 0.5 * np.log(nu * np.pi))
+
+        def observation_loglik(
+            y: npt.NDArray[np.float64], states: npt.NDArray[np.float64]
+        ) -> npt.NDArray[np.float64]:
+            h = np.asarray(states, dtype=np.float64)[:, 0]
+            residual = float(y[0]) - mean
+            return constant - 0.5 * h - 0.5 * (nu + 1.0) * np.log1p(residual**2 * np.exp(-h) / nu)
+
+    observed_transition = None
+    state_cov = sigma2
+    if rho != 0.0:
+        state_cov = sigma2 * (1.0 - rho**2)
+        loading = float(np.sqrt(sigma2) * rho)
+
+        def observed_transition(
+            states: npt.NDArray[np.float64], y_prev: npt.NDArray[np.float64]
+        ) -> npt.NDArray[np.float64]:
+            h = np.asarray(states, dtype=np.float64)
+            previous = float(y_prev[0])
+            if not np.isfinite(previous):
+                return mu + phi * (h - mu)
+            eps = (previous - mean) * np.exp(-0.5 * h)
+            return mu + phi * (h - mu) + loading * eps
 
     return _NonlinearStateSpace(
         transition,
         observation,
-        state_cov=[[sigma2]],
+        state_cov=[[state_cov]],
         obs_cov=[[1.0]],
         initial_state=[mu],
         initial_state_cov=[[params.stationary_variance]],
         observation_loglik=observation_loglik,
+        observed_transition=observed_transition,
     )
 
 
@@ -102,21 +164,40 @@ def _quasi_volatility_state_space(
     ``-1.2704`` and variance ``pi**2 / 2``. The Kalman filter on this
     system yields the *quasi*-likelihood: consistent for the parameters,
     not the exact likelihood, and the estimator that seeds both the Gibbs
-    sampler and the particle chain.
+    sampler and the particle chain. Under Student-t noise the moments
+    shift by those of ``log(lambda)`` (Ruiz 1994); the degrees of freedom
+    are identified there only through the white part of the linearized
+    noise variance, which the summary says.
 
     Args:
         params: The parameter record.
 
     Returns:
         The linear-Gaussian state-space model in the log-squared data.
+
+    Raises:
+        SpecificationError: If the record carries leverage, whose
+            linearization needs the sign of the return as a second
+            observation and is not offered here.
     """
+    if params.rho != 0.0:
+        raise SpecificationError(
+            "the quasi-likelihood linearization discards the sign of the return, "
+            "which is exactly what leverage acts through; the Harvey-Shephard "
+            "sign-augmented system is not offered. Use the particle likelihood."
+        )
+    noise_mean, noise_var = _LOG_CHI2_MEAN, _LOG_CHI2_VAR
+    if params.nu is not None:
+        shift_mean, shift_var = _log_scale_mixture_moments(params.nu)
+        noise_mean += shift_mean
+        noise_var += shift_var
     return _LinearGaussianStateSpace(
         np.ones((1, 1)),
-        np.array([[_LOG_CHI2_VAR]]),
+        np.array([[noise_var]]),
         np.array([[params.phi]]),
         np.eye(1),
         np.array([[params.sigma2]]),
-        obs_intercept=np.array([_LOG_CHI2_MEAN]),
+        obs_intercept=np.array([noise_mean]),
         state_intercept=np.array([params.mu * (1.0 - params.phi)]),
         initial_state=np.array([params.mu]),
         initial_state_cov=np.array([[params.stationary_variance]]),
@@ -236,4 +317,87 @@ def _decay_nelson_siegel_state_space(
         obs_cov=np.diag(params.obs_var),
         initial_state=mu,
         initial_state_cov=stationary,
+    )
+
+
+def _linear_state_space(
+    solution: _PerturbationSolution,
+    design: npt.NDArray[np.float64],
+    intercept: npt.NDArray[np.float64],
+    obs_cov: npt.NDArray[np.float64],
+) -> _LinearGaussianStateSpace:
+    """The first-order solution as an exact linear-Gaussian state space.
+
+    The state is the deviation ``x - x_ss``; observables are ``design @
+    [x; y] + intercept + measurement error``.
+    """
+    n_x = solution.n_states
+    z_full = design @ np.vstack([np.eye(n_x), solution.g_x])
+    d_full = design @ np.concatenate([solution.x_ss, solution.y_ss]) + intercept
+    noise = solution.eta @ solution.eta.T
+    return _LinearGaussianStateSpace(
+        z_full,
+        obs_cov,
+        solution.h_x,
+        np.eye(n_x),
+        noise,
+        obs_intercept=d_full,
+        initial_state=np.zeros(n_x),
+        initial_state_cov=_discrete_lyapunov(solution.h_x, noise),
+    )
+
+
+def _pruned_state_space(
+    solution: _PerturbationSolution,
+    design: npt.NDArray[np.float64],
+    intercept: npt.NDArray[np.float64],
+    obs_cov: npt.NDArray[np.float64],
+) -> _NonlinearStateSpace:
+    """The pruned second-order solution as an additive-Gaussian nonlinear state space.
+
+    The state is ``(x_f, x_s)``: the first-order deviation and the
+    second-order deviation. Noise enters only ``x_f``, so the state
+    covariance is singular and the form is additive-Gaussian, which
+    every filter on the substrate accepts.
+    """
+    n_x = solution.n_states
+    h_x, h_xx, h_ss = solution.h_x, solution.h_xx, solution.h_ss
+    g_x, g_xx, g_ss = solution.g_x, solution.g_xx, solution.g_ss
+    x_ss, y_ss = solution.x_ss, solution.y_ss
+
+    def kron_square(block: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        return np.einsum("nj,nk->njk", block, block).reshape(block.shape[0], n_x * n_x)
+
+    def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        block = np.asarray(states, dtype=np.float64)
+        x_f = block[:, :n_x]
+        x_s = block[:, n_x:]
+        next_f = x_f @ h_x.T
+        next_s = x_s @ h_x.T + 0.5 * kron_square(x_f) @ h_xx.T + 0.5 * h_ss[None, :]
+        return np.hstack([next_f, next_s])
+
+    def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        block = np.asarray(states, dtype=np.float64)
+        x_f = block[:, :n_x]
+        x_s = block[:, n_x:]
+        x_dev = x_f + x_s
+        y_dev = x_dev @ g_x.T + 0.5 * kron_square(x_f) @ g_xx.T + 0.5 * g_ss[None, :]
+        full = np.hstack([x_dev + x_ss[None, :], y_dev + y_ss[None, :]])
+        return full @ design.T + intercept[None, :]
+
+    noise = solution.eta @ solution.eta.T
+    state_cov = np.zeros((2 * n_x, 2 * n_x))
+    state_cov[:n_x, :n_x] = noise
+    p_first = _discrete_lyapunov(h_x, noise)
+    mean_second = np.linalg.solve(np.eye(n_x) - h_x, 0.5 * (h_xx @ p_first.ravel() + h_ss))
+    initial_state = np.concatenate([np.zeros(n_x), mean_second])
+    initial_cov = np.zeros((2 * n_x, 2 * n_x))
+    initial_cov[:n_x, :n_x] = p_first
+    return _NonlinearStateSpace(
+        transition,
+        observation,
+        state_cov=state_cov,
+        obs_cov=obs_cov,
+        initial_state=initial_state,
+        initial_state_cov=initial_cov,
     )

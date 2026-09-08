@@ -65,10 +65,11 @@ import numpy.typing as npt
 
 from ..._core import SummaryTable
 from ..._internals import (
+    _impulse_responses,
+    _PerturbationDSGEPosterior,
     _PerturbationFit,
     _PerturbationModel,
     _PerturbationSolution,
-    _simulate_pruned,
     _SummaryMixin,
 )
 from ...exceptions import SpecificationError
@@ -78,42 +79,6 @@ __all__ = [
     "PerturbationDSGE",
     "PerturbationDSGEResult",
 ]
-
-
-def _impulse_responses(
-    solution: _PerturbationSolution, *, horizon: int, size: float
-) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """Responses of states and controls to each shock, ``(n_eps, horizon, n)``.
-
-    At first order these are the usual linear responses. At second order
-    the response depends on where the economy starts, and the convention
-    here is the one Andreasen et al. call the response from the
-    *stochastic* steady state: the pruned system is run without shocks
-    until its second-order state settles, then a one-time impulse of
-    ``size`` standard deviations is added, and the difference from the
-    unshocked continuation is reported.
-    """
-    n_x, n_y, n_eps = solution.n_states, solution.n_controls, solution.n_shocks
-    settle = 500
-    quiet = np.zeros((settle, n_eps))
-    states0, _ = _simulate_pruned(solution, quiet)
-    base_first = np.zeros(n_x)
-    base_second = states0[-1] - solution.x_ss
-    zeros = np.zeros((horizon, n_eps))
-    base_s, base_c = _simulate_pruned(
-        solution, zeros, initial_first=base_first, initial_second=base_second
-    )
-    out_states = np.empty((n_eps, horizon, n_x))
-    out_controls = np.empty((n_eps, horizon, n_y))
-    for e in range(n_eps):
-        shocks = zeros.copy()
-        shocks[0, e] = size
-        s_path, c_path = _simulate_pruned(
-            solution, shocks, initial_first=base_first, initial_second=base_second
-        )
-        out_states[e] = s_path - base_s
-        out_controls[e] = c_path - base_c
-    return out_states, out_controls
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -362,7 +327,7 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
         thin: int = 1,
         proposal_scale: npt.ArrayLike | None = None,
         seed: int | None = None,
-    ) -> PerturbationDSGEPosterior:
+    ) -> _PerturbationDSGEPosterior:
         """Particle marginal Metropolis-Hastings under the specification's prior.
 
         Args:
@@ -388,4 +353,4 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
             proposal_scale=proposal_scale,
             seed=seed,
         )
-        return PerturbationDSGEPosterior._from_fit(fit, self)
+        return _PerturbationDSGEPosterior._from_fit(fit, self)

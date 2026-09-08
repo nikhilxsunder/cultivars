@@ -119,11 +119,6 @@ def log_transform(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return np.log(arr)
 
 
-def log_difference(y: npt.ArrayLike, *, axis: int = 0) -> npt.NDArray[np.float64]:
-    """First difference of the log (approximate growth rate)."""
-    return difference(log_transform(y), 1, axis=axis)
-
-
 def standardize(y: npt.ArrayLike, *, axis: int = 0, ddof: int = 0) -> Standardized:
     """Center and scale to zero mean and unit standard deviation.
 
@@ -286,17 +281,6 @@ def combined_difference(
     Returns:
         The differenced series, shorter by ``d + s * capital_d``.
     """
-    w = y
-    if d > 0:
-        w = difference(w, d)
-    if capital_d > 0:
-        w = seasonal_difference(w, s, capital_d)
-    return w
-
-
-def _difference_series(
-    y: npt.NDArray[np.float64], d: int, capital_d: int, s: int
-) -> npt.NDArray[np.float64]:
     w = y
     if d > 0:
         w = difference(w, d)

@@ -69,6 +69,7 @@ from .._core import (
     _DEFAULT_TRIM,
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
+    _NU_PRIOR_RATE,
     _STUDENT_DF_GRID,
     _TINY,
     _UNRESTRICTED_TREND,
@@ -97,6 +98,7 @@ from .._core import (
     n_deterministic,
     ols,
     pack_stationary,
+    sigmoid,
     simulate_cointegration_null,
     validate_aligned,
     validate_choice,
@@ -110,22 +112,35 @@ from .._core import (
     validate_panel,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._chains import _ParticleMarginalChain
+from ._emitters import (
+    _decay_nelson_siegel_state_space,
+    _linear_state_space,
+    _pruned_state_space,
+    _quasi_volatility_state_space,
+    _volatility_state_space,
+)
 from ._engines import MeanFunctionEngine, NumpyMLPEngine
 from ._filters import hamilton_filter
 from ._fits import (
     _AutoRegressionFit,
     _BoxJenkinsFit,
+    _DecayNelsonSiegelFit,
     _ExogenousVectorAutoRegressionFit,
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
     _MarkovSwitchingFit,
     _NeuralAutoRegressionFit,
     _NeuralThresholdFit,
+    _ParticleChainFit,
+    _PerturbationFit,
     _ShortMemoryVarianceFit,
     _SmoothTransitionFit,
+    _StochasticVolatilityFit,
     _StructuralFit,
     _ThresholdFit,
     _TimeVaryingFit,
+    _TrendVolatilityFit,
     _VectorAutoRegressionFit,
     _VectorConjugateFit,
     _VectorErrorCorrectionFit,
@@ -140,6 +155,7 @@ from ._fits import (
     _VectorStudentFit,
     _VectorThresholdFit,
     _VectorVolatilityFit,
+    _VolatilityDrawsFit,
 )
 from ._inferences import _CoefficientInference
 from ._layouts import _ParameterLayout
@@ -149,30 +165,49 @@ from ._objectives import (
     _AutoRegressionObjective,
     _BoxJenkinsObjective,
     _ConditionalVarianceObjective,
+    _DecayNelsonSiegelObjective,
     _FractionalIntegrationObjective,
     _FractionalVarianceObjective,
+    _NelsonSiegelObjective,
+    _Objective,
+    _ParticleLikelihoodObjective,
+    _PerturbationObjective,
+    _QuasiVolatilityObjective,
     _SmoothTransitionObjective,
     _StructuralObjective,
     _VectorSmoothTransitionObjective,
 )
+from ._parameters import _StochasticVolatilityParameters
 from ._posteriors import (
     _ConjugatePosterior,
 )
 from ._priors import _AdaptivePrior, _NoPrior, _Prior, _PriorContext
-from ._samplers import _draw_volatility_path
+from ._samplers import (
+    _draw_degrees_of_freedom,
+    _draw_scale_mixture,
+    _draw_stationary_volatility_path,
+    _draw_triangular_volatility_block,
+    _draw_volatility_parameters,
+    _draw_volatility_path,
+    _scalar_ffbs,
+)
 from ._selections import _LagOrderSelection
 from ._smoothers import kim_smoother
+from ._solutions import _PerturbationSolution
 from ._solvers import (
     _conjugate_posterior,
     _fista_penalized,
     _maximize_likelihood,
     _solve,
+    _solve_perturbation,
     posterior_coefficients,
 )
+from ._specifications import _PerturbationModelSpecification
 from ._states import _ExpectationMaximizationState, _VectorExpectationMaximizationState
 from ._substrates import (
     _LinearGaussianStateSpace,
     _MarkovSwitchingStateSpace,
+    _NonlinearStateSpace,
 )
 from ._tests import _JohansenRankTest, _StabilityTest
 
@@ -5141,29 +5176,16 @@ class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
 
             resid = target - np.einsum("tkd,td->tk", z, beta)
             if sv:
-                for i in range(1, k):
-                    weights = np.exp(-h_path[:, i])
-                    x_reg = -resid[:, :i]
-                    precision = x_reg.T @ (x_reg * weights[:, None]) + a_prior_prec * np.eye(i)
-                    mean = np.linalg.solve(precision, x_reg.T @ (resid[:, i] * weights))
-                    root = np.linalg.cholesky(np.linalg.inv(precision))
-                    a_mat[i, :i] = mean + root @ rng.standard_normal(i)
-                ortho = resid @ a_mat.T
-                for i in range(k):
-                    h_path[:, i] = _draw_volatility_path(
-                        ortho[:, i],
-                        h_path[:, i],
-                        float(vol_of_vol[i]),
-                        prior_mean=float(log_diag0[i]),
-                        prior_var=4.0,
-                        rng=rng,
-                    )
-                    delta = np.diff(h_path[:, i])
-                    vol_of_vol[i] = _draw_inverse_gamma(
-                        2.0 + 0.5 * (n - 1),
-                        2.0 * k_vol**2 + 0.5 * float(delta @ delta),
-                        rng,
-                    )
+                _draw_triangular_volatility_block(
+                    resid,
+                    a_mat,
+                    h_path,
+                    vol_of_vol,
+                    log_diag0=log_diag0,
+                    k_vol=k_vol,
+                    a_prior_prec=a_prior_prec,
+                    rng=rng,
+                )
             else:
                 sigma = _draw_inverse_wishart(h_scale0 + resid.T @ resid, df_h + n, rng)
 
@@ -5820,29 +5842,16 @@ class _VolatilityBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel
             beta = draw.reshape(k, width).T
 
             resid = target - design @ beta
-            for i in range(1, k):
-                weights = np.exp(-h_path[:, i])
-                x_reg = -resid[:, :i]
-                row_precision = x_reg.T @ (x_reg * weights[:, None]) + a_prior_prec * np.eye(i)
-                row_mean = np.linalg.solve(row_precision, x_reg.T @ (resid[:, i] * weights))
-                root = np.linalg.cholesky(np.linalg.inv(row_precision))
-                a_mat[i, :i] = row_mean + root @ rng.standard_normal(i)
-            ortho = resid @ a_mat.T
-            for i in range(k):
-                h_path[:, i] = _draw_volatility_path(
-                    ortho[:, i],
-                    h_path[:, i],
-                    float(vol_of_vol[i]),
-                    prior_mean=float(log_diag0[i]),
-                    prior_var=4.0,
-                    rng=rng,
-                )
-                steps = np.diff(h_path[:, i])
-                vol_of_vol[i] = _draw_inverse_gamma(
-                    2.0 + 0.5 * (n_eff - 1.0),
-                    2.0 * k_vol**2 + 0.5 * float(steps @ steps),
-                    rng,
-                )
+            _draw_triangular_volatility_block(
+                resid,
+                a_mat,
+                h_path,
+                vol_of_vol,
+                log_diag0=log_diag0,
+                k_vol=k_vol,
+                a_prior_prec=a_prior_prec,
+                rng=rng,
+            )
             if iteration >= n_burn and (iteration - n_burn) % thin == 0:
                 a_inv = np.linalg.inv(a_mat)
                 beta_kept[kept] = beta
@@ -5999,20 +6008,47 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         DimensionError: If the series is too short.
     """
 
-    __slots__ = ("_mean_spec",)
+    __slots__ = ("_leverage", "_mean_spec", "_tails")
 
-    def __init__(self, endog: npt.ArrayLike, *, mean: str = "constant") -> None:
+    def __init__(
+        self,
+        endog: npt.ArrayLike,
+        *,
+        mean: str = "constant",
+        dist: str = "normal",
+        leverage: bool = False,
+    ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
         if mean not in ("constant", "zero"):
             raise SpecificationError(f"mean must be 'constant' or 'zero'; got {mean!r}.")
+        if dist not in ("normal", "t"):
+            raise SpecificationError(f"dist must be 'normal' or 't'; got {dist!r}.")
+        if dist == "t" and leverage:
+            raise SpecificationError(
+                "heavy tails and leverage are not offered together: the leverage "
+                "correlation attaches to the Gaussian kernel of the t innovation, "
+                "which the return alone does not reveal. Fit one departure at a time."
+            )
         self._mean_spec = mean
+        self._tails = dist == "t"
+        self._leverage = bool(leverage)
         self._ensure_length(50, "a stochastic-volatility model")
 
     @property
     def mean_spec(self) -> str:
         """Whether the observation mean is estimated or fixed at zero."""
         return self._mean_spec
+
+    @property
+    def heavy_tailed(self) -> bool:
+        """Whether the observation noise is Student-t."""
+        return self._tails
+
+    @property
+    def leveraged(self) -> bool:
+        """Whether the innovations are correlated."""
+        return self._leverage
 
     @property
     def _n_mean(self) -> int:
@@ -6148,18 +6184,28 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         start = self._fit_quasi()
         mu, phi, sigma2 = start.params.mu, start.params.phi, start.params.sigma2
         mean = start.params.mean
+        nu = start.params.nu if start.params.nu is not None else 0.0
+        mixture = np.ones(n)
         h = start.log_variance.copy()
         keep = (n_draws - n_burn + thin - 1) // thin
         mu_kept = np.empty(keep)
         phi_kept = np.empty(keep)
         sigma2_kept = np.empty(keep)
         mean_kept = np.empty(keep)
+        nu_kept = np.empty(keep) if self._tails else None
         h_kept = np.empty((keep, n))
         kept = 0
+        accepted = 0
         for iteration in range(n_draws):
             residual = y - mean
+            if self._tails:
+                mixture = _draw_scale_mixture(residual, h, nu=nu, rng=rng)
+                nu, moved = _draw_degrees_of_freedom(
+                    mixture, nu, prior_rate=_NU_PRIOR_RATE, step=0.25, rng=rng
+                )
+                accepted += int(moved)
             h = _draw_stationary_volatility_path(
-                residual, h, mu=mu, phi=phi, sigma2=sigma2, rng=rng
+                residual / np.sqrt(mixture), h, mu=mu, phi=phi, sigma2=sigma2, rng=rng
             )
             mu, phi, sigma2 = _draw_volatility_parameters(
                 h,
@@ -6172,7 +6218,7 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
                 rng=rng,
             )
             if self._mean_spec == "constant":
-                weights = np.exp(-h)
+                weights = np.exp(-h) / mixture
                 precision = float(weights.sum()) + 1e-6
                 mean = float((weights @ y) / precision + rng.standard_normal() / np.sqrt(precision))
             if iteration >= n_burn and (iteration - n_burn) % thin == 0:
@@ -6180,6 +6226,8 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
                 phi_kept[kept] = phi
                 sigma2_kept[kept] = sigma2
                 mean_kept[kept] = mean
+                if nu_kept is not None:
+                    nu_kept[kept] = nu
                 h_kept[kept] = h
                 kept += 1
         return _VolatilityDrawsFit(
@@ -6188,6 +6236,8 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
             sigma2_draws=sigma2_kept,
             mean_draws=mean_kept,
             h_draws=h_kept,
+            nu_draws=nu_kept,
+            nu_acceptance=accepted / n_draws if self._tails else None,
             nobs=n,
             n_draws=n_draws,
             n_burn=n_burn,
@@ -6289,19 +6339,23 @@ class _TrendVolatilityModel[R](_UnivariateModel[R]):
         q: npt.NDArray[np.float64],
         rng: np.random.Generator,
     ) -> npt.NDArray[np.float64]:
-        """The trend path given both variance paths: an exact linear draw."""
-        n = y.shape[0]
-        space = _LinearGaussianStateSpaceModel(
-            np.ones((1, 1)),
-            np.exp(h).reshape(n, 1, 1),
-            np.ones((1, 1)),
-            np.ones((1, 1)),
-            np.exp(q).reshape(n, 1, 1),
-            initial_state=np.array([y[0]]),
-            initial_state_cov=np.array([[max(float(np.var(y)), 1e-6) * 10.0]]),
+        """The trend path given both variance paths: an exact linear draw.
+
+        A random-walk state observed through time-varying noise, drawn by
+        the scalar forward-filter backward-sampler the volatility draws
+        share; the substrate's simulation smoother gives the same law at
+        two orders of magnitude the cost.
+        """
+        return _scalar_ffbs(
+            y,
+            np.exp(h),
+            phi=1.0,
+            drift=0.0,
+            sigma2=np.exp(q),
+            init_mean=float(y[0]),
+            init_var=max(float(np.var(y)), 1e-6) * 10.0,
+            rng=rng,
         )
-        draw = space.simulation_smoother(y.reshape(n, 1), n_sims=1, seed=rng)
-        return np.asarray(draw[0, :, 0], dtype=np.float64)
 
     def _sample_gibbs(
         self,
@@ -6518,7 +6572,7 @@ class _PerturbationModel[R](ABC):
     prior in the constrained space it thinks in.
 
     Args:
-        specification: The model, see :class:`_ModelSpecification`.
+        specification: The model, see :class:`_PerturbationModelSpecification`.
         data: The ``(nobs, p)`` observables, ``numpy.nan`` rows missing.
         order: Perturbation order, ``1`` or ``2``.
 
@@ -6531,7 +6585,7 @@ class _PerturbationModel[R](ABC):
 
     def __init__(
         self,
-        specification: _ModelSpecification,
+        specification: _PerturbationModelSpecification,
         data: npt.ArrayLike,
         *,
         order: int = 2,
@@ -6575,6 +6629,39 @@ class _PerturbationModel[R](ABC):
     def n_params(self) -> int:
         """Structural parameters."""
         return int(self._bounds.shape[0])
+
+    @property
+    def parameter_names(self) -> tuple[str, ...]:
+        """Structural parameter labels, in the specification's order."""
+        return tuple(self._spec.parameter_names)
+
+    def solve(self, theta: npt.ArrayLike) -> _PerturbationSolution:
+        """The perturbation solution at a structural parameter point.
+
+        The public face of the solver the estimators drive: results and
+        posteriors re-solve at an estimate or a draw through this, so the
+        solution they report is the same object the likelihood saw.
+
+        Args:
+            theta: Structural parameters in the model's own (constrained)
+                space, ``(n_params,)``.
+
+        Returns:
+            The :class:`_PerturbationSolution`.
+        """
+        return self._solve(np.asarray(theta, dtype=np.float64))
+
+    def state_space(self, theta: npt.ArrayLike) -> _LinearGaussianStateSpace | _NonlinearStateSpace:
+        """The solved model on its substrate at a structural parameter point.
+
+        First order lands on the linear-Gaussian substrate; second order
+        on the nonlinear one in pruned form.
+
+        Args:
+            theta: Structural parameters in the model's own (constrained)
+                space, ``(n_params,)``.
+        """
+        return self._state_space(np.asarray(theta, dtype=np.float64))
 
     @abstractmethod
     def fit(self) -> R:
@@ -6689,7 +6776,7 @@ class _PerturbationModel[R](ABC):
 
     def _state_space(
         self, theta: npt.NDArray[np.float64]
-    ) -> _LinearGaussianStateSpaceModel | _NonlinearStateSpaceModel:
+    ) -> _LinearGaussianStateSpace | _NonlinearStateSpace:
         """The solution at ``theta`` on the substrate its order calls for."""
         solution = self._solve(theta)
         design, intercept, obs_cov = self._measurement(theta, solution)
@@ -6697,13 +6784,13 @@ class _PerturbationModel[R](ABC):
             return _linear_state_space(solution, design, intercept, obs_cov)
         return _pruned_state_space(solution, design, intercept, obs_cov)
 
-    def _nonlinear_state_space(self, theta: npt.NDArray[np.float64]) -> _NonlinearStateSpaceModel:
+    def _nonlinear_state_space(self, theta: npt.NDArray[np.float64]) -> _NonlinearStateSpace:
         """The pruned system regardless of order (a first-order pruned system is exact)."""
         solution = self._solve(theta)
         design, intercept, obs_cov = self._measurement(theta, solution)
         return _pruned_state_space(solution, design, intercept, obs_cov)
 
-    def _linear_state_space(self, theta: npt.NDArray[np.float64]) -> _LinearGaussianStateSpaceModel:
+    def _linear_state_space(self, theta: npt.NDArray[np.float64]) -> _LinearGaussianStateSpace:
         """The first-order system on the linear substrate, whatever the order.
 
         Raises:
@@ -6744,8 +6831,7 @@ class _PerturbationModel[R](ABC):
                 model.particle_filter(self._data, n_particles=n_particles, seed=seed).loglikelihood
             )
         raise SpecificationError(
-            "filter must be 'kalman', 'extended', 'unscented', or 'particle'; "
-            f"got {filter_name!r}."
+            f"filter must be 'kalman', 'extended', 'unscented', or 'particle'; got {filter_name!r}."
         )
 
     def _fit_point(
@@ -6768,9 +6854,7 @@ class _PerturbationModel[R](ABC):
                 seed=0 if seed is None else int(seed),
             )
         else:
-            objective = _PerturbationObjective(
-                engine=self, theta0=z0, filter_name=filter_name
-            )
+            objective = _PerturbationObjective(engine=self, theta0=z0, filter_name=filter_name)
         z, llf = _maximize_likelihood(objective)
         theta = self._to_constrained(z)
         solution = self._solve(theta)

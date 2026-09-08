@@ -67,20 +67,19 @@ from .._internals import (
     _StochasticVolatilityModel,
     _StochasticVolatilityParameters,
     _SummaryMixin,
+    _SVPosterior,
     _TrendVolatilityModel,
+    _UCSVPosterior,
     _volatility_state_space,
 )
 from ..exceptions import SpecificationError
 from ..state_space import LinearGaussianSSM, NonlinearSSM
 
-__all__ = ["SV", "UCSV", "SVResult",]
-
-
-def _quantiles(
-    draws: npt.NDArray[np.float64], levels: tuple[float, ...]
-) -> npt.NDArray[np.float64]:
-    """Column quantiles of a ``(S, n)`` draw block, ``(len(levels), n)``."""
-    return np.asarray(np.quantile(draws, levels, axis=0), dtype=np.float64)
+__all__ = [
+    "SV",
+    "UCSV",
+    "SVResult",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -113,6 +112,8 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
     mu: float
     phi: float
     sigma2: float
+    nu: float | None
+    rho: float
     llf: float
     method: str
     nobs: int
@@ -130,6 +131,8 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             mu=fit.params.mu,
             phi=fit.params.phi,
             sigma2=fit.params.sigma2,
+            nu=fit.params.nu,
+            rho=fit.params.rho,
             llf=fit.llf,
             method=fit.method,
             nobs=fit.nobs,
@@ -142,7 +145,7 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
     def _params(self) -> _StochasticVolatilityParameters:
         """The parameter record, rebuilt for the emitters."""
         return _StochasticVolatilityParameters(
-            mu=self.mu, phi=self.phi, sigma2=self.sigma2, mean=self.mean
+            mu=self.mu, phi=self.phi, sigma2=self.sigma2, mean=self.mean, nu=self.nu, rho=self.rho
         )
 
     @property
@@ -238,7 +241,13 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
 
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""
-        return f"SV[{self.mean_spec}, {self.method}]"
+        parts = [self.mean_spec]
+        if self.nu is not None:
+            parts.append("t")
+        if self.rho != 0.0:
+            parts.append("leverage")
+        parts.append(self.method)
+        return f"SV[{', '.join(parts)}]"
 
     def _summary_table(self) -> SummaryTable:
         """Structured summary rendered by every display path."""
@@ -248,8 +257,19 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             ("phi", f"{self.phi:.4f}"),
             ("sigma2", f"{self.sigma2:.6g}"),
         ]
+        if self.nu is not None:
+            rows.append(("nu", f"{self.nu:.3f}"))
+        if self.rho != 0.0:
+            rows.append(("rho", f"{self.rho:.4f}"))
         if self.mean_spec == "constant":
             rows.insert(0, ("mean", f"{self.mean:.6g}"))
+        notes: list[str] = []
+        if self.nu is not None and self.method == "qml":
+            notes.append(
+                "Under the linearization the degrees of freedom enter only through "
+                "the mean and variance of log(lambda), so nu is weakly identified by "
+                "QML; the particle estimators and the samplers see the tail directly."
+            )
         criterion = (
             "The likelihood is the quasi-likelihood of the Harvey-Ruiz-Shephard "
             "linearization, exact for the linearized model and consistent for "
@@ -271,7 +291,7 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             ),
             columns=("", "estimate"),
             rows=tuple(rows),
-            notes=(criterion,),
+            notes=(criterion, *notes),
         )
 
 
@@ -337,7 +357,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
         prior_phi: tuple[float, float] = (20.0, 1.5),
         prior_sigma2: tuple[float, float] = (2.5, 0.025),
         seed: int | None = None,
-    ) -> SVPosterior:
+    ) -> _SVPosterior:
         """Sample the posterior.
 
         Both samplers use the same prior: Gaussian ``mu ~ N(m, v)``, Beta
@@ -366,7 +386,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
         priors = {"prior_mu": prior_mu, "prior_phi": prior_phi, "prior_sigma2": prior_sigma2}
         if method == "gibbs":
             fit = self._sample_gibbs(n_draws=n_draws, n_burn=n_burn, thin=thin, seed=seed, **priors)
-            return SVPosterior._from_gibbs(fit, self)
+            return _SVPosterior._from_gibbs(fit, self)
         if method == "particle":
             chain, mean = self._sample_chain(
                 n_particles=n_particles,
@@ -377,12 +397,11 @@ class SV(_StochasticVolatilityModel[SVResult]):
                 seed=seed,
                 **priors,
             )
-            return SVPosterior._from_chain(chain, mean, self, n_particles=n_particles, seed=seed)
+            return _SVPosterior._from_chain(chain, mean, self, n_particles=n_particles, seed=seed)
         raise SpecificationError(f"method must be 'gibbs' or 'particle'; got {method!r}.")
 
 
-
-class UCSV(_TrendVolatilityModel[UCSVPosterior]):
+class UCSV(_TrendVolatilityModel[_UCSVPosterior]):
     """Stock and Watson's unobserved-components stochastic-volatility model.
 
     ``y_t = tau_t + exp(h_t / 2) eps_t``, ``tau_{t+1} = tau_t + exp(q_t / 2)
@@ -415,7 +434,7 @@ class UCSV(_TrendVolatilityModel[UCSVPosterior]):
         thin: int = 1,
         prior_gamma2: tuple[float, float] = (3.0, 0.04),
         seed: int | None = None,
-    ) -> UCSVPosterior:
+    ) -> _UCSVPosterior:
         """Run the Gibbs sampler and return the posterior.
 
         Args:
@@ -427,7 +446,7 @@ class UCSV(_TrendVolatilityModel[UCSVPosterior]):
                 ``None``.
             seed: Seed.
         """
-        return UCSVPosterior._from_fit(
+        return _UCSVPosterior._from_fit(
             self._sample_gibbs(
                 n_draws=n_draws, n_burn=n_burn, thin=thin, prior_gamma2=prior_gamma2, seed=seed
             ),

@@ -66,6 +66,10 @@ import numpy.typing as npt
 from ..._core import SummaryTable, _nelson_siegel_loadings
 from ..._internals import (
     _ComparisonMixin,
+    _decay_nelson_siegel_state_space,
+    _DecayNelsonSiegelFit,
+    _DecayNelsonSiegelModel,
+    _DecayNelsonSiegelParameters,
     _maximize_likelihood,
     _NelsonSiegelFit,
     _NelsonSiegelObjective,
@@ -73,9 +77,14 @@ from ..._internals import (
     _SummaryMixin,
 )
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ...state_space import LinearGaussianSSM
+from ...state_space import LinearGaussianSSM, NonlinearSSM
 
-__all__ = ["DynamicNelsonSiegel", "DynamicNelsonSiegelResult", "TimeVaryingNelsonSiegelResult", "TimeVaryingNelsonSiegel"]
+__all__ = [
+    "DynamicNelsonSiegel",
+    "DynamicNelsonSiegelResult",
+    "TimeVaryingNelsonSiegel",
+    "TimeVaryingNelsonSiegelResult",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)

@@ -19,31 +19,31 @@ import scipy.linalg as sla
 
 from .._core import (
     _LOG_2PI,
+    _ROW_SUM_ATOL,
     Frequency,
     _ForwardPass,
     _nelson_siegel_loadings,
     aggregation_weights,
+    ergodic_distribution,
+    lag_matrix,
     psd_sqrt,
     validate_transition,
-    ergodic_distribution,
-    _ROW_SUM_ATOL,
-    lag_matrix,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._filters import hamilton_filter
 from ._parameters import _NelsonSiegelParameters, _StructuralParameters
 from ._results import (
     _DurbinKoopmanSmootherResult,
     _FilterResult,
+    _HamiltonFilterResult,
     _KalmanFilterResult,
+    _KimFilterResult,
+    _KimSmootherResult,
     _ParticleFilterResult,
     _ParticleSmootherResult,
     _RtsSmootherResult,
     _SmootherResult,
-    _KimFilterResult,
-    _KimSmootherResult,
-    _HamiltonFilterResult,
 )
-from ._filters import hamilton_filter
 from ._smoothers import kim_smoother
 from ._systems import _structural_matrices
 
@@ -76,9 +76,7 @@ class _StateSpace[F: _FilterResult, S: _SmootherResult](ABC):
     def loglikelihood(self, y: npt.ArrayLike) -> float: ...
 
 
-class _LinearGaussianStateSpace(
-    _StateSpace[_KalmanFilterResult, _DurbinKoopmanSmootherResult]
-):
+class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanSmootherResult]):
     """A linear-Gaussian state-space model.
 
     Args:
@@ -963,6 +961,10 @@ class _NonlinearStateSpace:
             [npt.NDArray[np.float64], npt.NDArray[np.float64]], npt.NDArray[np.float64]
         ]
         | None = None,
+        observed_transition: Callable[
+            [npt.NDArray[np.float64], npt.NDArray[np.float64]], npt.NDArray[np.float64]
+        ]
+        | None = None,
     ) -> None:
         """Validate the system and probe the callables' shape contract.
 
@@ -979,6 +981,10 @@ class _NonlinearStateSpace:
             observation_loglik: Optional replacement for the Gaussian
                 measurement density: ``(y (p,), particles (n, m)) -> (n,)``
                 log-densities.
+            observed_transition: Optional state mean conditioned on the
+                previous observation: ``(particles (n, m), y_prev (p,)) ->
+                (n, m)``. Noise stays ``N(0, Q)``; ``transition`` is still
+                required and is what the linearizing filters would see.
 
         Raises:
             DimensionError: If a matrix or a probed callable's output has
@@ -1027,6 +1033,7 @@ class _NonlinearStateSpace:
         self._p = p
         self._sampler = transition_sampler
         self._obs_loglik = observation_loglik
+        self._observed_f = observed_transition
 
     @property
     def k_states(self) -> int:
@@ -1041,7 +1048,7 @@ class _NonlinearStateSpace:
     @property
     def is_additive_gaussian(self) -> bool:
         """Whether the model is in the additive-Gaussian form all filters accept."""
-        return self._sampler is None and self._obs_loglik is None
+        return self._sampler is None and self._obs_loglik is None and self._observed_f is None
 
     def _prepare(self, y: npt.ArrayLike) -> npt.NDArray[np.float64]:
         """Coerce data to ``(n, p)``, promoting a 1-D series when ``p`` is one.
@@ -1083,9 +1090,9 @@ class _NonlinearStateSpace:
             raise SpecificationError(
                 f"the {filter_name} filter is defined only for the "
                 "additive-Gaussian form, and this model carries a custom "
-                "transition sampler or observation likelihood; linearizing "
-                "an assumption that no longer holds would return confident "
-                "nonsense. Use particle_filter, which assumes neither."
+                "transition sampler, observation likelihood, or "
+                "observation-conditioned transition; linearizing an "
+                "assumption that no longer holds would return confident "
             )
 
     def _jacobian(
@@ -1405,14 +1412,25 @@ class _NonlinearStateSpace:
 
         return self._rts_backward(outcome, cross_at, "unscented")
 
+    def _predict(
+        self, particles: npt.NDArray[np.float64], y_prev: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
+        """The state mean map, conditioned on the previous row when the model says so."""
+        if self._observed_f is not None:
+            return np.asarray(self._observed_f(particles, y_prev), dtype=np.float64)
+        return np.asarray(self._f(particles), dtype=np.float64)
+
     def _draw_states(
-        self, particles: npt.NDArray[np.float64], rng: np.random.Generator
+        self,
+        particles: npt.NDArray[np.float64],
+        rng: np.random.Generator,
+        y_prev: npt.NDArray[np.float64],
     ) -> npt.NDArray[np.float64]:
         """One transition draw per particle."""
         if self._sampler is not None:
             return np.asarray(self._sampler(particles, rng), dtype=np.float64)
         noise = rng.standard_normal(particles.shape) @ psd_sqrt(self._Q).T
-        return np.asarray(self._f(particles), dtype=np.float64) + noise
+        return self._predict(particles, y_prev) + noise
 
     def _measure(
         self, y_row: npt.NDArray[np.float64], particles: npt.NDArray[np.float64]
@@ -1512,7 +1530,7 @@ class _NonlinearStateSpace:
         for t in range(n):
             observed = bool(np.all(np.isfinite(data[t])))
             if method == "auxiliary" and observed and t > 0:
-                anchors = np.asarray(self._f(particles), dtype=np.float64)
+                anchors = self._predict(particles, data[t - 1])
                 first = log_weights + self._measure(data[t], anchors)
                 peak = float(first.max())
                 if not np.isfinite(peak):
@@ -1522,7 +1540,7 @@ class _NonlinearStateSpace:
                 stage = np.exp(first - peak)
                 total = float(stage.sum())
                 indices = self._systematic_resample(stage / total, rng)
-                particles = self._draw_states(particles[indices], rng)
+                particles = self._draw_states(particles[indices], rng, data[t - 1])
                 second = self._measure(data[t], particles) - self._measure(
                     data[t], anchors[indices]
                 )
@@ -1540,7 +1558,7 @@ class _NonlinearStateSpace:
                 log_weights = np.log(np.maximum(normalized, 1e-300))
             else:
                 if t > 0:
-                    particles = self._draw_states(particles, rng)
+                    particles = self._draw_states(particles, rng, data[t - 1])
                 if observed:
                     log_weights = log_weights + self._measure(data[t], particles)
                 peak = float(log_weights.max())
@@ -1640,7 +1658,7 @@ class _NonlinearStateSpace:
         weights = np.empty((n, count))
         for t in range(n):
             if t > 0:
-                particles = self._draw_states(particles, rng)
+                particles = self._draw_states(particles, rng, data[t - 1])
             if np.all(np.isfinite(data[t])):
                 log_weights = log_weights + self._measure(data[t], particles)
             peak = float(log_weights.max())
@@ -1665,7 +1683,7 @@ class _NonlinearStateSpace:
         gap = clouds[-1] - smoothed[-1][None, :]
         spread[-1] = np.sqrt(np.maximum(backward @ gap**2, 0.0))
         for t in range(n - 2, -1, -1):
-            anchors = np.asarray(self._f(clouds[t]), dtype=np.float64)
+            anchors = self._predict(clouds[t], data[t])
             diff = clouds[t + 1][:, None, :] - anchors[None, :, :]
             white = sla.solve_triangular(chol_q, diff.reshape(-1, m).T, lower=True)
             log_density = -0.5 * (

@@ -29,14 +29,21 @@ import numpy.typing as npt
 from scipy.optimize import minimize
 from scipy.special import multigammaln
 
-from .._core import link_matrix
+from .._core import (
+    _first_order,
+    _numerical_hessian,
+    _numerical_jacobian,
+    _Residuals,
+    _second_order,
+    _stack_point,
+    link_matrix,
+)
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._covariances import _PosteriorCovariance
 from ._levels import _ConditionalLevels
 from ._objectives import _Objective
 from ._posteriors import _ConjugatePosterior
 from ._priors import _Prior, _PriorContext
-from ._solvers import _LinearGaussianStateSpace, _NonlinearStateSpace
 from ._solutions import _PerturbationSolution
 
 
@@ -468,89 +475,6 @@ def _spectral_factor(
     transfer = psi @ np.linalg.inv(psi0)
     sigma = np.real(psi0 @ np.conj(psi0.T))
     return transfer, sigma
-
-
-def _linear_state_space(
-    solution: _PerturbationSolution,
-    design: npt.NDArray[np.float64],
-    intercept: npt.NDArray[np.float64],
-    obs_cov: npt.NDArray[np.float64],
-) -> _LinearGaussianStateSpace:
-    """The first-order solution as an exact linear-Gaussian state space.
-
-    The state is the deviation ``x - x_ss``; observables are ``design @
-    [x; y] + intercept + measurement error``.
-    """
-    n_x = solution.n_states
-    z_full = design @ np.vstack([np.eye(n_x), solution.g_x])
-    d_full = design @ np.concatenate([solution.x_ss, solution.y_ss]) + intercept
-    noise = solution.eta @ solution.eta.T
-    return _LinearGaussianStateSpace(
-        z_full,
-        obs_cov,
-        solution.h_x,
-        np.eye(n_x),
-        noise,
-        obs_intercept=d_full,
-        initial_state=np.zeros(n_x),
-        initial_state_cov=_discrete_lyapunov(solution.h_x, noise),
-    )
-
-
-def _pruned_state_space(
-    solution: _PerturbationSolution,
-    design: npt.NDArray[np.float64],
-    intercept: npt.NDArray[np.float64],
-    obs_cov: npt.NDArray[np.float64],
-) -> _NonlinearStateSpace:
-    """The pruned second-order solution as an additive-Gaussian nonlinear state space.
-
-    The state is ``(x_f, x_s)``: the first-order deviation and the
-    second-order deviation. Noise enters only ``x_f``, so the state
-    covariance is singular and the form is additive-Gaussian, which
-    every filter on the substrate accepts.
-    """
-    n_x = solution.n_states
-    h_x, h_xx, h_ss = solution.h_x, solution.h_xx, solution.h_ss
-    g_x, g_xx, g_ss = solution.g_x, solution.g_xx, solution.g_ss
-    x_ss, y_ss = solution.x_ss, solution.y_ss
-
-    def kron_square(block: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        return np.einsum("nj,nk->njk", block, block).reshape(block.shape[0], n_x * n_x)
-
-    def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        block = np.asarray(states, dtype=np.float64)
-        x_f = block[:, :n_x]
-        x_s = block[:, n_x:]
-        next_f = x_f @ h_x.T
-        next_s = x_s @ h_x.T + 0.5 * kron_square(x_f) @ h_xx.T + 0.5 * h_ss[None, :]
-        return np.hstack([next_f, next_s])
-
-    def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        block = np.asarray(states, dtype=np.float64)
-        x_f = block[:, :n_x]
-        x_s = block[:, n_x:]
-        x_dev = x_f + x_s
-        y_dev = x_dev @ g_x.T + 0.5 * kron_square(x_f) @ g_xx.T + 0.5 * g_ss[None, :]
-        full = np.hstack([x_dev + x_ss[None, :], y_dev + y_ss[None, :]])
-        return full @ design.T + intercept[None, :]
-
-    noise = solution.eta @ solution.eta.T
-    state_cov = np.zeros((2 * n_x, 2 * n_x))
-    state_cov[:n_x, :n_x] = noise
-    p_first = _discrete_lyapunov(h_x, noise)
-    mean_second = np.linalg.solve(np.eye(n_x) - h_x, 0.5 * (h_xx @ p_first.ravel() + h_ss))
-    initial_state = np.concatenate([np.zeros(n_x), mean_second])
-    initial_cov = np.zeros((2 * n_x, 2 * n_x))
-    initial_cov[:n_x, :n_x] = p_first
-    return _NonlinearStateSpace(
-        transition,
-        observation,
-        state_cov=state_cov,
-        obs_cov=obs_cov,
-        initial_state=initial_state,
-        initial_state_cov=initial_cov,
-    )
 
 
 def _solve_perturbation(

@@ -74,17 +74,17 @@ class _FittedMLP:
 
     @staticmethod
     def _activation(z: npt.NDArray[np.float64], kind: str) -> npt.NDArray[np.float64]:
-            """Hidden-layer activation."""
-            if kind == "tanh":
-                return np.tanh(z)
-            return np.maximum(z, 0.0)
+        """Hidden-layer activation."""
+        if kind == "tanh":
+            return np.tanh(z)
+        return np.maximum(z, 0.0)
 
     @staticmethod
     def _activation_grad(z: npt.NDArray[np.float64], kind: str) -> npt.NDArray[np.float64]:
-            """Derivative of :func:`_activation`."""
-            if kind == "tanh":
-                return 1.0 - np.tanh(z) ** 2
-            return (z > 0.0).astype(np.float64)
+        """Derivative of :func:`_activation`."""
+        if kind == "tanh":
+            return 1.0 - np.tanh(z) ** 2
+        return (z > 0.0).astype(np.float64)
 
     def predict(self, features: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """Conditional means for ``features`` of shape ``(n, k)``.

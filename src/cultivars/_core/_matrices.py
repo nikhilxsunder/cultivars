@@ -22,14 +22,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from itertools import combinations
+from typing import Any, cast
 
 import numpy as np
 import numpy.typing as npt
+import scipy.linalg as sla
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ._containers import LagPolynomial
 from ._defaults import _RANK_TOL, _TREND_WIDTH
 
 
@@ -69,21 +70,6 @@ def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
     if p > 1:
         companion[k:, : k * (p - 1)] = np.eye(k * (p - 1))
     return companion
-
-
-def companion_from_polynomial(poly: LagPolynomial) -> npt.NDArray[np.float64]:
-    """Build the companion matrix from a monic AR :class:`LagPolynomial`.
-
-    Args:
-        poly: A polynomial in monic AR form (constant term == identity).
-
-    Returns:
-        The companion matrix of shape ``(k * p, k * p)``.
-
-    Raises:
-        SpecificationError: If ``poly`` is not in monic AR form.
-    """
-    return companion_matrix(poly.ar_coeffs())
 
 
 def selector_matrix(k: int, p: int) -> npt.NDArray[np.float64]:
@@ -641,3 +627,212 @@ def _companion_spectral_radius(stack: npt.NDArray[np.float64]) -> float:
     """
     eigenvalues = np.linalg.eigvals(companion_matrix(stack))
     return float(np.abs(eigenvalues).max(initial=0.0))
+
+
+def _quantiles(
+    draws: npt.NDArray[np.float64], levels: tuple[float, ...]
+) -> npt.NDArray[np.float64]:
+    """Column quantiles of a ``(S, n)`` draw block, ``(len(levels), n)``."""
+    return np.asarray(np.quantile(draws, levels, axis=0), dtype=np.float64)
+
+
+def _numerical_jacobian(
+    fun: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+    point: npt.NDArray[np.float64],
+    *,
+    step: float = 1e-6,
+) -> npt.NDArray[np.float64]:
+    """Central-difference Jacobian ``(n_out, n_in)`` of a vector map."""
+    base = np.asarray(fun(point), dtype=np.float64).ravel()
+    out = np.empty((base.shape[0], point.shape[0]))
+    for j in range(point.shape[0]):
+        h = step * max(1.0, abs(float(point[j])))
+        up = point.copy()
+        down = point.copy()
+        up[j] += h
+        down[j] -= h
+        out[:, j] = (np.asarray(fun(up)).ravel() - np.asarray(fun(down)).ravel()) / (2.0 * h)
+    return out
+
+
+def _numerical_hessian(
+    fun: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+    point: npt.NDArray[np.float64],
+    *,
+    step: float = 1e-4,
+) -> npt.NDArray[np.float64]:
+    """Central-difference Hessian ``(n_out, n_in, n_in)`` of a vector map.
+
+    Uses the symmetric four-point stencil for the off-diagonal entries and
+    the three-point stencil for the diagonal, then symmetrizes.
+    """
+    base = np.asarray(fun(point), dtype=np.float64).ravel()
+    n_out, n_in = base.shape[0], point.shape[0]
+    steps = np.array([step * max(1.0, abs(float(v))) for v in point])
+    out = np.empty((n_out, n_in, n_in))
+
+    def at(shift: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        return np.asarray(fun(point + shift), dtype=np.float64).ravel()
+
+    for j in range(n_in):
+        ej = np.zeros(n_in)
+        ej[j] = steps[j]
+        out[:, j, j] = (at(ej) - 2.0 * base + at(-ej)) / steps[j] ** 2
+        for k in range(j + 1, n_in):
+            ek = np.zeros(n_in)
+            ek[k] = steps[k]
+            mixed = (at(ej + ek) - at(ej - ek) - at(-ej + ek) + at(-ej - ek)) / (
+                4.0 * steps[j] * steps[k]
+            )
+            out[:, j, k] = mixed
+            out[:, k, j] = mixed
+    return out
+
+
+def _stack_point(
+    y_next: npt.NDArray[np.float64],
+    y: npt.NDArray[np.float64],
+    x_next: npt.NDArray[np.float64],
+    x: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
+    """The ``(y', y, x', x)`` argument order flattened into one vector."""
+    return np.concatenate([y_next, y, x_next, x])
+
+
+def _first_order(
+    f_y_next: npt.NDArray[np.float64],
+    f_y: npt.NDArray[np.float64],
+    f_x_next: npt.NDArray[np.float64],
+    f_x: npt.NDArray[np.float64],
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Klein's generalized-Schur solution of the linearized system.
+
+    With ``w = (x, y)`` the system is ``A E_t w' = B w``, ``A = [f_x',
+    f_y']``, ``B = -[f_x, f_y]``. Ordering the stable generalized
+    eigenvalues first gives ``g_x = Z21 Z11^{-1}`` and ``h_x = Z11 S11^{-1}
+    T11 Z11^{-1}``.
+
+    Returns:
+        ``(h_x, g_x)``.
+
+    Raises:
+        NumericalError: If the Blanchard-Kahn count fails (no unique
+            stable solution) or the decomposition is singular.
+    """
+    n_x = f_x.shape[1]
+    a_mat = np.hstack([f_x_next, f_y_next])
+    b_mat = -np.hstack([f_x, f_y])
+
+    def stable(
+        alpha: npt.NDArray[np.complexfloating[Any, Any]] | npt.NDArray[np.floating[Any]],
+        beta: npt.NDArray[np.complexfloating[Any, Any]] | npt.NDArray[np.floating[Any]],
+    ) -> npt.NDArray[np.bool_]:
+        # the eigenvalues of s' = S^{-1} T s are beta / alpha; keep those inside
+        return np.abs(beta) < np.abs(alpha)
+
+    try:
+        # scipy vectorizes the sort callable over the eigenvalue arrays; the
+        # stubs type it scalar-to-bool, so the cast states the real contract.
+        s_mat, t_mat, alpha, beta, _, z_mat = sla.ordqz(
+            a_mat,
+            b_mat,
+            sort=cast("Callable[[float, float], bool]", stable),
+            output="real",
+        )
+    except (ValueError, np.linalg.LinAlgError) as error:
+        raise NumericalError("the generalized Schur decomposition failed.") from error
+    n_stable = int(np.count_nonzero(stable(alpha, beta)))
+
+    try:
+        s_mat, t_mat, alpha, beta, _, z_mat = sla.ordqz(
+            a_mat,
+            b_mat,
+            sort=cast("Callable[[float, float], bool]", stable),
+            output="real",
+        )
+    except (ValueError, np.linalg.LinAlgError) as error:
+        raise NumericalError("the generalized Schur decomposition failed.") from error
+    n_stable = int(np.sum(stable(alpha, beta)))
+    if n_stable != n_x:
+        raise NumericalError(
+            f"Blanchard-Kahn conditions fail: {n_stable} stable eigenvalues for "
+            f"{n_x} predetermined states (need exactly {n_x})."
+        )
+    z11 = z_mat[:n_x, :n_x]
+    z21 = z_mat[n_x:, :n_x]
+    s11 = s_mat[:n_x, :n_x]
+    t11 = t_mat[:n_x, :n_x]
+    if abs(np.linalg.det(z11)) < 1e-14:
+        raise NumericalError("the stable invariant subspace is not a graph over the states.")
+    z11_inv = np.linalg.inv(z11)
+    g_x = z21 @ z11_inv
+    h_x = z11 @ np.linalg.solve(s11, t11) @ z11_inv
+    return np.real(h_x), np.real(g_x)
+
+
+def _second_order(
+    jac: npt.NDArray[np.float64],
+    hess: npt.NDArray[np.float64],
+    h_x: npt.NDArray[np.float64],
+    g_x: npt.NDArray[np.float64],
+    eta: npt.NDArray[np.float64],
+    *,
+    n_x: int,
+    n_y: int,
+) -> tuple[
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+]:
+    """The Schmitt-Grohe-Uribe second-order blocks.
+
+    Returns:
+        ``(h_xx, g_xx, h_ss, g_ss)`` with ``h_xx`` of shape ``(n_x, n_x**2)``
+        and ``g_xx`` of shape ``(n_y, n_x**2)``, both acting on the
+        row-major Kronecker square ``x kron x``.
+    """
+    n_eq = jac.shape[0]
+    f_yn = jac[:, :n_y]
+    f_y = jac[:, n_y : 2 * n_y]
+    f_xn = jac[:, 2 * n_y : 2 * n_y + n_x]
+    # dv/dx, v = (y', y, x', x)
+    d_mat = np.vstack([g_x @ h_x, g_x, h_x, np.eye(n_x)])
+    known = np.einsum("iab,aj,bk->ijk", hess, d_mat, d_mat).reshape(n_eq, n_x * n_x)
+    kron_h = np.kron(h_x, h_x)
+    eye_sq = np.eye(n_x * n_x)
+    lhs_g = np.kron(f_yn, kron_h.T) + np.kron(f_y, eye_sq)
+    lhs_h = np.kron(f_yn @ g_x + f_xn, eye_sq)
+    lhs = np.hstack([lhs_g, lhs_h])
+    rhs = -known.ravel()
+    try:
+        solution = np.linalg.solve(lhs, rhs)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError("the second-order system is singular.") from error
+    g_xx = solution[: n_y * n_x * n_x].reshape(n_y, n_x * n_x)
+    h_xx = solution[n_y * n_x * n_x :].reshape(n_x, n_x * n_x)
+    # risk correction: dv/deps at sigma = 0
+    m_mat = np.vstack(
+        [g_x @ eta, np.zeros((n_y, eta.shape[1])), eta, np.zeros((n_x, eta.shape[1]))]
+    )
+    trace_term = np.einsum("iab,ae,be->i", hess, m_mat, m_mat)
+    eta_sq = (eta @ eta.T).ravel()
+    rhs_ss = -(f_yn @ g_xx @ eta_sq + trace_term)
+    lhs_ss = np.hstack([f_yn + f_y, f_yn @ g_x + f_xn])
+    try:
+        ss = np.linalg.solve(lhs_ss, rhs_ss)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError("the risk-correction system is singular.") from error
+    g_ss = ss[:n_y]
+    h_ss = ss[n_y:]
+    return h_xx, g_xx, h_ss, g_ss
+
+
+def _discrete_lyapunov(
+    transition: npt.NDArray[np.float64], noise: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
+    """The stationary covariance ``P = T P T' + Q``."""
+    try:
+        return np.asarray(sla.solve_discrete_lyapunov(transition, noise), dtype=np.float64)
+    except (ValueError, np.linalg.LinAlgError) as error:
+        raise NumericalError("the first-order transition has no stationary covariance.") from error

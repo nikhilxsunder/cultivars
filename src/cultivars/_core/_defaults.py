@@ -149,4 +149,5 @@ _TARGET_ACCEPTANCE = 0.234
 _ADAPT_FLOOR = 1e-8
 """Diagonal jitter added to the adapted covariance so it never degenerates."""
 
-
+_NU_PRIOR_RATE = 0.1
+"""Rate parameter for the prior on the degrees of freedom of the Student-t innovations."""

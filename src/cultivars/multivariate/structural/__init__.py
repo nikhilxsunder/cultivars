@@ -4,6 +4,7 @@ from .external_instruments import ProxySVAR
 from .factor_augmented import FactorAugmentedSVAR, FactorAugmentedSVARResult
 from .heteroskedacity import HeteroskedasticSVAR
 from .non_gaussian import NonGaussianSVAR
+from .perturbation import PerturbationDSGE, PerturbationDSGEResult
 from .set_identification import SetIdentifiedSVAR, SetIdentifiedSVARResult
 from .sign_restrictions import (
     NarrativeSignRestrictedSVAR,
@@ -11,7 +12,6 @@ from .sign_restrictions import (
     SignRestrictedSVARResult,
 )
 from .zero_restrictions import LongRunSVAR, MixedSVAR, RecursiveSVAR, ShortRunSVAR, SVARResult
-from .perturbation import PerturbationDSGE, PerturbationDSGEResult
 
 __all__ = [
     "FactorAugmentedSVAR",
@@ -21,6 +21,8 @@ __all__ = [
     "MixedSVAR",
     "NarrativeSignRestrictedSVAR",
     "NonGaussianSVAR",
+    "PerturbationDSGE",
+    "PerturbationDSGEResult",
     "ProxySVAR",
     "RecursiveSVAR",
     "SVARResult",
@@ -29,6 +31,4 @@ __all__ = [
     "ShortRunSVAR",
     "SignRestrictedSVAR",
     "SignRestrictedSVARResult",
-    "PerturbationDSGE",
-    "PerturbationDSGEResult",
 ]

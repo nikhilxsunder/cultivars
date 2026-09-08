@@ -61,24 +61,6 @@ class FittedResult(Protocol):
 
 
 @runtime_checkable
-class Forecaster(Protocol):
-    """Anything that produces point forecasts over a horizon."""
-
-    def forecast(self, h: int, /) -> npt.NDArray[np.float64]: ...
-
-
-@runtime_checkable
-class MeanModelResult(FittedResult, Protocol):
-    """A fitted conditional-mean model: residuals, fitted values, forecasts."""
-
-    endog: npt.NDArray[np.float64]
-    resid: npt.NDArray[np.float64]
-    fittedvalues: npt.NDArray[np.float64]
-
-    def forecast(self, h: int, /) -> npt.NDArray[np.float64]: ...
-
-
-@runtime_checkable
 class VolatilityResult(FittedResult, Protocol):
     """A fitted model carrying a time-varying conditional-variance path."""
 
@@ -86,15 +68,6 @@ class VolatilityResult(FittedResult, Protocol):
 
     @property
     def conditional_volatility(self) -> npt.NDArray[np.float64]: ...
-
-
-@runtime_checkable
-class TimeSeriesModel[R](Protocol):
-    """A model specification that validates data and fits to a result ``R``."""
-
-    @property
-    def endog(self) -> npt.NDArray[np.float64]: ...
-    def fit(self) -> R: ...
 
 
 @runtime_checkable

@@ -158,42 +158,6 @@ def local_whittle_d(
     return float(result.x), m_eff
 
 
-def gph_d(
-    y: npt.NDArray[np.float64], m: int | None = None, exponent: float = 0.5
-) -> tuple[float, float, int]:
-    """Geweke-Porter-Hudak log-periodogram estimate of ``d``.
-
-    Args:
-        y: The series.
-        m: Explicit bandwidth, or ``None`` for the default rule.
-        exponent: Exponent in the default bandwidth rule.
-
-    Returns:
-        A tuple ``(d_hat, se, m_eff)``.
-
-    Raises:
-        NumericalError: If the periodogram has non-positive ordinates, or the
-            regressor has zero variance.
-    """
-    from ..exceptions import NumericalError
-
-    freqs, ordinates = periodogram(y)
-    m_eff = min(bandwidth(y.shape[0], m, exponent), freqs.shape[0])
-    lam = freqs[:m_eff]
-    power = ordinates[:m_eff]
-    if np.any(power <= 0.0):
-        raise NumericalError("periodogram has non-positive ordinates; cannot take logs.")
-    regressor = -2.0 * np.log(2.0 * np.sin(lam / 2.0))
-    centered = regressor - regressor.mean()
-    denom = float(centered @ centered)
-    if denom <= 0.0:
-        raise NumericalError("degenerate GPH regression (zero regressor variance).")
-    response = np.log(power)
-    d_hat = float(centered @ (response - response.mean()) / denom)
-    se = float(np.pi / np.sqrt(24.0 * denom))
-    return d_hat, se, m_eff
-
-
 def ewma_mean_square(x: npt.NDArray[np.float64], *, decay: float = 0.94, window: int = 75) -> float:
     """Exponentially weighted pre-sample variance estimate.
 

@@ -50,14 +50,14 @@ import numpy.typing as npt
 
 from ._inferences import _CoefficientInference
 from ._parameters import (
-    _NelsonSiegelParameters,
-    _StructuralParameters,
     _DecayNelsonSiegelParameters,
+    _NelsonSiegelParameters,
     _StochasticVolatilityParameters,
+    _StructuralParameters,
     _TrendVolatilityParameters,
 )
-from ._solutions import _PerturbationSolution
 from ._predictors import MeanPredictor
+from ._solutions import _PerturbationSolution
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -968,6 +968,8 @@ class _VolatilityDrawsFit:
     sigma2_draws: npt.NDArray[np.float64]
     mean_draws: npt.NDArray[np.float64]
     h_draws: npt.NDArray[np.float64]
+    nu_draws: npt.NDArray[np.float64] | None
+    nu_acceptance: float | None
     nobs: int
     n_draws: int
     n_burn: int
@@ -981,6 +983,7 @@ class _VolatilityDrawsFit:
             phi=float(self.phi_draws.mean()),
             sigma2=float(self.sigma2_draws.mean()),
             mean=float(self.mean_draws.mean()),
+            nu=float(self.nu_draws.mean()) if self.nu_draws is not None else None,
         )
 
 
@@ -1116,4 +1119,3 @@ class _PerturbationFit:
     n_params: int
     nobs: int
     filtered_state: npt.NDArray[np.float64]
-

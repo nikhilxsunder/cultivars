@@ -234,11 +234,23 @@ class _StochasticVolatilityParameters:
     phi: float
     sigma2: float
     mean: float
+    nu: float | None = None
+    rho: float = 0.0
 
     @property
     def stationary_variance(self) -> float:
         """The unconditional variance of the log variance."""
         return float(self.sigma2 / (1.0 - self.phi**2))
+
+    @property
+    def heavy_tailed(self) -> bool:
+        """Whether the observation noise is Student-t."""
+        return self.nu is not None
+
+    @property
+    def leveraged(self) -> bool:
+        """Whether the innovations are correlated."""
+        return self.rho != 0.0
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
