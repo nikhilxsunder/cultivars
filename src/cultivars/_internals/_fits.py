@@ -51,6 +51,7 @@ import numpy.typing as npt
 from ._inferences import _CoefficientInference
 from ._parameters import (
     _DecayNelsonSiegelParameters,
+    _LongMemoryVolatilityParameters,
     _NelsonSiegelParameters,
     _StochasticVolatilityParameters,
     _StructuralParameters,
@@ -1157,3 +1158,31 @@ class _VolatilityStructuralFit:
     n_draws: int
     n_burn: int
     thin: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _LongMemoryVolatilityFit:
+    """Raw output of the Whittle fit of the long-memory SV model.
+
+    Attributes:
+        params: The maximized parameter record.
+        llf: The Whittle criterion at the optimum, sign-flipped to read as
+            a log-likelihood: the frequency-domain quasi-likelihood of the
+            linearized model, comparable only with other Whittle fits.
+        n_params: Free parameters the criterion was maximized over.
+        nobs: Observations.
+        n_frequencies: Fourier ordinates the criterion summed over.
+        log_variance: Smoothed log-variance path, ``(n,)``, from the
+            spectral (Wiener-Kolmogorov) smoother under a circular
+            approximation.
+        log_variance_std: The smoother's stationary root mean squared
+            error, one value repeated ``(n,)`` times.
+    """
+
+    params: _LongMemoryVolatilityParameters
+    llf: float
+    n_params: int
+    nobs: int
+    n_frequencies: int
+    log_variance: npt.NDArray[np.float64]
+    log_variance_std: npt.NDArray[np.float64]

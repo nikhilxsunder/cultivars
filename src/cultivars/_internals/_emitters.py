@@ -36,10 +36,18 @@ import numpy as np
 import numpy.typing as npt
 from scipy.special import digamma, gammaln, polygamma
 
-from .._core import _LOG_2PI, _LOG_CHI2_MEAN, _LOG_CHI2_VAR, _discrete_lyapunov
+from .._core import (
+    _LOG_2PI,
+    _LOG_CHI2_MEAN,
+    _LOG_CHI2_VAR,
+    _discrete_lyapunov,
+    companion_matrix,
+    fractional_difference_weights,
+)
 from ..exceptions import SpecificationError
 from ._parameters import (
     _DecayNelsonSiegelParameters,
+    _LongMemoryVolatilityParameters,
     _StochasticVolatilityParameters,
     _TrendVolatilityParameters,
 )
@@ -399,5 +407,57 @@ def _pruned_state_space(
         state_cov=state_cov,
         obs_cov=obs_cov,
         initial_state=initial_state,
+        initial_state_cov=initial_cov,
+    )
+
+
+def _long_memory_quasi_state_space(
+    params: _LongMemoryVolatilityParameters, *, truncation: int
+) -> _LinearGaussianStateSpace:
+    """The linearized long-memory SV model as a truncated AR(inf) state space.
+
+    ``log((y_t - c)**2) = mu + E[log eps**2] + v_t + xi_t`` with ``v_t``
+    ARFIMA(1, d, 0). The fractional operator has no finite state
+    representation, so ``v_t`` is written in its autoregressive form
+    ``v_t = sum_j pi_j v_{t-j} + eta_t`` and cut at ``truncation`` lags: a
+    companion system of that dimension on the linear substrate, exact for
+    the truncated law and an approximation of the long-memory one whose
+    error decays like ``truncation**(-d)``. The initial state covariance is
+    the truncated law's stationary covariance. Both the truncation and the
+    ``pi**2 / 2`` measurement floor are the linearization's, so what the
+    Kalman filter returns on this system is a truncated quasi-likelihood.
+
+    Args:
+        params: The parameter record.
+        truncation: Autoregressive lags retained, at least 1.
+
+    Returns:
+        The linear-Gaussian state-space model in the log-squared data.
+
+    Raises:
+        SpecificationError: If ``truncation`` is not positive.
+    """
+    if truncation < 1:
+        raise SpecificationError(f"truncation must be at least 1; got {truncation}.")
+    # AR(inf) of (1 - phi L)(1 - L)^d: weights of (1 - L)^d convolved with (1, -phi)
+    frac = fractional_difference_weights(params.d, truncation + 1)
+    poly = np.convolve(frac, np.array([1.0, -params.phi]))[: truncation + 1]
+    ar = -poly[1:]
+    m = truncation
+    transition = companion_matrix(ar)
+    selection = np.zeros((m, 1))
+    selection[0, 0] = 1.0
+    state_cov = np.array([[params.sigma2]])
+    initial_cov = _discrete_lyapunov(transition, selection @ state_cov @ selection.T)
+    design = np.zeros((1, m))
+    design[0, 0] = 1.0
+    return _LinearGaussianStateSpace(
+        design,
+        np.array([[_LOG_CHI2_VAR]]),
+        transition,
+        selection,
+        state_cov,
+        obs_intercept=np.array([params.mu + _LOG_CHI2_MEAN]),
+        initial_state=np.zeros(m),
         initial_state_cov=initial_cov,
     )

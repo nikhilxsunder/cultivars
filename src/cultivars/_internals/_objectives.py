@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 import numpy as np
 import numpy.typing as npt
+from scipy.special import gamma as gamma_fn
 
 from .._core import (
     _D_MAX,
@@ -40,6 +41,7 @@ from .._core import (
     OptimizerOptions,
     _arch_infinity_variance,
     _arch_infinity_weights,
+    _fractional_spectrum,
     _gaussian_negloglik,
     _linear_variance_recursion,
     _log_variance_recursion,
@@ -50,7 +52,9 @@ from .._core import (
     expand_ar,
     expand_ma,
     fractional_difference,
+    local_whittle_d,
     ols,
+    periodogram,
     sigmoid,
     softplus,
     unpack_stationary,
@@ -68,6 +72,7 @@ from ._parameters import (
     _DecayNelsonSiegelParameters,
     _FractionalIntegrationParameters,
     _FractionalVarianceParameters,
+    _LongMemoryVolatilityParameters,
     _NelsonSiegelParameters,
     _SmoothTransitionParameters,
     _StochasticVolatilityParameters,
@@ -1582,3 +1587,89 @@ class _PerturbationObjective(_Objective[npt.NDArray[np.float64]]):
         ):
             return _PENALTY
         return -value if np.isfinite(value) else _PENALTY
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
+    """Whittle quasi-likelihood of the long-memory stochastic-volatility model.
+
+    Squaring and taking logs gives ``x_t = log((y_t - c)**2) = mu + E[log
+    eps**2] + v_t + xi_t`` with ``v_t`` ARFIMA(1, d, 0) and ``xi_t`` white
+    noise of variance ``pi**2 / 2``, so the spectrum of ``x`` is the
+    fractional spectrum plus a flat floor ``pi / 4``. The Whittle criterion
+    ``sum_j log f(lambda_j) + I(lambda_j) / f(lambda_j)`` over the positive
+    Fourier frequencies is the frequency-domain quasi-likelihood (Breidt,
+    Crato, and de Lima 1998): consistent and asymptotically normal for
+    ``(d, sigma2, phi)`` under Gaussian ``eta``, and indifferent to the
+    level, which the zero frequency alone carries and which is therefore
+    read off the sample mean of ``x``.
+
+    The flat vector holds ``arctanh(2d)`` so that ``d`` lives on
+    ``(-0.5, 0.5)``, the log innovation variance and, under a short-memory
+    factor, ``arctanh phi``.
+
+    Attributes:
+        endog: The observed series.
+        mean: The observation mean ``c`` used to demean, already resolved.
+        short_memory: Whether the log variance carries the AR(1) factor.
+    """
+
+    method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    options: ClassVar[OptimizerOptions | None] = {"maxiter": 4000, "xatol": 1e-6, "fatol": 1e-8}
+
+    endog: npt.NDArray[np.float64]
+    mean: float
+    short_memory: bool = False
+
+    def _log_squared(self) -> npt.NDArray[np.float64]:
+        """``log((y - c)**2 + offset)``, the linearized observation."""
+        return np.log((self.endog - self.mean) ** 2 + 1e-6)
+
+    def _level(self) -> float:
+        """The log-variance level the zero frequency carries."""
+        return float(np.mean(self._log_squared())) - _LOG_CHI2_MEAN
+
+    def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
+        """Local-Whittle ``d``, moment-based innovation variance, zero ``phi``.
+
+        The fractional noise has variance ``sigma2 Gamma(1 - 2d) /
+        Gamma(1 - d)**2``, so the excess of ``var(x)`` over the log
+        chi-squared floor pins a starting ``sigma2`` once ``d`` is known.
+        """
+        star = self._log_squared()
+        d0, _ = local_whittle_d(star)
+        d0 = float(np.clip(d0, 0.05, 0.45))
+        excess = max(float(np.var(star)) - _LOG_CHI2_VAR, 0.05)
+        scale = float(gamma_fn(1.0 - 2.0 * d0) / gamma_fn(1.0 - d0) ** 2)
+        sigma2_0 = max(excess / scale, 1e-3)
+        head = [float(np.arctanh(2.0 * d0)), float(np.log(sigma2_0))]
+        tail = [0.0] if self.short_memory else []
+        return (np.array([*head, *tail]),)
+
+    def unpack(self, theta: npt.NDArray[np.float64]) -> _LongMemoryVolatilityParameters:
+        """Map the flat vector to the parameter record."""
+        return _LongMemoryVolatilityParameters(
+            mu=self._level(),
+            d=0.5 * float(np.tanh(theta[0])),
+            sigma2=float(np.exp(theta[1])),
+            phi=float(np.tanh(theta[2])) if self.short_memory else 0.0,
+            mean=self.mean,
+        )
+
+    def __call__(self, theta: npt.NDArray[np.float64]) -> float:
+        """The Whittle criterion at this draw."""
+        if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
+            return _PENALTY
+        params = self.unpack(theta)
+        if abs(params.d) >= _D_MAX or abs(params.phi) > 0.9999:
+            return _PENALTY
+        freqs, ordinates = periodogram(self._log_squared())
+        # the package periodogram is |FFT|**2 / n; the density carries 1 / (2 pi)
+        density_ordinates = ordinates / (2.0 * np.pi)
+        spectrum = _fractional_spectrum(
+            freqs, d=params.d, sigma2=params.sigma2, phi=params.phi
+        ) + _LOG_CHI2_VAR / (2.0 * np.pi)
+        if not np.all(np.isfinite(spectrum)) or np.any(spectrum <= 0.0):
+            return _PENALTY
+        value = float(np.sum(np.log(spectrum) + density_ordinates / spectrum))
+        return value if np.isfinite(value) else _PENALTY

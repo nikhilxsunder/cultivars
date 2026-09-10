@@ -22,6 +22,7 @@
 
 from ._emitters import (
     _decay_nelson_siegel_state_space,
+    _long_memory_quasi_state_space,
     _quasi_volatility_state_space,
     _trend_volatility_state_space,
     _volatility_state_space,
@@ -33,6 +34,7 @@ from ._fits import (
     _ExogenousVectorAutoRegressionFit,
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
+    _LongMemoryVolatilityFit,
     _MarkovSwitchingFit,
     _NelsonSiegelFit,
     _NeuralAutoRegressionFit,
@@ -83,6 +85,7 @@ from ._models import (
     _FunctionalCoefficientVectorAutoRegressionModel,
     _GibbsBayesianVectorAutoRegressionModel,
     _IdentificationModel,
+    _LongMemoryVolatilityModel,
     _MarkovSwitchingModel,
     _MarkovSwitchingVectorAutoRegressionModel,
     _NeuralAutoRegressionModel,
@@ -116,6 +119,7 @@ from ._objectives import (
 )
 from ._parameters import (
     _DecayNelsonSiegelParameters,
+    _LongMemoryVolatilityParameters,
     _NelsonSiegelParameters,
     _StochasticVolatilityParameters,
     _StructuralParameters,
@@ -161,8 +165,6 @@ from ._tests import (
 )
 
 __all__ = [
-    "_LABEL_NOTE",
-    "_SCALE_NOTE",
     "MeanPredictor",
     "_AdaptivePrior",
     "_AutoRegressionFit",
@@ -198,6 +200,9 @@ __all__ = [
     "_KimSmootherResult",
     "_LikelihoodRatioTest",
     "_LinearGaussianStateSpace",
+    "_LongMemoryVolatilityFit",
+    "_LongMemoryVolatilityModel",
+    "_LongMemoryVolatilityParameters",
     "_MarkovSwitchingFit",
     "_MarkovSwitchingModel",
     "_MarkovSwitchingStateSpace",
@@ -282,8 +287,10 @@ __all__ = [
     "_VolatilityIdentificationModel",
     "_VolatilityStructuralFit",
     "_WaldTest",
+    "_WhittleVolatilityObjective",
     "_decay_nelson_siegel_state_space",
     "_impulse_responses",
+    "_long_memory_quasi_state_space",
     "_maximize_likelihood",
     "_quasi_volatility_state_space",
     "_simulate_pruned",

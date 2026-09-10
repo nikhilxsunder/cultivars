@@ -11,12 +11,20 @@ from .sign_restrictions import (
     SignRestrictedSVAR,
     SignRestrictedSVARResult,
 )
+from .stochastic_volatility import (
+    LongMemorySV,
+    LongMemorySVResult,
+    StochasticVolatilitySVAR,
+    StochasticVolatilitySVARResult,
+)
 from .zero_restrictions import LongRunSVAR, MixedSVAR, RecursiveSVAR, ShortRunSVAR, SVARResult
 
 __all__ = [
     "FactorAugmentedSVAR",
     "FactorAugmentedSVARResult",
     "HeteroskedasticSVAR",
+    "LongMemorySV",
+    "LongMemorySVResult",
     "LongRunSVAR",
     "MixedSVAR",
     "NarrativeSignRestrictedSVAR",
@@ -31,4 +39,6 @@ __all__ = [
     "ShortRunSVAR",
     "SignRestrictedSVAR",
     "SignRestrictedSVARResult",
+    "StochasticVolatilitySVAR",
+    "StochasticVolatilitySVARResult",
 ]

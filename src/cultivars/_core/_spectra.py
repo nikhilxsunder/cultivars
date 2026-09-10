@@ -179,3 +179,29 @@ def _ideal_weights(count: int, low: float, high: float) -> npt.NDArray[np.float6
     weights[0] = (b - a) / np.pi
     weights[1:] = (np.sin(lags * b) - np.sin(lags * a)) / (np.pi * lags)
     return weights
+
+
+def _fractional_spectrum(
+    freqs: npt.NDArray[np.float64], *, d: float, sigma2: float, phi: float = 0.0
+) -> npt.NDArray[np.float64]:
+    """Spectral density of an ARFIMA(1, d, 0) process at the given frequencies.
+
+    ``f(lambda) = sigma2 / (2 pi) * |1 - phi e^{-i lambda}|**-2 * (2 sin(lambda / 2))**-2d``,
+    the long-memory kernel times a first-order short-memory factor. At
+    ``lambda = 0`` with ``d > 0`` the density is infinite; callers that
+    include the zero frequency must handle it.
+
+    Args:
+        freqs: Frequencies in ``[0, pi]``.
+        d: Fractional differencing order, ``|d| < 0.5``.
+        sigma2: Innovation variance.
+        phi: Short-memory AR(1) coefficient, ``|phi| < 1``.
+
+    Returns:
+        The density at each frequency.
+    """
+    lam = np.asarray(freqs, dtype=np.float64)
+    short = 1.0 / (1.0 - 2.0 * phi * np.cos(lam) + phi**2)
+    with np.errstate(divide="ignore"):
+        long_memory = (2.0 * np.sin(0.5 * lam)) ** (-2.0 * d)
+    return np.asarray(sigma2 / (2.0 * np.pi) * short * long_memory, dtype=np.float64)

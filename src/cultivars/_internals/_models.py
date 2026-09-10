@@ -69,6 +69,7 @@ from .._core import (
     _DEFAULT_TRIM,
     _DEFAULT_TRUNCATION,
     _LOG_2PI,
+    _LOG_CHI2_VAR,
     _NU_PRIOR_RATE,
     _STUDENT_DF_GRID,
     _TINY,
@@ -84,6 +85,7 @@ from .._core import (
     Vol,
     _draw_inverse_gamma,
     _draw_inverse_wishart,
+    _fractional_spectrum,
     combined_difference,
     concentrated_gaussian,
     conditional_design,
@@ -129,6 +131,7 @@ from ._fits import (
     _ExogenousVectorAutoRegressionFit,
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
+    _LongMemoryVolatilityFit,
     _MarkovSwitchingFit,
     _NeuralAutoRegressionFit,
     _NeuralThresholdFit,
@@ -177,6 +180,7 @@ from ._objectives import (
     _SmoothTransitionObjective,
     _StructuralObjective,
     _VectorSmoothTransitionObjective,
+    _WhittleVolatilityObjective,
 )
 from ._parameters import _StochasticVolatilityParameters
 from ._posteriors import (
@@ -7092,3 +7096,93 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
         signs = np.sign(similarity[rows, cols])
         signs[signs == 0.0] = 1.0
         return order, np.asarray(signs, dtype=np.float64)
+
+
+class _LongMemoryVolatilityModel[R](_UnivariateModel[R]):
+    """Estimation engine of the long-memory stochastic-volatility model.
+
+    Breidt, Crato, and de Lima's (1998) model: the log variance is an
+    ARFIMA(1, d, 0), so volatility shocks decay hyperbolically, which is
+    the autocorrelation shape squared and absolute returns actually show.
+    One estimator is offered, and the reason is stated. The fractional
+    operator has no finite state, so the exact likelihood is out of reach
+    of the substrates, and the natural home of the model is the frequency
+    domain: the Whittle criterion on the periodogram of the log-squared
+    returns is the quasi-likelihood of the linearized model, consistent for
+    ``(d, sigma2, phi)`` and computed in one FFT. The log-variance path
+    comes from the spectral (Wiener-Kolmogorov) smoother, exact for the
+    stationary linearized model under a circular approximation, and the
+    truncated autoregressive state space is emitted for readers who want a
+    Kalman filter on the same law, labelled as the truncation it is.
+
+    Args:
+        endog: The observed series.
+        mean: ``"constant"`` to remove the sample mean, ``"zero"`` to fix
+            the observation mean at zero.
+        short_memory: Whether the log variance carries an AR(1) factor in
+            addition to the fractional one.
+
+    Raises:
+        SpecificationError: If ``mean`` is unrecognized.
+        DimensionError: If the series is too short.
+    """
+
+    __slots__ = ("_mean_spec", "_short_memory")
+
+    def __init__(
+        self, endog: npt.ArrayLike, *, mean: str = "constant", short_memory: bool = False
+    ) -> None:
+        """Validate the specification and the data."""
+        super().__init__(endog)
+        if mean not in ("constant", "zero"):
+            raise SpecificationError(f"mean must be 'constant' or 'zero'; got {mean!r}.")
+        self._mean_spec = mean
+        self._short_memory = bool(short_memory)
+        self._ensure_length(100, "a long-memory stochastic-volatility model")
+
+    @property
+    def mean_spec(self) -> str:
+        """Whether the observation mean is removed or fixed at zero."""
+        return self._mean_spec
+
+    @property
+    def short_memory(self) -> bool:
+        """Whether the log variance carries an AR(1) factor."""
+        return self._short_memory
+
+    def _resolved_mean(self) -> float:
+        """The sample mean, or zero."""
+        return float(np.mean(self._endog)) if self._mean_spec == "constant" else 0.0
+
+    @abstractmethod
+    def fit(self) -> R:
+        """Estimate the specification and return the public result."""
+
+    def _fit_whittle(self) -> _LongMemoryVolatilityFit:
+        """Whittle estimation and the spectral smoother."""
+        mean = self._resolved_mean()
+        objective = _WhittleVolatilityObjective(
+            endog=self._endog, mean=mean, short_memory=self._short_memory
+        )
+        params, llf = _maximize_likelihood(objective)
+        star = objective._log_squared()
+        n = star.shape[0]
+        centered = star - float(np.mean(star))
+        # Wiener-Kolmogorov smoother on the full (two-sided) FFT grid
+        freqs = 2.0 * np.pi * np.fft.rfftfreq(n)
+        signal = _fractional_spectrum(freqs[1:], d=params.d, sigma2=params.sigma2, phi=params.phi)
+        noise = _LOG_CHI2_VAR / (2.0 * np.pi)
+        gain = np.concatenate([[1.0], signal / (signal + noise)])
+        smoothed = np.fft.irfft(gain * np.fft.rfft(centered), n=n)
+        error_spectrum = signal * noise / (signal + noise)
+        mse = float(np.mean(error_spectrum)) * 2.0 * np.pi
+        n_mean = 1 if self._mean_spec == "constant" else 0
+        return _LongMemoryVolatilityFit(
+            params=params,
+            llf=llf,
+            n_params=2 + int(self._short_memory) + n_mean,
+            nobs=n,
+            n_frequencies=int(freqs.shape[0] - 1),
+            log_variance=np.asarray(params.mu + smoothed, dtype=np.float64),
+            log_variance_std=np.full(n, np.sqrt(max(mse, 0.0))),
+        )

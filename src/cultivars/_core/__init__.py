@@ -75,6 +75,7 @@ from ._estimators import (
     local_whittle_d,
     minnesota_scales,
     ols,
+    periodogram,
     principal_components,
     simulate_cointegration_null,
 )
@@ -151,6 +152,7 @@ from ._samplers import (
 )
 from ._scores import crps_from_draws, energy_score, pit_from_draws
 from ._spectra import (
+    _fractional_spectrum,
     _ideal_weights,
     _pairwise_measure,
     frequency_grid,
@@ -283,6 +285,7 @@ __all__ = [
     "_draw_mixture_indicators",
     "_face_projectors",
     "_first_order",
+    "_fractional_spectrum",
     "_gamma_from_mode",
     "_gaussian_negloglik",
     "_haar_rotation",
@@ -342,6 +345,7 @@ __all__ = [
     "n_deterministic",
     "ols",
     "pack_stationary",
+    "periodogram",
     "pit_from_draws",
     "principal_components",
     "psd_sqrt",

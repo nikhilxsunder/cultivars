@@ -312,3 +312,28 @@ class _DecayNelsonSiegelParameters:
     def decay(self) -> float:
         """The unconditional (median) decay ``exp(log_decay_mean)``."""
         return float(np.exp(self.log_decay_mean))
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _LongMemoryVolatilityParameters:
+    """The parameter record of the long-memory stochastic-volatility model.
+
+    The log variance is ``h_t = mu + v_t`` with ``(1 - phi L)(1 - L)**d v_t =
+    eta_t``, an ARFIMA(1, d, 0) whose fractional order ``d`` in ``(0, 0.5)``
+    is what makes volatility shocks decay hyperbolically rather than
+    geometrically; the observation is ``y_t = c + exp(h_t / 2) eps_t``.
+
+    Attributes:
+        mu: Level of the log variance.
+        d: Fractional differencing order of the log variance, in ``(-0.5, 0.5)``.
+        sigma2: Innovation variance of the fractional noise, strictly positive.
+        phi: Short-memory AR(1) coefficient of the log variance, in
+            ``(-1, 1)``; ``0.0`` when the law is pure fractional noise.
+        mean: The observation mean ``c``, or ``0.0`` when fixed at zero.
+    """
+
+    mu: float
+    d: float
+    sigma2: float
+    phi: float
+    mean: float

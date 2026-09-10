@@ -80,14 +80,31 @@ from ..._core import (
     _SCALE_NOTE,
     ClosedSystemResult,
     SummaryTable,
+    _fractional_spectrum,
     _validate_quantiles,
     _variance_ratio_test,
 )
-from ..._internals import _SummaryMixin, _VolatilityIdentificationModel, _VolatilityStructuralFit
+from ..._internals import (
+    _ComparisonMixin,
+    _long_memory_quasi_state_space,
+    _LongMemoryVolatilityFit,
+    _LongMemoryVolatilityModel,
+    _LongMemoryVolatilityParameters,
+    _SeriesMixin,
+    _SummaryMixin,
+    _VolatilityIdentificationModel,
+    _VolatilityStructuralFit,
+)
 from ...exceptions import SpecificationError
+from ...state_space import LinearGaussianSSM
 from .zero_restrictions import SVARResult
 
-__all__ = ["StochasticVolatilitySVAR", "StochasticVolatilitySVARResult"]
+__all__ = [
+    "LongMemorySV",
+    "LongMemorySVResult",
+    "StochasticVolatilitySVAR",
+    "StochasticVolatilitySVARResult",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -485,3 +502,261 @@ class StochasticVolatilitySVAR(_VolatilityIdentificationModel[StochasticVolatili
             seed=seed,
         )
         return StochasticVolatilitySVARResult._from_fit(fit, self)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class LongMemorySVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
+    """A Whittle-estimated long-memory stochastic-volatility model.
+
+    Attributes:
+        endog: The observed series.
+        mean_spec: ``"constant"`` or ``"zero"``.
+        mean: The observation mean ``c``.
+        mu: Level of the log variance.
+        d: Fractional differencing order of the log variance.
+        sigma2: Innovation variance of the fractional noise.
+        phi: Short-memory AR(1) coefficient of the log variance; ``0.0``
+            when the law is pure fractional noise.
+        short_memory: Whether ``phi`` was estimated.
+        llf: The Whittle criterion at the optimum, read as a
+            log-likelihood: the frequency-domain quasi-likelihood of the
+            linearized model. Comparable only with other Whittle fits.
+        nobs: Observations.
+        n_params: Free parameters.
+        n_frequencies: Fourier ordinates the criterion summed over.
+        log_variance: Smoothed log-variance path, ``(n,)``, from the
+            spectral smoother.
+        log_variance_std: The smoother's stationary root mean squared
+            error, repeated ``(n,)`` times.
+    """
+
+    endog: npt.NDArray[np.float64] = field(repr=False)
+    mean_spec: str
+    mean: float
+    mu: float
+    d: float
+    sigma2: float
+    phi: float
+    short_memory: bool
+    llf: float
+    nobs: int
+    n_params: float
+    n_frequencies: int
+    log_variance: npt.NDArray[np.float64] = field(repr=False)
+    log_variance_std: npt.NDArray[np.float64] = field(repr=False)
+
+    @classmethod
+    def _from_fit(cls, fit: _LongMemoryVolatilityFit, model: LongMemorySV) -> LongMemorySVResult:
+        """Assemble the public result from a raw fit and its specification."""
+        return cls(
+            endog=model.endog,
+            mean_spec=model.mean_spec,
+            mean=fit.params.mean,
+            mu=fit.params.mu,
+            d=fit.params.d,
+            sigma2=fit.params.sigma2,
+            phi=fit.params.phi,
+            short_memory=model.short_memory,
+            llf=fit.llf,
+            nobs=fit.nobs,
+            n_params=float(fit.n_params),
+            n_frequencies=fit.n_frequencies,
+            log_variance=fit.log_variance,
+            log_variance_std=fit.log_variance_std,
+        )
+
+    @property
+    def _params(self) -> _LongMemoryVolatilityParameters:
+        """The parameter record, rebuilt for the emitter."""
+        return _LongMemoryVolatilityParameters(
+            mu=self.mu, d=self.d, sigma2=self.sigma2, phi=self.phi, mean=self.mean
+        )
+
+    @property
+    def at_boundary(self) -> bool:
+        """Whether ``d`` sits at the stationarity boundary of the search.
+
+        The Whittle criterion is maximized over ``|d| < 0.5``; an estimate
+        within ``0.01`` of that edge means the data prefer a nonstationary
+        log variance, and ``d`` should be read as a lower bound rather than
+        a point.
+        """
+        return abs(self.d) >= 0.49
+
+    @property
+    def volatility(self) -> npt.NDArray[np.float64]:
+        """Smoothed volatility ``exp(h_t / 2)``, ``(n,)``."""
+        return np.asarray(np.exp(0.5 * self.log_variance), dtype=np.float64)
+
+    def volatility_bands(
+        self, level: float = 0.95
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Smoother bands on the volatility at a Gaussian coverage level.
+
+        Args:
+            level: Coverage probability in ``(0, 1)``.
+
+        Returns:
+            ``(lower, upper)`` bands, each ``(n,)``.
+
+        Raises:
+            SpecificationError: If ``level`` is outside ``(0, 1)``.
+        """
+        if not 0.0 < level < 1.0:
+            raise SpecificationError(f"level must lie in (0, 1); got {level}.")
+        from scipy.stats import norm
+
+        z = float(norm.ppf(0.5 + 0.5 * level))
+        lower = np.exp(0.5 * (self.log_variance - z * self.log_variance_std))
+        upper = np.exp(0.5 * (self.log_variance + z * self.log_variance_std))
+        return np.asarray(lower, dtype=np.float64), np.asarray(upper, dtype=np.float64)
+
+    def autocorrelation(self, lags: int = 50) -> npt.NDArray[np.float64]:
+        """Implied autocorrelation of the log variance at lags ``0..lags``.
+
+        The ARFIMA(1, d, 0) autocorrelation, computed from the spectrum by
+        Fourier inversion on a fine grid; its hyperbolic tail is the
+        model's signature and the thing to hold against the sample
+        autocorrelation of ``log((y - c)**2)`` after the white-noise floor
+        is netted out.
+
+        Args:
+            lags: Largest lag, at least 1.
+
+        Returns:
+            An array of shape ``(lags + 1,)`` with ``1.0`` first.
+
+        Raises:
+            SpecificationError: If ``lags`` is not positive.
+        """
+        if lags < 1:
+            raise SpecificationError(f"lags must be at least 1; got {lags}.")
+        grid = 2**14
+        freqs = np.pi * (np.arange(grid) + 0.5) / grid
+        spectrum = _fractional_spectrum(freqs, d=self.d, sigma2=self.sigma2, phi=self.phi)
+        out = np.empty(lags + 1)
+        for lag in range(lags + 1):
+            out[lag] = float(np.mean(spectrum * np.cos(lag * freqs)))
+        return np.asarray(out / out[0], dtype=np.float64)
+
+    def quasi_state_space(self, truncation: int = 100) -> LinearGaussianSSM:
+        """The linearized model as a truncated AR(inf) linear-Gaussian state space.
+
+        The fractional operator has no finite state, so this is the
+        autoregressive representation cut at ``truncation`` lags on the
+        log-squared data: exact for the truncated law, an approximation of
+        the long-memory one, and the ``pi**2 / 2`` measurement floor is the
+        linearization's. What the Kalman filter returns on it is a
+        truncated quasi-likelihood, not the model's likelihood.
+
+        Args:
+            truncation: Autoregressive lags retained, at least 1.
+
+        Returns:
+            The linear-Gaussian state-space model.
+        """
+        return _long_memory_quasi_state_space(self._params, truncation=truncation)
+
+    def _series(self) -> dict[str, npt.NDArray[np.float64]]:
+        """Aligned per-observation output."""
+        lower, upper = self.volatility_bands()
+        return {
+            "observed": self.endog,
+            "log_variance": self.log_variance,
+            "volatility": self.volatility,
+            "volatility_lower": lower,
+            "volatility_upper": upper,
+        }
+
+    def _comparison_label(self) -> str:
+        """Specification label used when this result appears in a ranking."""
+        law = "ARFIMA(1,d,0)" if self.short_memory else "ARFIMA(0,d,0)"
+        return f"LongMemorySV[{self.mean_spec}, {law}]"
+
+    def _summary_table(self) -> SummaryTable:
+        """Structured summary rendered by every display path."""
+        ic = self.information_criteria
+        rows: list[tuple[str, str]] = [
+            ("mu", f"{self.mu:.4f}"),
+            ("d", f"{self.d:.4f}"),
+            ("sigma2", f"{self.sigma2:.6g}"),
+        ]
+        if self.short_memory:
+            rows.append(("phi", f"{self.phi:.4f}"))
+        if self.mean_spec == "constant":
+            rows.insert(0, ("mean", f"{self.mean:.6g}"))
+        notes = [
+            "The criterion is the Whittle quasi-likelihood of the Harvey-Ruiz-Shephard "
+            "linearization, summed over the positive Fourier frequencies; compare only "
+            "against other Whittle fits, and read the information criteria in that light.",
+            "Long memory means volatility shocks decay hyperbolically, at rate lag**(2d - 1) "
+            "in the autocorrelation; autocorrelation() has the implied shape. There is no "
+            "half-life.",
+            "The log-variance path is the spectral (Wiener-Kolmogorov) smoother under a "
+            "circular approximation, with one stationary error band; the truncated "
+            "quasi_state_space() offers a Kalman reading of the same law, labelled as a "
+            "truncation.",
+            "Small d against the pi**2 / 2 measurement floor is weakly identified in the "
+            "frequency domain: dispersion of d across samples is large below about 0.3 "
+            "unless the volatility signal is strong.",
+        ]
+        if self.at_boundary:
+            notes.append(
+                "d is at the stationarity boundary of the search (|d| < 0.5): the data "
+                "prefer a nonstationary log variance, and d is a lower bound, not a point. "
+                "UCSV is the random-walk (d = 1) alternative."
+            )
+        return SummaryTable(
+            title=f"{self._comparison_label()} Results",
+            metadata=(
+                ("Method", "whittle"),
+                ("Log-likelihood", f"{self.llf:.3f}"),
+                ("Observations", f"{self.nobs}"),
+                ("AIC", f"{ic.aic:.3f}"),
+                ("Frequencies", f"{self.n_frequencies}"),
+                ("BIC", f"{ic.bic:.3f}"),
+            ),
+            columns=("", "estimate"),
+            rows=tuple(rows),
+            notes=tuple(notes),
+        )
+
+
+class LongMemorySV(_LongMemoryVolatilityModel[LongMemorySVResult]):
+    """Long-memory stochastic volatility, Breidt, Crato, and de Lima (1998).
+
+    ``y_t = c + exp(h_t / 2) eps_t`` with ``h_t = mu + v_t`` and
+    ``(1 - phi L)(1 - L)**d v_t = eta_t``: the log variance is fractionally
+    integrated, so its shocks decay hyperbolically -- the persistence that
+    squared and absolute returns show at long lags and that no finite-order
+    AR(1) log variance can produce. Estimation is Whittle in the frequency
+    domain, the natural home of a process with no finite state; the price
+    is a quasi-likelihood on the linearized model, and the summary says so.
+
+    Args:
+        endog: The observed series (returns, typically).
+        mean: ``"constant"`` to remove the sample mean, ``"zero"`` to fix
+            the observation mean at zero.
+        short_memory: Whether the log variance carries an AR(1) factor as
+            well as the fractional one.
+
+    Example:
+        >>> import numpy as np
+        >>> from cultivars._core import fractional_difference_weights
+        >>> rng = np.random.default_rng(0)
+        >>> n, burn = 1500, 2000
+        >>> eta = 0.5 * rng.standard_normal(n + burn)
+        >>> v = np.convolve(eta, fractional_difference_weights(-0.4, n + burn))[burn : n + burn]
+        >>> y = np.exp((-1.0 + v) / 2) * rng.standard_normal(n)
+        >>> res = LongMemorySV(y, mean="zero").fit()
+        >>> bool(0.2 < res.d <= 0.5)
+        True
+    """
+
+    def fit(self) -> LongMemorySVResult:
+        """Estimate by Whittle quasi-likelihood and smooth the log variance.
+
+        Returns:
+            The fitted :class:`LongMemorySVResult`.
+        """
+        return LongMemorySVResult._from_fit(self._fit_whittle(), self)
