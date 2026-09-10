@@ -890,3 +890,11 @@ def _validate_band(low: float, high: float) -> None:
             f"cycle); got {low}, {high}. Two observations per cycle is the "
             "shortest period the sampling can represent."
         )
+
+
+def _validate_quantiles(quantiles: Sequence[float]) -> tuple[float, ...]:
+    """Validate probability levels."""
+    levels = tuple(float(q) for q in quantiles)
+    if any(not 0.0 < q < 1.0 for q in levels):
+        raise SpecificationError(f"quantiles must lie in (0, 1); got {levels}.")
+    return levels

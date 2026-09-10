@@ -58,6 +58,7 @@ from ._fits import (
     _VectorStudentFit,
     _VectorThresholdFit,
     _VectorVolatilityFit,
+    _VolatilityStructuralFit,
 )
 from ._levels import _ConditionalLevels
 from ._mixins import (
@@ -103,6 +104,7 @@ from ._models import (
     _VectorAutoRegressionModel,
     _VectorErrorCorrectionModel,
     _VolatilityBayesianVectorAutoRegressionModel,
+    _VolatilityIdentificationModel,
 )
 from ._moments import _VectorMoments
 from ._objectives import (
@@ -159,6 +161,8 @@ from ._tests import (
 )
 
 __all__ = [
+    "_LABEL_NOTE",
+    "_SCALE_NOTE",
     "MeanPredictor",
     "_AdaptivePrior",
     "_AutoRegressionFit",
@@ -275,6 +279,8 @@ __all__ = [
     "_VectorThresholdFit",
     "_VectorVolatilityFit",
     "_VolatilityBayesianVectorAutoRegressionModel",
+    "_VolatilityIdentificationModel",
+    "_VolatilityStructuralFit",
     "_WaldTest",
     "_decay_nelson_siegel_state_space",
     "_impulse_responses",

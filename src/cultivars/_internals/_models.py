@@ -57,7 +57,7 @@ import numpy as np
 import numpy.typing as npt
 import scipy.sparse as sps
 import scipy.stats as sst
-from scipy.optimize import linprog, minimize
+from scipy.optimize import linear_sum_assignment, linprog, minimize
 from scipy.special import gammaln
 
 from .._core import (
@@ -156,6 +156,7 @@ from ._fits import (
     _VectorThresholdFit,
     _VectorVolatilityFit,
     _VolatilityDrawsFit,
+    _VolatilityStructuralFit,
 )
 from ._inferences import _CoefficientInference
 from ._layouts import _ParameterLayout
@@ -186,6 +187,7 @@ from ._samplers import (
     _draw_degrees_of_freedom,
     _draw_scale_mixture,
     _draw_stationary_volatility_path,
+    _draw_structural_rows,
     _draw_triangular_volatility_block,
     _draw_volatility_parameters,
     _draw_volatility_path,
@@ -6914,3 +6916,179 @@ class _PerturbationModel[R](ABC):
             adapt=True,
             seed=seed,
         )
+
+
+class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
+    """Engine of identification through stochastic volatility.
+
+    The reduced-form innovations are ``u_t = B eps_t`` with each structural
+    shock carrying its own log-AR(1) variance ``h_it``; if those variance
+    paths are not proportional the impact matrix is identified up to
+    column order and sign from the second moments alone (Lewis 2021;
+    Bertsche and Braun 2022). The sampler alternates three exact blocks:
+    the rows of ``A = B**-1`` by Waggoner-Zha given the paths; each path
+    by the Kim-Shephard-Chib mixture step given ``A``; and each path's
+    persistence and innovation variance from their conditionals. The
+    log-variance means are pinned at zero in the transition, since ``B``
+    carries the scale; because a persistent path's sample mean can sit far
+    from that zero and the likelihood cannot tell level from scale, every
+    kept draw is re-expressed with zero *sample* mean per path and the
+    level folded into the matching column of ``B``. The impact matrix is
+    therefore the response to a shock at its in-sample average variance,
+    which is the finite-sample statement the data can actually support.
+
+    Order and sign are conventions imposed after the fact: every kept draw
+    is matched to a reference impact matrix by assignment on column
+    similarity, and the reference itself is ordered so that shock ``j``
+    is the one loading most on variable ``j``, with a positive diagonal.
+    How often the assignment has to permute columns is reported as the
+    relabelling rate.
+
+    Identification is *not* read off the posterior. When the true variance
+    paths are proportional the likelihood is flat over rotations, yet the
+    sampler still returns a sharp posterior: the smooth-AR(1) volatility
+    prior prefers whichever rotation makes the shocks look most like
+    clustered volatility, and in a few hundred observations that
+    preference is worth tens of log points, chain after chain. The honest
+    check is a test of the identifying condition on the data -- whether
+    the shocks' variance *ratios* move over time -- which the public
+    result carries and its summary reports.
+    """
+
+    __slots__ = ()
+
+    def _sample(
+        self,
+        *,
+        n_draws: int,
+        n_burn: int,
+        thin: int,
+        prior_phi: tuple[float, float],
+        prior_sigma2: tuple[float, float],
+        seed: int | np.random.Generator | None,
+    ) -> _VolatilityStructuralFit:
+        """Run the Gibbs sampler on the source residuals.
+
+        Args:
+            n_draws: Total sampler iterations.
+            n_burn: Burn-in discarded.
+            thin: Keep every ``thin``-th post-burn draw.
+            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
+            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            seed: Seed or generator.
+
+        Returns:
+            The packed :class:`_VolatilityStructuralFit`.
+
+        Raises:
+            SpecificationError: If the draw bookkeeping is inconsistent.
+            NumericalError: If the structural matrix degenerates.
+        """
+        if n_draws <= n_burn:
+            raise SpecificationError(f"n_draws ({n_draws}) must exceed n_burn ({n_burn}).")
+        if thin < 1:
+            raise SpecificationError(f"thin must be at least 1; got {thin}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        resid = np.asarray(self.source.resid, dtype=np.float64)
+        nobs, k = resid.shape
+        sigma_u = np.asarray(self.source.sigma_u, dtype=np.float64)
+        a_mat = np.linalg.inv(np.linalg.cholesky(sigma_u))
+        prior_precision = 1e-4 * float(np.trace(np.linalg.inv(sigma_u))) / k
+        h_path = np.zeros((nobs, k))
+        phi = np.full(k, 0.9)
+        sigma2 = np.full(k, 0.1)
+        keep = (n_draws - n_burn + thin - 1) // thin
+        impact_kept = np.empty((keep, k, k))
+        h_kept = np.empty((keep, nobs, k))
+        phi_kept = np.empty((keep, k))
+        sigma2_kept = np.empty((keep, k))
+        kept = 0
+        for iteration in range(n_draws):
+            _draw_structural_rows(resid, a_mat, h_path, prior_precision=prior_precision, rng=rng)
+            shocks = resid @ a_mat.T
+            for i in range(k):
+                h_path[:, i] = _draw_stationary_volatility_path(
+                    shocks[:, i],
+                    h_path[:, i],
+                    mu=0.0,
+                    phi=float(phi[i]),
+                    sigma2=float(sigma2[i]),
+                    rng=rng,
+                )
+                _, phi[i], sigma2[i] = _draw_volatility_parameters(
+                    h_path[:, i],
+                    mu=0.0,
+                    phi=float(phi[i]),
+                    sigma2=float(sigma2[i]),
+                    prior_mu=(0.0, 1.0),
+                    prior_phi=prior_phi,
+                    prior_sigma2=prior_sigma2,
+                    rng=rng,
+                    draw_mean=False,
+                )
+            if iteration >= n_burn and (iteration - n_burn) % thin == 0:
+                impact_kept[kept] = np.linalg.inv(a_mat)
+                h_kept[kept] = h_path
+                phi_kept[kept] = phi
+                sigma2_kept[kept] = sigma2
+                kept += 1
+        # -- labelling: match every draw to a reference, then fix the reference's order
+        reference = impact_kept[0].copy()
+        for _ in range(2):
+            aligned = np.empty_like(impact_kept)
+            for index in range(keep):
+                order, signs = self._match_columns(impact_kept[index], reference)
+                aligned[index] = impact_kept[index][:, order] * signs[None, :]
+            reference = np.median(aligned, axis=0)
+        rows, cols = linear_sum_assignment(-np.abs(reference))
+        diagonal_order = np.empty(k, dtype=np.int64)
+        diagonal_order[rows] = cols
+        reference = reference[:, diagonal_order]
+        reference = reference * np.sign(np.diag(reference))[None, :]
+        identity = np.arange(k)
+        relabelled = 0
+        for index in range(keep):
+            order, signs = self._match_columns(impact_kept[index], reference)
+            relabelled += int(bool(np.any(order != identity)))
+            impact_kept[index] = impact_kept[index][:, order] * signs[None, :]
+            h_kept[index] = h_kept[index][:, order]
+            phi_kept[index] = phi_kept[index][order]
+            sigma2_kept[index] = sigma2_kept[index][order]
+        # -- scale: the likelihood cannot separate a path's level from its column's
+        # scale, and a persistent path's sample mean sits far from its unconditional
+        # zero; express every draw with zero *sample* mean and the level in B.
+        level = h_kept.mean(axis=1)
+        impact_kept *= np.exp(0.5 * level)[:, None, :]
+        h_kept -= level[:, None, :]
+        return _VolatilityStructuralFit(
+            impact_draws=impact_kept,
+            h_draws=h_kept,
+            phi_draws=phi_kept,
+            sigma2_draws=sigma2_kept,
+            relabel_rate=relabelled / keep,
+            nobs=nobs,
+            n_draws=n_draws,
+            n_burn=n_burn,
+            thin=thin,
+        )
+
+    @staticmethod
+    def _match_columns(
+        impact: npt.NDArray[np.float64], reference: npt.NDArray[np.float64]
+    ) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.float64]]:
+        """The column permutation and signs that align ``impact`` with ``reference``.
+
+        Columns are matched by assignment on absolute cosine similarity and
+        signed so that each matched pair has positive inner product. Returns
+        ``(order, signs)`` such that ``impact[:, order] * signs`` is the
+        relabelled matrix; ``order`` also relabels anything indexed by shock.
+        """
+        unit = impact / np.maximum(np.linalg.norm(impact, axis=0, keepdims=True), 1e-300)
+        ref = reference / np.maximum(np.linalg.norm(reference, axis=0, keepdims=True), 1e-300)
+        similarity = ref.T @ unit
+        rows, cols = linear_sum_assignment(-np.abs(similarity))
+        order = np.empty(impact.shape[1], dtype=np.int64)
+        order[rows] = cols
+        signs = np.sign(similarity[rows, cols])
+        signs[signs == 0.0] = 1.0
+        return order, np.asarray(signs, dtype=np.float64)

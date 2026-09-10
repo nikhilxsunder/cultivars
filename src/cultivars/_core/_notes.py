@@ -92,3 +92,15 @@ _SET_BOUNDS_NOTE = (
     "which repeats these bounds across posterior draws, arrives with the "
     "sampling backend."
 )
+
+_SCALE_NOTE = (
+    "Each impact column is the response to its shock at the shock's in-sample "
+    "average variance: log-variance paths have zero sample mean and their "
+    "level sits in B. Shocks are not unit-variance; volatility_path() has "
+    "the time variation."
+)
+_LABEL_NOTE = (
+    "Shock j is the one loading most on variable j, signed so the diagonal "
+    "is positive: a convention, not an economic identification. An economic "
+    "name for any shock is a claim to be argued from outside the model."
+)

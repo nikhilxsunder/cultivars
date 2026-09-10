@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
+import scipy.linalg as sla
 from scipy.special import gammaln
 
 from .._core import _KSC_MEAN, _KSC_VAR, _OFFSET, _draw_inverse_gamma, _draw_mixture_indicators
+from ..exceptions import NumericalError
 
 
 def _scalar_ffbs(
@@ -223,6 +225,7 @@ def _draw_volatility_parameters(
     prior_phi: tuple[float, float],
     prior_sigma2: tuple[float, float],
     rng: np.random.Generator,
+    draw_mean: bool = True,
 ) -> tuple[float, float, float]:
     """One sweep of the Kim-Shephard-Chib parameter blocks given a path.
 
@@ -242,6 +245,9 @@ def _draw_volatility_parameters(
         prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
         prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
         rng: Random generator.
+        draw_mean: Whether to draw mu; False holds it at the value passed in, which is how a model
+            that carries the scale elsewhere (a structural impact matrix, say) pins the log-variance
+            level.
 
     Returns:
         ``(mu, phi, sigma2)`` after one sweep.
@@ -249,13 +255,14 @@ def _draw_volatility_parameters(
     h = log_variance
     n = h.shape[0]
     # -- mu | h, phi, sigma2 : Gaussian -------------------------------------
-    m0, v0 = prior_mu
-    precision = 1.0 / v0 + ((1.0 - phi**2) + (n - 1) * (1.0 - phi) ** 2) / sigma2
-    moment = (
-        m0 / v0
-        + ((1.0 - phi**2) * h[0] + (1.0 - phi) * float(np.sum(h[1:] - phi * h[:-1]))) / sigma2
-    )
-    mu = float(moment / precision + rng.standard_normal() / np.sqrt(precision))
+    if draw_mean:
+        m0, v0 = prior_mu
+        precision = 1.0 / v0 + ((1.0 - phi**2) + (n - 1) * (1.0 - phi) ** 2) / sigma2
+        moment = (
+            m0 / v0
+            + ((1.0 - phi**2) * h[0] + (1.0 - phi) * float(np.sum(h[1:] - phi * h[:-1]))) / sigma2
+        )
+        mu = float(moment / precision + rng.standard_normal() / np.sqrt(precision))
     # -- phi | h, mu, sigma2 : MH with the regression conditional -----------
     centered = h - mu
     sxx = float(centered[:-1] @ centered[:-1])
@@ -365,3 +372,63 @@ def _draw_degrees_of_freedom(
     if np.log(rng.uniform()) < log_ratio:
         return proposal, True
     return nu, False
+
+
+def _draw_structural_rows(
+    resid: npt.NDArray[np.float64],
+    a_mat: npt.NDArray[np.float64],
+    log_variance: npt.NDArray[np.float64],
+    *,
+    prior_precision: float,
+    rng: np.random.Generator,
+) -> None:
+    """One Gibbs sweep over the rows of a structural matrix, Waggoner-Zha (2003).
+
+    The model is ``A u_t = eps_t`` with ``eps_it ~ N(0, exp(h_it))``, so the
+    likelihood in ``A`` is ``|det A|^T`` times a Gaussian kernel whose
+    precision for row ``i`` is ``S_i = sum_t exp(-h_it) u_t u_t'`` plus the
+    prior. The determinant is linear in any one row given the others, and
+    Waggoner and Zha's construction turns that into an exact draw: rotate
+    row ``i`` into coordinates where the kernel is spherical, split off the
+    one direction the determinant lives on, draw that coordinate from
+    ``|b|^T exp(-b**2 / 2)`` (a signed square root of a gamma variate) and
+    the rest as standard normals. The draw is exact, so the sweep is Gibbs
+    rather than Metropolis, and the sign of the determinant coordinate is
+    drawn at random: the posterior is symmetric under column sign flips,
+    and the caller normalizes signs after the fact.
+
+    Args:
+        resid: ``(T, k)`` reduced-form innovations ``u_t``.
+        a_mat: ``(k, k)`` current structural matrix ``A = B**-1``; updated
+            in place, row by row.
+        log_variance: ``(T, k)`` current log variances of the structural
+            shocks.
+        prior_precision: Precision of the ``N(0, 1 / prior_precision)``
+            prior on each element of ``A``.
+        rng: Random generator.
+
+    Raises:
+        NumericalError: If the current ``A`` is singular, so the cofactor
+            direction is undefined.
+    """
+    nobs, k = resid.shape
+    weights = np.exp(-log_variance)
+    for i in range(k):
+        kernel = (resid * weights[:, i][:, None]).T @ resid + prior_precision * np.eye(k)
+        chol = np.linalg.cholesky(kernel)
+        det = float(np.linalg.det(a_mat))
+        if not np.isfinite(det) or det == 0.0:
+            raise NumericalError("the structural matrix became singular during the row sweep.")
+        cofactor = det * np.linalg.inv(a_mat)[:, i]
+        direction = sla.solve_triangular(chol, cofactor, lower=True)
+        norm = float(np.linalg.norm(direction))
+        if norm <= 0.0:
+            raise NumericalError("the determinant direction of a structural row vanished.")
+        basis = np.linalg.qr(np.column_stack([direction / norm, np.eye(k)]))[0][:, :k]
+        if float(basis[:, 0] @ direction) < 0.0:
+            basis[:, 0] = -basis[:, 0]
+        coordinates = np.asarray(rng.standard_normal(k), dtype=np.float64)
+        magnitude = float(np.sqrt(rng.gamma(0.5 * (nobs + 1.0), 2.0)))
+        coordinates[0] = magnitude if rng.random() < 0.5 else -magnitude
+        rotated = basis @ coordinates
+        a_mat[i] = sla.solve_triangular(chol, rotated, lower=True, trans="T")

@@ -1119,3 +1119,41 @@ class _PerturbationFit:
     n_params: int
     nobs: int
     filtered_state: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VolatilityStructuralFit:
+    """Raw output of the stochastic-volatility identification sampler.
+
+    Every draw is already normalized to one labelling: columns of the
+    impact matrix are matched to a reference by assignment on their
+    absolute cosine similarity and signed to agree with it, so the draws
+    below describe one posterior mode rather than a mixture of ``2**k k!``
+    relabellings.
+
+    Attributes:
+        impact_draws: ``(S, k, k)`` kept impact matrices ``B = A**-1``.
+        h_draws: ``(S, T, k)`` kept structural log-variance paths, one
+            column per shock, each with zero sample mean; the level sits
+            in the matching column of ``impact_draws``.
+        phi_draws: ``(S, k)`` kept log-variance persistences.
+        sigma2_draws: ``(S, k)`` kept log-variance innovation variances.
+        relabel_rate: Fraction of kept draws whose column order had to be
+            permuted to match the reference -- near zero when the shocks
+            are well separated, and the first thing to read when they
+            are not.
+        nobs: Observations.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    impact_draws: npt.NDArray[np.float64]
+    h_draws: npt.NDArray[np.float64]
+    phi_draws: npt.NDArray[np.float64]
+    sigma2_draws: npt.NDArray[np.float64]
+    relabel_rate: float
+    nobs: int
+    n_draws: int
+    n_burn: int
+    thin: int
