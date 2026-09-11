@@ -893,7 +893,17 @@ def _validate_band(low: float, high: float) -> None:
 
 
 def _validate_quantiles(quantiles: Sequence[float]) -> tuple[float, ...]:
-    """Validate probability levels."""
+    """Coerce probability levels to floats and require each to lie in ``(0, 1)``.
+
+    Args:
+        quantiles: Probability levels for pointwise quantile summaries.
+
+    Returns:
+        The levels as a tuple of floats, in the order given.
+
+    Raises:
+        SpecificationError: If any level is outside the open unit interval.
+    """
     levels = tuple(float(q) for q in quantiles)
     if any(not 0.0 < q < 1.0 for q in levels):
         raise SpecificationError(f"quantiles must lie in (0, 1); got {levels}.")

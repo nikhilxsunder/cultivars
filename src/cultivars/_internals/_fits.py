@@ -1186,3 +1186,44 @@ class _LongMemoryVolatilityFit:
     n_frequencies: int
     log_variance: npt.NDArray[np.float64]
     log_variance_std: npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _FactorVolatilityFit:
+    """Raw output of the factor stochastic-volatility Gibbs sampler.
+
+    Attributes:
+        loading_draws: ``(S, k, r)`` kept loading matrices, lower triangular
+            with unit diagonal in the leading ``r`` rows.
+        factor_draws: ``(S, T, r)`` kept factor paths.
+        h_factor_draws: ``(S, T, r)`` kept factor log-variance paths.
+        h_idio_draws: ``(S, T, k)`` kept idiosyncratic log-variance paths.
+        mu_factor_draws: ``(S, r)`` factor log-variance means.
+        phi_factor_draws: ``(S, r)`` factor log-variance persistences.
+        sigma2_factor_draws: ``(S, r)`` factor log-variance innovation
+            variances.
+        mu_idio_draws: ``(S, k)`` idiosyncratic log-variance means.
+        phi_idio_draws: ``(S, k)`` idiosyncratic persistences.
+        sigma2_idio_draws: ``(S, k)`` idiosyncratic innovation variances.
+        means: ``(k,)`` series means removed before sampling.
+        nobs: Observations.
+        n_draws: Total sampler iterations.
+        n_burn: Burn-in discarded.
+        thin: Post-burn thinning.
+    """
+
+    loading_draws: npt.NDArray[np.float64]
+    factor_draws: npt.NDArray[np.float64]
+    h_factor_draws: npt.NDArray[np.float64]
+    h_idio_draws: npt.NDArray[np.float64]
+    mu_factor_draws: npt.NDArray[np.float64]
+    phi_factor_draws: npt.NDArray[np.float64]
+    sigma2_factor_draws: npt.NDArray[np.float64]
+    mu_idio_draws: npt.NDArray[np.float64]
+    phi_idio_draws: npt.NDArray[np.float64]
+    sigma2_idio_draws: npt.NDArray[np.float64]
+    means: npt.NDArray[np.float64]
+    nobs: int
+    n_draws: int
+    n_burn: int
+    thin: int

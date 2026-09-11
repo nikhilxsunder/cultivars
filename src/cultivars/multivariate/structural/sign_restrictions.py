@@ -66,6 +66,7 @@ from ..._core import (
     _lower_cholesky,
     _narrative_rotations,
     _validate_narrative_events,
+    _validate_quantiles,
     _validate_sign_patterns,
 )
 from ..._internals import _IdentificationModel, _SummaryMixin
@@ -160,7 +161,7 @@ class SignRestrictedSVARResult(_SummaryMixin):
             SpecificationError: If a quantile is outside the open unit
                 interval.
         """
-        levels = tuple(float(q) for q in quantiles)
+        levels = _validate_quantiles(quantiles)
         if any(not 0.0 < q < 1.0 for q in levels):
             raise SpecificationError(f"quantiles must lie in (0, 1); got {levels}.")
         draws = self.irf_draws(horizon, cumulative=cumulative)
@@ -185,7 +186,7 @@ class SignRestrictedSVARResult(_SummaryMixin):
             SpecificationError: If a quantile is outside the open unit
                 interval.
         """
-        levels = tuple(float(q) for q in quantiles)
+        levels = _validate_quantiles(quantiles)
         if any(not 0.0 < q < 1.0 for q in levels):
             raise SpecificationError(f"quantiles must lie in (0, 1); got {levels}.")
         theta = self.irf_draws(horizon)
