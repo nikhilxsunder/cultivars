@@ -1,13 +1,25 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Self
 
 import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
 
-from .._core import _DEFAULT_ALPHA, SummaryTable, companion_matrix
+from .._core import (
+    _DEFAULT_ALPHA,
+    _MIN_CHAIN_DRAWS,
+    _MIN_ESS_PER_CHAIN,
+    _RHAT_TOL,
+    SummaryTable,
+    _ess_bulk,
+    _ess_tail,
+    _geweke,
+    _mcse_mean,
+    _rhat,
+    companion_matrix,
+)
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 
@@ -392,3 +404,271 @@ class _StabilityTest:
         if ma.size == 0:
             return True
         return cls._assess(companion_matrix(ma), tol=tol, allow_unit_roots=False).is_stable
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ConvergenceTest:
+    """Per-parameter convergence diagnostics of a Markov chain Monte Carlo run.
+
+    One row per scalar quantity: its posterior mean and spread, the Monte
+    Carlo standard error of that mean, rank-normalized bulk and tail
+    effective sample sizes, rank-normalized split-R-hat with folding, and
+    the largest-magnitude Geweke score across chains. The verdict applies
+    the Vehtari et al. (2021) thresholds the report carries, so two reports
+    are comparable only when their thresholds are.
+
+    A parameter whose chain never moved has ``nan`` in every column and is
+    listed under :attr:`degenerate` rather than counted against the verdict:
+    the report cannot tell a parameter fixed by construction from a sampler
+    that is stuck, and refuses to guess. Read the list.
+
+    With a single chain, split-R-hat compares the two halves of that chain,
+    which detects drift but not a chain stuck in one of several modes; the
+    summary says so. The between-chain reading needs a second run with a
+    different seed passed alongside the first. Two half-chains also make the
+    statistic noisy when they are short: an independent sequence of 200 draws
+    exceeds 1.01 about a fifth of the time and one of 500 draws about a
+    fiftieth, so a flag close to the threshold on a short single chain is a
+    reason to run longer, not a verdict.
+
+    Attributes:
+        names: Label of every scalar quantity, in row order.
+        mean: ``(d,)`` posterior means.
+        sd: ``(d,)`` posterior standard deviations.
+        mcse: ``(d,)`` Monte Carlo standard errors of the means.
+        ess_bulk: ``(d,)`` bulk effective sample sizes.
+        ess_tail: ``(d,)`` tail effective sample sizes.
+        rhat: ``(d,)`` split-R-hat statistics.
+        geweke: ``(d,)`` signed Geweke scores, the one of largest magnitude
+            across chains; ``nan`` when the chains are too short for the
+            default segments.
+        n_chains: Independent chains the diagnostics pooled.
+        n_draws: Kept draws per chain.
+        rhat_tol: R-hat above which a parameter is flagged.
+        min_ess: Effective draws per chain below which a parameter is
+            flagged, so the floor applied is ``min_ess * n_chains``.
+        source: What was assessed, for the summary title.
+    """
+
+    names: tuple[str, ...]
+    mean: npt.NDArray[np.float64] = field(repr=False)
+    sd: npt.NDArray[np.float64] = field(repr=False)
+    mcse: npt.NDArray[np.float64] = field(repr=False)
+    ess_bulk: npt.NDArray[np.float64] = field(repr=False)
+    ess_tail: npt.NDArray[np.float64] = field(repr=False)
+    rhat: npt.NDArray[np.float64] = field(repr=False)
+    geweke: npt.NDArray[np.float64] = field(repr=False)
+    n_chains: int
+    n_draws: int
+    rhat_tol: float
+    min_ess: float
+    source: str
+
+    @classmethod
+    def _assess(
+        cls,
+        draws: npt.NDArray[np.float64],
+        *,
+        names: tuple[str, ...],
+        rhat_tol: float = _RHAT_TOL,
+        min_ess: float = _MIN_ESS_PER_CHAIN,
+        source: str = "draws",
+    ) -> Self:
+        """Compute every diagnostic from ``(C, N, d)`` draws.
+
+        Args:
+            draws: ``C`` chains of ``N`` kept draws of ``d`` scalar quantities.
+            names: ``d`` labels.
+            rhat_tol: Flagging threshold for R-hat.
+            min_ess: Flagging floor for effective draws, per chain.
+            source: Label for the summary title.
+
+        Raises:
+            DimensionError: If ``draws`` is not three-dimensional or ``names``
+                does not match its last axis.
+            SpecificationError: If the thresholds are not positive or a chain
+                is shorter than the minimum.
+        """
+        if draws.ndim != 3:
+            raise DimensionError(f"draws must be (chains, draws, d); got shape {draws.shape}.")
+        n_chains, n_draws, d = draws.shape
+        if len(names) != d:
+            raise DimensionError(f"Got {len(names)} names for {d} quantities.")
+        if rhat_tol <= 1.0:
+            raise SpecificationError(f"rhat_tol must exceed 1; got {rhat_tol}.")
+        if min_ess <= 0.0:
+            raise SpecificationError(f"min_ess must be positive; got {min_ess}.")
+        if n_draws < _MIN_CHAIN_DRAWS:
+            raise SpecificationError(
+                f"Each chain needs at least {_MIN_CHAIN_DRAWS} kept draws; got {n_draws}."
+            )
+        columns = {
+            key: np.full(d, np.nan) for key in ("mcse", "ess_bulk", "ess_tail", "rhat", "geweke")
+        }
+        flat = draws.reshape(n_chains * n_draws, d)
+        mean = flat.mean(axis=0)
+        sd = flat.std(axis=0, ddof=1) if flat.shape[0] > 1 else np.zeros(d)
+        for j in range(d):
+            chains = draws[:, :, j]
+            columns["rhat"][j] = _rhat(chains)
+            columns["ess_bulk"][j] = _ess_bulk(chains)
+            columns["ess_tail"][j] = _ess_tail(chains)
+            columns["mcse"][j] = _mcse_mean(chains)
+            try:
+                scores = _geweke(chains)
+            except SpecificationError:
+                continue
+            if np.all(np.isnan(scores)):
+                continue
+            columns["geweke"][j] = scores[np.nanargmax(np.abs(scores))]
+        return cls(
+            names=tuple(names),
+            mean=mean,
+            sd=sd,
+            mcse=columns["mcse"],
+            ess_bulk=columns["ess_bulk"],
+            ess_tail=columns["ess_tail"],
+            rhat=columns["rhat"],
+            geweke=columns["geweke"],
+            n_chains=n_chains,
+            n_draws=n_draws,
+            rhat_tol=rhat_tol,
+            min_ess=min_ess,
+            source=source,
+        )
+
+    @property
+    def ess_floor(self) -> float:
+        """Total effective draws below which a parameter is flagged."""
+        return self.min_ess * self.n_chains
+
+    @property
+    def degenerate(self) -> tuple[str, ...]:
+        """Quantities whose chain never moved, excluded from the verdict."""
+        return tuple(name for name, r in zip(self.names, self.rhat, strict=True) if np.isnan(r))
+
+    @property
+    def _failing(self) -> npt.NDArray[np.bool_]:
+        assessed = ~np.isnan(self.rhat)
+        bad = (
+            (self.rhat > self.rhat_tol)
+            | (self.ess_bulk < self.ess_floor)
+            | (self.ess_tail < self.ess_floor)
+        )
+        return np.asarray(assessed & bad)
+
+    @property
+    def flagged(self) -> tuple[str, ...]:
+        """Quantities failing the R-hat or either effective-sample-size test."""
+        return tuple(np.asarray(self.names)[self._failing].tolist())
+
+    @property
+    def converged(self) -> bool:
+        """Whether no assessed quantity is flagged.
+
+        ``True`` with a non-empty :attr:`degenerate` list is a verdict on the
+        quantities that moved, not on the run.
+        """
+        return not bool(self._failing.any())
+
+    def worst(self, n: int = 5) -> tuple[str, ...]:
+        """The ``n`` quantities with the largest R-hat, degenerate ones last."""
+        order = np.argsort(np.nan_to_num(self.rhat, nan=-np.inf))[::-1]
+        return tuple(np.asarray(self.names)[order[:n]].tolist())
+
+    def summary(self, *, top: int | None = 20) -> SummaryTable:
+        """Render as a table sorted by R-hat, descending.
+
+        Args:
+            top: Rows to show; ``None`` shows every quantity. The metadata
+                always reports the count that was assessed.
+        """
+        order = np.argsort(np.nan_to_num(self.rhat, nan=-np.inf))[::-1]
+        shown = order if top is None else order[:top]
+        verdict = "converged" if self.converged else f"{len(self.flagged)} flagged"
+        metadata = (
+            ("Chains", str(self.n_chains)),
+            ("Draws per chain", str(self.n_draws)),
+            ("Quantities", str(len(self.names))),
+            ("Verdict", verdict),
+            ("R-hat threshold", f"{self.rhat_tol:g}"),
+            ("ESS floor", f"{self.ess_floor:g}"),
+        )
+        rows = tuple(
+            (
+                self.names[j],
+                f"{self.mean[j]:.4g}",
+                f"{self.sd[j]:.4g}",
+                f"{self.mcse[j]:.3g}",
+                f"{self.ess_bulk[j]:.0f}",
+                f"{self.ess_tail[j]:.0f}",
+                f"{self.rhat[j]:.4f}",
+                f"{self.geweke[j]:.2f}",
+                "*" if self._failing[j] else "",
+            )
+            for j in shown
+        )
+        notes: list[str] = []
+        if self.n_chains == 1:
+            notes.append(
+                "Single chain: R-hat compares the two halves of the run and detects drift, not "
+                "a chain confined to one of several modes. Pass a second run with a different "
+                "seed for the between-chain reading."
+            )
+            if self.n_draws < 1000:
+                notes.append(
+                    f"With {self.n_draws} draws the two half-chains are short and R-hat is "
+                    "noisy: an independent sequence of 500 draws exceeds 1.01 in about one "
+                    "run in fifty. Flags near the threshold call for a longer run."
+                )
+        if self.flagged:
+            notes.append(
+                f"* R-hat > {self.rhat_tol:g} or fewer than {self.ess_floor:g} effective draws "
+                f"in the bulk or a tail: {', '.join(self.flagged[:8])}"
+                + (" ..." if len(self.flagged) > 8 else "")
+                + "."
+            )
+        if self.degenerate:
+            notes.append(
+                f"Never moved (fixed by construction or a stuck sampler; not assessed): "
+                f"{', '.join(self.degenerate[:8])}"
+                + (" ..." if len(self.degenerate) > 8 else "")
+                + "."
+            )
+        if top is not None and len(self.names) > top:
+            notes.append(
+                f"Showing the {top} largest R-hat of {len(self.names)}; "
+                "summary(top=None) shows all."
+            )
+        notes.append(
+            "Rank-normalized split-R-hat with folding, bulk and tail ESS by Geyer's initial "
+            "monotone sequence (Vehtari et al., 2021); Geweke z on the first 10% versus last 50%."
+        )
+        return SummaryTable(
+            title=f"Convergence: {self.source}",
+            metadata=metadata,
+            columns=(
+                "quantity",
+                "mean",
+                "sd",
+                "mcse",
+                "ess_bulk",
+                "ess_tail",
+                "rhat",
+                "geweke",
+                "",
+            ),
+            rows=rows,
+            notes=tuple(notes),
+        )
+
+    def __repr__(self) -> str:
+        assessed = self.rhat[~np.isnan(self.rhat)]
+        worst = f"{assessed.max():.4f}" if assessed.size else "nan"
+        bulk = self.ess_bulk[~np.isnan(self.ess_bulk)]
+        least = f"{bulk.min():.0f}" if bulk.size else "nan"
+        verdict = "converged" if self.converged else f"{len(self.flagged)} flagged"
+        return (
+            f"ConvergenceReport({len(self.names)} quantities, {self.n_chains} x {self.n_draws} "
+            f"draws, max rhat={worst}, min ess_bulk={least}, {verdict})"
+        )

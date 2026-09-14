@@ -3,6 +3,7 @@
 from .bayesian import BVAR, BVARResult
 from .dynamic_factor import DFM, DFMResult
 from .factor_augmented import FAVAR, FAVARResult
+from .factor_volatility import FactorSV, FactorSVResult
 from .gibbs import GibbsBVAR, GibbsBVARResult
 from .graphical import GraphicalVAR, GraphicalVARResult
 from .hierarchical import HierarchicalBVAR, HierarchicalBVARResult
@@ -20,6 +21,8 @@ __all__ = [
     "BVARSVResult",
     "DFMResult",
     "FAVARResult",
+    "FactorSV",
+    "FactorSVResult",
     "GibbsBVAR",
     "GibbsBVARResult",
     "GraphicalVAR",

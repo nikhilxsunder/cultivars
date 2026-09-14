@@ -83,9 +83,12 @@ from .._core import (
     Transition,
     Trend,
     Vol,
+    _draw_factors,
     _draw_inverse_gamma,
     _draw_inverse_wishart,
+    _draw_loading_rows,
     _fractional_spectrum,
+    _validate_wide_panel,
     combined_difference,
     concentrated_gaussian,
     conditional_design,
@@ -129,6 +132,7 @@ from ._fits import (
     _BoxJenkinsFit,
     _DecayNelsonSiegelFit,
     _ExogenousVectorAutoRegressionFit,
+    _FactorVolatilityFit,
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
     _LongMemoryVolatilityFit,
@@ -7185,4 +7189,233 @@ class _LongMemoryVolatilityModel[R](_UnivariateModel[R]):
             n_frequencies=int(freqs.shape[0] - 1),
             log_variance=np.asarray(params.mu + smoothed, dtype=np.float64),
             log_variance_std=np.full(n, np.sqrt(max(mse, 0.0))),
+        )
+
+
+class _FactorVolatilityModel[R](ABC):
+    """Estimation engine of the factor stochastic-volatility model.
+
+    ``y_t = Lambda f_t + eps_t`` with every factor and every idiosyncratic
+    error carrying its own log-AR(1) variance (Pitt and Shephard 1999;
+    Chib, Nardari, and Shephard 2006): the covariance matrix of a wide
+    panel moves every period through ``r`` common volatilities and ``k``
+    private ones, ``Lambda H_t Lambda' + D_t``, which is what makes the
+    model tractable where a multivariate GARCH of the same dimension is
+    not. Identification is by the triangular convention -- ``Lambda`` is
+    lower triangular with a unit diagonal in its leading ``r`` rows, so
+    factor ``j`` is scaled and signed by series ``j`` -- and the factor
+    log-variance levels are free.
+
+    The Gibbs sampler alternates four exact blocks: the factors, one
+    Gaussian per period given everything else; the free loadings, one
+    weighted regression per row; the ``k`` idiosyncratic paths and the
+    ``r`` factor paths by the Kim-Shephard-Chib mixture step; and every
+    path's ``(mu, phi, sigma2)`` from their conditionals. Kastner,
+    Fruehwirth-Schnatter, and Lopes (2017) show that interweaving the
+    loading and factor-scale updates speeds mixing; that is not done here,
+    and the draws should be thinned accordingly.
+
+    Args:
+        panel: The observed ``(nobs, k)`` panel; wide is welcome.
+        n_factors: Factor count, at least one and below ``k``.
+        series_names: One label per series. Defaults to ``x1 ... xk``.
+
+    Raises:
+        SpecificationError: If the factor count or the labels are
+            malformed.
+        DimensionError: If the panel cannot support the specification.
+    """
+
+    __slots__ = ("_n_factors", "_panel", "_series_names")
+
+    def __init__(
+        self,
+        panel: npt.ArrayLike,
+        *,
+        n_factors: int,
+        series_names: Sequence[str] | None = None,
+    ) -> None:
+        """Validate the panel, the factor count, and the labels."""
+        self._panel = _validate_wide_panel(panel)
+        nobs, k = self._panel.shape
+        if int(n_factors) != n_factors or n_factors < 1:
+            raise SpecificationError(f"n_factors must be an integer >= 1; got {n_factors!r}.")
+        if n_factors >= k:
+            raise DimensionError(
+                f"n_factors ({n_factors}) must be below the number of series ({k})."
+            )
+        if nobs < 50:
+            raise DimensionError(
+                f"a factor stochastic-volatility model needs at least 50 observations; got {nobs}."
+            )
+        self._n_factors = int(n_factors)
+        if series_names is None:
+            self._series_names = tuple(f"x{i + 1}" for i in range(k))
+        else:
+            resolved = tuple(str(name) for name in series_names)
+            if len(resolved) != k:
+                raise SpecificationError(
+                    f"series_names must have one entry per series ({k}); got {len(resolved)}."
+                )
+            self._series_names = resolved
+
+    @property
+    def panel(self) -> npt.NDArray[np.float64]:
+        """The observed panel."""
+        return self._panel
+
+    @property
+    def n_factors(self) -> int:
+        """Number of latent factors."""
+        return self._n_factors
+
+    @property
+    def series_names(self) -> tuple[str, ...]:
+        """One label per series."""
+        return self._series_names
+
+    @abstractmethod
+    def fit(self) -> R:
+        """Sample the posterior and return the public result."""
+
+    def _sample(
+        self,
+        *,
+        n_draws: int,
+        n_burn: int,
+        thin: int,
+        prior_mu: tuple[float, float],
+        prior_phi: tuple[float, float],
+        prior_sigma2: tuple[float, float],
+        loading_prior_precision: float,
+        seed: int | np.random.Generator | None,
+    ) -> _FactorVolatilityFit:
+        """Run the Gibbs sampler.
+
+        Args:
+            n_draws: Total sampler iterations.
+            n_burn: Burn-in discarded.
+            thin: Keep every ``thin``-th post-burn draw.
+            prior_mu: ``(mean, variance)`` of the Gaussian prior on each
+                log-variance mean.
+            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
+            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            loading_prior_precision: Prior precision on each free loading.
+            seed: Seed or generator.
+
+        Returns:
+            The packed :class:`_FactorVolatilityFit`.
+
+        Raises:
+            SpecificationError: If the draw bookkeeping is inconsistent.
+        """
+        if n_draws <= n_burn:
+            raise SpecificationError(f"n_draws ({n_draws}) must exceed n_burn ({n_burn}).")
+        if thin < 1:
+            raise SpecificationError(f"thin must be at least 1; got {thin}.")
+        if loading_prior_precision <= 0.0:
+            raise SpecificationError(
+                f"loading_prior_precision must be positive; got {loading_prior_precision}."
+            )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        means = self._panel.mean(axis=0)
+        y = self._panel - means
+        nobs, k = y.shape
+        r = self._n_factors
+        # -- starts: the leading r series as factor proxies, unit-triangular loadings
+        factors = y[:, :r].copy()
+        loadings = np.zeros((k, r))
+        loadings[np.arange(r), np.arange(r)] = 1.0
+        h_idio = np.tile(np.log(np.maximum(y.var(axis=0), 1e-6)), (nobs, 1))
+        h_factor = np.tile(np.log(np.maximum(factors.var(axis=0), 1e-6)), (nobs, 1))
+        mu_idio = h_idio[0].copy()
+        mu_factor = h_factor[0].copy()
+        phi_idio = np.full(k, 0.9)
+        phi_factor = np.full(r, 0.9)
+        sigma2_idio = np.full(k, 0.1)
+        sigma2_factor = np.full(r, 0.1)
+        keep = (n_draws - n_burn + thin - 1) // thin
+        loading_kept = np.empty((keep, k, r))
+        factor_kept = np.empty((keep, nobs, r))
+        h_factor_kept = np.empty((keep, nobs, r))
+        h_idio_kept = np.empty((keep, nobs, k))
+        mu_f_kept = np.empty((keep, r))
+        phi_f_kept = np.empty((keep, r))
+        sigma2_f_kept = np.empty((keep, r))
+        mu_e_kept = np.empty((keep, k))
+        phi_e_kept = np.empty((keep, k))
+        sigma2_e_kept = np.empty((keep, k))
+        kept = 0
+        for iteration in range(n_draws):
+            factors = _draw_factors(y, loadings, h_factor, h_idio, rng=rng)
+            _draw_loading_rows(
+                y, factors, loadings, h_idio, prior_precision=loading_prior_precision, rng=rng
+            )
+            resid = y - factors @ loadings.T
+            for i in range(k):
+                h_idio[:, i] = _draw_stationary_volatility_path(
+                    resid[:, i],
+                    h_idio[:, i],
+                    mu=float(mu_idio[i]),
+                    phi=float(phi_idio[i]),
+                    sigma2=float(sigma2_idio[i]),
+                    rng=rng,
+                )
+                mu_idio[i], phi_idio[i], sigma2_idio[i] = _draw_volatility_parameters(
+                    h_idio[:, i],
+                    mu=float(mu_idio[i]),
+                    phi=float(phi_idio[i]),
+                    sigma2=float(sigma2_idio[i]),
+                    prior_mu=prior_mu,
+                    prior_phi=prior_phi,
+                    prior_sigma2=prior_sigma2,
+                    rng=rng,
+                )
+            for j in range(r):
+                h_factor[:, j] = _draw_stationary_volatility_path(
+                    factors[:, j],
+                    h_factor[:, j],
+                    mu=float(mu_factor[j]),
+                    phi=float(phi_factor[j]),
+                    sigma2=float(sigma2_factor[j]),
+                    rng=rng,
+                )
+                mu_factor[j], phi_factor[j], sigma2_factor[j] = _draw_volatility_parameters(
+                    h_factor[:, j],
+                    mu=float(mu_factor[j]),
+                    phi=float(phi_factor[j]),
+                    sigma2=float(sigma2_factor[j]),
+                    prior_mu=prior_mu,
+                    prior_phi=prior_phi,
+                    prior_sigma2=prior_sigma2,
+                    rng=rng,
+                )
+            if iteration >= n_burn and (iteration - n_burn) % thin == 0:
+                loading_kept[kept] = loadings
+                factor_kept[kept] = factors
+                h_factor_kept[kept] = h_factor
+                h_idio_kept[kept] = h_idio
+                mu_f_kept[kept] = mu_factor
+                phi_f_kept[kept] = phi_factor
+                sigma2_f_kept[kept] = sigma2_factor
+                mu_e_kept[kept] = mu_idio
+                phi_e_kept[kept] = phi_idio
+                sigma2_e_kept[kept] = sigma2_idio
+                kept += 1
+        return _FactorVolatilityFit(
+            loading_draws=loading_kept,
+            factor_draws=factor_kept,
+            h_factor_draws=h_factor_kept,
+            h_idio_draws=h_idio_kept,
+            mu_factor_draws=mu_f_kept,
+            phi_factor_draws=phi_f_kept,
+            sigma2_factor_draws=sigma2_f_kept,
+            mu_idio_draws=mu_e_kept,
+            phi_idio_draws=phi_e_kept,
+            sigma2_idio_draws=sigma2_e_kept,
+            means=np.asarray(means, dtype=np.float64),
+            nobs=nobs,
+            n_draws=n_draws,
+            n_burn=n_burn,
+            thin=thin,
         )

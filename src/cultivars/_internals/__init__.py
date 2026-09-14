@@ -32,6 +32,7 @@ from ._fits import (
     _BoxJenkinsFit,
     _DecayNelsonSiegelFit,
     _ExogenousVectorAutoRegressionFit,
+    _FactorVolatilityFit,
     _FractionalIntegrationFit,
     _FractionalVarianceFit,
     _LongMemoryVolatilityFit,
@@ -66,6 +67,7 @@ from ._levels import _ConditionalLevels
 from ._mixins import (
     _ComparisonMixin,
     _ConditionalVarianceMixin,
+    _ConvergenceMixin,
     _InvertibilityMixin,
     _SeriesMixin,
     _StationarityMixin,
@@ -80,6 +82,7 @@ from ._models import (
     _DecayNelsonSiegelModel,
     _ExogenousVectorAutoRegressionModel,
     _ExogenousVectorErrorCorrectionModel,
+    _FactorVolatilityModel,
     _FractionalIntegrationModel,
     _FractionalVarianceModel,
     _FunctionalCoefficientVectorAutoRegressionModel,
@@ -158,6 +161,7 @@ from ._substrates import (
 )
 from ._systems import _structural_matrices
 from ._tests import (
+    _ConvergenceTest,
     _JohansenRankTest,
     _LikelihoodRatioTest,
     _StabilityTest,
@@ -177,6 +181,8 @@ __all__ = [
     "_ConditionalLevels",
     "_ConditionalVarianceMixin",
     "_ConditionalVarianceResult",
+    "_ConvergenceMixin",
+    "_ConvergenceTest",
     "_DecayNelsonSiegelFit",
     "_DecayNelsonSiegelModel",
     "_DecayNelsonSiegelParameters",
@@ -185,6 +191,8 @@ __all__ = [
     "_ExogenousVectorAutoRegressionFit",
     "_ExogenousVectorAutoRegressionModel",
     "_ExogenousVectorErrorCorrectionModel",
+    "_FactorVolatilityFit",
+    "_FactorVolatilityModel",
     "_FractionalIntegrationFit",
     "_FractionalIntegrationModel",
     "_FractionalVarianceFit",

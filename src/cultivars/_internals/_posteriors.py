@@ -13,7 +13,7 @@ from ._emitters import (
     _volatility_state_space,
 )
 from ._fits import _ParticleChainFit, _TrendVolatilityFit, _VolatilityDrawsFit
-from ._mixins import _SeriesMixin, _SummaryMixin
+from ._mixins import _ConvergenceMixin, _SeriesMixin, _SummaryMixin
 from ._parameters import _StochasticVolatilityParameters, _TrendVolatilityParameters
 from ._simulators import _impulse_responses
 from ._solutions import _PerturbationSolution
@@ -72,7 +72,7 @@ class _ConjugatePosterior:
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class _SVPosterior(_SummaryMixin, _SeriesMixin):
+class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     """A posterior over the stochastic-volatility model, from either sampler.
 
     Deliberately absent: ``llf``, ``n_params``, information criteria. A
@@ -198,6 +198,9 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin):
         """Posterior draws retained."""
         return int(self.mu_draws.shape[0])
 
+    def _convergence_label(self) -> str:
+        return f"SV[{self._spec_label()}] posterior"
+
     def _spec_label(self) -> str:
         """``mean[, t][, leverage]`` for titles."""
         parts = [self.mean_spec]
@@ -318,7 +321,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class _UCSVPosterior(_SummaryMixin, _SeriesMixin):
+class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     """A posterior over the unobserved-components stochastic-volatility model.
 
     Attributes:
@@ -502,7 +505,7 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class _PerturbationDSGEPosterior(_SummaryMixin):
+class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
     """A particle-chain posterior over a perturbation model.
 
     Attributes:
@@ -532,6 +535,12 @@ class _PerturbationDSGEPosterior(_SummaryMixin):
     n_burn: int
     thin: int
     _engine: _PerturbationModel[Any] = field(repr=False)
+
+    def _draw_labels(self) -> dict[str, tuple[str, ...]]:
+        return {"theta": self.parameter_names}
+
+    def _convergence_label(self) -> str:
+        return f"Perturbation DSGE (order {self.order}) posterior"
 
     @classmethod
     def _from_fit(

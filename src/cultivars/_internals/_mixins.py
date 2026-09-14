@@ -38,14 +38,18 @@ comparison for anything reporting a likelihood.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from collections.abc import Sequence
+from dataclasses import fields
+from typing import TYPE_CHECKING, ClassVar, Self
 
 import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
 from .._core import (
+    _MIN_ESS_PER_CHAIN,
     _NO_CLOSED_SYSTEM,
+    _RHAT_TOL,
     Identification,
     InformationCriteria,
     SummaryTable,
@@ -57,7 +61,7 @@ from .._core import (
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._covariances import _CoefficientCovariance
 from ._inferences import _CoefficientInference
-from ._tests import _LikelihoodRatioTest, _StabilityTest, _WaldTest
+from ._tests import _ConvergenceTest, _LikelihoodRatioTest, _StabilityTest, _WaldTest
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -1343,3 +1347,130 @@ class _ConditionalSystemMixin:
         """
         self._no_closed_system("an unconditional forecast")
         raise AssertionError  # pragma: no cover
+
+
+class _ConvergenceMixin:
+    """Sampler convergence diagnostics over every retained draw array.
+
+    The concrete result is a dataclass whose ``*_draws`` fields share a
+    leading kept-draw axis. The mixin discovers those fields by name, drops
+    any that is empty or whose leading axis is not the kept-draw count (a
+    particle-smoothed path stored once, say), flattens every trailing axis
+    into labelled scalar quantities, and hands the ``(chains, draws, d)``
+    stack to :class:`_ConvergenceReport`.
+
+    A result may override :meth:`_draw_labels` to name the elements of a
+    draw array -- structural parameter names for a ``theta`` matrix rather
+    than ``theta[3]`` -- and :meth:`_convergence_label` to title the report.
+
+    Passing further results of the same class from independent runs gives
+    the between-chain reading; a single result gives the split-chain one,
+    and the report says which it is.
+    """
+
+    __slots__ = ()
+
+    def _draw_labels(self) -> dict[str, tuple[str, ...]]:
+        """Element labels for draw arrays whose trailing axes have names."""
+        return {}
+
+    def _convergence_label(self) -> str:
+        """Title of the convergence report."""
+        return type(self).__name__.removeprefix("_")
+
+    def _draw_arrays(self) -> dict[str, npt.NDArray[np.float64]]:
+        """Every ``*_draws`` field sharing the kept-draw axis, keyed without the suffix."""
+        found: dict[str, npt.NDArray[np.float64]] = {}
+        for spec in fields(self):  # type: ignore[arg-type]
+            if not spec.name.endswith("_draws"):
+                continue
+            value = getattr(self, spec.name)
+            if not isinstance(value, np.ndarray) or value.size == 0:
+                continue
+            found[spec.name.removesuffix("_draws")] = np.asarray(value, dtype=np.float64)
+        if not found:
+            raise SpecificationError(f"{type(self).__name__} retains no draw arrays to assess.")
+        n_kept = max(value.shape[0] for value in found.values())
+        return {key: value for key, value in found.items() if value.shape[0] == n_kept}
+
+    def _labelled_columns(
+        self, key: str, value: npt.NDArray[np.float64]
+    ) -> tuple[npt.NDArray[np.float64], tuple[str, ...]]:
+        """Flatten trailing axes of a ``(S, ...)`` array into ``(S, m)`` with labels."""
+        flat = value.reshape(value.shape[0], -1)
+        labels = self._draw_labels().get(key)
+        if labels is not None:
+            if len(labels) != flat.shape[1]:
+                raise DimensionError(f"{key}: {len(labels)} labels for {flat.shape[1]} elements.")
+            return flat, tuple(labels)
+        if value.ndim == 1:
+            return flat, (key,)
+        names = tuple(
+            f"{key}[{','.join(str(i) for i in index)}]" for index in np.ndindex(*value.shape[1:])
+        )
+        return flat, names
+
+    def convergence(
+        self,
+        *chains: Self,
+        include: Sequence[str] | None = None,
+        exclude: Sequence[str] = (),
+        rhat_tol: float = _RHAT_TOL,
+        min_ess: float = _MIN_ESS_PER_CHAIN,
+    ) -> _ConvergenceTest:
+        """Assess the sampler's convergence over the retained draws.
+
+        Args:
+            *chains: Further results of this class from independent runs
+                (different seeds), pooled as additional chains.
+            include: Draw arrays to assess, by field name with or without
+                the ``_draws`` suffix; ``None`` assesses all of them.
+            exclude: Draw arrays to leave out, same naming.
+            rhat_tol: R-hat above which a quantity is flagged.
+            min_ess: Effective draws per chain below which a quantity is
+                flagged.
+
+        Returns:
+            The per-quantity report.
+
+        Raises:
+            SpecificationError: If another chain is not the same class, if
+                a requested array does not exist, or if nothing is left to
+                assess.
+            DimensionError: If the chains' draw arrays differ in shape.
+        """
+        runs: tuple[Self, ...] = (self, *chains)
+        for other in chains:
+            if type(other) is not type(self):
+                raise SpecificationError(
+                    f"Chains must be {type(self).__name__} results; got {type(other).__name__}."
+                )
+        arrays = [run._draw_arrays() for run in runs]
+        available = tuple(arrays[0])
+        wanted = list(available) if include is None else [n.removesuffix("_draws") for n in include]
+        dropped = {n.removesuffix("_draws") for n in exclude}
+        for name in (*wanted, *dropped):
+            if name not in available:
+                raise SpecificationError(
+                    f"No draw array {name!r}; available: {', '.join(available)}."
+                )
+        keys = [name for name in wanted if name not in dropped]
+        if not keys:
+            raise SpecificationError("Nothing left to assess after include/exclude.")
+        blocks: list[npt.NDArray[np.float64]] = []
+        names: list[str] = []
+        for key in keys:
+            shapes = {a[key].shape for a in arrays}
+            if len(shapes) != 1:
+                raise DimensionError(f"{key}_draws differs in shape across chains: {shapes}.")
+            columns = [self._labelled_columns(key, a[key]) for a in arrays]
+            blocks.append(np.stack([flat for flat, _ in columns]))
+            names.extend(columns[0][1])
+        draws = np.concatenate(blocks, axis=2)
+        return _ConvergenceTest._assess(
+            draws,
+            names=tuple(names),
+            rhat_tol=rhat_tol,
+            min_ess=min_ess,
+            source=self._convergence_label(),
+        )

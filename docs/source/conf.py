@@ -1,0 +1,264 @@
+"""Sphinx configuration file for the cultivars project."""
+# Configuration file for the Sphinx documentation builder.
+#
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+import sys
+import tomllib
+from pathlib import Path
+from typing import TypeAliasType
+
+from sphinx.application import Sphinx
+from sphinx.pycode import ModuleAnalyzer
+from traitlets import Any
+
+# -- Path setup --------------------------------------------------------------
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT / "src"))
+
+# -- Project information -----------------------------------------------------
+with open(_ROOT / "pyproject.toml", "rb") as _f:
+    _META = tomllib.load(_f)["project"]
+
+project: str = "cultivars"
+copyright: str = "2026, Nikhil Sunder"
+author: str = "Nikhil Sunder"
+release: str = _META["version"]
+version: str = ".".join(release.split(".")[:2])
+
+# -- General configuration ---------------------------------------------------
+extensions: list[str] = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.doctest",
+    "sphinx_autodoc_typehints",
+    "sphinx_design",
+    "sphinx_sitemap",
+    "sphinxext.opengraph",
+    "myst_parser",
+]
+
+templates_path: list[str] = ["_templates"]
+exclude_patterns: list[str] = []
+
+source_suffix: dict[str, str] = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+
+# Sphinx >= 8 fails the build on missing references only if nitpicky is on.
+# Keep it off: private-base cross-refs (``_VectorInferenceMixin``) are
+# intentionally undocumented.
+nitpicky: bool = False
+suppress_warnings: list[str] = [
+    # Inherited dataclass fields whose annotation names a private type that is
+    # imported in the base module but not in the subclass module; the rendered
+    # type falls back to the literal string, which is what we want anyway.
+    "sphinx_autodoc_typehints.forward_reference",
+    # Relative Markdown links inside the included root CONTRIBUTING/SECURITY.
+    "myst.xref_missing",
+]
+
+# -- MyST --------------------------------------------------------------------
+myst_enable_extensions: list[str] = [
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    "substitution",
+    "tasklist",
+]
+myst_heading_anchors: int = 4
+
+# -- autodoc / autosummary ---------------------------------------------------
+autosummary_generate: bool = True
+# Respect ``__all__`` in each subpackage ``__init__`` so re-exported classes
+# are documented under their public path (cultivars.univariate.AR, not
+# cultivars.univariate.autoregression.AR).
+autosummary_ignore_module_all: bool = False
+autosummary_imported_members: bool = False
+
+# Member selection lives in the autosummary templates (``_templates/autosummary``)
+# rather than here: Sphinx >= 9 does not reliably honour ``:no-members:`` on a
+# directive when ``members`` is a global default, and the module pages must
+# not re-document what the class pages already own.
+autodoc_default_options: dict[str, str] = {
+    "member-order": "groupwise",
+    "exclude-members": "__init__, __new__, __weakref__",
+}
+autodoc_typehints: str = "description"
+autodoc_typehints_format: str = "short"
+autodoc_typehints_description_target: str = "documented_params"
+autodoc_class_signature: str = "mixed"
+autodoc_member_order: str = "groupwise"
+autodoc_preserve_defaults: bool = True
+
+# sphinx_autodoc_typehints
+typehints_fully_qualified: bool = False
+always_document_param_types: bool = False
+typehints_document_rtype: bool = True
+typehints_use_signature: bool = False
+typehints_use_signature_return: bool = False
+simplify_optional_unions: bool = True
+
+# -- napoleon (Google style, matches ruff pydocstyle convention) --------------
+napoleon_google_docstring: bool = True
+napoleon_numpy_docstring: bool = False
+napoleon_include_init_with_doc: bool = False
+napoleon_include_private_with_doc: bool = False
+napoleon_use_admonition_for_examples: bool = True
+napoleon_use_admonition_for_notes: bool = True
+napoleon_use_admonition_for_references: bool = False
+napoleon_use_ivar: bool = True  # dataclass fields: avoid duplicate attribute entries
+napoleon_use_param: bool = True
+napoleon_use_rtype: bool = False
+napoleon_preprocess_types: bool = True
+napoleon_attr_annotations: bool = True
+napoleon_custom_sections: list[tuple[str, str]] = [
+    ("Shapes", "params_style"),
+    ("Identification", "notes_style"),
+    ("Priors", "params_style"),
+]
+
+# -- intersphinx -------------------------------------------------------------
+intersphinx_mapping: dict[str, tuple[str, str | None]] = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "polars": ("https://docs.pola.rs/api/python/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "fedfred": ("https://nikhilxsunder.github.io/fedfred/", None),
+}
+intersphinx_timeout: int = 10
+
+# -- extlinks ----------------------------------------------------------------
+extlinks: dict[str, tuple[str, str]] = {
+    "github": ("https://github.com/nikhilxsunder/cultivars/%s", "GitHub: %s"),
+    "issue": ("https://github.com/nikhilxsunder/cultivars/issues/%s", "issue %s"),
+    "doi": ("https://doi.org/%s", "doi:%s"),
+    "numpy-doc": ("https://numpy.org/doc/stable/reference/%s", "NumPy Docs: %s"),
+    "scipy-doc": ("https://docs.scipy.org/doc/scipy/reference/%s", "SciPy Docs: %s"),
+}
+
+# -- HTML output -------------------------------------------------------------
+html_baseurl: str = "https://nikhilxsunder.github.io/cultivars/"
+html_theme: str = "pydata_sphinx_theme"
+html_title: str = "cultivars"
+html_logo: str = "_static/cultivars-logo.png"
+html_favicon: str = "_static/cultivars-favicon.ico"
+html_static_path: list[str] = ["_static"]
+html_extra_path: list[str] = ["robots.txt"]
+html_css_files: list[str] = ["custom.css"]
+html_js_files: list[str] = ["json_ld.js"]
+html_show_sourcelink: bool = False
+
+html_theme_options: dict[str, object] = {
+    "logo": {
+        "image_light": "_static/cultivars-logo.png",
+        "image_dark": "_static/cultivars-logo.png",
+        "text": "cultivars",
+    },
+    "header_links_before_dropdown": 3,
+    "navbar_start": ["navbar-logo"],
+    "navbar_center": ["navbar-nav"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "navbar_align": "right",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/nikhilxsunder/cultivars",
+            "icon": "fab fa-github",
+        },
+        {"name": "PyPI", "url": "https://pypi.org/project/cultivars/", "icon": "fab fa-python"},
+        {
+            "name": "Conda-Forge",
+            "url": "https://anaconda.org/conda-forge/cultivars",
+            "icon": "fas fa-database",
+        },
+        {
+            "name": "Codecov",
+            "url": "https://app.codecov.io/gh/nikhilxsunder/cultivars",
+            "icon": "fas fa-umbrella",
+        },
+        {
+            "name": "OpenSSF",
+            "url": "https://www.bestpractices.dev/projects/10158",
+            "icon": "fas fa-trophy",
+        },
+        {"name": "Zenodo", "url": "https://doi.org/10.5281/zenodo.17635942", "icon": "fas fa-book"},
+    ],
+    "use_edit_page_button": True,
+    "show_toc_level": 2,
+    "show_prev_next": True,
+    "footer_start": ["copyright"],
+    "footer_end": ["sphinx-version", "theme-version"],
+    "secondary_sidebar_items": ["page-toc", "edit-this-page"],
+    "pygments_light_style": "friendly",
+    "pygments_dark_style": "monokai",
+}
+
+html_context: dict[str, str] = {
+    "github_user": "nikhilxsunder",
+    "github_repo": "cultivars",
+    "github_version": "main",
+    "doc_path": "docs/source",
+}
+
+html_meta: dict[str, str] = {
+    "description": _META["description"],
+    "keywords": ", ".join(_META["keywords"]),
+}
+
+# -- sitemap -----------------------------------------------------------------
+sitemap_filename: str = "sitemap.xml"
+sitemap_url_scheme: str = "{link}"
+
+# -- opengraph ---------------------------------------------------------------
+ogp_site_url: str = html_baseurl
+ogp_image: str = html_baseurl + "_static/cultivars-logo.png"
+ogp_description_length: int = 300
+ogp_type: str = "website"
+ogp_enable_meta_description: bool = True
+ogp_custom_meta_tags: list[str] = [
+    '<meta property="og:locale" content="en_US" />',
+    '<meta property="og:site_name" content="cultivars Documentation" />',
+    '<meta property="og:image:alt" content="cultivars Logo" />',
+]
+
+# -- doctest -----------------------------------------------------------------
+doctest_global_setup: str = "import numpy as np\nimport cultivars"
+
+
+# -- autodoc hooks -----------------------------------------------------------
+def _document_type_alias(
+    app: Sphinx, what: str, name: str, obj: Any, options: dict[str, Any], lines: list[str]
+) -> None:
+    """Document PEP 695 ``type`` aliases re-exported through ``cultivars.typing``.
+
+    A ``TypeAliasType`` carries no ``__doc__`` of its own, so autodoc falls back
+    to the generic ``typing.TypeAliasType`` docstring. Replace it with the
+    docstring-comment that follows the alias in its defining module, and lead
+    with the aliased value so the permitted literals are visible.
+    """
+    if what != "data" or not isinstance(obj, TypeAliasType):
+        return
+    value = repr(obj.__value__).replace("typing.", "")
+    try:
+        attr_docs = ModuleAnalyzer.for_module(obj.__module__).find_attr_docs()
+        doc = list(attr_docs.get(("", obj.__name__), []))
+    except Exception:  # pragma: no cover - analyzer failure is non-fatal
+        doc = []
+    lines[:] = [f"Alias of ``{value}``.", "", *doc]
+
+
+def setup(app: Sphinx) -> None:
+    """Setup hook for Sphinx."""
+    app.connect("autodoc-process-docstring", _document_type_alias)

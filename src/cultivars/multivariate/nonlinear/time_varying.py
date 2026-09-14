@@ -73,6 +73,7 @@ import numpy.typing as npt
 
 from ..._core import SummaryTable, companion_matrix
 from ..._internals import (
+    _ConvergenceMixin,
     _SummaryMixin,
     _TimeVaryingVectorAutoRegressionModel,
 )
@@ -89,7 +90,7 @@ __all__ = [
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class TVPVARResult(_SummaryMixin):
+class TVPVARResult(_SummaryMixin, _ConvergenceMixin):
     """A fitted time-varying-parameter VAR, homoskedastic innovations.
 
     Every coefficient is a path: the posterior over ``beta_t`` is summarized
@@ -336,7 +337,7 @@ class TVPVARSVResult(TVPVARResult):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class TVPSVARResult(_SummaryMixin):
+class TVPSVARResult(_SummaryMixin, _ConvergenceMixin):
     """A structurally interpreted TVP-VAR: one recursive declaration, a path of answers.
 
     Attributes:

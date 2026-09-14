@@ -398,3 +398,81 @@ def _gamma_from_mode(mode: float, sd: float) -> tuple[float, float]:
     """
     scale = 0.5 * (np.sqrt(mode**2 + 4.0 * sd**2) - mode)
     return mode / scale + 1.0, float(scale)
+
+
+def _draw_factors(
+    panel: npt.NDArray[np.float64],
+    loadings: npt.NDArray[np.float64],
+    h_factor: npt.NDArray[np.float64],
+    h_idio: npt.NDArray[np.float64],
+    *,
+    rng: np.random.Generator,
+) -> npt.NDArray[np.float64]:
+    """Draw the latent factors of a factor SV model, one Gaussian per period.
+
+    Given loadings and both sets of log variances the model is linear and
+    Gaussian period by period: ``f_t | y_t ~ N(m_t, V_t)`` with
+    ``V_t**-1 = Lambda' D_t**-1 Lambda + H_t**-1`` and ``m_t = V_t Lambda'
+    D_t**-1 y_t``, where ``D_t`` and ``H_t`` are the idiosyncratic and
+    factor variances. The ``T`` small systems are solved in one batch.
+
+    Args:
+        panel: ``(T, k)`` demeaned observations.
+        loadings: ``(k, r)`` loading matrix.
+        h_factor: ``(T, r)`` factor log variances.
+        h_idio: ``(T, k)`` idiosyncratic log variances.
+        rng: Random generator.
+
+    Returns:
+        The ``(T, r)`` factor draw.
+    """
+    nobs, r = h_factor.shape
+    weights = np.exp(-h_idio)
+    precision = np.einsum("kj,tk,kl->tjl", loadings, weights, loadings)
+    precision[:, np.arange(r), np.arange(r)] += np.exp(-h_factor)
+    rhs = np.einsum("kj,tk->tj", loadings, weights * panel)
+    mean = np.linalg.solve(precision, rhs[:, :, None])[:, :, 0]
+    chol = np.linalg.cholesky(precision)
+    noise = np.linalg.solve(np.transpose(chol, (0, 2, 1)), rng.standard_normal((nobs, r, 1)))[
+        :, :, 0
+    ]
+    return np.asarray(mean + noise, dtype=np.float64)
+
+
+def _draw_loading_rows(
+    panel: npt.NDArray[np.float64],
+    factors: npt.NDArray[np.float64],
+    loadings: npt.NDArray[np.float64],
+    h_idio: npt.NDArray[np.float64],
+    *,
+    prior_precision: float,
+    rng: np.random.Generator,
+) -> None:
+    """Draw the free loadings row by row, in place, under the triangular convention.
+
+    Row ``i`` loads on factors ``j < min(i, r)`` freely and, when ``i < r``,
+    on factor ``i`` with the loading fixed at one; rows ``i >= r`` load on
+    every factor. Each row's free block is a weighted Gaussian regression
+    of the series on the factors with weights ``exp(-h_it)``, under an
+    independent ``N(0, 1 / prior_precision)`` prior.
+
+    Args:
+        panel: ``(T, k)`` demeaned observations.
+        factors: ``(T, r)`` current factors.
+        loadings: ``(k, r)`` loading matrix, updated in place.
+        h_idio: ``(T, k)`` idiosyncratic log variances.
+        prior_precision: Prior precision on each free loading.
+        rng: Random generator.
+    """
+    k, r = loadings.shape
+    for i in range(k):
+        n_free = min(i, r)
+        if n_free == 0:
+            continue
+        weights = np.exp(-h_idio[:, i])
+        target = panel[:, i] - (factors[:, i] if i < r else 0.0)
+        design = factors[:, :n_free]
+        precision = design.T @ (design * weights[:, None]) + prior_precision * np.eye(n_free)
+        mean = np.linalg.solve(precision, design.T @ (weights * target))
+        root = np.linalg.cholesky(np.linalg.inv(precision))
+        loadings[i, :n_free] = mean + root @ rng.standard_normal(n_free)

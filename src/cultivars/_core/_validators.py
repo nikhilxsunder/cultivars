@@ -76,7 +76,7 @@ def validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float
         NumericalError: If ``exog`` contains non-finite values.
     """
     if exog is None:
-        raise DimensionError("exog cannot be None; pass an empty array instead.")
+        return np.empty((nobs, 0), dtype=np.float64)
     x = np.asarray(exog, dtype=np.float64)
     if x.ndim == 1:
         x = x[:, None]

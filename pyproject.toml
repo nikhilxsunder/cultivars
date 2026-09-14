@@ -32,13 +32,10 @@ classifiers = [
 dependencies = [
     "numpy",
     "scipy",
+    "fedfred",
 ]
 
 [project.optional-dependencies]
-pandas = ["pandas", "pandas-stubs"]
-polars = ["polars"]
-fedfred = ["fedfred"]
-frames = ["pandas", "polars"]
 cuda-12 = ["cupy-cuda12x"]
 cuda-13 = ["cupy-cuda13x"]
 rocm = ["cupy-rocm-7-0"]
@@ -54,7 +51,6 @@ Documentation = "https://nikhilxsunder.github.io/cultivars/"
 [dependency-groups]
 types = [
     "scipy-stubs",
-    "pandas-stubs",
 ]
 test = [
     "pytest",
@@ -92,18 +88,12 @@ notebooks = [
     "notebook",
     "matplotlib",
 ]
-extras = [
-    "pandas",
-    "polars",
-    "fedfred",
-]
 dev = [
     { include-group = "types" },
     { include-group = "test" },
     { include-group = "lint" },
     { include-group = "docs" },
     { include-group = "notebooks" },
-    { include-group = "extras" },
 ]
 
 # ── uv config ────────────────────────────────────────────────────────────────

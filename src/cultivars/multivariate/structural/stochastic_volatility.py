@@ -86,6 +86,7 @@ from ..._core import (
 )
 from ..._internals import (
     _ComparisonMixin,
+    _ConvergenceMixin,
     _long_memory_quasi_state_space,
     _LongMemoryVolatilityFit,
     _LongMemoryVolatilityModel,
@@ -108,7 +109,7 @@ __all__ = [
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class StochasticVolatilitySVARResult(_SummaryMixin):
+class StochasticVolatilitySVARResult(_SummaryMixin, _ConvergenceMixin):
     """The posterior of a stochastic-volatility identification.
 
     Attributes:

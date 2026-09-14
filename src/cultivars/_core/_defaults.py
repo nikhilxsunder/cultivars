@@ -151,3 +151,26 @@ _ADAPT_FLOOR = 1e-8
 
 _NU_PRIOR_RATE = 0.1
 """Rate parameter for the prior on the degrees of freedom of the Student-t innovations."""
+
+_MIN_CHAIN_DRAWS: Final[int] = 8
+"""Fewest kept draws per chain a convergence diagnostic will accept.
+
+Split-R-hat halves each chain and the Geyer sequence needs a few lags on each
+half, so anything shorter has no autocorrelation structure to estimate from
+and the statistic would be a number wearing the name of a diagnostic.
+"""
+
+_RHAT_TOL: Final[float] = 1.01
+"""Rank-normalized split-R-hat above which a parameter is flagged.
+
+Vehtari et al. (2021) tightened the classical 1.1 to 1.01 after showing that
+chains with R-hat between the two can still disagree materially in their
+tails.
+"""
+
+_MIN_ESS_PER_CHAIN: Final[float] = 100.0
+"""Bulk and tail effective draws per chain below which a parameter is flagged.
+
+The same paper's floor: enough draws that the Monte Carlo standard error of a
+posterior quantile is small relative to its posterior spread.
+"""

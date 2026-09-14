@@ -70,6 +70,7 @@ import numpy.typing as npt
 from ..._core import SummaryTable, Trend, companion_matrix
 from ..._internals import (
     _BayesianVectorAutoRegressionModel,
+    _ConvergenceMixin,
     _Prior,
     _SummaryMixin,
     _VectorConjugateFit,
@@ -81,7 +82,7 @@ __all__ = ["BVAR", "BVARResult"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class BVARResult(_SummaryMixin):
+class BVARResult(_SummaryMixin, _ConvergenceMixin):
     """A fitted conjugate Bayesian VAR: an exact posterior over ``(B, Sigma)``.
 
     Point summaries are posterior means; the retained draws carry the full
