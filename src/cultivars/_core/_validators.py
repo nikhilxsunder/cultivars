@@ -908,3 +908,28 @@ def _validate_quantiles(quantiles: Sequence[float]) -> tuple[float, ...]:
     if any(not 0.0 < q < 1.0 for q in levels):
         raise SpecificationError(f"quantiles must lie in (0, 1); got {levels}.")
     return levels
+
+
+def _validate_posterior_draws(
+    draws: npt.ArrayLike, log_kernel: npt.ArrayLike
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Coerce draws to ``(S, d)`` and kernel values to ``(S,)``."""
+    theta = np.asarray(draws, dtype=np.float64)
+    if theta.ndim == 1:
+        theta = theta[:, None]
+    if theta.ndim != 2:
+        raise DimensionError(f"draws must be (S,) or (S, d); got shape {theta.shape}.")
+    values = np.asarray(log_kernel, dtype=np.float64)
+    if values.shape != (theta.shape[0],):
+        raise DimensionError(
+            f"log_kernel must have one value per draw, shape ({theta.shape[0]},); "
+            f"got {values.shape}."
+        )
+    if theta.shape[0] <= 2 * theta.shape[1] + 2:
+        raise SpecificationError(
+            f"Need more draws than twice the dimension plus two to fit a Gaussian "
+            f"envelope; got {theta.shape[0]} draws in {theta.shape[1]} dimensions."
+        )
+    if not (np.all(np.isfinite(theta)) and np.all(np.isfinite(values))):
+        raise NumericalError("draws and log_kernel must be finite.")
+    return theta, values

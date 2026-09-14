@@ -30,25 +30,20 @@ in ``_internals``, which houses mono-consumer mechanism plumbing.
 from __future__ import annotations
 
 from ._containers import InformationCriteria, SummaryTable, _ForwardPass
-from ._convergence import (
-    _as_chains,
-    _ess_bulk,
-    _ess_mean,
-    _ess_tail,
-    _geweke,
-    _mcse_mean,
-    _per_column,
-    _rhat,
-    _stack,
-)
 from ._converters import (
+    _as_chains,
+    _evidence_label,
     _mean_label,
     _mixed_frequency_system,
+    _per_column,
+    _stack,
     to_pandas_frame,
     to_polars_frame,
 )
 from ._defaults import (
     _ADAPT_FLOOR,
+    _BRIDGE_MAX_ITER,
+    _BRIDGE_TOL,
     _CAPACITY_WARNING,
     _D_MAX,
     _DEFAULT_ALPHA,
@@ -66,6 +61,7 @@ from ._defaults import (
     _LOG_2PI,
     _LOG_CHI2_MEAN,
     _LOG_CHI2_VAR,
+    _MHM_TAU,
     _MIN_CHAIN_DRAWS,
     _MIN_ESS_PER_CHAIN,
     _NU_PRIOR_RATE,
@@ -80,8 +76,18 @@ from ._defaults import (
     _TINY,
 )
 from ._estimators import (
+    _bridge_sampling,
+    _chib_independent_normal_wishart,
     _cumulant_slices,
+    _ess_bulk,
+    _ess_mean,
+    _ess_tail,
     _gaussian_negloglik,
+    _geweke,
+    _log_mean_mcse,
+    _mcse_mean,
+    _modified_harmonic_mean,
+    _rhat,
     _variance_ratio_test,
     concentrated_gaussian,
     ergodic_distribution,
@@ -93,10 +99,7 @@ from ._estimators import (
     principal_components,
     simulate_cointegration_null,
 )
-from ._mappings import (
-    _LEVELS_TREND,
-    _UNRESTRICTED_TREND,
-)
+from ._mappings import _KASS_RAFTERY_SCALE, _LEVELS_TREND, _UNRESTRICTED_TREND
 from ._matrices import (
     _companion_spectral_radius,
     _discrete_lyapunov,
@@ -175,7 +178,13 @@ from ._spectra import (
     spectral_matrix,
     transfer_function,
 )
-from ._transforms import combined_difference, fractional_difference, fractional_difference_weights
+from ._transforms import (
+    _rank_normalize,
+    _split_chains,
+    combined_difference,
+    fractional_difference,
+    fractional_difference_weights,
+)
 from ._types import (
     Activation,
     CointegrationTrend,
@@ -202,6 +211,7 @@ from ._validators import (
     _validate_narrative_events,
     _validate_observed,
     _validate_ordering,
+    _validate_posterior_draws,
     _validate_quantiles,
     _validate_regimes,
     _validate_sign_patterns,
@@ -223,6 +233,8 @@ from ._validators import (
 __all__ = [
     "_ADAPT_FLOOR",
     "_AGGREGATION_NOTE",
+    "_BRIDGE_MAX_ITER",
+    "_BRIDGE_TOL",
     "_CAPACITY_WARNING",
     "_CHOLESKY_NOTE",
     "_CONDITIONAL_REFUSAL",
@@ -237,6 +249,7 @@ __all__ = [
     "_GIG_MAX_ROUNDS",
     "_GIG_TINY",
     "_HR_CONDITIONAL_NOTE",
+    "_KASS_RAFTERY_SCALE",
     "_KSC_MEAN",
     "_KSC_PROB",
     "_KSC_VAR",
@@ -245,6 +258,7 @@ __all__ = [
     "_LOG_2PI",
     "_LOG_CHI2_MEAN",
     "_LOG_CHI2_VAR",
+    "_MHM_TAU",
     "_MIDAS_CONDITIONAL_NOTE",
     "_MIN_CHAIN_DRAWS",
     "_MIN_ESS_PER_CHAIN",
@@ -296,6 +310,8 @@ __all__ = [
     "_arch_infinity_variance",
     "_arch_infinity_weights",
     "_as_chains",
+    "_bridge_sampling",
+    "_chib_independent_normal_wishart",
     "_companion_spectral_radius",
     "_cumulant_slices",
     "_discrete_lyapunov",
@@ -308,6 +324,7 @@ __all__ = [
     "_ess_bulk",
     "_ess_mean",
     "_ess_tail",
+    "_evidence_label",
     "_face_projectors",
     "_first_order",
     "_fractional_spectrum",
@@ -317,6 +334,7 @@ __all__ = [
     "_haar_rotation",
     "_ideal_weights",
     "_linear_variance_recursion",
+    "_log_mean_mcse",
     "_log_variance_recursion",
     "_long_run_matrix",
     "_lower_cholesky",
@@ -325,6 +343,7 @@ __all__ = [
     "_midas_weights",
     "_midas_windows",
     "_mixed_frequency_system",
+    "_modified_harmonic_mean",
     "_narrative_rotations",
     "_nelson_siegel_loadings",
     "_null_basis",
@@ -335,9 +354,11 @@ __all__ = [
     "_per_column",
     "_projection_scores",
     "_quantiles",
+    "_rank_normalize",
     "_rhat",
     "_second_order",
     "_sphere_extrema",
+    "_split_chains",
     "_stack",
     "_stack_point",
     "_validate_band",
@@ -346,6 +367,7 @@ __all__ = [
     "_validate_narrative_events",
     "_validate_observed",
     "_validate_ordering",
+    "_validate_posterior_draws",
     "_validate_quantiles",
     "_validate_regimes",
     "_validate_sign_patterns",
@@ -375,6 +397,7 @@ __all__ = [
     "lag_matrix",
     "link_matrix",
     "local_whittle_d",
+    "log_mean_mcse",
     "mcse_mean",
     "minnesota_scales",
     "n_deterministic",

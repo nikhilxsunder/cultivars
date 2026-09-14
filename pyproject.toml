@@ -36,6 +36,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+pandas = ["pandas"]
+polars = ["polars"]
 cuda-12 = ["cupy-cuda12x"]
 cuda-13 = ["cupy-cuda13x"]
 rocm = ["cupy-rocm-7-0"]
@@ -49,6 +51,7 @@ Documentation = "https://nikhilxsunder.github.io/cultivars/"
 # CI jobs use the minimal group they need (e.g. --group test for test runs).
 
 [dependency-groups]
+extras = [ "pandas", "polars" ]
 types = [
     "scipy-stubs",
 ]

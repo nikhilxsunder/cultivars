@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import ClassVar
 
 import numpy as np
 import numpy.typing as npt
+from scipy.special import logsumexp
 
-from .._core import SummaryTable
-from ..exceptions import SpecificationError
+from .._core import SummaryTable, _evidence_label
+from ..exceptions import DimensionError, SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -148,3 +152,170 @@ class _LagOrderSelection:
         """One-line summary naming each criterion's pick."""
         picks = ", ".join(f"{c.upper()}={order}" for c, order in self.selected.items())
         return f"LagOrderSelection(max_lags={self.max_lags}, nobs={self.nobs}, {picks})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _MarginalLikelihoodSelection:
+    """A log marginal likelihood with its provenance.
+
+    Attributes:
+        log_value: The log marginal likelihood of the sample.
+        mcse: Monte Carlo standard error of ``log_value``; ``0.0`` for an
+            analytic value, ``nan`` when the estimator could not assess it.
+        method: How it was obtained -- ``"analytic"``, ``"chib"``,
+            ``"modified harmonic mean"``, or ``"bridge sampling"``.
+        n_draws: Posterior draws the estimate used; ``0`` for analytic.
+        source: The model, for tables.
+        nobs: Observations the likelihood scored; ``0`` when unknown. Two
+            records are comparable only when this agrees, and ``compare``
+            says so when it does not -- a VAR with more lags conditions on
+            more presample rows and scores fewer, which alone shifts its
+            log marginal likelihood by roughly the per-observation log
+            density times the difference.
+        notes: Caveats that qualify the number.
+    """
+
+    log_value: float
+    mcse: float
+    method: str
+    n_draws: int
+    source: str
+    nobs: int = 0
+    notes: tuple[str, ...] = ()
+
+    def log_bayes_factor(self, other: _MarginalLikelihoodSelection) -> float:
+        """``log m_self(y) - log m_other(y)``: positive favours ``self``.
+
+        Meaningful only when both were computed on the same sample; the
+        record cannot check that, and the caller must.
+        """
+        return self.log_value - other.log_value
+
+    def bayes_factor_strength(self, other: _MarginalLikelihoodSelection) -> str:
+        """Verbal strength of the evidence for ``self`` over ``other``.
+
+        Args:
+            other: The record to compare against.
+
+        Returns:
+            A string describing the strength of the evidence for ``self`` over ``other``.
+        """
+        return _evidence_label(2.0 * self.log_bayes_factor(other))
+
+    def compare(
+        self,
+        *others: _MarginalLikelihoodSelection,
+        names: Sequence[str] | None = None,
+        prior_probabilities: Sequence[float] | None = None,
+    ) -> SummaryTable:
+        """Rank models by evidence with posterior model probabilities.
+
+        Args:
+            *others: Further records on the same sample.
+            names: Row labels; default each record's ``source``.
+            prior_probabilities: Prior model probabilities, one per record;
+                default equal.
+
+        Returns:
+            One row per model, best first: log marginal likelihood, its
+            Monte Carlo error, the log Bayes factor against the best, the
+            Kass-Raftery strength of that evidence, and the posterior model
+            probability.
+
+        Raises:
+            DimensionError: If ``names`` or ``prior_probabilities`` do not
+                match the number of records.
+            SpecificationError: If a prior probability is negative or all
+                are zero.
+        """
+        records = (self, *others)
+        labels = tuple(r.source for r in records) if names is None else tuple(names)
+        if len(labels) != len(records):
+            raise DimensionError(f"Got {len(labels)} names for {len(records)} records.")
+        if prior_probabilities is None:
+            prior = np.full(len(records), 1.0 / len(records))
+        else:
+            prior = np.asarray(prior_probabilities, dtype=np.float64)
+            if prior.shape != (len(records),):
+                raise DimensionError(
+                    f"Got {prior.shape[0] if prior.ndim == 1 else prior.shape} prior "
+                    f"probabilities for {len(records)} records."
+                )
+            if np.any(prior < 0.0) or not prior.sum() > 0.0:
+                raise SpecificationError(
+                    "Prior model probabilities must be non-negative, not all zero."
+                )
+            prior = prior / prior.sum()
+        values = np.array([r.log_value for r in records])
+        with np.errstate(divide="ignore"):
+            log_post = values + np.log(prior)
+        post = np.exp(log_post - logsumexp(log_post))
+        order = np.argsort(values)[::-1]
+        best = values[order[0]]
+        rows = []
+        for i in order:
+            record = records[i]
+            delta = values[i] - best
+            rows.append(
+                (
+                    labels[i],
+                    f"{values[i]:.3f}",
+                    f"{record.mcse:.3f}" if np.isfinite(record.mcse) else "nan",
+                    f"{delta:.3f}",
+                    "best" if i == order[0] else _evidence_label(-2.0 * delta),
+                    f"{post[i]:.3f}",
+                    record.method,
+                )
+            )
+        notes = [
+            "Differences of log ML are log Bayes factors; the strength column is Kass and "
+            "Raftery's reading of 2 log BF against the best model.",
+        ]
+        counts = {r.nobs for r in records if r.nobs > 0}
+        if len(counts) > 1:
+            notes.append(
+                "The records score different numbers of observations "
+                f"({', '.join(str(c) for c in sorted(counts))}), so their differences are not "
+                "Bayes factors: fit every model on the same effective sample (drop the "
+                "leading rows so each conditions on the same presample) and recompute."
+            )
+        errors = np.array([r.mcse for r in records])
+        if np.any(np.isfinite(errors) & (errors > 0.0)):
+            close = [
+                labels[i]
+                for i in order[1:]
+                if abs(values[i] - best)
+                <= 2.0
+                * np.sqrt(np.nan_to_num(errors[i]) ** 2 + np.nan_to_num(errors[order[0]]) ** 2)
+            ]
+            if close:
+                notes.append(
+                    "Within two Monte Carlo standard errors of the best, so not separated by "
+                    f"this run: {', '.join(close)}."
+                )
+        for record, label in zip(records, labels, strict=True):
+            notes.extend(f"{label}: {note}" for note in record.notes)
+        return SummaryTable(
+            title="Marginal likelihood comparison",
+            metadata=(
+                ("Models", str(len(records))),
+                ("Prior", "equal" if prior_probabilities is None else "as given"),
+            ),
+            columns=(
+                "model",
+                "log ML",
+                "mcse",
+                "log BF vs best",
+                "evidence",
+                "post. prob.",
+                "method",
+            ),
+            rows=tuple(rows),
+            notes=tuple(notes),
+        )
+
+    def __repr__(self) -> str:
+        error = f" (mcse {self.mcse:.3f})" if np.isfinite(self.mcse) and self.mcse > 0.0 else ""
+        return (
+            f"MarginalLikelihood({self.source}: log ML={self.log_value:.3f}{error}, {self.method})"
+        )

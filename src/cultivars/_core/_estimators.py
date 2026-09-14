@@ -22,15 +22,20 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from functools import lru_cache
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import chi2
+from scipy.special import logsumexp
+from scipy.stats import chi2, invwishart, norm
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ._defaults import _LOG_2PI, _PENALTY
+from ._converters import _as_chains
+from ._defaults import _BRIDGE_MAX_ITER, _BRIDGE_TOL, _LOG_2PI, _MHM_TAU, _MIN_CHAIN_DRAWS, _PENALTY
+from ._transforms import _rank_normalize, _split_chains
 from ._types import CointegrationTrend
+from ._validators import _validate_posterior_draws
 
 
 def ols(
@@ -512,3 +517,522 @@ def _variance_ratio_test(
             statistics[i, j] = statistics[j, i] = stat
             p_values[i, j] = p_values[j, i] = float(chi2.sf(stat, n_blocks - 1))
     return statistics, p_values
+
+
+def _gaussian_envelope(
+    theta: npt.NDArray[np.float64],
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], float]:
+    """Mean, Cholesky factor of the covariance, and its log determinant."""
+    mean = theta.mean(axis=0)
+    cov = np.atleast_2d(np.cov(theta, rowvar=False))
+    cov[np.diag_indices_from(cov)] += 1e-12 * max(float(np.trace(cov)), 1.0)
+    try:
+        chol = np.linalg.cholesky(cov)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError("The posterior draws have a singular covariance.") from error
+    log_det = 2.0 * float(np.log(np.diag(chol)).sum())
+    return mean, chol, log_det
+
+
+def _modified_harmonic_mean(
+    draws: npt.ArrayLike, log_kernel: npt.ArrayLike, *, tau: float = _MHM_TAU
+) -> tuple[float, float, float]:
+    """Geweke's truncated-Gaussian harmonic-mean estimate of the log evidence.
+
+    Args:
+        draws: ``(S, d)`` posterior draws.
+        log_kernel: ``(S,)`` unnormalized log posterior at each draw.
+        tau: Probability mass of the Gaussian envelope retained; draws
+            outside the ``tau`` ellipsoid receive zero weight.
+
+    Returns:
+        ``(log_evidence, mcse, coverage)`` where ``coverage`` is the share
+        of draws inside the truncation region -- a value far from ``tau``
+        says the posterior is not the Gaussian the envelope assumes.
+
+    Raises:
+        SpecificationError: If ``tau`` is not in ``(0, 1)`` or no draw
+            falls inside the region.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> z = rng.standard_normal((4000, 2))
+        >>> kernel = -0.5 * (z**2).sum(axis=1)
+        >>> value, error, coverage = _modified_harmonic_mean(z, kernel)
+        >>> round(value, 1)
+        1.8
+    """
+    if not 0.0 < tau < 1.0:
+        raise SpecificationError(f"tau must lie in (0, 1); got {tau}.")
+    theta, values = _validate_posterior_draws(draws, log_kernel)
+    d = theta.shape[1]
+    mean, chol, log_det = _gaussian_envelope(theta)
+    whitened = np.linalg.solve(chol, (theta - mean).T).T
+    mahalanobis = (whitened**2).sum(axis=1)
+    inside = mahalanobis <= chi2.ppf(tau, d)
+    coverage = float(inside.mean())
+    if not inside.any():
+        raise SpecificationError("No draw falls inside the truncation ellipsoid.")
+    log_weight = -0.5 * (d * _LOG_2PI + log_det + mahalanobis[inside]) - np.log(tau)
+    log_terms = np.full(theta.shape[0], -np.inf)
+    log_terms[inside] = log_weight - values[inside]
+    shift = float(log_terms[inside].max())
+    ratios = np.exp(log_terms - shift)
+    mean_ratio = float(ratios.mean())
+    log_inverse = shift + float(np.log(mean_ratio))
+    ess = _ess_mean(ratios) if ratios.shape[0] >= 8 else float("nan")
+    error = (
+        float("nan")
+        if np.isnan(ess) or not ess > 0.0
+        else float(ratios.std(ddof=1) / (mean_ratio * np.sqrt(ess)))
+    )
+    return -log_inverse, error, coverage
+
+
+def _bridge_sampling(
+    draws: npt.ArrayLike,
+    log_kernel: npt.ArrayLike,
+    kernel: Callable[[npt.NDArray[np.float64]], float],
+    *,
+    rng: np.random.Generator,
+    n_proposal: int | None = None,
+    max_iter: int = _BRIDGE_MAX_ITER,
+    tol: float = _BRIDGE_TOL,
+) -> tuple[float, float, int]:
+    """Meng-Wong bridge-sampling estimate of the log evidence.
+
+    The draws are split in half: the first half fits the Gaussian
+    proposal, the second half enters the bridge, so the proposal is not
+    tuned to the same draws it is bridged against (Gronau et al., 2017).
+
+    Args:
+        draws: ``(S, d)`` posterior draws.
+        log_kernel: ``(S,)`` unnormalized log posterior at each draw.
+        kernel: The same unnormalized log posterior as a function of one
+            ``(d,)`` point, evaluated at fresh proposal draws.
+        rng: Generator for the proposal draws.
+        n_proposal: Proposal draws; defaults to the number of posterior
+            draws entering the bridge.
+        max_iter: Iterations of the fixed-point recursion.
+        tol: Relative change in the estimate at which to stop.
+
+    Returns:
+        ``(log_evidence, mcse, n_iter)``. The error is the Frühwirth-
+        Schnatter (2004) approximation, which treats the posterior half as
+        independent draws scaled by their effective sample size.
+
+    Raises:
+        NumericalError: If the recursion fails to converge or the kernel
+            returns non-finite values at the proposal points.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> z = rng.standard_normal((4000, 2))
+        >>> logk = lambda x: -0.5 * float(x @ x)
+        >>> value, error, n_iter = _bridge_sampling(
+        ...     z, -0.5 * (z**2).sum(axis=1), logk, rng=rng
+        ... )
+        >>> round(value, 1)
+        1.8
+    """
+    theta, values = _validate_posterior_draws(draws, log_kernel)
+    half = theta.shape[0] // 2
+    fit_half, bridge_half, bridge_values = theta[:half], theta[half:], values[half:]
+    d = theta.shape[1]
+    mean, chol, log_det = _gaussian_envelope(fit_half)
+    n_prop = bridge_half.shape[0] if n_proposal is None else int(n_proposal)
+    if n_prop < 8:
+        raise SpecificationError(f"n_proposal must be at least 8; got {n_prop}.")
+    proposal = mean + (chol @ rng.standard_normal((d, n_prop))).T
+
+    def log_proposal(points: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        whitened = np.linalg.solve(chol, (points - mean).T).T
+        return -0.5 * (d * _LOG_2PI + log_det + (whitened**2).sum(axis=1))
+
+    log_q_post = log_proposal(bridge_half)
+    log_q_prop = log_proposal(proposal)
+    log_p_prop = np.array([float(kernel(point)) for point in proposal])
+    if not np.all(np.isfinite(log_p_prop)):
+        raise NumericalError("The kernel returned non-finite values at proposal points.")
+    n2, n1 = bridge_half.shape[0], n_prop
+    s1, s2 = n1 / (n1 + n2), n2 / (n1 + n2)
+    # Work with l = log p - log q throughout; r = log evidence estimate.
+    l_post = bridge_values - log_q_post
+    l_prop = log_p_prop - log_q_prop
+    log_r = float(np.median(l_post))
+    n_iter = 0
+    while n_iter < max_iter:
+        n_iter += 1
+        numerator = logsumexp(l_prop - np.logaddexp(np.log(s1) + l_prop, np.log(s2) + log_r))
+        denominator = logsumexp(-np.logaddexp(np.log(s1) + l_post, np.log(s2) + log_r))
+        new = float(numerator - np.log(n1) - denominator + np.log(n2))
+        if abs(new - log_r) <= tol * max(1.0, abs(new)):
+            log_r = new
+            break
+        log_r = new
+    else:
+        raise NumericalError(f"Bridge sampling did not converge in {max_iter} iterations.")
+    # Frühwirth-Schnatter (2004) relative variance approximation.
+    f1 = np.exp(l_prop - np.logaddexp(np.log(s1) + l_prop, np.log(s2) + log_r))
+    f2 = np.exp(-np.logaddexp(np.log(s1) + l_post, np.log(s2) + log_r) + log_r)
+    ess2 = _ess_mean(f2) if f2.shape[0] >= 8 else float(f2.shape[0])
+    ess2 = float(f2.shape[0]) if np.isnan(ess2) or not ess2 > 0.0 else ess2
+    rel_var = float(
+        f1.var(ddof=1) / (n1 * f1.mean() ** 2) + f2.var(ddof=1) / (ess2 * f2.mean() ** 2)
+    )
+    return log_r, float(np.sqrt(max(rel_var, 0.0))), n_iter
+
+
+def _chib_independent_normal_wishart(
+    target: npt.NDArray[np.float64],
+    design: npt.NDArray[np.float64],
+    beta_draws: npt.NDArray[np.float64],
+    sigma_draws: npt.NDArray[np.float64],
+    *,
+    prior_mean: npt.NDArray[np.float64],
+    prior_variance: npt.NDArray[np.float64],
+    prior_scale: npt.NDArray[np.float64],
+    prior_df: float,
+) -> tuple[float, float]:
+    """Chib's log marginal likelihood for the independent Normal-Wishart VAR.
+
+    Two blocks, no reduced runs: ``pi(Sigma* | y)`` is the average over the
+    main run's coefficient draws of the inverse-Wishart conditional, and
+    ``pi(beta* | Sigma*, y)`` is a Gaussian density evaluated exactly, both
+    at the posterior mean. The only Monte Carlo error is in the first
+    average.
+
+    Args:
+        target: ``(n, k)`` sample rows of the response.
+        design: ``(n, w)`` regressor rows.
+        beta_draws: ``(S, w, k)`` kept coefficient draws.
+        sigma_draws: ``(S, k, k)`` kept covariance draws.
+        prior_mean: ``(w, k)`` prior coefficient means.
+        prior_variance: ``(w, k)`` prior coefficient variances.
+        prior_scale: ``(k, k)`` inverse-Wishart scale.
+        prior_df: Inverse-Wishart degrees of freedom.
+
+    Returns:
+        ``(log_marginal_likelihood, mcse)``.
+
+    Raises:
+        NumericalError: If a conditional loses positive definiteness at the
+            evaluation point.
+    """
+    n, k = target.shape
+    width = design.shape[1]
+    beta_star = beta_draws.mean(axis=0)
+    sigma_star = sigma_draws.mean(axis=0)
+    sigma_star = 0.5 * (sigma_star + sigma_star.T)
+    try:
+        chol_star = np.linalg.cholesky(sigma_star)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError("The posterior mean covariance is not positive definite.") from error
+    log_det_star = 2.0 * float(np.log(np.diag(chol_star)).sum())
+    sigma_star_inv = np.linalg.inv(sigma_star)
+    # Likelihood at the point.
+    resid = target - design @ beta_star
+    loglik = -0.5 * n * (k * _LOG_2PI + log_det_star) - 0.5 * float(
+        np.trace(sigma_star_inv @ (resid.T @ resid))
+    )
+    # Prior ordinates.
+    log_prior_beta = float(
+        np.sum(norm.logpdf(beta_star, loc=prior_mean, scale=np.sqrt(prior_variance)))
+    )
+    log_prior_sigma = float(invwishart.logpdf(sigma_star, df=prior_df, scale=prior_scale))
+    # pi(Sigma* | y): average of the inverse-Wishart conditional over beta draws.
+    log_terms = np.empty(beta_draws.shape[0])
+    for s, beta in enumerate(beta_draws):
+        resid_s = target - design @ beta
+        log_terms[s] = invwishart.logpdf(
+            sigma_star, df=prior_df + n, scale=prior_scale + resid_s.T @ resid_s
+        )
+    log_sigma_ordinate, mcse = _log_mean_mcse(log_terms)
+    # pi(beta* | Sigma*, y): exact Gaussian conditional.
+    gram = design.T @ design
+    moment = design.T @ target
+    precision_vector = (1.0 / prior_variance).T.ravel()
+    big = np.kron(sigma_star_inv, gram)
+    big[np.diag_indices_from(big)] += precision_vector
+    rhs = (sigma_star_inv @ moment.T).ravel() + precision_vector * prior_mean.T.ravel()
+    try:
+        chol_big = np.linalg.cholesky(big)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError("The coefficient conditional is not positive definite.") from error
+    conditional_mean = np.linalg.solve(big, rhs)
+    deviation = beta_star.T.ravel() - conditional_mean
+    quad = float(deviation @ (big @ deviation))
+    log_det_big = 2.0 * float(np.log(np.diag(chol_big)).sum())
+    log_beta_ordinate = 0.5 * log_det_big - 0.5 * k * width * _LOG_2PI - 0.5 * quad
+    log_ml = loglik + log_prior_beta + log_prior_sigma - log_sigma_ordinate - log_beta_ordinate
+    return float(log_ml), float(mcse)
+
+
+def _autocovariance(chains: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Biased sample autocovariance of every chain, all lags, via the FFT.
+
+    Example:
+        >>> acov = _autocovariance(np.array([[1.0, -1.0, 1.0, -1.0]]))
+        >>> [round(float(v), 2) for v in acov[0]]
+        [1.0, -0.75, 0.5, -0.25]
+    """
+    n_draws = chains.shape[1]
+    n_fft = 1 << int(2 * n_draws - 1).bit_length()
+    centered = chains - chains.mean(axis=1, keepdims=True)
+    spectrum = np.fft.rfft(centered, n=n_fft, axis=1)
+    acov = np.fft.irfft(spectrum * np.conj(spectrum), n=n_fft, axis=1)[:, :n_draws]
+    return np.asarray(acov / n_draws, dtype=np.float64)
+
+
+def _potential_scale_reduction(chains: npt.NDArray[np.float64]) -> float:
+    """Classical R-hat over already split (and possibly transformed) chains.
+
+    ``sqrt(var_hat / W)`` with ``var_hat`` the weighted average of the
+    within-chain variance ``W`` and the between-chain variance ``B``.
+    Returns ``nan`` when the chains carry no within-chain variance.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> round(_potential_scale_reduction(rng.standard_normal((4, 500))), 1)
+        1.0
+    """
+    n_chains, n_draws = chains.shape
+    within = float(chains.var(axis=1, ddof=1).mean())
+    if not within > 0.0:
+        return float("nan")
+    between = float(n_draws * chains.mean(axis=1).var(ddof=1)) if n_chains > 1 else 0.0
+    var_hat = (n_draws - 1) / n_draws * within + between / n_draws
+    return float(np.sqrt(var_hat / within))
+
+
+def _effective_sample_size(chains: npt.NDArray[np.float64]) -> float:
+    """Geyer initial-monotone-sequence effective sample size of ``(M, N)`` chains.
+
+    The pooled autocorrelation at each lag is ``1 - (W - mean acov) /
+    var_hat``; consecutive lags are summed in pairs, the sequence is
+    truncated at the first non-positive pair (initial positive sequence)
+    and then forced non-increasing (initial monotone sequence), and the
+    integrated autocorrelation time is ``-1 + 2 * sum of the pairs``. The
+    estimate is capped at ``M N log10(M N)``, since an antithetic chain can
+    otherwise report more effective draws than a bound the estimator's
+    precision supports. Returns ``nan`` for chains without variance.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> ess = _effective_sample_size(rng.standard_normal((2, 1000)))
+        >>> 1400 < ess < 2600
+        True
+    """
+    n_chains, n_draws = chains.shape
+    acov = _autocovariance(chains)
+    chain_var = acov[:, 0] * n_draws / (n_draws - 1)
+    within = float(chain_var.mean())
+    var_hat = within * (n_draws - 1) / n_draws
+    if n_chains > 1:
+        var_hat += float(chains.mean(axis=1).var(ddof=1))
+    if not var_hat > 0.0:
+        return float("nan")
+    rho = 1.0 - (within - acov.mean(axis=0)) / var_hat
+    n_pairs = n_draws // 2
+    pairs = rho[: 2 * n_pairs].reshape(n_pairs, 2).sum(axis=1)
+    negative = np.flatnonzero(pairs <= 0.0)
+    cutoff = int(negative[0]) if negative.size else n_pairs
+    tau = 1.0 if cutoff == 0 else -1.0 + 2.0 * float(np.minimum.accumulate(pairs[:cutoff]).sum())
+    total = n_chains * n_draws
+    ess = total / tau if tau > 0.0 else float(total)
+    return float(min(ess, total * np.log10(total)))
+
+
+def _rhat(draws: npt.ArrayLike) -> float:
+    """Rank-normalized split-R-hat with folding.
+
+    Args:
+        draws: ``(N,)`` or ``(C, N)`` kept draws of one quantity.
+
+    Returns:
+        The larger of the rank-normalized R-hat and the folded rank-normalized
+        R-hat; ``nan`` for a constant chain.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> mixed = rng.standard_normal((2, 400))
+        >>> rhat(mixed) < 1.02
+        True
+        >>> apart = np.stack([mixed[0], mixed[1] + 5.0])
+        >>> rhat(apart) > 1.5
+        True
+    """
+    chains = _as_chains(draws)
+    split = _split_chains(chains)
+    plain = _potential_scale_reduction(_rank_normalize(split))
+    folded = _potential_scale_reduction(_rank_normalize(np.abs(split - np.median(chains))))
+    if np.isnan(plain) or np.isnan(folded):
+        return float("nan")
+    return max(plain, folded)
+
+
+def _ess_bulk(draws: npt.ArrayLike) -> float:
+    """Bulk effective sample size on the rank-normalized split chains.
+
+    Args:
+        draws: ``(N,)`` or ``(C, N)`` kept draws of one quantity.
+
+    Returns:
+        Effective draws for estimating central posterior quantities; ``nan``
+        for a constant chain.
+
+    Example:
+        >>> rng = np.random.default_rng(1)
+        >>> x = rng.standard_normal(2000)
+        >>> 1400 < ess_bulk(x) < 2600
+        True
+        >>> sticky = np.repeat(x[:200], 10)
+        >>> ess_bulk(sticky) < 400
+        True
+    """
+    return _effective_sample_size(_rank_normalize(_split_chains(_as_chains(draws))))
+
+
+def _ess_tail(draws: npt.ArrayLike) -> float:
+    """Tail effective sample size: the lesser of the 5% and 95% quantile sizes.
+
+    Each is the effective sample size of the indicator that a draw lies
+    below the corresponding pooled quantile, which is the quantity whose
+    Monte Carlo error governs a credible-interval endpoint.
+
+    Args:
+        draws: ``(N,)`` or ``(C, N)`` kept draws of one quantity.
+
+    Returns:
+        Effective draws for the interval endpoints; ``nan`` for a constant
+        chain.
+
+    Example:
+        >>> rng = np.random.default_rng(2)
+        >>> 900 < ess_tail(rng.standard_normal(2000)) < 2600
+        True
+    """
+    chains = _as_chains(draws)
+    lower, upper = np.quantile(chains, [0.05, 0.95])
+    sizes = [
+        _effective_sample_size(_split_chains((chains <= q).astype(np.float64)))
+        for q in (lower, upper)
+    ]
+    if any(np.isnan(s) for s in sizes):
+        return float("nan")
+    return float(min(sizes))
+
+
+def _ess_mean(draws: npt.ArrayLike) -> float:
+    """Effective sample size for the posterior mean, on the raw split chains.
+
+    This is the untransformed size that enters the Monte Carlo standard
+    error of the mean; the rank-normalized bulk size is the one to read for
+    a convergence verdict.
+
+    Example:
+        >>> rng = np.random.default_rng(3)
+        >>> 1400 < ess_mean(rng.standard_normal(2000)) < 2600
+        True
+    """
+    return _effective_sample_size(_split_chains(_as_chains(draws)))
+
+
+def _mcse_mean(draws: npt.ArrayLike) -> float:
+    """Monte Carlo standard error of the posterior mean.
+
+    ``sd / sqrt(ess_mean)``, with the standard deviation pooled across
+    chains.
+
+    Example:
+        >>> rng = np.random.default_rng(4)
+        >>> round(mcse_mean(rng.standard_normal(10_000)), 1)
+        0.0
+    """
+    chains = _as_chains(draws)
+    ess = _ess_mean(chains)
+    if np.isnan(ess):
+        return float("nan")
+    return float(chains.std(ddof=1) / np.sqrt(ess))
+
+
+def _geweke(
+    draws: npt.ArrayLike, *, first: float = 0.1, last: float = 0.5
+) -> npt.NDArray[np.float64]:
+    """Geweke's early-versus-late mean-difference score, one per chain.
+
+    The long-run variance of each segment is its sample variance times the
+    ratio of its length to its effective sample size, so no spectral window
+    is tuned separately.
+
+    Args:
+        draws: ``(N,)`` or ``(C, N)`` kept draws of one quantity.
+        first: Fraction of each chain forming the early segment.
+        last: Fraction of each chain forming the late segment.
+
+    Returns:
+        ``(C,)`` z-scores, ``nan`` where a segment is constant.
+
+    Raises:
+        SpecificationError: If the fractions are not positive, overlap, or
+            leave a segment too short to estimate an autocorrelation.
+
+    Example:
+        >>> rng = np.random.default_rng(5)
+        >>> z = geweke(rng.standard_normal((3, 1000)))
+        >>> z.shape
+        (3,)
+        >>> bool(np.all(np.abs(z) < 4.0))
+        True
+    """
+    if not (first > 0.0 and last > 0.0 and first + last <= 1.0):
+        raise SpecificationError(
+            f"first and last must be positive fractions summing to at most 1; got {first}, {last}."
+        )
+    chains = _as_chains(draws)
+    n_draws = chains.shape[1]
+    n_first = int(first * n_draws)
+    n_last = int(last * n_draws)
+    if min(n_first, n_last) < _MIN_CHAIN_DRAWS:
+        raise SpecificationError(
+            f"Geweke segments need at least {_MIN_CHAIN_DRAWS} draws each; got {n_first} "
+            f"and {n_last} from {n_draws} draws."
+        )
+    scores = np.empty(chains.shape[0], dtype=np.float64)
+    for c, chain in enumerate(chains):
+        early = chain[:n_first]
+        late = chain[n_draws - n_last :]
+        variances = []
+        for segment in (early, late):
+            ess = _effective_sample_size(segment[None, :])
+            variances.append(float("nan") if np.isnan(ess) else segment.var(ddof=1) / ess)
+        denominator = float(np.sqrt(variances[0] + variances[1]))
+        scores[c] = (
+            float("nan") if not denominator > 0.0 else (early.mean() - late.mean()) / denominator
+        )
+    return scores
+
+
+def _log_mean_mcse(log_terms: npt.NDArray[np.float64]) -> tuple[float, float]:
+    """Log of the mean of ``exp(log_terms)`` and its Monte Carlo standard error.
+
+    The error uses the effective sample size of the term sequence, so a
+    correlated chain of terms is not reported as if independent.
+
+    Example:
+        >>> value, error = _log_mean_mcse(np.log(np.full(1000, 2.0)))
+        >>> round(value, 6), error
+        (0.693147, 0.0)
+    """
+    n = log_terms.shape[0]
+    shift = float(log_terms.max())
+    ratios = np.exp(log_terms - shift)
+    mean = float(ratios.mean())
+    log_mean = shift + float(np.log(mean))
+    if n < 8:
+        return log_mean, float("nan")
+    ess = _ess_mean(ratios)
+    if np.isnan(ess) or not ess > 0.0:
+        return log_mean, 0.0
+    error = float(ratios.std(ddof=1) / (mean * np.sqrt(ess)))
+    return log_mean, error

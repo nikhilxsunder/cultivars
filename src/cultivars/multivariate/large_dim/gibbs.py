@@ -78,6 +78,7 @@ import numpy.typing as npt
 from ..._core import SummaryTable, Trend
 from ..._internals import (
     _GibbsBayesianVectorAutoRegressionModel,
+    _MarginalLikelihoodSelection,
     _Prior,
     _VectorGibbsFit,
     _VectorPosteriorDrawsResult,
@@ -136,6 +137,7 @@ class GibbsBVARResult(_VectorPosteriorDrawsResult):
     n_draws: int
     n_burn: int
     thin: int
+    _engine: _GibbsBayesianVectorAutoRegressionModel[GibbsBVARResult] = field(repr=False)
 
     @classmethod
     def _from_fit(
@@ -165,6 +167,30 @@ class GibbsBVARResult(_VectorPosteriorDrawsResult):
             n_draws=fit.n_draws,
             n_burn=fit.n_burn,
             thin=fit.thin,
+            _engine=model,
+        )
+
+    def marginal_likelihood(self) -> _MarginalLikelihoodSelection:
+        """Chib's (1995) log marginal likelihood of the sample.
+
+        The two-block identity: the likelihood and prior at the posterior
+        mean, less the posterior ordinate there, with the covariance
+        ordinate averaged over the retained coefficient draws and the
+        coefficient ordinate evaluated exactly.
+
+        Returns:
+            The record; ``compare()`` on it ranks models fitted to the same
+            sample.
+
+        Raises:
+            SpecificationError: Under an adaptive prior, whose extra Gibbs
+                block would need reduced runs, or a dummy-observation prior,
+                whose artificial rows the sampler treats as data.
+        """
+        return self._engine._marginal_likelihood(
+            self.beta_draws,
+            self.sigma_draws,
+            source=f"Gibbs BVAR({self.order}), {self.prior_label}",
         )
 
     def _lag_diagnostic(self) -> npt.NDArray[np.float64]:
@@ -237,9 +263,8 @@ class GibbsBVARResult(_VectorPosteriorDrawsResult):
             "inverse-Wishart covariance), so draws are a Markov chain: "
             "burn-in and thinning matter, and independent-draw intuition "
             "does not apply.",
-            "No marginal likelihood is reported: with the prior independent "
-            "of the covariance the evidence has no closed form, and prior "
-            "comparison by Bayes factor belongs to the conjugate BVAR.",
+            "marginal_likelihood() gives Chib's estimate from the Gibbs output "
+            "for static priors; adaptive and dummy-observation priors are refused.",
             self._stability_note(),
             "No llf, parameter count, or information criteria are reported: a posterior has none.",
             "forecast() is the full posterior predictive -- parameter and "

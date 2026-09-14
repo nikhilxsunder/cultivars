@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable, _quantiles
+from .._core import _MHM_TAU, SummaryTable, _modified_harmonic_mean, _quantiles
 from ..exceptions import NumericalError, SpecificationError
 from ._emitters import (
     _trend_volatility_state_space,
@@ -15,6 +15,7 @@ from ._emitters import (
 from ._fits import _ParticleChainFit, _TrendVolatilityFit, _VolatilityDrawsFit
 from ._mixins import _ConvergenceMixin, _SeriesMixin, _SummaryMixin
 from ._parameters import _StochasticVolatilityParameters, _TrendVolatilityParameters
+from ._selections import _MarginalLikelihoodSelection
 from ._simulators import _impulse_responses
 from ._solutions import _PerturbationSolution
 from ._substrates import _LinearGaussianStateSpace, _NonlinearStateSpace
@@ -527,6 +528,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
     parameter_names: tuple[str, ...]
     theta_draws: npt.NDArray[np.float64] = field(repr=False)
     loglik_draws: npt.NDArray[np.float64] = field(repr=False)
+    log_posterior_draws: npt.NDArray[np.float64] = field(repr=False)
     acceptance_rate: float
     order: int
     n_particles: int
@@ -535,6 +537,46 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
     n_burn: int
     thin: int
     _engine: _PerturbationModel[Any] = field(repr=False)
+    _unconstrained: npt.NDArray[np.float64] = field(repr=False)
+
+    def marginal_likelihood(self, *, tau: float = _MHM_TAU) -> _MarginalLikelihoodSelection:
+        """Geweke's modified harmonic mean of the log marginal likelihood.
+
+        Computed in the chain's unconstrained space, where the Gaussian
+        envelope is least wrong; the evidence is invariant to the
+        reparameterization. The likelihood entering the kernel is the
+        particle-filter *estimate* carried by each draw, so the number is
+        the Herbst-Schorfheide practice rather than an exact ordinate: the
+        estimate noise biases it, and the record says so.
+
+        Args:
+            tau: Probability mass of the envelope retained.
+
+        Returns:
+            The record, with the Monte Carlo error and a coverage note.
+        """
+        log_ml, mcse, coverage = _modified_harmonic_mean(
+            self._unconstrained, self.log_posterior_draws, tau=tau
+        )
+        notes = [
+            "Modified harmonic mean (Geweke, 1999) on the unconstrained chain; the kernel "
+            "carries particle-filter likelihood estimates, whose noise biases the value.",
+        ]
+        if abs(coverage - tau) > 0.1:
+            notes.append(
+                f"Only {coverage:.0%} of the draws fall inside the {tau:.0%} envelope, so the "
+                "posterior is far from the Gaussian the envelope assumes; read the value "
+                "with that in mind."
+            )
+        return _MarginalLikelihoodSelection(
+            log_value=log_ml,
+            mcse=mcse,
+            method="modified harmonic mean",
+            n_draws=self.n_kept,
+            source=f"Perturbation DSGE (order {self.order})",
+            nobs=int(self.nobs),
+            notes=tuple(notes),
+        )
 
     def _draw_labels(self) -> dict[str, tuple[str, ...]]:
         return {"theta": self.parameter_names}
@@ -553,6 +595,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
             parameter_names=tuple(model.parameter_names),
             theta_draws=np.asarray(theta, dtype=np.float64),
             loglik_draws=fit.loglik_draws,
+            log_posterior_draws=fit.log_posterior_draws,
             acceptance_rate=fit.acceptance_rate,
             order=model.order,
             n_particles=fit.n_particles,
@@ -561,6 +604,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
             n_burn=fit.n_burn,
             thin=fit.thin,
             _engine=model,
+            _unconstrained=np.asarray(fit.theta_draws, dtype=np.float64),
         )
 
     @property

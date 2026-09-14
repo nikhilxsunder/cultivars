@@ -20,3 +20,11 @@ _LEVELS_TREND: dict[CointegrationTrend, str] = {
     "restricted_trend": "ct",
     "trend": "ct",
 }
+
+_KASS_RAFTERY_SCALE: tuple[tuple[float, str], ...] = (
+    (2.0, "not worth more than a bare mention"),
+    (6.0, "positive"),
+    (10.0, "strong"),
+    (float("inf"), "very strong"),
+)
+"""Kass and Raftery's (1995) verbal scale, keyed by the upper bound on ``|2 log BF|``."""

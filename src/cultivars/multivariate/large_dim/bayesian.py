@@ -71,11 +71,12 @@ from ..._core import SummaryTable, Trend, companion_matrix
 from ..._internals import (
     _BayesianVectorAutoRegressionModel,
     _ConvergenceMixin,
+    _MarginalLikelihoodSelection,
     _Prior,
     _SummaryMixin,
     _VectorConjugateFit,
 )
-from ...bayes.priors import NormalInverseWishartPrior
+from ...bayes import NormalInverseWishartPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["BVAR", "BVARResult"]
@@ -375,6 +376,22 @@ class BVARResult(_SummaryMixin, _ConvergenceMixin):
             eigs = np.linalg.eigvals(companion_matrix(self._stack_of(self.beta_draws[s])))
             stable += int(float(np.abs(eigs).max(initial=0.0)) < 1.0)
         return stable / self.n_kept
+
+    def marginal_likelihood(self) -> _MarginalLikelihoodSelection:
+        """The closed-form log marginal likelihood as a comparable record.
+
+        The same number as :attr:`log_marginal_likelihood`, wrapped so it
+        can sit in one ``compare()`` table with simulated estimates from the
+        Gibbs and particle-chain families.
+        """
+        return _MarginalLikelihoodSelection(
+            log_value=float(self.log_marginal_likelihood),
+            mcse=0.0,
+            method="analytic",
+            n_draws=0,
+            source=f"BVAR({self.order}), {self.prior_label}",
+            nobs=int(self.nobs),
+        )
 
     def _summary_table(self) -> SummaryTable:
         """Build the structured summary."""

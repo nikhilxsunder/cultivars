@@ -35,12 +35,16 @@ than surfacing a bare :exc:`ModuleNotFoundError` from three frames down.
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import numpy.typing as npt
 
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._defaults import _MIN_CHAIN_DRAWS
 from ._loaders import require_optional
+from ._mappings import _KASS_RAFTERY_SCALE
 from ._polynomials import _aggregation_weights
 from ._types import Frequency
 
@@ -200,3 +204,93 @@ def _mixed_frequency_system(
 
     obs_cov = np.zeros((size, size), dtype=np.float64)
     return design, obs_cov, transition, selection, sigma_u, state_intercept
+
+
+def _evidence_label(two_log_bf: float) -> str:
+    """Kass and Raftery's verbal reading of ``2 log BF`` in favour of a model.
+
+    Example:
+        >>> _evidence_label(7.0)
+        'strong'
+        >>> _evidence_label(-1.0)
+        'not worth more than a bare mention'
+    """
+    magnitude = abs(two_log_bf)
+    for bound, label in _KASS_RAFTERY_SCALE:
+        if magnitude < bound:
+            return label
+    return _KASS_RAFTERY_SCALE[-1][1]
+
+
+def _as_chains(draws: npt.ArrayLike) -> npt.NDArray[np.float64]:
+    """Coerce one quantity's draws to a validated ``(C, N)`` float array.
+
+    Args:
+        draws: ``(N,)`` for one chain or ``(C, N)`` for several.
+
+    Returns:
+        The ``(C, N)`` array.
+
+    Raises:
+        DimensionError: If ``draws`` is not one- or two-dimensional.
+        SpecificationError: If a chain is shorter than the minimum.
+        NumericalError: If any draw is not finite.
+
+    Example:
+        >>> _as_chains(np.arange(10.0)).shape
+        (1, 10)
+    """
+    chains = np.asarray(draws, dtype=np.float64)
+    if chains.ndim == 1:
+        chains = chains[None, :]
+    elif chains.ndim != 2:
+        raise DimensionError(
+            f"draws must be (N,) for one chain or (C, N) for several; got shape {chains.shape}."
+        )
+    if chains.shape[1] < _MIN_CHAIN_DRAWS:
+        raise SpecificationError(
+            f"Each chain needs at least {_MIN_CHAIN_DRAWS} kept draws for a convergence "
+            f"diagnostic; got {chains.shape[1]}."
+        )
+    if not np.all(np.isfinite(chains)):
+        raise NumericalError("Chain draws contain non-finite values.")
+    return chains
+
+
+def _stack(chains: tuple[npt.ArrayLike, ...]) -> tuple[npt.NDArray[np.float64], bool]:
+    """Stack ``(S,)`` or ``(S, d)`` chains into ``(C, S, d)``.
+
+    Returns:
+        The stack and whether every chain was one-dimensional, so the caller
+        can return a scalar rather than a length-one array.
+
+    Raises:
+        SpecificationError: If no chain is given.
+        DimensionError: If a chain is not one- or two-dimensional, or the
+            chains differ in shape.
+    """
+    if not chains:
+        raise SpecificationError("At least one chain is required.")
+    arrays = [np.asarray(chain, dtype=np.float64) for chain in chains]
+    scalar = all(array.ndim == 1 for array in arrays)
+    columns: list[npt.NDArray[np.float64]] = []
+    for array in arrays:
+        if array.ndim == 1:
+            columns.append(array[:, None])
+        elif array.ndim == 2:
+            columns.append(array)
+        else:
+            raise DimensionError(f"A chain must be (S,) or (S, d); got shape {array.shape}.")
+    shapes = {column.shape for column in columns}
+    if len(shapes) != 1:
+        raise DimensionError(f"Chains differ in shape: {sorted(shapes)}.")
+    return np.stack(columns), scalar
+
+
+def _per_column(
+    chains: tuple[npt.ArrayLike, ...], statistic: Callable[[npt.NDArray[np.float64]], float]
+) -> float | npt.NDArray[np.float64]:
+    """Apply a ``(C, N) -> float`` statistic to every quantity in the stack."""
+    stack, scalar = _stack(chains)
+    values = np.array([statistic(stack[:, :, j]) for j in range(stack.shape[2])])
+    return float(values[0]) if scalar else values

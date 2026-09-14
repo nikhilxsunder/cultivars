@@ -83,6 +83,7 @@ from .._core import (
     Transition,
     Trend,
     Vol,
+    _chib_independent_normal_wishart,
     _draw_factors,
     _draw_inverse_gamma,
     _draw_inverse_wishart,
@@ -201,7 +202,7 @@ from ._samplers import (
     _draw_volatility_path,
     _scalar_ffbs,
 )
-from ._selections import _LagOrderSelection
+from ._selections import _LagOrderSelection, _MarginalLikelihoodSelection
 from ._smoothers import kim_smoother
 from ._solutions import _PerturbationSolution
 from ._solvers import (
@@ -4169,6 +4170,73 @@ class _GibbsBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             n_draws=n_draws,
             n_burn=n_burn,
             thin=thin,
+        )
+
+    def _marginal_likelihood(
+        self,
+        beta_draws: npt.NDArray[np.float64],
+        sigma_draws: npt.NDArray[np.float64],
+        *,
+        source: str,
+    ) -> _MarginalLikelihoodSelection:
+        """Chib's (1995) log marginal likelihood from the two-block Gibbs output.
+
+        Args:
+            beta_draws: ``(S, w, k)`` kept coefficient draws.
+            sigma_draws: ``(S, k, k)`` kept covariance draws.
+            source: Label for the record.
+
+        Returns:
+            The record, with the Monte Carlo error of the one simulated
+            ordinate.
+
+        Raises:
+            SpecificationError: If the prior is adaptive (a third Gibbs block
+                whose ordinate needs reduced runs) or contributes dummy
+                observations (which enter the sampler as data, so the
+                sample's own evidence is not what the two-block identity
+                yields).
+        """
+        prior = self._prior
+        if any(isinstance(part, _AdaptivePrior) for part in prior._components()):
+            raise SpecificationError(
+                "Chib's estimator here covers the two-block sampler over coefficients and "
+                "covariance; an adaptive shrinkage prior adds a scale block whose posterior "
+                "ordinate needs reduced Gibbs runs, which are not implemented. Compare "
+                "adaptive priors by out-of-sample predictive score instead."
+            )
+        context = self._prior_context()
+        mean, variance, dummy_target, _ = self._gibbs_static_inputs(context)
+        if dummy_target.shape[0]:
+            raise SpecificationError(
+                "the prior contributes dummy observations, which the sampler treats as data; "
+                "the two-block identity then yields the evidence of the augmented sample, not "
+                "of the actual one. Use the conjugate BVAR, whose closed form handles dummy "
+                "observations, or a moment-only prior here."
+            )
+        target, design, n_eff = self._design()
+        log_ml, mcse = _chib_independent_normal_wishart(
+            target,
+            design,
+            beta_draws,
+            sigma_draws,
+            prior_mean=mean,
+            prior_variance=variance,
+            prior_scale=np.diag(context.scales**2),
+            prior_df=float(self.k_endog + 2),
+        )
+        return _MarginalLikelihoodSelection(
+            log_value=log_ml,
+            mcse=mcse,
+            method="chib",
+            n_draws=int(beta_draws.shape[0]),
+            source=source,
+            nobs=int(n_eff),
+            notes=(
+                "Chib (1995) at the posterior mean: the covariance ordinate is averaged over "
+                "the coefficient draws, the coefficient ordinate is exact. Trustworthy only "
+                "if the chain has converged; check convergence() first.",
+            ),
         )
 
 

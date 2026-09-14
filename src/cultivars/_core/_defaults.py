@@ -174,3 +174,12 @@ _MIN_ESS_PER_CHAIN: Final[float] = 100.0
 The same paper's floor: enough draws that the Monte Carlo standard error of a
 posterior quantile is small relative to its posterior spread.
 """
+
+_MHM_TAU: Final[float] = 0.9
+"""Probability mass of the Gaussian envelope Geweke's harmonic mean retains."""
+
+_BRIDGE_TOL: Final[float] = 1e-10
+"""Relative change in the log evidence at which the bridge recursion stops."""
+
+_BRIDGE_MAX_ITER: Final[int] = 1000
+"""Iterations of the bridge recursion before it is declared not to converge."""

@@ -149,6 +149,7 @@ from ._results import (
     _VectorPosteriorDrawsResult,
     _VectorResult,
 )
+from ._selections import _MarginalLikelihoodSelection
 from ._simulators import _impulse_responses, _simulate_pruned
 from ._solutions import _PerturbationSolution
 from ._solvers import _maximize_likelihood, _solve, _spectral_factor, solve_global
@@ -211,6 +212,7 @@ __all__ = [
     "_LongMemoryVolatilityFit",
     "_LongMemoryVolatilityModel",
     "_LongMemoryVolatilityParameters",
+    "_MarginalLikelihoodSelection",
     "_MarkovSwitchingFit",
     "_MarkovSwitchingModel",
     "_MarkovSwitchingStateSpace",

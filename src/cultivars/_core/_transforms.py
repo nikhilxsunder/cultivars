@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
+from scipy.stats import norm, rankdata
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._containers import Standardized
@@ -287,3 +288,33 @@ def combined_difference(
     if capital_d > 0:
         w = seasonal_difference(w, s, capital_d)
     return w
+
+
+def _split_chains(chains: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Halve every chain, so ``(C, N)`` becomes ``(2C, N // 2)``.
+
+    An odd trailing draw is dropped, so both halves have the same length.
+
+    Example:
+        >>> _split_chains(np.arange(9.0)[None, :]).shape
+        (2, 4)
+    """
+    half = chains.shape[1] // 2
+    return np.concatenate([chains[:, :half], chains[:, half : 2 * half]], axis=0)
+
+
+def _rank_normalize(chains: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Replace every draw by the normal score of its rank among all draws.
+
+    Ranks are pooled across chains (ties averaged) and mapped through the
+    Blom offset ``(r - 3/8) / (S + 1/4)`` before the normal quantile, which
+    keeps the scores finite at both extremes.
+
+    Example:
+        >>> z = _rank_normalize(np.array([[1.0, 2.0, 3.0, 4.0]]))
+        >>> bool(np.all(np.diff(z[0]) > 0))
+        True
+    """
+    ranks = rankdata(chains, method="average", axis=None).reshape(chains.shape)
+    size = chains.size
+    return np.asarray(norm.ppf((ranks - 0.375) / (size + 0.25)), dtype=np.float64)
