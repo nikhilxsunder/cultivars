@@ -84,11 +84,20 @@ from .._core import (
     Trend,
     Vol,
     _chib_independent_normal_wishart,
+    _draw_degrees_of_freedom,
     _draw_factors,
     _draw_inverse_gamma,
     _draw_inverse_wishart,
     _draw_loading_rows,
+    _draw_scale_mixture,
+    _draw_stationary_volatility_path,
+    _draw_structural_rows,
+    _draw_triangular_volatility_block,
+    _draw_volatility_parameters,
+    _draw_volatility_path,
     _fractional_spectrum,
+    _interweave_volatility_parameters,
+    _scalar_ffbs,
     _validate_wide_panel,
     combined_difference,
     concentrated_gaussian,
@@ -192,17 +201,8 @@ from ._posteriors import (
     _ConjugatePosterior,
 )
 from ._priors import _AdaptivePrior, _NoPrior, _Prior, _PriorContext
-from ._samplers import (
-    _draw_degrees_of_freedom,
-    _draw_scale_mixture,
-    _draw_stationary_volatility_path,
-    _draw_structural_rows,
-    _draw_triangular_volatility_block,
-    _draw_volatility_parameters,
-    _draw_volatility_path,
-    _scalar_ffbs,
-)
 from ._selections import _LagOrderSelection, _MarginalLikelihoodSelection
+from ._simulators import _simulate_stochastic_volatility, _simulate_vector_autoregression
 from ._smoothers import kim_smoother
 from ._solutions import _PerturbationSolution
 from ._solvers import (
@@ -4043,6 +4043,80 @@ class _GibbsBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         dummy_target, dummy_design = prior.dummy_observations(context)
         return prior.coefficient_mean(context), variance, dummy_target, dummy_design
 
+    @property
+    def observed(self) -> npt.NDArray[np.float64]:
+        """The effective sample a replication is shaped like, ``(nobs, k)``."""
+        return np.asarray(self._endog[self._order :], dtype=np.float64)
+
+    def prior_replications(
+        self,
+        n_replications: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Data sets the independent Normal-Wishart prior generates.
+
+        Each replication draws ``Sigma`` from its inverse-Wishart prior and
+        every coefficient from its own Gaussian, independently of
+        ``Sigma``, then simulates the sample from the observed presample.
+
+        Args:
+            n_replications: Replicated data sets.
+            seed: Seed or generator.
+
+        Returns:
+            An array of shape ``(n_replications, nobs, k)`` aligned with
+            :attr:`observed`.
+
+        Raises:
+            SpecificationError: If the count is not positive, or the prior
+                is adaptive or states dummy observations. An adaptive
+                prior's coefficient variances are latent states with no
+                marginal prior to draw from in closed form; dummy rows
+                under an independent prior couple the coefficients to the
+                covariance through pseudo-data, so the effective prior has
+                no direct sampler. The conjugate BVAR folds dummy rows into
+                its prior exactly and replicates them.
+        """
+        if n_replications < 1:
+            raise SpecificationError(f"n_replications must be positive; got {n_replications}.")
+        prior = self._prior
+        if not prior._components():
+            raise SpecificationError(
+                "a Bayesian VAR needs a proper prior; construct with "
+                "prior=IndependentNormalWishartPrior(...) or a composition."
+            )
+        if isinstance(prior, _AdaptivePrior):
+            raise SpecificationError(
+                "prior replications are not offered under an adaptive shrinkage prior: its "
+                "coefficient variances are latent states whose marginal prior has no closed "
+                "form to draw from. State the prior as IndependentNormalWishartPrior to check it."
+            )
+        context = self._prior_context()
+        mean, variance, dummy_target, _ = self._gibbs_static_inputs(context)
+        if dummy_target.shape[0]:
+            raise SpecificationError(
+                "prior replications are not offered when an independent prior states dummy "
+                "observations: the pseudo-data couple the coefficients to the covariance and "
+                "the effective prior has no direct sampler. Use the conjugate BVAR, which "
+                "folds the dummy rows into its prior exactly."
+            )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        k, p = self.k_endog, self._order
+        scale0 = np.diag(context.scales**2)
+        n_eff = self._endog.shape[0] - p
+        out = np.empty((n_replications, n_eff, k))
+        sd = np.sqrt(variance)
+        for r in range(n_replications):
+            sigma = _draw_inverse_wishart(scale0, float(k + 2), rng)
+            beta = mean + sd * rng.standard_normal(mean.shape)
+            chol = np.linalg.cholesky(sigma)
+            noise = np.asarray(rng.standard_normal((n_eff, k)) @ chol.T, dtype=np.float64)
+            out[r] = _simulate_vector_autoregression(
+                beta, noise, order=p, trend=self._trend, presample=self._endog[:p], start=p + 1
+            )
+        return out
+
     def _fit_gibbs(
         self,
         *,
@@ -5460,6 +5534,113 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             )
         return beta_draws, sigma_draws
 
+    @property
+    def observed(self) -> npt.NDArray[np.float64]:
+        """The effective sample a replication is shaped like, ``(nobs, k)``."""
+        return np.asarray(self._endog[self._order :], dtype=np.float64)
+
+    def _prior_draws(
+        self, n_draws: int, rng: np.random.Generator
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Independent draws of ``(B, Sigma)`` from the prior, dummy rows folded in.
+
+        Dummy observations are part of the prior, so the prior drawn from
+        is the Normal-inverse-Wishart updated on the dummy rows alone --
+        the same object the marginal likelihood divides out.
+
+        Args:
+            n_draws: Draws to produce.
+            rng: Random generator.
+
+        Returns:
+            ``(beta_draws, sigma_draws)`` of shapes ``(S, w, k)`` and
+            ``(S, k, k)``.
+
+        Raises:
+            SpecificationError: If the prior is unusable.
+        """
+        omega, mean, scale0, dummy_target, dummy_design = self._conjugate_inputs()
+        prior = _conjugate_posterior(
+            dummy_target,
+            dummy_design,
+            omega=omega,
+            mean=mean,
+            scale0=scale0,
+            df0=float(self.k_endog + 2),
+        )
+        return self._draw_conjugate(prior, n_draws, rng)
+
+    def _replicate_prior(
+        self,
+        n_replications: int,
+        rng: np.random.Generator,
+        noise: Callable[[int, npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+    ) -> npt.NDArray[np.float64]:
+        """Simulate the effective sample from each prior draw with the given innovation law.
+
+        Args:
+            n_replications: Replicated data sets.
+            rng: Random generator.
+            noise: ``(nobs, sigma) -> (nobs, k)`` innovations for one draw.
+
+        Returns:
+            An ``(n_replications, nobs, k)`` array aligned with :attr:`observed`.
+
+        Raises:
+            SpecificationError: If the count is not positive.
+        """
+        if n_replications < 1:
+            raise SpecificationError(f"n_replications must be positive; got {n_replications}.")
+        beta_draws, sigma_draws = self._prior_draws(n_replications, rng)
+        p = self._order
+        n_eff = self._endog.shape[0] - p
+        out = np.empty((n_replications, n_eff, self.k_endog))
+        for r in range(n_replications):
+            out[r] = _simulate_vector_autoregression(
+                beta_draws[r],
+                noise(n_eff, sigma_draws[r]),
+                order=p,
+                trend=self._trend,
+                presample=self._endog[:p],
+                start=p + 1,
+            )
+        return out
+
+    def prior_replications(
+        self,
+        n_replications: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Data sets the prior generates, shaped like the effective sample.
+
+        Each replication draws ``(B, Sigma)`` from the prior -- dummy
+        observations folded in, as they are part of it -- and simulates
+        the sample from the observed presample with Gaussian innovations.
+        Read the replicated statistics for what the prior deems plausible
+        on the scale of the data: a Minnesota prior loose enough to admit
+        explosive systems shows it here, before any sample is fitted.
+
+        Args:
+            n_replications: Replicated data sets.
+            seed: Seed or generator.
+
+        Returns:
+            An array of shape ``(n_replications, nobs, k)`` aligned with
+            :attr:`observed`.
+
+        Raises:
+            SpecificationError: If the count is not positive or the prior
+                is unusable.
+        """
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+
+        def gaussian(n: int, sigma: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            chol = np.linalg.cholesky(sigma)
+            return np.asarray(rng.standard_normal((n, sigma.shape[0])) @ chol.T, dtype=np.float64)
+
+        return self._replicate_prior(n_replications, rng, gaussian)
+
     def _fit_conjugate(
         self,
         *,
@@ -5695,6 +5876,49 @@ class _StudentBayesianVectorAutoRegressionModel[R](_BayesianVectorAutoRegression
         probability = np.exp(log_kernel)
         probability /= probability.sum()
         return float(rng.choice(_STUDENT_DF_GRID, p=probability))
+
+    def prior_replications(
+        self,
+        n_replications: int = 200,
+        *,
+        df: float | None = None,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Data sets the prior generates, with Student-t innovations.
+
+        ``(B, Sigma)`` come from the Normal-inverse-Wishart prior as in the
+        conjugate model; the degrees of freedom are the stated value, or
+        -- when ``None``, as at fit -- one draw per replication from the
+        flat prior on the estimation grid.
+
+        Args:
+            n_replications: Replicated data sets.
+            df: Degrees of freedom, above two, or ``None`` for the grid prior.
+            seed: Seed or generator.
+
+        Returns:
+            An array of shape ``(n_replications, nobs, k)`` aligned with
+            :attr:`observed`.
+
+        Raises:
+            SpecificationError: If the count is not positive, the stated
+                degrees of freedom do not admit a covariance, or the prior
+                is unusable.
+        """
+        if df is not None and df <= 2.0:
+            raise SpecificationError(
+                f"df must exceed 2 for the innovations to have a covariance; got {df}."
+            )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+
+        def student(n: int, sigma: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            nu = float(df) if df is not None else float(rng.choice(_STUDENT_DF_GRID))
+            chol = np.linalg.cholesky(sigma)
+            mixing = rng.gamma(0.5 * nu, 2.0 / nu, size=n)
+            shocks = rng.standard_normal((n, sigma.shape[0])) / np.sqrt(mixing)[:, None]
+            return np.asarray(shocks @ chol.T, dtype=np.float64)
+
+        return self._replicate_prior(n_replications, rng, student)
 
     def _fit_student(
         self,
@@ -6137,6 +6361,76 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         """The sample mean, or zero."""
         return float(np.mean(self._endog)) if self._mean_spec == "constant" else 0.0
 
+    @property
+    def observed(self) -> npt.NDArray[np.float64]:
+        """The series a replication is shaped like, ``(n,)``."""
+        return np.asarray(self._endog, dtype=np.float64)
+
+    def prior_replications(
+        self,
+        n_replications: int = 200,
+        *,
+        prior_mu: tuple[float, float] = (0.0, 10.0),
+        prior_phi: tuple[float, float] = (20.0, 1.5),
+        prior_sigma2: tuple[float, float] = (2.5, 0.025),
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Series the prior generates, one per prior draw of ``(mu, phi, sigma2)``.
+
+        The prior is the samplers' prior, stated with the same arguments:
+        Gaussian ``mu``, Beta on ``(phi + 1) / 2``, inverse-gamma
+        ``sigma2``; under heavy tails ``nu - 2`` is exponential with the
+        Gibbs sampler's rate. The observation mean, on which the samplers
+        put no informative prior, is held at the sample mean (or zero), as
+        the particle chain holds it. Each replication starts its log
+        variance from the stationary distribution the draw implies.
+
+        Args:
+            n_replications: Replicated series.
+            prior_mu: ``(mean, variance)``.
+            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
+            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            seed: Seed or generator.
+
+        Returns:
+            An array of shape ``(n_replications, n)`` aligned with
+            :attr:`observed`.
+
+        Raises:
+            SpecificationError: If the count is not positive, a prior
+                hyperparameter is outside its domain, or the model carries
+                leverage, on which the samplers state no prior.
+        """
+        if n_replications < 1:
+            raise SpecificationError(f"n_replications must be positive; got {n_replications}.")
+        if self._leverage:
+            raise SpecificationError(
+                "prior replications are not offered with leverage: the samplers do not carry "
+                "the leverage correlation and state no prior on it."
+            )
+        m0, v0 = prior_mu
+        a, b = prior_phi
+        shape0, rate0 = prior_sigma2
+        if v0 <= 0.0 or a <= 0.0 or b <= 0.0 or shape0 <= 0.0 or rate0 <= 0.0:
+            raise SpecificationError(
+                "prior hyperparameters must be positive: prior_mu variance, both Beta shapes, "
+                f"and the inverse-gamma shape and rate; got {prior_mu}, {prior_phi}, "
+                f"{prior_sigma2}."
+            )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        n = int(self._endog.shape[0])
+        mean = self._resolved_mean()
+        out = np.empty((n_replications, n))
+        for r in range(n_replications):
+            mu = m0 + float(np.sqrt(v0)) * rng.standard_normal()
+            phi = float(np.clip(2.0 * rng.beta(a, b) - 1.0, -0.9999, 0.9999))
+            sigma2 = _draw_inverse_gamma(shape0, rate0, rng)
+            nu = 2.0 + rng.exponential(1.0 / _NU_PRIOR_RATE) if self._tails else None
+            out[r], _ = _simulate_stochastic_volatility(
+                n, mu=mu, phi=phi, sigma2=sigma2, mean=mean, rng=rng, nu=nu
+            )
+        return out
+
     @abstractmethod
     def fit(self) -> R:
         """Estimate the specification and return the public result."""
@@ -6192,7 +6486,9 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
     def _fit_quasi(self) -> _StochasticVolatilityFit:
         """Quasi-maximum likelihood on the linearized model."""
         mean = self._resolved_mean()
-        objective = _QuasiVolatilityObjective(endog=self._endog, mean=mean)
+        objective = _QuasiVolatilityObjective(
+            endog=self._endog, mean=mean, heavy_tailed=self._tails
+        )
         params, llf = _maximize_likelihood(objective)
         smoothed = _quasi_volatility_state_space(params).smooth(objective._log_squared())
         return _StochasticVolatilityFit(
@@ -6286,6 +6582,17 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
                 residual / np.sqrt(mixture), h, mu=mu, phi=phi, sigma2=sigma2, rng=rng
             )
             mu, phi, sigma2 = _draw_volatility_parameters(
+                h,
+                mu=mu,
+                phi=phi,
+                sigma2=sigma2,
+                prior_mu=prior_mu,
+                prior_phi=prior_phi,
+                prior_sigma2=prior_sigma2,
+                rng=rng,
+            )
+            h, mu, phi, sigma2 = _interweave_volatility_parameters(
+                residual / np.sqrt(mixture),
                 h,
                 mu=mu,
                 phi=phi,
@@ -7102,6 +7409,18 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
                     rng=rng,
                     draw_mean=False,
                 )
+                h_path[:, i], _, phi[i], sigma2[i] = _interweave_volatility_parameters(
+                    shocks[:, i],
+                    h_path[:, i],
+                    mu=0.0,
+                    phi=float(phi[i]),
+                    sigma2=float(sigma2[i]),
+                    prior_mu=(0.0, 1.0),
+                    prior_phi=prior_phi,
+                    prior_sigma2=prior_sigma2,
+                    rng=rng,
+                    draw_mean=False,
+                )
             if iteration >= n_burn and (iteration - n_burn) % thin == 0:
                 impact_kept[kept] = np.linalg.inv(a_mat)
                 h_kept[kept] = h_path
@@ -7439,6 +7758,19 @@ class _FactorVolatilityModel[R](ABC):
                     prior_sigma2=prior_sigma2,
                     rng=rng,
                 )
+                h_idio[:, i], mu_idio[i], phi_idio[i], sigma2_idio[i] = (
+                    _interweave_volatility_parameters(
+                        resid[:, i],
+                        h_idio[:, i],
+                        mu=float(mu_idio[i]),
+                        phi=float(phi_idio[i]),
+                        sigma2=float(sigma2_idio[i]),
+                        prior_mu=prior_mu,
+                        prior_phi=prior_phi,
+                        prior_sigma2=prior_sigma2,
+                        rng=rng,
+                    )
+                )
             for j in range(r):
                 h_factor[:, j] = _draw_stationary_volatility_path(
                     factors[:, j],
@@ -7457,6 +7789,19 @@ class _FactorVolatilityModel[R](ABC):
                     prior_phi=prior_phi,
                     prior_sigma2=prior_sigma2,
                     rng=rng,
+                )
+                h_factor[:, j], mu_factor[j], phi_factor[j], sigma2_factor[j] = (
+                    _interweave_volatility_parameters(
+                        factors[:, j],
+                        h_factor[:, j],
+                        mu=float(mu_factor[j]),
+                        phi=float(phi_factor[j]),
+                        sigma2=float(sigma2_factor[j]),
+                        prior_mu=prior_mu,
+                        prior_phi=prior_phi,
+                        prior_sigma2=prior_sigma2,
+                        rng=rng,
+                    )
                 )
             if iteration >= n_burn and (iteration - n_burn) % thin == 0:
                 loading_kept[kept] = loadings

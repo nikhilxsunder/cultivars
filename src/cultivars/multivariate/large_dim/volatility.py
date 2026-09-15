@@ -209,6 +209,25 @@ class BVARSVResult(_VectorPosteriorDrawsResult):
             out[h] = impact @ (np.exp(0.5 * level) * rng.standard_normal(k))
         return out
 
+    def _replication_noise(self, draw: int, rng: np.random.Generator) -> npt.NDArray[np.float64]:
+        """Innovations under the draw's own in-sample volatility path.
+
+        A replication conditions on the draw's log-variance path ``h_t``
+        rather than simulating a fresh random walk: the walk has no
+        stationary distribution to start from, and what the check asks
+        is whether the dynamics reproduce the data *given* a volatility
+        history the posterior finds plausible.
+        """
+        scale = np.exp(0.5 * self.h_draws[draw])
+        shocks = scale * rng.standard_normal(scale.shape)
+        return np.asarray(shocks @ self.impact_draws[draw].T, dtype=np.float64)
+
+    def _replication_notes(self) -> tuple[str, ...]:
+        return (
+            "Replications condition on each draw's in-sample volatility path: the check "
+            "reads the dynamics given the volatility history, not the volatility law itself.",
+        )
+
     def _summary_table(self) -> SummaryTable:
         """Build the structured summary."""
         rows = []

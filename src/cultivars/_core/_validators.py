@@ -933,3 +933,120 @@ def _validate_posterior_draws(
     if not (np.all(np.isfinite(theta)) and np.all(np.isfinite(values))):
         raise NumericalError("draws and log_kernel must be finite.")
     return theta, values
+
+
+def _validate_log_density_matrix(log_density: npt.ArrayLike) -> npt.NDArray[np.float64]:
+    """Coerce held-out predictive log densities to a validated ``(T, M)`` matrix.
+
+    Args:
+        log_density: One row per evaluation origin, one column per model.
+
+    Returns:
+        The ``(T, M)`` float array.
+
+    Raises:
+        DimensionError: If the input is not two-dimensional.
+        SpecificationError: If there are fewer than two models or fewer
+            origins than models.
+        NumericalError: If any entry is not finite.
+
+    Example:
+        >>> _validate_log_density_matrix(np.zeros((10, 2))).shape
+        (10, 2)
+    """
+    matrix = np.asarray(log_density, dtype=np.float64)
+    if matrix.ndim != 2:
+        raise DimensionError(f"log densities must be (T, M); got shape {matrix.shape}.")
+    n_origins, n_models = matrix.shape
+    if n_models < 2:
+        raise SpecificationError(f"Combination needs at least two models; got {n_models}.")
+    if n_origins < n_models:
+        raise SpecificationError(
+            f"Stacking weights over {n_models} models need at least {n_models} evaluation "
+            f"origins; got {n_origins}."
+        )
+    if not np.all(np.isfinite(matrix)):
+        raise NumericalError("log densities must be finite.")
+    return matrix
+
+
+def _validate_statistics(
+    statistics: Sequence[str] | None, *, known: Sequence[str], default: Sequence[str]
+) -> tuple[str, ...]:
+    """Resolve the discrepancy statistics a predictive check computes.
+
+    Args:
+        statistics: Requested names, or ``None`` for the default set.
+        known: Every name the registry offers.
+        default: The set used when none is requested.
+
+    Returns:
+        The names in the order given, duplicates removed.
+
+    Raises:
+        SpecificationError: If a name is unknown or the request is empty.
+
+    Example:
+        >>> _validate_statistics(None, known=("mean", "sd"), default=("sd",))
+        ('sd',)
+        >>> _validate_statistics(["sd", "mean", "sd"], known=("mean", "sd"), default=("sd",))
+        ('sd', 'mean')
+    """
+    chosen = tuple(default) if statistics is None else tuple(dict.fromkeys(statistics))
+    if not chosen:
+        raise SpecificationError("at least one discrepancy statistic is required.")
+    unknown = [name for name in chosen if name not in known]
+    if unknown:
+        raise SpecificationError(
+            f"unknown discrepancy statistic(s) {unknown}; known: {', '.join(known)}."
+        )
+    return chosen
+
+
+def _validate_replications(
+    observed: npt.ArrayLike, replicated: npt.ArrayLike, *, minimum: int
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Check an observed panel against its replications.
+
+    Args:
+        observed: ``(n,)`` or ``(n, k)`` data.
+        replicated: ``(R, n)`` or ``(R, n, k)`` replicated data sets.
+        minimum: Fewest replications accepted.
+
+    Returns:
+        ``(observed, replicated)`` as ``(n, k)`` and ``(R, n, k)`` float arrays.
+
+    Raises:
+        DimensionError: If the shapes disagree or there are too few
+            replications.
+        NumericalError: If a replication is not finite.
+
+    Example:
+        >>> y, rep = _validate_replications(np.zeros(5), np.zeros((3, 5)), minimum=2)
+        >>> y.shape, rep.shape
+        ((5, 1), (3, 5, 1))
+    """
+    data = np.asarray(observed, dtype=np.float64)
+    if data.ndim == 1:
+        data = data[:, None]
+    if data.ndim != 2:
+        raise DimensionError(f"observed must be 1-D or 2-D; got {data.ndim}-D.")
+    reps = np.asarray(replicated, dtype=np.float64)
+    if reps.ndim == 2:
+        reps = reps[:, :, None]
+    if reps.ndim != 3:
+        raise DimensionError(f"replicated must be 2-D or 3-D; got {reps.ndim}-D.")
+    if reps.shape[1:] != data.shape:
+        raise DimensionError(
+            f"each replication has shape {reps.shape[1:]}; the observed panel has {data.shape}."
+        )
+    if reps.shape[0] < minimum:
+        raise DimensionError(
+            f"{reps.shape[0]} replications; at least {minimum} are needed for a tail "
+            "probability with any resolution."
+        )
+    if not np.all(np.isfinite(reps)):
+        raise NumericalError("a replicated data set is not finite; the simulator diverged.")
+    if not np.all(np.isfinite(data)):
+        raise NumericalError("the observed panel is not finite.")
+    return data, reps

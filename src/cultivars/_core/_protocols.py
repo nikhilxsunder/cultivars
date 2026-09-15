@@ -127,3 +127,57 @@ class StructuralResult(Protocol):
     def source(self) -> ClosedSystemResult: ...
 
     def irf(self, horizon: int = ..., *, cumulative: bool = ...) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class PredictiveResult(Protocol):
+    """What a model combination reads from a fitted Bayesian result.
+
+    A result that can hand over its posterior predictive as raw simulated
+    paths, one per retained draw, is a result whose forecasts can be scored,
+    fanned, and mixed with another model's. Every sampled result in the
+    package with a closed system satisfies it; so does any user-defined
+    result exposing the same member.
+    """
+
+    def forecast_paths(
+        self, steps: int = ..., *, seed: int | np.random.Generator | None = ...
+    ) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class ReplicatingResult(Protocol):
+    """What a posterior predictive check reads from a fitted Bayesian result.
+
+    A result that can replicate its own sample -- simulate, from each of a
+    set of retained draws, a data set of the same shape as the one it was
+    fitted to -- is a result whose fit can be checked against the features
+    of the data it claims to explain. ``observed`` is the panel the
+    replications are shaped like, which for a conditional model is the
+    effective sample after the presample it conditions on.
+    """
+
+    @property
+    def observed(self) -> npt.NDArray[np.float64]: ...
+
+    def posterior_replications(
+        self, n_replications: int = ..., *, seed: int | np.random.Generator | None = ...
+    ) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class ReplicatingModel(Protocol):
+    """What a prior predictive check reads from an unfitted Bayesian model.
+
+    A model that can draw parameters from its prior and simulate a data set
+    from each is a model whose prior can be inspected on the scale of the
+    data before any sample touches it. ``observed`` is the panel the
+    replications are shaped like.
+    """
+
+    @property
+    def observed(self) -> npt.NDArray[np.float64]: ...
+
+    def prior_replications(
+        self, n_replications: int = ..., *, seed: int | np.random.Generator | None = ...
+    ) -> npt.NDArray[np.float64]: ...

@@ -215,6 +215,15 @@ class StudentBVARResult(_VectorPosteriorDrawsResult):
         shocks = rng.standard_normal((steps, self.k_endog)) / np.sqrt(mixing)[:, None]
         return np.asarray(shocks @ chol.T, dtype=np.float64)
 
+    def _replication_noise(self, draw: int, rng: np.random.Generator) -> npt.NDArray[np.float64]:
+        """Student-t in-sample innovations: a replication keeps the fat tails."""
+        n = self.endog.shape[0] - self.order
+        return self._predictive_noise(draw, n, rng)
+
+    def _replication_notes(self) -> tuple[str, ...]:
+        tails = "its own drawn" if self.df_estimated else f"the stated {self.df:g}"
+        return (f"Replications draw Student-t innovations with {tails} degrees of freedom.",)
+
     def _summary_table(self) -> SummaryTable:
         """Build the structured summary."""
         rows = []

@@ -61,6 +61,7 @@ from .._core import (
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._covariances import _CoefficientCovariance
 from ._inferences import _CoefficientInference
+from ._simulators import _simulate_vector_autoregression
 from ._tests import _ConvergenceTest, _LikelihoodRatioTest, _StabilityTest, _WaldTest
 
 if TYPE_CHECKING:
@@ -1474,3 +1475,95 @@ class _ConvergenceMixin:
             min_ess=min_ess,
             source=self._convergence_label(),
         )
+
+
+class _ReplicationMixin:
+    """Posterior replications of the sample for a VAR with retained ``(B, Sigma)`` draws.
+
+    A replication is the effective sample simulated afresh from one kept
+    draw: the draw's coefficients, its innovation law, and the same
+    presample the fit conditioned on, so that each replicated panel is
+    shaped exactly like :attr:`observed`. The concrete result declares
+    ``endog``, ``order``, ``trend``, ``beta_draws``, ``sigma_draws``,
+    ``n_kept`` and ``k_endog``; a heteroskedastic or heavy-tailed member
+    overrides :meth:`_replication_noise` with its own innovation law, the
+    same way it overrides the predictive's.
+    """
+
+    __slots__ = ()
+
+    endog: npt.NDArray[np.float64]
+    order: int
+    trend: str
+    beta_draws: npt.NDArray[np.float64]
+    sigma_draws: npt.NDArray[np.float64]
+
+    @property
+    def n_kept(self) -> int:  # pragma: no cover - declared by the concrete result
+        raise NotImplementedError
+
+    @property
+    def k_endog(self) -> int:  # pragma: no cover - declared by the concrete result
+        raise NotImplementedError
+
+    @property
+    def observed(self) -> npt.NDArray[np.float64]:
+        """The effective sample the replications are shaped like, ``(nobs, k)``."""
+        return np.asarray(self.endog[self.order :], dtype=np.float64)
+
+    def _replication_noise(self, draw: int, rng: np.random.Generator) -> npt.NDArray[np.float64]:
+        """One draw's in-sample innovations, ``(nobs, k)``.
+
+        The base law is i.i.d. Gaussian from the draw's covariance, exact
+        for every homoskedastic member of the family.
+        """
+        chol = np.linalg.cholesky(self.sigma_draws[draw])
+        n = self.endog.shape[0] - self.order
+        return np.asarray(rng.standard_normal((n, self.k_endog)) @ chol.T, dtype=np.float64)
+
+    def _replication_notes(self) -> tuple[str, ...]:
+        """Remarks a predictive check carries about how this result replicates."""
+        return ()
+
+    def posterior_replications(
+        self,
+        n_replications: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Replicated effective samples, one per posterior draw used.
+
+        Draws are taken evenly across the kept sequence when fewer
+        replications than draws are asked for, so that the replications
+        span the posterior rather than its first stretch; asking for more
+        replications than draws cycles through the draws with fresh
+        innovations.
+
+        Args:
+            n_replications: Replicated data sets.
+            seed: Seed or generator for the innovations.
+
+        Returns:
+            An array of shape ``(n_replications, nobs, k)`` aligned with
+            :attr:`observed`.
+
+        Raises:
+            SpecificationError: If the count is not positive.
+        """
+        if n_replications < 1:
+            raise SpecificationError(f"n_replications must be positive; got {n_replications}.")
+        rng = np.random.default_rng(seed)
+        n_eff, k = self.endog.shape[0] - self.order, self.k_endog
+        presample = self.endog[: self.order]
+        indices = np.linspace(0, self.n_kept - 1, n_replications).round().astype(int)
+        out = np.empty((n_replications, n_eff, k))
+        for r, draw in enumerate(indices):
+            out[r] = _simulate_vector_autoregression(
+                self.beta_draws[draw],
+                self._replication_noise(int(draw), rng),
+                order=self.order,
+                trend=self.trend,
+                presample=presample,
+                start=self.order + 1,
+            )
+        return out

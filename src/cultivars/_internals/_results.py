@@ -44,6 +44,7 @@ from ._mixins import (
     _ComparisonMixin,
     _ConditionalVarianceMixin,
     _ConvergenceMixin,
+    _ReplicationMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
@@ -1279,7 +1280,7 @@ class _RegimeSystemResult:
         return out
 
 
-class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin):
+class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin, _ReplicationMixin):
     """What every fitted Bayesian VAR with retained ``(B, Sigma)`` draws reports.
 
     The shared propagation surface of the conjugate family: point summaries

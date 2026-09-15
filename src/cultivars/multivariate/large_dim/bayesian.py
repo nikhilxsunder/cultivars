@@ -73,6 +73,7 @@ from ..._internals import (
     _ConvergenceMixin,
     _MarginalLikelihoodSelection,
     _Prior,
+    _ReplicationMixin,
     _SummaryMixin,
     _VectorConjugateFit,
 )
@@ -83,7 +84,7 @@ __all__ = ["BVAR", "BVARResult"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class BVARResult(_SummaryMixin, _ConvergenceMixin):
+class BVARResult(_SummaryMixin, _ConvergenceMixin, _ReplicationMixin):
     """A fitted conjugate Bayesian VAR: an exact posterior over ``(B, Sigma)``.
 
     Point summaries are posterior means; the retained draws carry the full
@@ -303,6 +304,52 @@ class BVARResult(_SummaryMixin, _ConvergenceMixin):
             axis=-1,
         )
 
+    def forecast_paths(
+        self,
+        steps: int = 8,
+        *,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """The posterior predictive's raw simulated paths, one per kept draw.
+
+        Each retained draw simulates its own future -- its coefficients, its
+        covariance, its innovations -- and this method hands the paths over
+        unsummarized: the object a forecast evaluation scores, a fan chart
+        takes quantiles of, and a model average mixes. :meth:`forecast` is
+        these paths' three-number summary.
+
+        Args:
+            steps: Horizons ahead.
+            seed: Seed or generator for the predictive shocks.
+
+        Returns:
+            An array of shape ``(n_kept, steps, k)``.
+
+        Raises:
+            SpecificationError: If ``steps`` is not positive.
+        """
+        if steps < 1:
+            raise SpecificationError(f"steps must be positive; got {steps}.")
+        rng = np.random.default_rng(seed)
+        k, p, n = self.k_endog, self.order, self.endog.shape[0]
+        offset = self._n_deterministic
+        paths = np.empty((self.n_kept, steps, k))
+        for s in range(self.n_kept):
+            beta = self.beta_draws[s]
+            stack = self._stack_of(beta)
+            chol = np.linalg.cholesky(self.sigma_draws[s])
+            history = list(self.endog[n - p :][::-1]) if p else []
+            for h in range(steps):
+                det = {"n": [], "c": [1.0], "ct": [1.0, float(n + h + 1)]}[self.trend]
+                value = np.asarray(det, dtype=np.float64) @ beta[:offset]
+                for lag in range(p):
+                    value = value + stack[lag] @ history[lag]
+                value = value + chol @ rng.standard_normal(k)
+                paths[s, h] = value
+                if p:
+                    history = [value, *history[:-1]]
+        return paths
+
     def forecast(
         self,
         steps: int = 8,
@@ -330,26 +377,7 @@ class BVARResult(_SummaryMixin, _ConvergenceMixin):
         Raises:
             SpecificationError: If ``steps`` is not positive.
         """
-        if steps < 1:
-            raise SpecificationError(f"steps must be positive; got {steps}.")
-        rng = np.random.default_rng(seed)
-        k, p, n = self.k_endog, self.order, self.endog.shape[0]
-        offset = self._n_deterministic
-        paths = np.empty((self.n_kept, steps, k))
-        for s in range(self.n_kept):
-            beta = self.beta_draws[s]
-            stack = self._stack_of(beta)
-            chol = np.linalg.cholesky(self.sigma_draws[s])
-            history = list(self.endog[n - p :][::-1]) if p else []
-            for h in range(steps):
-                det = {"n": [], "c": [1.0], "ct": [1.0, float(n + h + 1)]}[self.trend]
-                value = np.asarray(det, dtype=np.float64) @ beta[:offset]
-                for lag in range(p):
-                    value = value + stack[lag] @ history[lag]
-                value = value + chol @ rng.standard_normal(k)
-                paths[s, h] = value
-                if p:
-                    history = [value, *history[:-1]]
+        paths = self.forecast_paths(steps, seed=seed)
         return np.stack(
             [
                 np.quantile(paths, 0.16, axis=0),

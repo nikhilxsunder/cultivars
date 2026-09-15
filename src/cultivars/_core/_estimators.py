@@ -22,17 +22,19 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from functools import lru_cache
 
 import numpy as np
 import numpy.typing as npt
+from scipy.optimize import minimize
 from scipy.special import logsumexp
 from scipy.stats import chi2, invwishart, norm
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._converters import _as_chains
 from ._defaults import _BRIDGE_MAX_ITER, _BRIDGE_TOL, _LOG_2PI, _MHM_TAU, _MIN_CHAIN_DRAWS, _PENALTY
+from ._mappings import _DISCREPANCIES
 from ._transforms import _rank_normalize, _split_chains
 from ._types import CointegrationTrend
 from ._validators import _validate_posterior_draws
@@ -1036,3 +1038,140 @@ def _log_mean_mcse(log_terms: npt.NDArray[np.float64]) -> tuple[float, float]:
         return log_mean, 0.0
     error = float(ratios.std(ddof=1) / (mean * np.sqrt(ess)))
     return log_mean, error
+
+
+def _stacking_weights(
+    log_density: npt.NDArray[np.float64],
+) -> tuple[npt.NDArray[np.float64], float]:
+    """Log-score-optimal simplex weights over models' held-out predictive densities.
+
+    Maximizes ``sum_t log sum_m w_m exp(l_tm)`` over the simplex (Yao,
+    Vehtari, Simpson, and Gelman, 2018): the weights of the mixture of
+    predictive densities that would have scored best on the evaluation
+    origins. The objective is concave in ``w``; it is optimized through the
+    softmax map from ``M - 1`` free coordinates, whose stationary point is
+    the simplex optimum.
+
+    Args:
+        log_density: ``(T, M)`` log predictive densities, one row per
+            origin and one column per model.
+
+    Returns:
+        ``(weights, score)``: the ``(M,)`` weights and the maximized mean log
+        score per origin.
+
+    Raises:
+        NumericalError: If the optimizer fails.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> better = -0.5 * rng.standard_normal(200) ** 2
+        >>> worse = better - 2.0
+        >>> weights, score = _stacking_weights(np.column_stack([better, worse]))
+        >>> round(float(weights[0]), 2)
+        1.0
+    """
+    n_origins, n_models = log_density.shape
+    shift = log_density.max(axis=1, keepdims=True)
+    scaled = np.exp(log_density - shift)
+
+    def objective(free: npt.NDArray[np.float64]) -> float:
+        z = np.concatenate([free, [0.0]])
+        weights = np.exp(z - z.max())
+        weights /= weights.sum()
+        mixture = scaled @ weights
+        return -float(np.sum(np.log(np.maximum(mixture, 1e-300))))
+
+    solution = minimize(objective, np.zeros(n_models - 1), method="L-BFGS-B")
+    if not solution.success and not np.isfinite(solution.fun):
+        raise NumericalError(f"Stacking weight optimization failed: {solution.message}")
+    z = np.concatenate([solution.x, [0.0]])
+    weights = np.exp(z - z.max())
+    weights /= weights.sum()
+    score = float(-(solution.fun) / n_origins + shift.mean())
+    return np.asarray(weights, dtype=np.float64), score
+
+
+def _standardized(panel: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Each column centered and scaled to unit variance; a constant column becomes ``nan``.
+
+    Every shape statistic is computed on this scale so that a prior
+    replication wandering to ``1e80`` does not overflow its fourth power.
+    """
+    centered = panel - panel.mean(axis=0)
+    scale = np.sqrt((centered**2).mean(axis=0))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.asarray(np.where(scale > 0.0, centered / scale, np.nan), dtype=np.float64)
+
+
+def _lag_one_autocorrelation(panel: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Lag-one autocorrelation of each column of an ``(n, k)`` panel."""
+    z = _standardized(panel)
+    return np.asarray((z[1:] * z[:-1]).sum(axis=0) / z.shape[0])
+
+
+def _excess_kurtosis(panel: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Excess kurtosis of each column of an ``(n, k)`` panel."""
+    return np.asarray((_standardized(panel) ** 4).mean(axis=0) - 3.0)
+
+
+def _skewness(panel: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """Skewness of each column of an ``(n, k)`` panel."""
+    return np.asarray((_standardized(panel) ** 3).mean(axis=0))
+
+
+def _discrepancy_statistics(
+    panel: npt.NDArray[np.float64], statistics: Sequence[str]
+) -> npt.NDArray[np.float64]:
+    """Evaluate named discrepancy statistics on one ``(n, k)`` panel.
+
+    Args:
+        panel: The data set, one column per variable.
+        statistics: Names from :data:`_DISCREPANCIES`.
+
+    Returns:
+        An ``(m, k)`` array, one row per statistic.
+
+    Raises:
+        SpecificationError: If a name is unknown.
+
+    Example:
+        >>> panel = np.column_stack([np.arange(6.0), np.ones(6)])
+        >>> _discrepancy_statistics(panel, ["mean", "sd"])
+        array([[2.5       , 1.        ],
+               [1.87082869, 0.        ]])
+    """
+    unknown = [name for name in statistics if name not in _DISCREPANCIES]
+    if unknown:
+        raise SpecificationError(
+            f"unknown discrepancy statistic(s) {unknown}; known: {', '.join(_DISCREPANCIES)}."
+        )
+    data = np.asarray(panel, dtype=np.float64)
+    return np.stack([_DISCREPANCIES[name](data) for name in statistics])
+
+
+def _predictive_pvalues(
+    observed: npt.NDArray[np.float64], replicated: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
+    """Posterior predictive p-values ``P(T(y_rep) >= T(y))`` with a tie correction.
+
+    Args:
+        observed: ``(m, k)`` statistics of the data.
+        replicated: ``(R, m, k)`` statistics of the replications.
+
+    Returns:
+        ``(m, k)`` tail probabilities, ties counted as one half so that a
+        statistic the model reproduces exactly reads ``0.5`` rather than
+        ``1.0``. A statistic undefined on some replication is ``nan``.
+
+    Example:
+        >>> rep = np.arange(10.0).reshape(10, 1, 1)
+        >>> float(_predictive_pvalues(np.array([[7.0]]), rep)[0, 0])
+        0.25
+    """
+    above = (replicated > observed[None]).mean(axis=0)
+    ties = (replicated == observed[None]).mean(axis=0)
+    out = np.asarray(above + 0.5 * ties, dtype=np.float64)
+    undefined = ~np.all(np.isfinite(replicated), axis=0) | ~np.isfinite(observed)
+    out[undefined] = np.nan
+    return out

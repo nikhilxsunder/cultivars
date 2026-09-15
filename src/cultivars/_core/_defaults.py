@@ -183,3 +183,28 @@ _BRIDGE_TOL: Final[float] = 1e-10
 
 _BRIDGE_MAX_ITER: Final[int] = 1000
 """Iterations of the bridge recursion before it is declared not to converge."""
+
+_DISCREPANCY_STATISTICS: Final[tuple[str, ...]] = ("mean", "sd", "acf1", "kurtosis", "arch1")
+"""Per-variable discrepancy statistics a predictive check computes by default.
+
+Location, scale, first-order persistence, tail weight, and first-order
+persistence of the squares: the five features a stationary time-series model
+is most often asked to reproduce, and the ones whose failure names the
+misspecification (a Gaussian innovation cannot match ``kurtosis``; a constant
+covariance cannot match ``arch1``).
+"""
+
+_MIN_REPLICATIONS: Final[int] = 20
+"""Fewest replicated data sets a predictive p-value is reported from.
+
+Below this a tail probability has a resolution coarser than 0.05, and the
+verdict would be a rounding artefact.
+"""
+
+_EXTREME_PVALUE: Final[float] = 0.05
+"""Predictive p-value below which, or above one minus which, a statistic is flagged.
+
+A posterior predictive p-value is not uniform under the true model -- it is
+conservative, concentrated near one half (Meng, 1994) -- so a flag at this
+level understates the evidence against the model rather than overstating it.
+"""

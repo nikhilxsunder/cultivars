@@ -55,6 +55,22 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
     import polars as pl
 
 
+def _variable_names(source: object, k: int) -> tuple[str, ...]:
+    """The result's or model's variable labels, or ``y1 ... yk``."""
+    names = getattr(source, "names", None)
+    if isinstance(names, tuple | list) and len(names) == k:
+        return tuple(str(name) for name in names)
+    return tuple(f"y{i + 1}" for i in range(k)) if k > 1 else ("y",)
+
+
+def _source_label(source: object) -> str:
+    """A title for the check."""
+    label = getattr(source, "_convergence_label", None)
+    if callable(label):
+        return str(label())
+    return type(source).__name__
+
+
 def _mean_label(mean_order: tuple[int, int], *, has_const: bool) -> str:
     """Name the conditional mean the way a reader expects to see it.
 

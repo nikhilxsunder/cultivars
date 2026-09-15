@@ -69,6 +69,7 @@ from ._mixins import (
     _ConditionalVarianceMixin,
     _ConvergenceMixin,
     _InvertibilityMixin,
+    _ReplicationMixin,
     _SeriesMixin,
     _StationarityMixin,
     _SummaryMixin,
@@ -149,7 +150,7 @@ from ._results import (
     _VectorPosteriorDrawsResult,
     _VectorResult,
 )
-from ._selections import _MarginalLikelihoodSelection
+from ._selections import _MarginalLikelihoodSelection, _ModelCombinationSelection
 from ._simulators import _impulse_responses, _simulate_pruned
 from ._solutions import _PerturbationSolution
 from ._solvers import _maximize_likelihood, _solve, _spectral_factor, solve_global
@@ -165,6 +166,7 @@ from ._tests import (
     _ConvergenceTest,
     _JohansenRankTest,
     _LikelihoodRatioTest,
+    _PredictiveCheckTest,
     _StabilityTest,
     _WaldTest,
 )
@@ -220,6 +222,7 @@ __all__ = [
     "_MeanFunctionResult",
     "_MidasProfileObjective",
     "_MixedHorizonObjective",
+    "_ModelCombinationSelection",
     "_NelsonSiegelFit",
     "_NelsonSiegelObjective",
     "_NelsonSiegelParameters",
@@ -239,11 +242,13 @@ __all__ = [
     "_PerturbationModel",
     "_PerturbationModelSpecification",
     "_PerturbationSolution",
+    "_PredictiveCheckTest",
     "_Prior",
     "_PriorContext",
     "_QuantileVectorAutoRegressionModel",
     "_RegimeSwitchingLinearStateSpace",
     "_RegimeSystemResult",
+    "_ReplicationMixin",
     "_RtsSmootherResult",
     "_SVPosterior",
     "_SeriesMixin",

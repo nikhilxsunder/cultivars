@@ -16,7 +16,7 @@ from ._fits import _ParticleChainFit, _TrendVolatilityFit, _VolatilityDrawsFit
 from ._mixins import _ConvergenceMixin, _SeriesMixin, _SummaryMixin
 from ._parameters import _StochasticVolatilityParameters, _TrendVolatilityParameters
 from ._selections import _MarginalLikelihoodSelection
-from ._simulators import _impulse_responses
+from ._simulators import _impulse_responses, _simulate_stochastic_volatility
 from ._solutions import _PerturbationSolution
 from ._substrates import _LinearGaussianStateSpace, _NonlinearStateSpace
 
@@ -248,6 +248,67 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     def state_space(self) -> _NonlinearStateSpace:
         """The model at the posterior mean, on the nonlinear substrate."""
         return _volatility_state_space(self.params)
+
+    @property
+    def observed(self) -> npt.NDArray[np.float64]:
+        """The series the replications are shaped like, ``(n,)``."""
+        return np.asarray(self.endog, dtype=np.float64)
+
+    def _replication_notes(self) -> tuple[str, ...]:
+        """Remarks a predictive check carries about how this posterior replicates."""
+        return (
+            "Replications simulate a fresh log-variance path from each draw's (mu, phi, "
+            "sigma2), started at its stationary distribution: the check reads the whole "
+            "model, volatility law included, not the observation equation given the "
+            "smoothed path.",
+        )
+
+    def posterior_replications(
+        self,
+        n_replications: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Replicated series, one per posterior draw used.
+
+        Each replication takes one kept draw of ``(mu, phi, sigma2, mean)``
+        -- and of ``nu`` or ``rho`` where the posterior carries them -- simulates a fresh
+        log-variance path from its stationary start, and the series from
+        it. Draws are taken evenly across the kept sequence when fewer
+        replications than draws are asked for.
+
+        Args:
+            n_replications: Replicated series.
+            seed: Seed or generator.
+
+        Returns:
+            An array of shape ``(n_replications, n)`` aligned with
+            :attr:`observed`.
+
+        Raises:
+            SpecificationError: If the count is not positive.
+        """
+        if n_replications < 1:
+            raise SpecificationError(f"n_replications must be positive; got {n_replications}.")
+        rng = np.random.default_rng(seed)
+        n = int(self.endog.shape[0])
+        indices = np.linspace(0, self.n_kept - 1, n_replications).round().astype(int)
+        out = np.empty((n_replications, n))
+        for r, draw in enumerate(indices):
+            phi = float(np.clip(self.phi_draws[draw], -0.9999, 0.9999))
+            nu = float(self.nu_draws[draw]) if self.nu_draws is not None else None
+            rho = float(self.rho_draws[draw]) if self.rho_draws is not None else 0.0
+            out[r], _ = _simulate_stochastic_volatility(
+                n,
+                mu=float(self.mu_draws[draw]),
+                phi=phi,
+                sigma2=float(self.sigma2_draws[draw]),
+                mean=float(self.mean_draws[draw]),
+                rng=rng,
+                nu=nu,
+                rho=rho,
+            )
+        return out
 
     def _series(self) -> dict[str, npt.NDArray[np.float64]]:
         """Aligned per-observation output."""

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 import numpy as np
 import numpy.typing as npt
 from scipy.special import logsumexp
 
-from .._core import SummaryTable, _evidence_label
+from .._core import PredictiveResult, SummaryTable, _evidence_label, _mix_predictive_paths
 from ..exceptions import DimensionError, SpecificationError
 
 
@@ -318,4 +318,131 @@ class _MarginalLikelihoodSelection:
         error = f" (mcse {self.mcse:.3f})" if np.isfinite(self.mcse) and self.mcse > 0.0 else ""
         return (
             f"MarginalLikelihood({self.source}: log ML={self.log_value:.3f}{error}, {self.method})"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ModelCombinationSelection:
+    """Weights over models and the mixture predictive they imply.
+
+    The record behind both routes to a combination: posterior model
+    probabilities from marginal likelihoods (Bayesian model averaging) and
+    log-score-optimal weights from held-out predictive densities (stacking).
+    Whatever produced the weights, prediction is the same act -- draw a
+    model in proportion to its weight, then one of its predictive paths --
+    so the two share this object and differ only in :attr:`method` and in
+    what :attr:`scores` holds.
+
+    Attributes:
+        names: Model labels, in weight order.
+        weights: ``(M,)`` non-negative weights summing to one.
+        method: ``"bayesian model average"`` or ``"stacking"``.
+        scores: ``(M,)`` the per-model number the weights came from -- log
+            marginal likelihoods for averaging, mean held-out log
+            predictive densities for stacking.
+        results: The fitted results, each exposing ``forecast_paths``.
+        n_origins: Evaluation origins behind stacking weights; ``0`` for
+            averaging.
+        notes: Caveats that qualify the weights.
+    """
+
+    names: tuple[str, ...]
+    weights: npt.NDArray[np.float64] = field(repr=False)
+    method: str
+    scores: npt.NDArray[np.float64] = field(repr=False)
+    results: tuple[PredictiveResult, ...] = field(repr=False)
+    n_origins: int = 0
+    notes: tuple[str, ...] = ()
+
+    @property
+    def n_models(self) -> int:
+        """Models combined."""
+        return len(self.names)
+
+    def forecast_paths(
+        self,
+        steps: int = 8,
+        *,
+        n_draws: int | None = None,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Draws from the mixture predictive, one model per draw.
+
+        Args:
+            steps: Horizons ahead.
+            n_draws: Mixed paths to return; default the largest number of
+                paths any one model supplies.
+            seed: Seed or generator, used both for the models' own
+                predictive shocks and for the model selection.
+
+        Returns:
+            ``(n_draws, steps, k)``.
+
+        Raises:
+            DimensionError: If the models' predictive paths disagree in
+                horizon or dimension.
+            SpecificationError: If ``steps`` or ``n_draws`` is not positive.
+        """
+        if steps < 1:
+            raise SpecificationError(f"steps must be positive; got {steps}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        blocks = [
+            np.asarray(result.forecast_paths(steps, seed=rng), dtype=np.float64)
+            for result in self.results
+        ]
+        shapes = {block.shape[1:] for block in blocks}
+        if len(shapes) != 1 or any(block.ndim != 3 for block in blocks):
+            raise DimensionError(
+                f"the models' predictive paths must share (steps, k); got {sorted(shapes)}."
+            )
+        count = max(block.shape[0] for block in blocks) if n_draws is None else int(n_draws)
+        if count < 1:
+            raise SpecificationError(f"n_draws must be positive; got {count}.")
+        return _mix_predictive_paths(blocks, self.weights, n_draws=count, rng=rng)
+
+    def forecast(
+        self,
+        steps: int = 8,
+        *,
+        n_draws: int | None = None,
+        seed: int | np.random.Generator | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """The mixture predictive's ``(16th percentile, mean, 84th percentile)``.
+
+        Returns:
+            ``(steps, k, 3)``, the family convention.
+        """
+        paths = self.forecast_paths(steps, n_draws=n_draws, seed=seed)
+        return np.stack(
+            [
+                np.quantile(paths, 0.16, axis=0),
+                paths.mean(axis=0),
+                np.quantile(paths, 0.84, axis=0),
+            ],
+            axis=-1,
+        )
+
+    def summary(self) -> SummaryTable:
+        """Weights and the number each came from, heaviest first."""
+        order = np.argsort(self.weights)[::-1]
+        score_label = "log ML" if self.method == "bayesian model average" else "mean log score"
+        rows = tuple(
+            (self.names[i], f"{self.weights[i]:.3f}", f"{self.scores[i]:.3f}") for i in order
+        )
+        metadata = [("Models", str(self.n_models)), ("Method", self.method)]
+        if self.n_origins:
+            metadata.append(("Evaluation origins", str(self.n_origins)))
+        return SummaryTable(
+            title="Model combination",
+            metadata=tuple(metadata),
+            columns=("model", "weight", score_label),
+            rows=rows,
+            notes=self.notes,
+        )
+
+    def __repr__(self) -> str:
+        top = int(np.argmax(self.weights))
+        return (
+            f"ModelCombinationSelection({self.n_models} models, {self.method}, "
+            f"heaviest {self.names[top]!r} at {self.weights[top]:.3f})"
         )
