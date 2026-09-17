@@ -71,6 +71,7 @@ from ..._internals import (
     _FactorVolatilityModel,
     _SummaryMixin,
 )
+from ...bayes import VolatilityPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["FactorSV", "FactorSVResult"]
@@ -348,9 +349,7 @@ class FactorSV(_FactorVolatilityModel[FactorSVResult]):
         n_draws: int = 3000,
         n_burn: int = 1000,
         thin: int = 1,
-        prior_mu: tuple[float, float] = (0.0, 10.0),
-        prior_phi: tuple[float, float] = (20.0, 1.5),
-        prior_sigma2: tuple[float, float] = (2.5, 0.025),
+        prior: VolatilityPrior | None = None,
         loading_prior_precision: float = 1.0,
         seed: int | np.random.Generator | None = None,
     ) -> FactorSVResult:
@@ -365,10 +364,9 @@ class FactorSV(_FactorVolatilityModel[FactorSVResult]):
             n_draws: Total sampler iterations.
             n_burn: Burn-in discarded.
             thin: Keep every ``thin``-th post-burn draw.
-            prior_mu: ``(mean, variance)`` of the prior on each
-                log-variance mean.
-            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
-            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            prior: The prior on each factor's volatility law, an instance of
+                :class:`VolatilityPrior` or ``None`` to use the default
+                Kim-Shephard-Chib prior.
             loading_prior_precision: Prior precision on each free loading.
             seed: Seed or generator.
 
@@ -383,9 +381,7 @@ class FactorSV(_FactorVolatilityModel[FactorSVResult]):
             n_draws=n_draws,
             n_burn=n_burn,
             thin=thin,
-            prior_mu=prior_mu,
-            prior_phi=prior_phi,
-            prior_sigma2=prior_sigma2,
+            prior=VolatilityPrior() if prior is None else prior,
             loading_prior_precision=loading_prior_precision,
             seed=seed,
         )

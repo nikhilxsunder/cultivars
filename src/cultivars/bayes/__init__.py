@@ -9,8 +9,10 @@ from .priors import (
     NoPrior,
     NormalGammaPrior,
     NormalInverseWishartPrior,
+    RandomWalkVolatilityPrior,
     SpikeAndSlabPrior,
     SumOfCoefficientsPrior,
+    VolatilityPrior,
 )
 
 __all__ = [
@@ -22,6 +24,8 @@ __all__ = [
     "NoPrior",
     "NormalGammaPrior",
     "NormalInverseWishartPrior",
+    "RandomWalkVolatilityPrior",
     "SpikeAndSlabPrior",
     "SumOfCoefficientsPrior",
+    "VolatilityPrior",
 ]

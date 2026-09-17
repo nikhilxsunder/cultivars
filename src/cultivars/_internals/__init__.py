@@ -131,7 +131,14 @@ from ._parameters import (
 )
 from ._posteriors import _PerturbationDSGEPosterior, _SVPosterior, _UCSVPosterior
 from ._predictors import MeanPredictor
-from ._priors import _AdaptivePrior, _NoPrior, _Prior, _PriorContext
+from ._priors import (
+    _AdaptivePrior,
+    _NoPrior,
+    _Prior,
+    _PriorContext,
+    _RandomWalkVolatilityPrior,
+    _VolatilityPrior,
+)
 from ._results import (
     _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
@@ -246,6 +253,7 @@ __all__ = [
     "_Prior",
     "_PriorContext",
     "_QuantileVectorAutoRegressionModel",
+    "_RandomWalkVolatilityPrior",
     "_RegimeSwitchingLinearStateSpace",
     "_RegimeSystemResult",
     "_ReplicationMixin",
@@ -300,6 +308,7 @@ __all__ = [
     "_VectorVolatilityFit",
     "_VolatilityBayesianVectorAutoRegressionModel",
     "_VolatilityIdentificationModel",
+    "_VolatilityPrior",
     "_VolatilityStructuralFit",
     "_WaldTest",
     "_WhittleVolatilityObjective",

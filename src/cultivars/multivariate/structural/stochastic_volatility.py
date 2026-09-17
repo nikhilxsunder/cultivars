@@ -96,6 +96,7 @@ from ..._internals import (
     _VolatilityIdentificationModel,
     _VolatilityStructuralFit,
 )
+from ...bayes import VolatilityPrior
 from ...exceptions import SpecificationError
 from ...state_space import LinearGaussianSSM
 from .zero_restrictions import SVARResult
@@ -467,8 +468,7 @@ class StochasticVolatilitySVAR(_VolatilityIdentificationModel[StochasticVolatili
         n_draws: int = 3000,
         n_burn: int = 1000,
         thin: int = 1,
-        prior_phi: tuple[float, float] = (20.0, 1.5),
-        prior_sigma2: tuple[float, float] = (2.5, 0.025),
+        prior: VolatilityPrior | None = None,
         seed: int | np.random.Generator | None = None,
     ) -> StochasticVolatilitySVARResult:
         """Sample the posterior over impact matrices and volatility paths.
@@ -483,8 +483,8 @@ class StochasticVolatilitySVAR(_VolatilityIdentificationModel[StochasticVolatili
             n_draws: Total sampler iterations.
             n_burn: Burn-in discarded.
             thin: Keep every ``thin``-th post-burn draw.
-            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
-            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            prior: The prior on each shock's volatility law, an instance of
+                :class:`VolatilityPrior` or ``None`` to use the default Kim-Shephard-Chib prior.
             seed: Seed or generator.
 
         Returns:
@@ -498,8 +498,7 @@ class StochasticVolatilitySVAR(_VolatilityIdentificationModel[StochasticVolatili
             n_draws=n_draws,
             n_burn=n_burn,
             thin=thin,
-            prior_phi=prior_phi,
-            prior_sigma2=prior_sigma2,
+            prior=VolatilityPrior() if prior is None else prior,
             seed=seed,
         )
         return StochasticVolatilitySVARResult._from_fit(fit, self)

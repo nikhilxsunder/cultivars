@@ -11,6 +11,8 @@ import numpy.typing as npt
 from .._core import _draw_generalized_inverse_gaussian
 from .._internals import _AdaptivePrior, _Prior, _PriorContext
 from .._internals import _NoPrior as NoPrior
+from .._internals import _RandomWalkVolatilityPrior as RandomWalkVolatilityPrior
+from .._internals import _VolatilityPrior as VolatilityPrior
 from ..exceptions import DimensionError, SpecificationError
 
 __all__ = [
@@ -22,8 +24,10 @@ __all__ = [
     "NoPrior",
     "NormalGammaPrior",
     "NormalInverseWishartPrior",
+    "RandomWalkVolatilityPrior",
     "SpikeAndSlabPrior",
     "SumOfCoefficientsPrior",
+    "VolatilityPrior",
 ]
 
 

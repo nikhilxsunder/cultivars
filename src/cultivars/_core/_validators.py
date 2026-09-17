@@ -1050,3 +1050,38 @@ def _validate_replications(
     if not np.all(np.isfinite(data)):
         raise NumericalError("the observed panel is not finite.")
     return data, reps
+
+
+def _validate_hyperparameter_pair(
+    value: Iterable[float], *, name: str, positive_first: bool
+) -> tuple[float, float]:
+    """Check a two-number prior hyperparameter such as ``(mean, variance)`` or ``(shape, rate)``.
+
+    Args:
+        value: The pair as given.
+        name: Argument name, for error messages.
+        positive_first: Whether the first entry must be positive as well as
+            the second (a shape or a Beta parameter, as opposed to a mean).
+
+    Returns:
+        The pair as floats.
+
+    Raises:
+        SpecificationError: If the pair is not two finite numbers or a
+            required entry is not positive.
+
+    Example:
+        >>> _validate_hyperparameter_pair((20, 1.5), name="phi", positive_first=True)
+        (20.0, 1.5)
+    """
+    try:
+        first, second = (float(entry) for entry in value)
+    except (TypeError, ValueError) as error:
+        raise SpecificationError(f"{name} must be a pair of numbers; got {value!r}.") from error
+    if not (np.isfinite(first) and np.isfinite(second)):
+        raise SpecificationError(f"{name} must be finite; got {value!r}.")
+    if second <= 0.0:
+        raise SpecificationError(f"the second entry of {name} must be positive; got {value!r}.")
+    if positive_first and first <= 0.0:
+        raise SpecificationError(f"both entries of {name} must be positive; got {value!r}.")
+    return first, second

@@ -72,6 +72,7 @@ from .._internals import (
     _UCSVPosterior,
     _volatility_state_space,
 )
+from ..bayes import RandomWalkVolatilityPrior, VolatilityPrior
 from ..exceptions import SpecificationError
 from ..state_space import LinearGaussianSSM, NonlinearSSM
 
@@ -353,9 +354,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
         n_burn: int = 1000,
         thin: int = 1,
         n_particles: int = 500,
-        prior_mu: tuple[float, float] = (0.0, 10.0),
-        prior_phi: tuple[float, float] = (20.0, 1.5),
-        prior_sigma2: tuple[float, float] = (2.5, 0.025),
+        prior: VolatilityPrior | None = None,
         seed: int | None = None,
     ) -> _SVPosterior:
         """Sample the posterior.
@@ -374,18 +373,19 @@ class SV(_StochasticVolatilityModel[SVResult]):
             thin: Keep every ``thin``-th post-burn draw.
             n_particles: Particles per likelihood estimate under
                 ``"particle"``.
-            prior_mu: ``(mean, variance)``.
-            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
-            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            prior: VolatilityPrior instance containing the priors.
             seed: Seed.
 
         Raises:
             SpecificationError: If the method is unknown or the draw
                 bookkeeping is inconsistent.
         """
-        priors = {"prior_mu": prior_mu, "prior_phi": prior_phi, "prior_sigma2": prior_sigma2}
+        if prior is None:
+            prior = VolatilityPrior()
         if method == "gibbs":
-            fit = self._sample_gibbs(n_draws=n_draws, n_burn=n_burn, thin=thin, seed=seed, **priors)
+            fit = self._sample_gibbs(
+                n_draws=n_draws, n_burn=n_burn, thin=thin, seed=seed, prior=prior
+            )
             return _SVPosterior._from_gibbs(fit, self)
         if method == "particle":
             chain, mean = self._sample_chain(
@@ -395,7 +395,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
                 thin=thin,
                 filter_method="bootstrap",
                 seed=seed,
-                **priors,
+                prior=prior,
             )
             return _SVPosterior._from_chain(chain, mean, self, n_particles=n_particles, seed=seed)
         raise SpecificationError(f"method must be 'gibbs' or 'particle'; got {method!r}.")
@@ -432,7 +432,7 @@ class UCSV(_TrendVolatilityModel[_UCSVPosterior]):
         n_draws: int = 3000,
         n_burn: int = 1000,
         thin: int = 1,
-        prior_gamma2: tuple[float, float] = (3.0, 0.04),
+        prior: RandomWalkVolatilityPrior | None = None,
         seed: int | None = None,
     ) -> _UCSVPosterior:
         """Run the Gibbs sampler and return the posterior.
@@ -441,14 +441,16 @@ class UCSV(_TrendVolatilityModel[_UCSVPosterior]):
             n_draws: Total iterations.
             n_burn: Burn-in discarded.
             thin: Keep every ``thin``-th post-burn draw.
-            prior_gamma2: ``(shape, rate)`` of the inverse-gamma prior on
-                each vol-of-vol variance, used only when ``gamma`` is
-                ``None``.
+            prior: VolatilityPrior instance.
             seed: Seed.
         """
         return _UCSVPosterior._from_fit(
             self._sample_gibbs(
-                n_draws=n_draws, n_burn=n_burn, thin=thin, prior_gamma2=prior_gamma2, seed=seed
+                n_draws=n_draws,
+                n_burn=n_burn,
+                thin=thin,
+                prior=RandomWalkVolatilityPrior() if prior is None else prior,
+                seed=seed,
             ),
             self,
         )

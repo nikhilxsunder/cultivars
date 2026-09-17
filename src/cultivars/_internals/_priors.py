@@ -6,6 +6,14 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from .._core import (
+    _KSC_MU_PRIOR,
+    _KSC_PHI_PRIOR,
+    _KSC_SIGMA2_PRIOR,
+    _UCSV_VOL_OF_VOL_PRIOR,
+    _validate_hyperparameter_pair,
+)
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _PriorContext:
@@ -368,3 +376,101 @@ class _AdaptivePrior(_Prior):
     @abstractmethod
     def _tracked_label(self) -> str:
         """What the averaged diagnostic *is*, for the result's summary."""
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VolatilityPrior:
+    """The Kim-Shephard-Chib prior on a stationary log-AR(1) volatility law.
+
+    ``h_{t+1} = mu + phi (h_t - mu) + sigma eta_t`` carries three
+    hyperparameters, and every model in the package whose volatility
+    follows this law -- the univariate stochastic-volatility model, the
+    volatility-identified SVAR, the factor stochastic-volatility model --
+    states its prior through this one record: Gaussian on ``mu``, Beta on
+    ``(phi + 1) / 2``, inverse-gamma on ``sigma2``. The defaults are Kim,
+    Shephard and Chib's (1998), which put the persistence near ``0.86`` a
+    priori and keep the innovation variance small; a model that pins
+    ``mu`` for identification says so and leaves that entry unread.
+
+    Attributes:
+        mu: ``(mean, variance)`` of the Gaussian prior on the log-variance
+            mean.
+        phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``, both
+            positive.
+        sigma2: ``(shape, rate)`` of the inverse-gamma prior on the
+            log-variance innovation variance, both positive.
+    """
+
+    mu: tuple[float, float] = _KSC_MU_PRIOR
+    phi: tuple[float, float] = _KSC_PHI_PRIOR
+    sigma2: tuple[float, float] = _KSC_SIGMA2_PRIOR
+
+    def __post_init__(self) -> None:
+        """Validate every pair and store it as floats."""
+        object.__setattr__(
+            self, "mu", _validate_hyperparameter_pair(self.mu, name="mu", positive_first=False)
+        )
+        object.__setattr__(
+            self, "phi", _validate_hyperparameter_pair(self.phi, name="phi", positive_first=True)
+        )
+        object.__setattr__(
+            self,
+            "sigma2",
+            _validate_hyperparameter_pair(self.sigma2, name="sigma2", positive_first=True),
+        )
+
+    @property
+    def phi_mean(self) -> float:
+        """The prior mean of the persistence, ``2a / (a + b) - 1``."""
+        a, b = self.phi
+        return 2.0 * a / (a + b) - 1.0
+
+    @property
+    def sigma2_mean(self) -> float:
+        """Prior mean of ``sigma2``, ``rate / (shape - 1)``; ``inf`` for a shape of one or less."""
+        shape, rate = self.sigma2
+        return rate / (shape - 1.0) if shape > 1.0 else float("inf")
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return (
+            f"ksc(mu~N({self.mu[0]:g}, {self.mu[1]:g}), phi~Beta({self.phi[0]:g}, "
+            f"{self.phi[1]:g}), sigma2~IG({self.sigma2[0]:g}, {self.sigma2[1]:g}))"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _RandomWalkVolatilityPrior:
+    """The prior on a random-walk log-variance law with an estimated step variance.
+
+    ``h_{t+1} = h_t + gamma eta_t`` carries one hyperparameter, the
+    variance of the step, and the unobserved-components stochastic-
+    volatility model states its prior on it through this record: an
+    inverse-gamma on ``gamma**2`` for each of its two volatility paths.
+    The walk has no mean and no persistence to put a prior on; a model
+    that fixes ``gamma`` outright does not read this record at all.
+
+    Attributes:
+        vol_of_vol: ``(shape, rate)`` of the inverse-gamma prior on the
+            step variance ``gamma**2``, both positive.
+    """
+
+    vol_of_vol: tuple[float, float] = _UCSV_VOL_OF_VOL_PRIOR
+
+    def __post_init__(self) -> None:
+        """Validate the pair and store it as floats."""
+        object.__setattr__(
+            self,
+            "vol_of_vol",
+            _validate_hyperparameter_pair(self.vol_of_vol, name="vol_of_vol", positive_first=True),
+        )
+
+    @property
+    def vol_of_vol_mean(self) -> float:
+        """Prior mean of ``gamma2``, ``rate / (shape - 1)``; ``inf`` for a shape of one or less."""
+        shape, rate = self.vol_of_vol
+        return rate / (shape - 1.0) if shape > 1.0 else float("inf")
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"rw(gamma2~IG({self.vol_of_vol[0]:g}, {self.vol_of_vol[1]:g}))"

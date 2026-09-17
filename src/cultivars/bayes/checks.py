@@ -233,7 +233,7 @@ def prior_predictive_check(
     statistics: Sequence[str] | None = None,
     n_replications: int = 200,
     seed: int | np.random.Generator | None = None,
-    **hyperparameters: float | tuple[float, float] | None,
+    **hyperparameters: object,
 ) -> PredictiveCheckTest:
     """Replicate the sample from the prior and locate the data in what it generates.
 

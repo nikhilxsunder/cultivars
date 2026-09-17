@@ -200,7 +200,14 @@ from ._parameters import _StochasticVolatilityParameters
 from ._posteriors import (
     _ConjugatePosterior,
 )
-from ._priors import _AdaptivePrior, _NoPrior, _Prior, _PriorContext
+from ._priors import (
+    _AdaptivePrior,
+    _NoPrior,
+    _Prior,
+    _PriorContext,
+    _RandomWalkVolatilityPrior,
+    _VolatilityPrior,
+)
 from ._selections import _LagOrderSelection, _MarginalLikelihoodSelection
 from ._simulators import _simulate_stochastic_volatility, _simulate_vector_autoregression
 from ._smoothers import kim_smoother
@@ -6370,14 +6377,12 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         self,
         n_replications: int = 200,
         *,
-        prior_mu: tuple[float, float] = (0.0, 10.0),
-        prior_phi: tuple[float, float] = (20.0, 1.5),
-        prior_sigma2: tuple[float, float] = (2.5, 0.025),
+        prior: _VolatilityPrior | None = None,
         seed: int | np.random.Generator | None = None,
     ) -> npt.NDArray[np.float64]:
         """Series the prior generates, one per prior draw of ``(mu, phi, sigma2)``.
 
-        The prior is the samplers' prior, stated with the same arguments:
+        The prior is the samplers' prior, stated through the same record:
         Gaussian ``mu``, Beta on ``(phi + 1) / 2``, inverse-gamma
         ``sigma2``; under heavy tails ``nu - 2`` is exponential with the
         Gibbs sampler's rate. The observation mean, on which the samplers
@@ -6387,9 +6392,8 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
 
         Args:
             n_replications: Replicated series.
-            prior_mu: ``(mean, variance)``.
-            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
-            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            prior: The volatility prior; the Kim-Shephard-Chib default
+                when omitted.
             seed: Seed or generator.
 
         Returns:
@@ -6397,9 +6401,8 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
             :attr:`observed`.
 
         Raises:
-            SpecificationError: If the count is not positive, a prior
-                hyperparameter is outside its domain, or the model carries
-                leverage, on which the samplers state no prior.
+            SpecificationError: If the count is not positive or the model
+                carries leverage, on which the samplers state no prior.
         """
         if n_replications < 1:
             raise SpecificationError(f"n_replications must be positive; got {n_replications}.")
@@ -6408,15 +6411,10 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
                 "prior replications are not offered with leverage: the samplers do not carry "
                 "the leverage correlation and state no prior on it."
             )
-        m0, v0 = prior_mu
-        a, b = prior_phi
-        shape0, rate0 = prior_sigma2
-        if v0 <= 0.0 or a <= 0.0 or b <= 0.0 or shape0 <= 0.0 or rate0 <= 0.0:
-            raise SpecificationError(
-                "prior hyperparameters must be positive: prior_mu variance, both Beta shapes, "
-                f"and the inverse-gamma shape and rate; got {prior_mu}, {prior_phi}, "
-                f"{prior_sigma2}."
-            )
+        prior = _VolatilityPrior() if prior is None else prior
+        m0, v0 = prior.mu
+        a, b = prior.phi
+        shape0, rate0 = prior.sigma2
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         n = int(self._endog.shape[0])
         mean = self._resolved_mean()
@@ -6455,13 +6453,7 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         )
 
     @staticmethod
-    def _log_prior(
-        theta: npt.NDArray[np.float64],
-        *,
-        prior_mu: tuple[float, float],
-        prior_phi: tuple[float, float],
-        prior_sigma2: tuple[float, float],
-    ) -> float:
+    def _log_prior(theta: npt.NDArray[np.float64], *, prior: _VolatilityPrior) -> float:
         """The Gibbs sampler's prior, in the chain's unconstrained space.
 
         Gaussian on ``mu``, Beta on ``(phi + 1) / 2``, inverse-gamma on
@@ -6471,9 +6463,9 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         mu, z_phi, z_sig = float(theta[0]), float(theta[1]), float(theta[2])
         phi = np.tanh(z_phi)
         sigma2 = np.exp(z_sig)
-        m0, v0 = prior_mu
-        a, b = prior_phi
-        shape0, rate0 = prior_sigma2
+        m0, v0 = prior.mu
+        a, b = prior.phi
+        shape0, rate0 = prior.sigma2
         value = -0.5 * (mu - m0) ** 2 / v0
         value += (a - 1.0) * np.log(0.5 * (1.0 + phi)) + (b - 1.0) * np.log(0.5 * (1.0 - phi))
         value += np.log(1.0 - phi**2)  # d phi / d z
@@ -6538,9 +6530,7 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         n_draws: int,
         n_burn: int,
         thin: int,
-        prior_mu: tuple[float, float],
-        prior_phi: tuple[float, float],
-        prior_sigma2: tuple[float, float],
+        prior: _VolatilityPrior,
         seed: int | np.random.Generator | None,
     ) -> _VolatilityDrawsFit:
         """Kim-Shephard-Chib Gibbs sampling.
@@ -6586,9 +6576,9 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
                 mu=mu,
                 phi=phi,
                 sigma2=sigma2,
-                prior_mu=prior_mu,
-                prior_phi=prior_phi,
-                prior_sigma2=prior_sigma2,
+                prior_mu=prior.mu,
+                prior_phi=prior.phi,
+                prior_sigma2=prior.sigma2,
                 rng=rng,
             )
             h, mu, phi, sigma2 = _interweave_volatility_parameters(
@@ -6597,9 +6587,9 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
                 mu=mu,
                 phi=phi,
                 sigma2=sigma2,
-                prior_mu=prior_mu,
-                prior_phi=prior_phi,
-                prior_sigma2=prior_sigma2,
+                prior_mu=prior.mu,
+                prior_phi=prior.phi,
+                prior_sigma2=prior.sigma2,
                 rng=rng,
             )
             if self._mean_spec == "constant":
@@ -6636,9 +6626,7 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         n_draws: int,
         n_burn: int,
         thin: int,
-        prior_mu: tuple[float, float],
-        prior_phi: tuple[float, float],
-        prior_sigma2: tuple[float, float],
+        prior: _VolatilityPrior,
         filter_method: str,
         seed: int | np.random.Generator | None,
     ) -> tuple[_ParticleChainFit, float]:
@@ -6658,9 +6646,7 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         chain = _ParticleMarginalChain(
             data=self._endog,
             build=lambda theta: _volatility_state_space(self._unpack(theta, mean)),
-            log_prior=lambda theta: self._log_prior(
-                theta, prior_mu=prior_mu, prior_phi=prior_phi, prior_sigma2=prior_sigma2
-            ),
+            log_prior=lambda theta: self._log_prior(theta, prior=prior),
             n_particles=n_particles,
             method=filter_method,
         )
@@ -6748,7 +6734,7 @@ class _TrendVolatilityModel[R](_UnivariateModel[R]):
         n_draws: int,
         n_burn: int,
         thin: int,
-        prior_gamma2: tuple[float, float],
+        prior: _RandomWalkVolatilityPrior,
         seed: int | np.random.Generator | None,
     ) -> _TrendVolatilityFit:
         """Gibbs over the trend, the two volatility paths, and the vol-of-vol.
@@ -6778,7 +6764,7 @@ class _TrendVolatilityModel[R](_UnivariateModel[R]):
         gh_kept = np.empty(keep)
         gq_kept = np.empty(keep)
         kept = 0
-        shape0, rate0 = prior_gamma2
+        shape0, rate0 = prior.vol_of_vol
         for iteration in range(n_draws):
             tau = self._draw_trend(y, h, q, rng)
             irregular = y - tau
@@ -7346,8 +7332,7 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
         n_draws: int,
         n_burn: int,
         thin: int,
-        prior_phi: tuple[float, float],
-        prior_sigma2: tuple[float, float],
+        prior: _VolatilityPrior,
         seed: int | np.random.Generator | None,
     ) -> _VolatilityStructuralFit:
         """Run the Gibbs sampler on the source residuals.
@@ -7356,8 +7341,7 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
             n_draws: Total sampler iterations.
             n_burn: Burn-in discarded.
             thin: Keep every ``thin``-th post-burn draw.
-            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
-            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            prior: The volatility prior.
             seed: Seed or generator.
 
         Returns:
@@ -7404,8 +7388,8 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
                     phi=float(phi[i]),
                     sigma2=float(sigma2[i]),
                     prior_mu=(0.0, 1.0),
-                    prior_phi=prior_phi,
-                    prior_sigma2=prior_sigma2,
+                    prior_phi=prior.phi,
+                    prior_sigma2=prior.sigma2,
                     rng=rng,
                     draw_mean=False,
                 )
@@ -7416,8 +7400,8 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
                     phi=float(phi[i]),
                     sigma2=float(sigma2[i]),
                     prior_mu=(0.0, 1.0),
-                    prior_phi=prior_phi,
-                    prior_sigma2=prior_sigma2,
+                    prior_phi=prior.phi,
+                    prior_sigma2=prior.sigma2,
                     rng=rng,
                     draw_mean=False,
                 )
@@ -7671,9 +7655,7 @@ class _FactorVolatilityModel[R](ABC):
         n_draws: int,
         n_burn: int,
         thin: int,
-        prior_mu: tuple[float, float],
-        prior_phi: tuple[float, float],
-        prior_sigma2: tuple[float, float],
+        prior: _VolatilityPrior,
         loading_prior_precision: float,
         seed: int | np.random.Generator | None,
     ) -> _FactorVolatilityFit:
@@ -7683,10 +7665,7 @@ class _FactorVolatilityModel[R](ABC):
             n_draws: Total sampler iterations.
             n_burn: Burn-in discarded.
             thin: Keep every ``thin``-th post-burn draw.
-            prior_mu: ``(mean, variance)`` of the Gaussian prior on each
-                log-variance mean.
-            prior_phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
-            prior_sigma2: ``(shape, rate)`` of the inverse-gamma prior.
+            prior: The volatility prior.
             loading_prior_precision: Prior precision on each free loading.
             seed: Seed or generator.
 
@@ -7753,9 +7732,9 @@ class _FactorVolatilityModel[R](ABC):
                     mu=float(mu_idio[i]),
                     phi=float(phi_idio[i]),
                     sigma2=float(sigma2_idio[i]),
-                    prior_mu=prior_mu,
-                    prior_phi=prior_phi,
-                    prior_sigma2=prior_sigma2,
+                    prior_mu=prior.mu,
+                    prior_phi=prior.phi,
+                    prior_sigma2=prior.sigma2,
                     rng=rng,
                 )
                 h_idio[:, i], mu_idio[i], phi_idio[i], sigma2_idio[i] = (
@@ -7765,9 +7744,9 @@ class _FactorVolatilityModel[R](ABC):
                         mu=float(mu_idio[i]),
                         phi=float(phi_idio[i]),
                         sigma2=float(sigma2_idio[i]),
-                        prior_mu=prior_mu,
-                        prior_phi=prior_phi,
-                        prior_sigma2=prior_sigma2,
+                        prior_mu=prior.mu,
+                        prior_phi=prior.phi,
+                        prior_sigma2=prior.sigma2,
                         rng=rng,
                     )
                 )
@@ -7785,9 +7764,9 @@ class _FactorVolatilityModel[R](ABC):
                     mu=float(mu_factor[j]),
                     phi=float(phi_factor[j]),
                     sigma2=float(sigma2_factor[j]),
-                    prior_mu=prior_mu,
-                    prior_phi=prior_phi,
-                    prior_sigma2=prior_sigma2,
+                    prior_mu=prior.mu,
+                    prior_phi=prior.phi,
+                    prior_sigma2=prior.sigma2,
                     rng=rng,
                 )
                 h_factor[:, j], mu_factor[j], phi_factor[j], sigma2_factor[j] = (
@@ -7797,9 +7776,9 @@ class _FactorVolatilityModel[R](ABC):
                         mu=float(mu_factor[j]),
                         phi=float(phi_factor[j]),
                         sigma2=float(sigma2_factor[j]),
-                        prior_mu=prior_mu,
-                        prior_phi=prior_phi,
-                        prior_sigma2=prior_sigma2,
+                        prior_mu=prior.mu,
+                        prior_phi=prior.phi,
+                        prior_sigma2=prior.sigma2,
                         rng=rng,
                     )
                 )

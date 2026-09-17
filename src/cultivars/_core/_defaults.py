@@ -208,3 +208,27 @@ A posterior predictive p-value is not uniform under the true model -- it is
 conservative, concentrated near one half (Meng, 1994) -- so a flag at this
 level understates the evidence against the model rather than overstating it.
 """
+
+_KSC_MU_PRIOR: Final[tuple[float, float]] = (0.0, 10.0)
+"""Kim, Shephard and Chib's ``(mean, variance)`` of the Gaussian prior on the log-variance mean."""
+
+_KSC_PHI_PRIOR: Final[tuple[float, float]] = (20.0, 1.5)
+"""Kim, Shephard and Chib's ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``.
+
+Prior mean ``2a / (a + b) - 1 = 0.86``: persistent volatility, with mass kept
+off the unit root so the stationary log variance is well defined.
+"""
+
+_KSC_SIGMA2_PRIOR: Final[tuple[float, float]] = (2.5, 0.025)
+"""Kim, Shephard and Chib's ``(shape, rate)`` of the inverse-gamma prior on ``sigma2``.
+
+Prior mean ``rate / (shape - 1) = 0.0167``, a volatility path that moves
+slowly relative to the returns it scales.
+"""
+
+_UCSV_VOL_OF_VOL_PRIOR: Final[tuple[float, float]] = (3.0, 0.04)
+"""``(shape, rate)`` of the inverse-gamma prior on each random-walk log-variance step variance.
+
+Prior mean ``0.02``, close to Stock and Watson's (2007) fixed ``gamma**2``
+and the value the unobserved-components model holds when ``gamma`` is stated.
+"""
