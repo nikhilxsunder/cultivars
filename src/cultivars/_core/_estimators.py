@@ -30,6 +30,8 @@ import numpy.typing as npt
 from scipy.optimize import minimize
 from scipy.special import logsumexp
 from scipy.stats import chi2, invwishart, norm
+from scipy.stats import f as f_dist
+from scipy.stats import t as t_dist
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._converters import _as_chains
@@ -1388,3 +1390,120 @@ def _model_confidence_set(
         running = max(running, p)
         pvalues[model] = running
     return np.asarray(order, dtype=np.intp), pvalues
+
+
+def _mincer_zarnowitz(
+    realized: npt.NDArray[np.float64], forecast: npt.NDArray[np.float64], *, horizon: int
+) -> tuple[float, float, float, float, float]:
+    """Mincer and Zarnowitz's (1969) efficiency regression with a HAC Wald test.
+
+    ``y_t = a + b f_t + u_t``; an unbiased and efficient forecast has
+    ``(a, b) = (0, 1)``. The joint restriction is tested with a Wald
+    statistic whose covariance is the Bartlett long-run covariance of the
+    regressor-scaled residuals through ``horizon - 1`` lags with the
+    ``T / (T - 2)`` degrees-of-freedom scaling, referred to ``F(2, T - 2)``
+    as ``W / 2``. At one step the size is close to nominal from 100
+    origins on; at multi-step horizons the truncated kernel understates
+    the long-run variance and the test over-rejects (about 13% at nominal
+    5% for a four-step horizon on 100 origins), which the caller is told.
+
+    Args:
+        realized: ``(T,)`` outcomes.
+        forecast: ``(T,)`` point forecasts.
+        horizon: The forecast horizon behind the series.
+
+    Returns:
+        ``(intercept, slope, statistic, pvalue, r_squared)``, the statistic
+        on the chi-squared scale.
+
+    Raises:
+        NumericalError: If the forecasts are constant or the covariance
+            degenerates.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> f = rng.standard_normal(200)
+        >>> a, b, stat, p, r2 = _mincer_zarnowitz(f + 0.5 * rng.standard_normal(200), f, horizon=1)
+        >>> bool(abs(b - 1.0) < 0.15 and p > 0.05)
+        True
+    """
+    count = realized.shape[0]
+    design = np.column_stack([np.ones(count), forecast])
+    gram = design.T @ design
+    if float(forecast.std()) <= 1e-12 * max(float(np.abs(forecast).max()), 1.0):
+        raise NumericalError("the forecasts are constant; the efficiency regression is singular.")
+    coefficients = np.linalg.solve(gram, design.T @ realized)
+    residual = realized - design @ coefficients
+    scores = design * residual[:, None]
+    meat = scores.T @ scores
+    for lag in range(1, horizon):
+        weight = 1.0 - lag / horizon
+        cross = scores[lag:].T @ scores[:-lag]
+        meat += weight * (cross + cross.T)
+    inverse = np.linalg.inv(gram)
+    covariance = inverse @ meat @ inverse * (count / (count - 2))
+    deviation = coefficients - np.array([0.0, 1.0])
+    try:
+        statistic = float(deviation @ np.linalg.solve(covariance, deviation))
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            "the HAC covariance of the efficiency regression is singular."
+        ) from error
+    total = float(((realized - realized.mean()) ** 2).sum())
+    r_squared = 1.0 - float(residual @ residual) / total if total > 0.0 else 0.0
+    return (
+        float(coefficients[0]),
+        float(coefficients[1]),
+        statistic,
+        float(f_dist.sf(0.5 * statistic, 2, count - 2)),
+        r_squared,
+    )
+
+
+def _forecast_encompassing(
+    errors_a: npt.NDArray[np.float64], errors_b: npt.NDArray[np.float64], *, horizon: int
+) -> tuple[float, float, float]:
+    """Harvey, Leybourne and Newbold's (1998) test that forecast A encompasses B.
+
+    Forecast A encompasses B when the optimal combination puts zero weight
+    on B, which is ``E[e_A (e_A - e_B)] = 0``. The statistic is the
+    Diebold-Mariano machinery on ``d_t = e_A,t (e_A,t - e_B,t)`` with the
+    Bartlett long-run variance through ``horizon - 1`` lags and the HLN
+    small-sample correction, referred to a ``t`` distribution one-sided:
+    a positive mean says B carries information A lacks.
+
+    Args:
+        errors_a: ``(T,)`` errors of the forecast claimed to encompass.
+        errors_b: ``(T,)`` errors of the forecast claimed to be encompassed.
+        horizon: The forecast horizon behind the series.
+
+    Returns:
+        ``(statistic, pvalue, weight)``: the corrected statistic, its
+        upper-tail p-value, and the least-squares combination weight on B,
+        ``mean(e_A (e_A - e_B)) / mean((e_A - e_B)**2)``.
+
+    Raises:
+        SpecificationError: If the two forecasts are numerically identical.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> e_a = rng.standard_normal(200)
+        >>> e_b = e_a + 0.5 * rng.standard_normal(200)
+        >>> stat, p, w = _forecast_encompassing(e_a, e_b, horizon=1)
+        >>> bool(p > 0.05 and abs(w) < 0.2)
+        True
+    """
+    gap = errors_a - errors_b
+    if float(np.abs(gap).max()) <= 1e-14 * max(float(np.abs(errors_a).max()), 1.0):
+        raise SpecificationError(
+            "the two forecasts are numerically identical; encompassing is not defined."
+        )
+    differential = errors_a * gap
+    count = differential.shape[0]
+    mean = float(differential.mean())
+    variance = _bartlett_long_run_variance(differential - mean, horizon)
+    statistic = mean / float(np.sqrt(variance / count))
+    adjust = float(np.sqrt((count + 1 - 2 * horizon + horizon * (horizon - 1) / count) / count))
+    corrected = statistic * adjust
+    weight = mean / float((gap**2).mean())
+    return corrected, float(t_dist.sf(corrected, count - 1)), weight

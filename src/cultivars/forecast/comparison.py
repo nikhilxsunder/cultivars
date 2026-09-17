@@ -73,12 +73,26 @@ import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
 
-from .._core import _MIN_COMPARISON_ORIGINS, SummaryTable, _bartlett_long_run_variance, _clark_west
+from .._core import (
+    _MIN_COMPARISON_ORIGINS,
+    SummaryTable,
+    _bartlett_long_run_variance,
+    _clark_west,
+    _forecast_encompassing,
+    _mincer_zarnowitz,
+    _validate_aligned_series,
+)
 from .._internals import _SummaryMixin
-from ..diagnostics import ClarkWestTest
+from ..diagnostics import ClarkWestTest, EncompassingTest, MincerZarnowitzTest
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
-__all__ = ["ForecastComparison", "ForecastComparisonResult", "clark_west"]
+__all__ = [
+    "ForecastComparison",
+    "ForecastComparisonResult",
+    "clark_west",
+    "encompassing",
+    "mincer_zarnowitz",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -322,29 +336,14 @@ def clark_west(
         >>> bool(verdict.pvalue < 0.01)
         True
     """
-    series = [
-        np.asarray(block, dtype=np.float64).ravel()
-        for block in (realized, restricted, unrestricted)
-    ]
-    if not (series[0].shape == series[1].shape == series[2].shape):
-        raise DimensionError(
-            "realized, restricted, and unrestricted must align origin by origin; got shapes "
-            f"{series[0].shape}, {series[1].shape}, {series[2].shape}."
-        )
-    count = series[0].shape[0]
-    if count < _MIN_COMPARISON_ORIGINS:
-        raise SpecificationError(
-            f"a comparison over {count} origins has no power and unreliable size; provide at "
-            f"least {_MIN_COMPARISON_ORIGINS}."
-        )
-    if not all(np.all(np.isfinite(block)) for block in series):
-        raise NumericalError("realized and forecast series must be finite.")
-    if horizon < 1:
-        raise SpecificationError(f"horizon must be at least 1; got {horizon}.")
-    if horizon >= count // 2:
-        raise SpecificationError(
-            f"a horizon of {horizon} needs more than {2 * horizon} evaluation origins; got {count}."
-        )
+    series, count = _validate_aligned_series(
+        realized,
+        restricted,
+        unrestricted,
+        horizon=horizon,
+        minimum=_MIN_COMPARISON_ORIGINS,
+        labels="realized, restricted, and unrestricted",
+    )
     statistic, pvalue, adjusted = _clark_west(series[0], series[1], series[2], horizon=horizon)
     return ClarkWestTest(
         statistic=statistic,
@@ -354,4 +353,116 @@ def clark_west(
         mspe_unrestricted=float(((series[0] - series[2]) ** 2).mean()),
         horizon=int(horizon),
         nobs=int(count),
+    )
+
+
+def mincer_zarnowitz(
+    realized: npt.ArrayLike, forecast: npt.ArrayLike, *, horizon: int = 1
+) -> MincerZarnowitzTest:
+    """Mincer-Zarnowitz efficiency regression of outcomes on point forecasts.
+
+    ``y_t = a + b f_t + u_t`` with the joint test of ``(a, b) = (0, 1)``:
+    the forecast is unbiased and cannot be improved by a linear
+    recalibration of itself. Multi-step errors overlap, so the Wald
+    covariance is HAC with Bartlett weights through ``horizon - 1`` lags;
+    at those horizons the test over-rejects in short windows (about 13%
+    at nominal 5% for four steps on 100 origins), and the record says so.
+
+    Args:
+        realized: ``(T,)`` outcomes.
+        forecast: ``(T,)`` point forecasts, aligned origin by origin --
+            ``BacktestResult.point[:, h - 1, j]`` against
+            ``BacktestResult.realized[:, h - 1, j]``.
+        horizon: The forecast horizon behind the series.
+
+    Returns:
+        The :class:`MincerZarnowitzTest`.
+
+    Raises:
+        DimensionError: If the series do not align.
+        SpecificationError: If there are too few origins or the horizon
+            is unusable.
+        NumericalError: If a series is not finite or the forecasts are
+            constant.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> f = rng.standard_normal(200)
+        >>> verdict = mincer_zarnowitz(f + 0.5 * rng.standard_normal(200), f)
+        >>> bool(verdict.pvalue > 0.05)
+        True
+        >>> bool(mincer_zarnowitz(0.5 * f + 0.5 * rng.standard_normal(200), f).pvalue < 0.01)
+        True
+    """
+    (y, f), count = _validate_aligned_series(
+        realized,
+        forecast,
+        horizon=horizon,
+        minimum=_MIN_COMPARISON_ORIGINS,
+        labels="realized and forecast",
+    )
+    intercept, slope, statistic, pvalue, r_squared = _mincer_zarnowitz(y, f, horizon=horizon)
+    return MincerZarnowitzTest(
+        intercept=intercept,
+        slope=slope,
+        statistic=statistic,
+        pvalue=pvalue,
+        r_squared=r_squared,
+        horizon=int(horizon),
+        nobs=int(count),
+    )
+
+
+def encompassing(
+    realized: npt.ArrayLike,
+    forecast_a: npt.ArrayLike,
+    forecast_b: npt.ArrayLike,
+    *,
+    horizon: int = 1,
+) -> EncompassingTest:
+    """Test whether forecast A encompasses forecast B (Harvey, Leybourne & Newbold, 1998).
+
+    A encompasses B when the optimal combination of the two puts no
+    weight on B, so combining them would not help. The test asks whether
+    ``e_A (e_A - e_B)`` has a positive mean, one-sided; a rejection says B
+    carries information A lacks, and the reported weight is the share B
+    would get in a least-squares combination. Run it both ways to learn
+    whether either forecast is redundant.
+
+    Args:
+        realized: ``(T,)`` outcomes.
+        forecast_a: ``(T,)`` point forecasts claimed to encompass.
+        forecast_b: ``(T,)`` point forecasts claimed to be encompassed,
+            aligned origin by origin.
+        horizon: The forecast horizon behind the series.
+
+    Returns:
+        The :class:`EncompassingTest`.
+
+    Raises:
+        DimensionError: If the series do not align.
+        SpecificationError: If there are too few origins, the horizon is
+            unusable, or the two forecasts are identical.
+        NumericalError: If a series is not finite.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> x, z = rng.standard_normal(200), rng.standard_normal(200)
+        >>> y = x + z + 0.5 * rng.standard_normal(200)
+        >>> bool(encompassing(y, x, x + z).pvalue < 0.01)  # x lacks what z knows
+        True
+        >>> bool(encompassing(y, x + z, x).pvalue > 0.05)  # x + z already has it
+        True
+    """
+    (y, a, b), count = _validate_aligned_series(
+        realized,
+        forecast_a,
+        forecast_b,
+        horizon=horizon,
+        minimum=_MIN_COMPARISON_ORIGINS,
+        labels="realized and both forecasts",
+    )
+    statistic, pvalue, weight = _forecast_encompassing(y - a, y - b, horizon=horizon)
+    return EncompassingTest(
+        statistic=statistic, pvalue=pvalue, weight=weight, horizon=int(horizon), nobs=int(count)
     )

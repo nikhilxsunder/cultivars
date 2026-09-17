@@ -61,11 +61,11 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable, _kernel_log_score, crps_from_draws, energy_score
+from .._core import SummaryTable, _kernel_log_score, _pinball_loss, crps_from_draws, energy_score
 from .._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError
 
-__all__ = ["DensityScore", "DensityScoreResult"]
+__all__ = ["DensityScore", "DensityScoreResult", "pinball_loss"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -239,3 +239,39 @@ class DensityScore:
             absolute_error=np.abs(median - self._realized),
             n_draws=draws,
         )
+
+
+def pinball_loss(
+    realized: npt.ArrayLike, quantile: npt.ArrayLike, tau: float
+) -> npt.NDArray[np.float64]:
+    """Score a quantile forecast with the pinball loss, elementwise.
+
+    The proper score for a ``tau``-quantile: ``(tau - 1{y < q}) (y - q)``,
+    which a forecaster minimizes in expectation exactly by reporting the
+    true conditional quantile. A quantile VAR's one-step forecasts, the
+    ``tau``-quantile of a predictive sample, or any rival's quantile
+    forecasts score the same way; ``BacktestResult.losses("pinball",
+    tau=...)`` applies it over a backtest.
+
+    Args:
+        realized: Outcomes, any shape.
+        quantile: Quantile forecasts of the same shape.
+        tau: The level forecast, strictly inside ``(0, 1)``.
+
+    Returns:
+        The losses, same shape, negatively oriented.
+
+    Raises:
+        DimensionError: If the shapes disagree.
+        SpecificationError: If the level is outside ``(0, 1)``.
+        NumericalError: If an input is not finite.
+
+    Example:
+        >>> pinball_loss([1.0, -1.0], [0.0, 0.0], 0.9)
+        array([0.9, 0.1])
+    """
+    y = np.asarray(realized, dtype=np.float64)
+    q = np.asarray(quantile, dtype=np.float64)
+    if not (np.all(np.isfinite(y)) and np.all(np.isfinite(q))):
+        raise NumericalError("realized and quantile forecasts must be finite.")
+    return _pinball_loss(y, q, tau)

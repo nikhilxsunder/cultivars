@@ -36,6 +36,7 @@ from .._core import (
     SummaryTable,
     _companion_spectral_radius,
     _kernel_log_score,
+    _pinball_loss,
     companion_matrix,
     crps_from_draws,
     deterministic_columns,
@@ -1798,34 +1799,70 @@ class _BacktestResult(_SummaryMixin):
                 out[t, h] = scorer(self.paths[t, :, h, :], self.realized[t, h])
         return out
 
+    def quantile(self, tau: float, *, horizon: int = 1) -> npt.NDArray[np.float64]:
+        """``(T, k)`` quantile forecasts at level ``tau`` for one horizon.
+
+        From the predictive draws when they were recorded; for a point
+        backtest the recorded forecasts *are* the quantile forecasts --
+        the case of a quantile regression backtested through ``predict``
+        -- and are returned as given.
+
+        Raises:
+            SpecificationError: If the level or horizon is unusable.
+        """
+        if not 0.0 < tau < 1.0:
+            raise SpecificationError(f"tau must lie strictly inside (0, 1); got {tau}.")
+        h = self._horizon_index(horizon)
+        if self.paths is None:
+            return np.asarray(self.point[:, h, :], dtype=np.float64)
+        return np.asarray(np.quantile(self.paths[:, :, h, :], tau, axis=1), dtype=np.float64)
+
     def losses(
-        self, kind: str = "squared", *, horizon: int = 1, name: str | None = None
+        self,
+        kind: str = "squared",
+        *,
+        horizon: int = 1,
+        name: str | None = None,
+        tau: float | None = None,
     ) -> npt.NDArray[np.float64]:
         """One loss series per origin, aligned for a comparison test.
 
         Args:
             kind: ``"squared"`` or ``"absolute"`` on the point forecast;
-                ``"crps"`` or ``"log"`` on the predictive draws.
+                ``"crps"`` or ``"log"`` on the predictive draws;
+                ``"pinball"`` on the ``tau``-quantile forecast.
             horizon: The horizon to score.
             name: A series label for a ``(T,)`` series; ``None`` returns
                 ``(T, k)``.
+            tau: The quantile level, required by and only by ``"pinball"``.
 
         Returns:
             The losses, negatively oriented.
 
         Raises:
-            SpecificationError: If the kind, horizon, or name is unknown,
-                or a density loss is asked of a point backtest.
+            SpecificationError: If the kind, horizon, name, or level is
+                unusable, or a density loss is asked of a point backtest.
         """
-        if kind not in ("squared", "absolute", "crps", "log"):
+        if kind not in ("squared", "absolute", "crps", "log", "pinball"):
             raise SpecificationError(
-                f"kind must be 'squared', 'absolute', 'crps', or 'log'; got {kind!r}."
+                f"kind must be 'squared', 'absolute', 'crps', 'log', or 'pinball'; got {kind!r}."
             )
+        level = 0.5
+        if kind == "pinball":
+            if tau is None:
+                raise SpecificationError("the pinball loss needs the quantile level tau.")
+            level = float(tau)
+        elif tau is not None:
+            raise SpecificationError(f"tau applies to the pinball loss only; got kind={kind!r}.")
         h = self._horizon_index(horizon)
         if kind == "squared":
             table = self.errors[:, h, :] ** 2
         elif kind == "absolute":
             table = np.abs(self.errors[:, h, :])
+        elif kind == "pinball":
+            table = _pinball_loss(
+                self.realized[:, h, :], self.quantile(level, horizon=horizon), level
+            )
         else:
             table = self._density_losses(kind)[:, h, :]
         if name is None:
@@ -1917,6 +1954,144 @@ class _BacktestResult(_SummaryMixin):
                 ("Draws", str(self.n_draws)),
             ),
             columns=("h", "series", "RMSE", "MAE", "mean CRPS"),
+            rows=rows,
+            notes=tuple(notes),
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ConditionalForecastResult(_SummaryMixin):
+    """A forecast of the whole system given stated future paths of some of it.
+
+    Waggoner and Zha (1999): the future is written in moving-average form,
+    the conditions become linear restrictions on the future shocks, and
+    the forecast is the system's law given those restrictions -- the
+    minimum-norm shock path that delivers the conditions at the center,
+    and the conditional Gaussian of the remaining shock directions around
+    it. Under a sampled result every retained parameter draw contributes
+    its own conditional paths, so the bands carry parameter uncertainty
+    as well.
+
+    Attributes:
+        names: Series labels.
+        steps: Horizons ahead.
+        conditions: ``(steps, k)`` conditioned values, ``nan`` where free.
+        unconditional: ``(steps, k)`` mean path with no conditions imposed
+            (averaged over draws under a sampled result).
+        mean: ``(steps, k)`` conditional mean path.
+        paths: ``(S, steps, k)`` conditional predictive paths; conditioned
+            cells equal their conditions on every path.
+        implied_shocks: ``(steps, k)`` minimum-norm standardized shocks
+            that deliver the conditions, in the orthogonalized (impact
+            matrix) basis; averaged over draws under a sampled result.
+        modesty: ``||eps*||**2`` of the minimum-norm shocks relative to
+            the number of conditions -- one when the scenario needs shocks
+            of typical size, large when it needs shocks the model deems
+            improbable (Leeper & Zha, 2003).
+        modesty_pvalue: Upper-tail chi-squared probability of
+            ``||eps*||**2`` on ``n_conditions`` degrees of freedom.
+        n_conditions: Cells conditioned.
+        source: The result forecast.
+        parameter_uncertainty: Whether the paths mix over parameter draws.
+    """
+
+    names: tuple[str, ...]
+    steps: int
+    conditions: npt.NDArray[np.float64] = field(repr=False)
+    unconditional: npt.NDArray[np.float64] = field(repr=False)
+    mean: npt.NDArray[np.float64] = field(repr=False)
+    paths: npt.NDArray[np.float64] = field(repr=False)
+    implied_shocks: npt.NDArray[np.float64] = field(repr=False)
+    modesty: float
+    modesty_pvalue: float
+    n_conditions: int
+    source: str
+    parameter_uncertainty: bool
+
+    @property
+    def k_endog(self) -> int:
+        """Series forecast."""
+        return len(self.names)
+
+    @property
+    def n_draws(self) -> int:
+        """Conditional paths."""
+        return int(self.paths.shape[0])
+
+    @property
+    def conditioned(self) -> npt.NDArray[np.bool_]:
+        """``(steps, k)`` mask of conditioned cells."""
+        return np.asarray(~np.isnan(self.conditions))
+
+    def forecast_paths(
+        self, steps: int | None = None, *, seed: int | np.random.Generator | None = None
+    ) -> npt.NDArray[np.float64]:
+        """The conditional paths, in the shape every scorer and fan chart reads.
+
+        Args:
+            steps: Must equal :attr:`steps` when given; the paths were
+                simulated once, at construction.
+            seed: Ignored; kept for the predictive-result signature.
+
+        Raises:
+            SpecificationError: If a different horizon is asked for.
+        """
+        if steps is not None and steps != self.steps:
+            raise SpecificationError(
+                f"the conditional forecast was simulated for {self.steps} steps; asked for "
+                f"{steps}. Build a new one for another horizon."
+            )
+        return np.asarray(self.paths, dtype=np.float64)
+
+    def quantiles(
+        self, levels: tuple[float, ...] = (0.05, 0.16, 0.5, 0.84, 0.95)
+    ) -> npt.NDArray[np.float64]:
+        """``(len(levels), steps, k)`` pointwise quantiles of the conditional paths."""
+        return np.asarray(np.quantile(self.paths, levels, axis=0), dtype=np.float64)
+
+    def _summary_table(self) -> SummaryTable:
+        """Build the structured summary: mean paths, conditioned cells marked."""
+        low, high = np.quantile(self.paths, [0.16, 0.84], axis=0)
+        mask = self.conditioned
+        rows = tuple(
+            (
+                str(h + 1),
+                name,
+                f"{self.unconditional[h, j]:.4f}",
+                f"{self.mean[h, j]:.4f}",
+                f"[{low[h, j]:.4f}, {high[h, j]:.4f}]",
+                "*" if mask[h, j] else "",
+            )
+            for h in range(self.steps)
+            for j, name in enumerate(self.names)
+        )
+        notes = [
+            f"* conditioned cell ({self.n_conditions} of {self.steps * self.k_endog}); the "
+            "conditional path equals the condition there on every draw.",
+            f"Modesty {self.modesty:.2f} (p = {self.modesty_pvalue:.3f}): the minimum-norm "
+            "shocks that deliver the scenario have squared norm "
+            f"{self.modesty * self.n_conditions:.2f} against {self.n_conditions} expected under "
+            "the model. Well above one, the scenario is one the model finds improbable and "
+            "agents would notice (Leeper & Zha, 2003).",
+            (
+                "Bands mix parameter draws and conditional shock draws."
+                if self.parameter_uncertainty
+                else "Bands carry conditional shock uncertainty at fixed parameters; the "
+                "point result offers no parameter draws to propagate."
+            ),
+            "Hard conditions only: each conditioned cell is met exactly. Interval (soft) "
+            "conditions are not implemented.",
+        ]
+        return SummaryTable(
+            title=f"Conditional Forecast: {self.source}",
+            metadata=(
+                ("Steps", str(self.steps)),
+                ("Series", str(self.k_endog)),
+                ("Conditions", str(self.n_conditions)),
+                ("Draws", str(self.n_draws)),
+                ("Modesty", f"{self.modesty:.2f}"),
+            ),
+            columns=("h", "series", "unconditional", "conditional", "16-84%", ""),
             rows=rows,
             notes=tuple(notes),
         )

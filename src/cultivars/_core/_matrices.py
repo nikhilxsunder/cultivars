@@ -836,3 +836,82 @@ def _discrete_lyapunov(
         return np.asarray(sla.solve_discrete_lyapunov(transition, noise), dtype=np.float64)
     except (ValueError, np.linalg.LinAlgError) as error:
         raise NumericalError("the first-order transition has no stationary covariance.") from error
+
+
+def _moving_average_from_stack(
+    stack: npt.NDArray[np.float64], horizon: int
+) -> npt.NDArray[np.float64]:
+    """Moving-average matrices ``Psi_0 .. Psi_{horizon - 1}`` of a lag stack.
+
+    Args:
+        stack: ``(p, k, k)`` autoregressive matrices; ``p = 0`` is white
+            noise.
+        horizon: Number of matrices, at least one.
+
+    Returns:
+        ``(horizon, k, k)`` with ``Psi_0 = I``.
+
+    Example:
+        >>> psi = _moving_average_from_stack(np.array([[[0.5]]]), 3)
+        >>> psi[:, 0, 0]
+        array([1.  , 0.5 , 0.25])
+    """
+    p, k = stack.shape[0], stack.shape[-1]
+    out = np.zeros((horizon, k, k), dtype=np.float64)
+    out[0] = np.eye(k)
+    if p == 0 or horizon == 1:
+        return out
+    companion = companion_matrix(stack)
+    power = np.eye(k * p, dtype=np.float64)
+    for h in range(1, horizon):
+        power = companion @ power
+        out[h] = power[:k, :k]
+    return out
+
+
+def _conditional_restrictions(
+    psi: npt.NDArray[np.float64],
+    impact: npt.NDArray[np.float64],
+    deviation: npt.NDArray[np.float64],
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Stack conditions on future values as linear restrictions on future shocks.
+
+    With ``y_{T+h} - mu_h = sum_{j<h} Psi_j P eps_{T+h-j}`` and the future
+    shocks stacked oldest first as ``eps = (eps_{T+1}, ..., eps_{T+H})``,
+    a condition on variable ``i`` at horizon ``h`` is one row
+    ``R eps = r`` (Waggoner & Zha, 1999). Cells of ``deviation`` that are
+    ``nan`` are unconditioned.
+
+    Args:
+        psi: ``(H, k, k)`` reduced-form moving-average matrices.
+        impact: ``(k, k)`` impact matrix ``P`` with ``P P' = Sigma``.
+        deviation: ``(H, k)`` conditioned values minus the unconditional
+            mean path, ``nan`` where free.
+
+    Returns:
+        ``(R, r)`` of shapes ``(q, H k)`` and ``(q,)``.
+
+    Example:
+        >>> psi = np.array([[[1.0]], [[0.5]]])
+        >>> R, r = _conditional_restrictions(psi, np.array([[2.0]]), np.array([[np.nan], [1.0]]))
+        >>> R, r
+        (array([[1., 2.]]), array([1.]))
+    """
+    horizon, k = deviation.shape
+    loaded = np.stack([psi[j] @ impact for j in range(horizon)])  # (H, k, k)
+    rows: list[npt.NDArray[np.float64]] = []
+    targets: list[float] = []
+    for h in range(horizon):
+        for i in range(k):
+            value = deviation[h, i]
+            if np.isnan(value):
+                continue
+            row = np.zeros(horizon * k, dtype=np.float64)
+            for j in range(h + 1):
+                block = h - j
+                row[block * k : (block + 1) * k] = loaded[j, i]
+            rows.append(row)
+            targets.append(float(value))
+    return np.asarray(rows, dtype=np.float64).reshape(len(rows), horizon * k), np.asarray(
+        targets, dtype=np.float64
+    )

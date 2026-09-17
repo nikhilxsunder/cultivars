@@ -1085,3 +1085,59 @@ def _mix_predictive_paths(
             pieces.append(block[rng.integers(0, block.shape[0], size=count)])
     mixed = np.concatenate(pieces, axis=0)
     return np.asarray(mixed[rng.permutation(n_draws)], dtype=np.float64)
+
+
+def _draw_conditional_shocks(
+    restriction: npt.NDArray[np.float64],
+    target: npt.NDArray[np.float64],
+    *,
+    n_draws: int,
+    rng: np.random.Generator,
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Standard normal shocks conditioned on ``R eps = r`` (Waggoner & Zha, 1999).
+
+    The conditional law of ``eps ~ N(0, I)`` given the restrictions is
+    Gaussian with mean ``R'(RR')^{-1} r`` -- the minimum-norm shock that
+    delivers the conditions -- and covariance ``I - R'(RR')^{-1}R``, the
+    projector onto the null space of ``R``; a draw is the mean plus the
+    projection of a fresh standard normal vector.
+
+    Args:
+        restriction: ``(q, m)`` restriction matrix of full row rank.
+        target: ``(q,)`` targets.
+        n_draws: Draws.
+        rng: Random generator.
+
+    Returns:
+        ``(shocks, minimum_norm)``: ``(n_draws, m)`` conditional draws and
+        the ``(m,)`` minimum-norm shock.
+
+    Raises:
+        NumericalError: If the restrictions are linearly dependent.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> R, r = np.array([[1.0, 1.0]]), np.array([2.0])
+        >>> draws, star = _draw_conditional_shocks(R, r, n_draws=5, rng=rng)
+        >>> star, bool(np.allclose(draws.sum(axis=1), 2.0))
+        (array([1., 1.]), True)
+    """
+    q, m = restriction.shape
+    if q == 0:
+        return rng.standard_normal((n_draws, m)), np.zeros(m)
+    gram = restriction @ restriction.T
+    try:
+        solved = np.linalg.solve(gram, np.column_stack([target, restriction]))
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            "the conditions are linearly dependent: some conditioned cell is implied by the "
+            "others, or more cells are conditioned than the shocks can deliver."
+        ) from error
+    if float(np.linalg.cond(gram)) > 1e12:
+        raise NumericalError(
+            "the conditions are nearly dependent; the conditional shock is not determined."
+        )
+    minimum_norm = restriction.T @ solved[:, 0]
+    projector = np.eye(m) - restriction.T @ solved[:, 1:]
+    draws = minimum_norm[None, :] + rng.standard_normal((n_draws, m)) @ projector.T
+    return np.asarray(draws, dtype=np.float64), np.asarray(minimum_norm, dtype=np.float64)

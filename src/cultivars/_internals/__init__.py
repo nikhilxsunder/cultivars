@@ -141,6 +141,7 @@ from ._priors import (
 )
 from ._results import (
     _BacktestResult,
+    _ConditionalForecastResult,
     _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
     _ErrorCorrectionResult,
@@ -163,7 +164,12 @@ from ._selections import (
     _ModelCombinationSelection,
     _ModelConfidenceSetSelection,
 )
-from ._simulators import _impulse_responses, _simulate_pruned
+from ._simulators import (
+    _impulse_responses,
+    _simulate_pruned,
+    _simulate_stochastic_volatility,
+    _simulate_vector_autoregression,
+)
 from ._solutions import _PerturbationSolution
 from ._solvers import _maximize_likelihood, _solve, _spectral_factor, solve_global
 from ._specifications import _PerturbationModelSpecification
@@ -177,8 +183,10 @@ from ._systems import _structural_matrices
 from ._tests import (
     _ClarkWestTest,
     _ConvergenceTest,
+    _EncompassingTest,
     _JohansenRankTest,
     _LikelihoodRatioTest,
+    _MincerZarnowitzTest,
     _PredictiveCheckTest,
     _StabilityTest,
     _WaldTest,
@@ -196,6 +204,7 @@ __all__ = [
     "_ClarkWestTest",
     "_CoDiagonalObjective",
     "_ComparisonMixin",
+    "_ConditionalForecastResult",
     "_ConditionalLevels",
     "_ConditionalVarianceMixin",
     "_ConditionalVarianceResult",
@@ -205,6 +214,7 @@ __all__ = [
     "_DecayNelsonSiegelModel",
     "_DecayNelsonSiegelParameters",
     "_DurbinKoopmanSmootherResult",
+    "_EncompassingTest",
     "_ErrorCorrectionResult",
     "_ExogenousVectorAutoRegressionFit",
     "_ExogenousVectorAutoRegressionModel",
@@ -236,6 +246,7 @@ __all__ = [
     "_MarkovSwitchingVectorAutoRegressionModel",
     "_MeanFunctionResult",
     "_MidasProfileObjective",
+    "_MincerZarnowitzTest",
     "_MixedHorizonObjective",
     "_ModelCombinationSelection",
     "_ModelConfidenceSetSelection",
@@ -327,6 +338,8 @@ __all__ = [
     "_maximize_likelihood",
     "_quasi_volatility_state_space",
     "_simulate_pruned",
+    "_simulate_stochastic_volatility",
+    "_simulate_vector_autoregression",
     "_solve",
     "_spectral_factor",
     "_structural_matrices",

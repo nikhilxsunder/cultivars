@@ -186,3 +186,34 @@ def _arch_infinity_variance(
             acc += backcast * float(lam[m:truncation].sum())
         sigma2[t] = acc
     return sigma2
+
+
+def _moving_average_paths(
+    psi: npt.NDArray[np.float64],
+    impact: npt.NDArray[np.float64],
+    shocks: npt.NDArray[np.float64],
+    mean: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
+    """Future paths ``mu_h + sum_{j<h} Psi_j P eps_{h-j}`` from stacked future shocks.
+
+    Args:
+        psi: ``(H, k, k)`` moving-average matrices.
+        impact: ``(k, k)`` impact matrix.
+        shocks: ``(S, H, k)`` standard shocks, oldest horizon first.
+        mean: ``(H, k)`` unconditional mean path.
+
+    Returns:
+        ``(S, H, k)`` paths.
+
+    Example:
+        >>> psi = np.array([[[1.0]], [[0.5]]])
+        >>> _moving_average_paths(psi, np.eye(1), np.ones((1, 2, 1)), np.zeros((2, 1)))[0, :, 0]
+        array([1. , 1.5])
+    """
+    horizon = psi.shape[0]
+    structural = shocks @ impact.T  # (S, H, k)
+    out = np.repeat(mean[None], shocks.shape[0], axis=0)
+    for h in range(horizon):
+        for j in range(h + 1):
+            out[:, h] += structural[:, h - j] @ psi[j].T
+    return np.asarray(out, dtype=np.float64)

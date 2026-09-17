@@ -186,3 +186,40 @@ def _kernel_log_score(
         -(peak + np.log(total) - np.log(count) - np.log(width) - 0.5 * np.log(2.0 * np.pi)),
         dtype=np.float64,
     )
+
+
+def _pinball_loss(
+    realized: npt.NDArray[np.float64], quantile: npt.NDArray[np.float64], tau: float
+) -> npt.NDArray[np.float64]:
+    """The pinball (check) loss of a ``tau``-quantile forecast, elementwise.
+
+    ``(tau - 1{y < q}) (y - q)``: the loss whose expectation a conditional
+    quantile minimizes, so it is the proper score for a quantile forecast
+    the way the squared error is for a conditional mean. Negatively
+    oriented; in the variable's units.
+
+    Args:
+        realized: Outcomes, any shape.
+        quantile: Quantile forecasts of the same shape.
+        tau: The level forecast, strictly inside ``(0, 1)``.
+
+    Returns:
+        The losses, same shape.
+
+    Raises:
+        DimensionError: If the shapes disagree.
+        SpecificationError: If the level is outside ``(0, 1)``.
+
+    Example:
+        >>> _pinball_loss(np.array([1.0, -1.0]), np.zeros(2), 0.9)
+        array([0.9, 0.1])
+    """
+    if not 0.0 < tau < 1.0:
+        raise SpecificationError(f"tau must lie strictly inside (0, 1); got {tau}.")
+    if realized.shape != quantile.shape:
+        raise DimensionError(
+            f"realized and quantile forecasts must share a shape; got {realized.shape} and "
+            f"{quantile.shape}."
+        )
+    gap = realized - quantile
+    return np.asarray(np.where(gap >= 0.0, tau * gap, (tau - 1.0) * gap), dtype=np.float64)

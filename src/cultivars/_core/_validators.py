@@ -1085,3 +1085,54 @@ def _validate_hyperparameter_pair(
     if positive_first and first <= 0.0:
         raise SpecificationError(f"both entries of {name} must be positive; got {value!r}.")
     return first, second
+
+
+def _validate_aligned_series(
+    *series: npt.ArrayLike, horizon: int, minimum: int, labels: str
+) -> tuple[list[npt.NDArray[np.float64]], int]:
+    """Check origin-aligned evaluation series for a comparison at one horizon.
+
+    Args:
+        *series: Two or more ``(T,)`` series -- outcomes, forecasts, or
+            losses -- aligned origin by origin.
+        horizon: The forecast horizon behind them.
+        minimum: Fewest origins accepted.
+        labels: What the series are, for error messages.
+
+    Returns:
+        ``(blocks, count)``: the series as flat float arrays, and ``T``.
+
+    Raises:
+        DimensionError: If the shapes disagree.
+        SpecificationError: If there are fewer than ``minimum`` origins,
+            the horizon is not positive, or it is too long for the window.
+        NumericalError: If a series is not finite.
+
+    Example:
+        >>> blocks, count = _validate_aligned_series(
+        ...     np.zeros(20), np.ones(20), horizon=2, minimum=8, labels="losses"
+        ... )
+        >>> len(blocks), count
+        (2, 20)
+    """
+    blocks = [np.asarray(block, dtype=np.float64).ravel() for block in series]
+    if any(block.shape != blocks[0].shape for block in blocks):
+        raise DimensionError(
+            f"{labels} must align origin by origin; got shapes "
+            f"{', '.join(str(block.shape) for block in blocks)}."
+        )
+    count = blocks[0].shape[0]
+    if count < minimum:
+        raise SpecificationError(
+            f"a comparison over {count} origins has no power and unreliable size; provide at "
+            f"least {minimum}."
+        )
+    if not all(np.all(np.isfinite(block)) for block in blocks):
+        raise NumericalError(f"{labels} must be finite.")
+    if horizon < 1:
+        raise SpecificationError(f"horizon must be at least 1; got {horizon}.")
+    if horizon >= count // 2:
+        raise SpecificationError(
+            f"a horizon of {horizon} needs more than {2 * horizon} evaluation origins; got {count}."
+        )
+    return blocks, count

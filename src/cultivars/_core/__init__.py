@@ -97,10 +97,12 @@ from ._estimators import (
     _ess_bulk,
     _ess_mean,
     _ess_tail,
+    _forecast_encompassing,
     _gaussian_negloglik,
     _geweke,
     _log_mean_mcse,
     _mcse_mean,
+    _mincer_zarnowitz,
     _model_confidence_set,
     _modified_harmonic_mean,
     _predictive_pvalues,
@@ -126,11 +128,13 @@ from ._mappings import (
 )
 from ._matrices import (
     _companion_spectral_radius,
+    _conditional_restrictions,
     _discrete_lyapunov,
     _face_projectors,
     _first_order,
     _long_run_matrix,
     _lower_cholesky,
+    _moving_average_from_stack,
     _null_basis,
     _numerical_hessian,
     _numerical_jacobian,
@@ -188,10 +192,12 @@ from ._recursions import (
     _arch_infinity_weights,
     _linear_variance_recursion,
     _log_variance_recursion,
+    _moving_average_paths,
 )
 from ._reparam import inv_softplus, pack_stationary, sigmoid, softplus, unpack_stationary
 from ._rotations import _accepted_rotations, _haar_rotation, _narrative_rotations
 from ._samplers import (
+    _draw_conditional_shocks,
     _draw_degrees_of_freedom,
     _draw_factors,
     _draw_generalized_inverse_gaussian,
@@ -210,7 +216,13 @@ from ._samplers import (
     _mix_predictive_paths,
     _scalar_ffbs,
 )
-from ._scores import _kernel_log_score, crps_from_draws, energy_score, pit_from_draws
+from ._scores import (
+    _kernel_log_score,
+    _pinball_loss,
+    crps_from_draws,
+    energy_score,
+    pit_from_draws,
+)
 from ._spectra import (
     _fractional_spectrum,
     _ideal_weights,
@@ -246,6 +258,7 @@ from ._types import (
     _Residuals,
 )
 from ._validators import (
+    _validate_aligned_series,
     _validate_band,
     _validate_curves,
     _validate_hyperparameter_pair,
@@ -375,9 +388,11 @@ __all__ = [
     "_chib_independent_normal_wishart",
     "_clark_west",
     "_companion_spectral_radius",
+    "_conditional_restrictions",
     "_cumulant_slices",
     "_discrepancy_statistics",
     "_discrete_lyapunov",
+    "_draw_conditional_shocks",
     "_draw_degrees_of_freedom",
     "_draw_factors",
     "_draw_generalized_inverse_gaussian",
@@ -397,6 +412,7 @@ __all__ = [
     "_evidence_label",
     "_face_projectors",
     "_first_order",
+    "_forecast_encompassing",
     "_fractional_spectrum",
     "_gamma_from_mode",
     "_gaussian_negloglik",
@@ -414,10 +430,13 @@ __all__ = [
     "_mean_label",
     "_midas_weights",
     "_midas_windows",
+    "_mincer_zarnowitz",
     "_mix_predictive_paths",
     "_mixed_frequency_system",
     "_model_confidence_set",
     "_modified_harmonic_mean",
+    "_moving_average_from_stack",
+    "_moving_average_paths",
     "_narrative_rotations",
     "_nelson_siegel_loadings",
     "_null_basis",
@@ -426,6 +445,7 @@ __all__ = [
     "_orthogonal_from_angles",
     "_pairwise_measure",
     "_per_column",
+    "_pinball_loss",
     "_predictive_pvalues",
     "_projection_scores",
     "_quantiles",
@@ -439,6 +459,7 @@ __all__ = [
     "_stack",
     "_stack_point",
     "_stacking_weights",
+    "_validate_aligned_series",
     "_validate_band",
     "_validate_curves",
     "_validate_hyperparameter_pair",
