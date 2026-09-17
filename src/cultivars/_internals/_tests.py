@@ -5,9 +5,9 @@ from typing import Self
 
 import numpy as np
 import numpy.typing as npt
-import scipy.stats as sst
 
 from .._core import (
+    _CRITICAL_LEVELS,
     _DEFAULT_ALPHA,
     _EXTREME_PVALUE,
     _MIN_CHAIN_DRAWS,
@@ -20,9 +20,8 @@ from .._core import (
     _mcse_mean,
     _predictive_pvalues,
     _rhat,
-    companion_matrix,
 )
-from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ..exceptions import DimensionError, SpecificationError
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -163,8 +162,268 @@ class _JohansenRankTest:
         )
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class _LikelihoodRatioTest:
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _HypothesisTest:
+    """A scalar test statistic, its p-value, and a verdict at a level.
+
+    Every hypothesis-test record in the package descends from this one:
+    a study that collects verdicts wants one type with ``reject`` and
+    ``summary``, not a union of seven. Subclasses add the fields their
+    construction needs and describe their own table through
+    :meth:`_summary_table`; the renderers -- ``summary()``, ``str()``,
+    the notebook HTML -- are derived here once. ``__repr__`` stays a
+    one-line verdict, because a test in a REPL should read as a sentence
+    and not as a table.
+
+    Attributes:
+        statistic: The test statistic.
+        pvalue: Its p-value, or ``None`` for a test known only through
+            tabulated critical values.
+    """
+
+    statistic: float
+    pvalue: float | None
+
+    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
+        """Whether the null is rejected at level ``alpha``.
+
+        Raises:
+            SpecificationError: If the level is not inside ``(0, 1)`` or
+                the test carries no p-value.
+        """
+        if not 0.0 < alpha < 1.0:
+            raise SpecificationError(f"alpha must lie strictly inside (0, 1); got {alpha}.")
+        if self.pvalue is None:
+            raise SpecificationError(
+                f"{type(self).__name__} carries no p-value; read its critical values."
+            )
+        return self.pvalue < alpha
+
+    def _summary_table(self) -> SummaryTable:
+        """Build the structured summary for this test.
+
+        Raises:
+            NotImplementedError: If the concrete test does not supply one.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement _summary_table() to be displayable."
+        )
+
+    def summary(self) -> SummaryTable:
+        """The test as a table, renderable as text, HTML, or a dataframe."""
+        return self._summary_table()
+
+    def __str__(self) -> str:
+        """Render the summary."""
+        return self._summary_table().to_text()
+
+    def _repr_html_(self) -> str:
+        """Render the summary as HTML for Jupyter."""
+        return self._summary_table()._repr_html_()
+
+    def _pvalue_text(self) -> str:
+        """The p-value for a one-line repr."""
+        return "None" if self.pvalue is None else f"{self.pvalue:.4g}"
+
+    def __repr__(self) -> str:
+        """One-line verdict."""
+        name = type(self).__name__.lstrip("_")
+        return f"{name}(statistic={self.statistic:.4f}, pvalue={self._pvalue_text()})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ChiSquaredTest(_HypothesisTest):
+    """A test referred to a chi-squared law with ``df`` degrees of freedom.
+
+    The likelihood-ratio and Wald records are siblings here rather than
+    parent and child: they carry the same three numbers, but a
+    likelihood ratio is named by its construction and a Wald statistic
+    by the null it was aimed at, and the one extra field is the
+    difference between them.
+
+    Attributes:
+        statistic: The chi-squared statistic.
+        df: Degrees of freedom.
+        pvalue: Upper-tail probability under the chi-squared null.
+    """
+
+    df: int
+    pvalue: float
+
+    def _label(self) -> str:
+        """The row label naming what was tested."""
+        return "restriction"
+
+    def _title(self) -> str:
+        """The table title."""
+        return "Chi-Squared Test"
+
+    def _summary_table(self) -> SummaryTable:
+        """One row: the statistic, its degrees of freedom, and the p-value."""
+        verdict = "reject" if self.reject() else "keep"
+        return SummaryTable(
+            title=self._title(),
+            metadata=(("Verdict at 5%", verdict),),
+            columns=("null", "statistic", "df", "p-value"),
+            rows=((self._label(), f"{self.statistic:.4f}", str(self.df), f"{self.pvalue:.4f}"),),
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ForecastComparisonTest(_HypothesisTest):
+    """A test on a series of aligned forecast errors from a rolling evaluation.
+
+    The three members -- Clark-West, Mincer-Zarnowitz, encompassing --
+    share the harness that produced their inputs and therefore the same
+    header: how many origins, at what horizon, and the verdict.
+
+    Attributes:
+        statistic: The test statistic.
+        pvalue: Its p-value.
+        horizon: Forecast horizon behind the series.
+        nobs: Evaluation origins.
+    """
+
+    pvalue: float
+    horizon: int
+    nobs: int
+
+    def _frame(
+        self,
+        *,
+        title: str,
+        verdict: str,
+        columns: tuple[str, ...],
+        rows: tuple[tuple[str, ...], ...],
+        notes: tuple[str, ...],
+    ) -> SummaryTable:
+        """Assemble the family's table around its common header."""
+        return SummaryTable(
+            title=title,
+            metadata=(
+                ("Origins", str(self.nobs)),
+                ("Horizon", str(self.horizon)),
+                ("Verdict", verdict),
+            ),
+            columns=columns,
+            rows=rows,
+            notes=notes,
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _TabulatedTest(_HypothesisTest):
+    """A test read against tabulated critical values, with or without a p-value.
+
+    Unit-root and structural-break tests have non-standard limit laws.
+    Where the literature supplies a response surface or the limit can be
+    simulated, ``pvalue`` is set and ``reject`` reads it; where only
+    three critical values exist, ``pvalue`` is ``None`` and ``reject``
+    reads the table in the direction ``lower_tail`` says. Several
+    statistics computed on the same sample by the same test -- the four
+    Ng-Perron statistics, the sup-, exp- and ave-Wald functionals --
+    travel as ``companions``, each a full record, so a table can show
+    them together and each can still be read alone.
+
+    Attributes:
+        name: The test.
+        statistic: The test statistic.
+        pvalue: Its p-value, or ``None`` when only critical values exist.
+        critical_values: ``{"1%", "5%", "10%"}`` critical values.
+        null: The hypothesis under test.
+        lower_tail: Whether rejection lies in the lower tail.
+        nobs: Observations the statistic was computed on.
+        companions: Further statistics of the same test on the same
+            sample.
+    """
+
+    name: str
+    critical_values: dict[str, float]
+    null: str
+    nobs: int
+    lower_tail: bool = False
+    companions: tuple[_TabulatedTest, ...] = ()
+
+    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
+        """Whether the null is rejected at level ``alpha``.
+
+        By p-value when one exists; otherwise by the tabulated critical
+        value, which requires ``alpha`` to be a tabulated level.
+
+        Raises:
+            SpecificationError: If the level is not inside ``(0, 1)``, or
+                the test carries no p-value and ``alpha`` is not a
+                tabulated level.
+        """
+        if self.pvalue is not None:
+            return _HypothesisTest.reject(self, alpha=alpha)
+        if not 0.0 < alpha < 1.0:
+            raise SpecificationError(f"alpha must lie strictly inside (0, 1); got {alpha}.")
+        label = f"{alpha * 100:g}%"
+        if label not in self.critical_values:
+            raise SpecificationError(
+                f"{self.name} carries no p-value; alpha must be one of "
+                f"{tuple(self.critical_values)} to use the tabulated critical values, got "
+                f"{alpha}."
+            )
+        threshold = self.critical_values[label]
+        return self.statistic < threshold if self.lower_tail else self.statistic > threshold
+
+    def _row(self) -> tuple[str, ...]:
+        """One table row: name, statistic, p-value, three critical values."""
+        p = "" if self.pvalue is None else f"{self.pvalue:.4f}"
+        cv = tuple(f"{self.critical_values[k]:.3f}" for k in _CRITICAL_LEVELS)
+        return (self.name, f"{self.statistic:.4f}", p, *cv)
+
+    def _verdict(self) -> str:
+        """The verdict at the default level, or a pointer to the table."""
+        try:
+            rejected = self.reject()
+        except SpecificationError:
+            return "see critical values"
+        return f"reject {self.null}" if rejected else f"keep {self.null}"
+
+    def _title(self) -> str:
+        """The table title."""
+        return f"{self.name} Test"
+
+    def _metadata(self) -> tuple[tuple[str, str], ...]:
+        """Header lines before the verdict; subclasses add their own."""
+        return (("Null", self.null), ("Observations", str(self.nobs)))
+
+    def _notes(self) -> tuple[str, ...]:
+        """Closing lines."""
+        tail = "lower" if self.lower_tail else "upper"
+        return (f"Rejection lies in the {tail} tail.",)
+
+    def _summary_table(self) -> SummaryTable:
+        """The statistic and its companions against the critical values."""
+        return SummaryTable(
+            title=self._title(),
+            metadata=(*self._metadata(), ("Verdict at 5%", self._verdict())),
+            columns=("statistic", "value", "p-value", *_CRITICAL_LEVELS),
+            rows=(self._row(), *(c._row() for c in self.companions)),
+            notes=self._notes(),
+        )
+
+    def _repr_fields(self) -> tuple[str, ...]:
+        """Extra ``key=value`` pieces for the one-line repr."""
+        return ()
+
+    def __repr__(self) -> str:
+        """One-line verdict."""
+        pieces = (
+            f"name={self.name!r}",
+            f"statistic={self.statistic:.4f}",
+            f"pvalue={self._pvalue_text()}",
+            *self._repr_fields(),
+            f"nobs={self.nobs}",
+        )
+        return f"{type(self).__name__.lstrip('_')}({', '.join(pieces)})"
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _LikelihoodRatioTest(_ChiSquaredTest):
     """Verdict of a likelihood-ratio test between two nested fits.
 
     Attributes:
@@ -173,13 +432,11 @@ class _LikelihoodRatioTest:
         pvalue: Upper-tail probability under a chi-squared null.
     """
 
-    statistic: float
-    df: int
-    pvalue: float
+    def _label(self) -> str:
+        return "nested restriction"
 
-    def reject(self, *, alpha: float = 0.05) -> bool:
-        """Whether the restriction is rejected at level ``alpha``."""
-        return self.pvalue < alpha
+    def _title(self) -> str:
+        return "Likelihood-Ratio Test"
 
     def __repr__(self) -> str:
         """One-line verdict."""
@@ -188,36 +445,9 @@ class _LikelihoodRatioTest:
             f"pvalue={self.pvalue:.4g})"
         )
 
-    @classmethod
-    def _berkowitz_test(cls, transformed: npt.NDArray[np.float64]) -> _LikelihoodRatioTest:
-        """Berkowitz's likelihood ratio on the normal-quantile transforms.
 
-        The unrestricted model is a Gaussian AR(1) with free mean, slope, and
-        variance, estimated by exact conditional maximum likelihood; the null
-        restricts to zero mean, zero slope, unit variance -- what a calibrated,
-        independent PIT series must look like on this scale.
-        """
-        z = transformed
-        lagged = z[:-1]
-        current = z[1:]
-        count = current.shape[0]
-        design = np.column_stack([np.ones(count), lagged])
-        coefficients, *_ = np.linalg.lstsq(design, current, rcond=None)
-        residual = current - design @ coefficients
-        variance = float(residual @ residual) / count
-        variance = max(variance, 1e-12)
-        llf_free = -0.5 * count * (np.log(2.0 * np.pi * variance) + 1.0)
-        llf_null = -0.5 * count * np.log(2.0 * np.pi) - 0.5 * float(current @ current)
-        statistic = max(2.0 * (llf_free - llf_null), 0.0)
-        return cls(
-            statistic=float(statistic),
-            df=3,
-            pvalue=float(sst.chi2.sf(statistic, 3)),
-        )
-
-
-@dataclass(frozen=True, kw_only=True, slots=True)
-class _WaldTest:
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _WaldTest(_ChiSquaredTest):
     """Verdict of a chi-squared restriction test on a fitted model.
 
     Carries the same three numbers as :class:`_LikelihoodRatioResult` and one
@@ -246,166 +476,21 @@ class _WaldTest:
     """
 
     statistic: float
-    df: int
-    pvalue: float
     null: str
 
-    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
-        """Whether the null is rejected at level ``alpha``."""
-        return self.pvalue < alpha
+    def _label(self) -> str:
+        return self.null
+
+    def _title(self) -> str:
+        return "Wald Test"
 
     def __repr__(self) -> str:
         """One-line verdict at the default level, which the text names."""
         verdict = "reject" if self.reject() else "keep"
         return (
-            f"WaldTestResult(statistic={self.statistic:.4f}, df={self.df}, "
+            f"WaldTest(statistic={self.statistic:.4f}, df={self.df}, "
             f"pvalue={self.pvalue:.4g}, {verdict} at {_DEFAULT_ALPHA:.0%}: {self.null!r})"
         )
-
-
-@dataclass(frozen=True)
-class _StabilityTest:
-    """The outcome of a stability (or invertibility) assessment.
-
-    Attributes:
-        eigenvalues: The companion eigenvalues (complex).
-        max_modulus: The largest eigenvalue modulus; ``0.0`` when there are no
-            eigenvalues (``p == 0``).
-        is_stable: Whether the requested stability criterion is satisfied. With
-            ``allow_unit_roots=False`` this means all moduli are strictly below
-            ``1 - tol``; with ``allow_unit_roots=True`` it means no modulus
-            exceeds ``1 + tol``.
-        n_unit_roots: Number of eigenvalues whose modulus is within ``tol`` of 1.
-        n_explosive: Number of eigenvalues with modulus above ``1 + tol``.
-        tol: The modulus tolerance used for classification.
-    """
-
-    eigenvalues: npt.NDArray[np.complex128]
-    max_modulus: float
-    is_stable: bool
-    n_unit_roots: int
-    n_explosive: int
-    tol: float
-
-    @classmethod
-    def _trivial(cls) -> Self:
-        return cls(
-            eigenvalues=np.empty(0, dtype=np.complex128),
-            max_modulus=0.0,
-            is_stable=True,
-            n_unit_roots=0,
-            n_explosive=0,
-            tol=0.0,
-        )
-
-    @classmethod
-    def _assess(
-        cls, companion: npt.NDArray[np.float64], *, tol: float, allow_unit_roots: bool
-    ) -> Self:
-        if tol < 0.0:
-            raise SpecificationError(f"tol must be non-negative; got {tol}.")
-        if companion.size == 0:
-            return cls(
-                eigenvalues=np.empty(0, dtype=np.complex128),
-                max_modulus=0.0,
-                is_stable=True,
-                n_unit_roots=0,
-                n_explosive=0,
-                tol=tol,
-            )
-        eigenvalues = np.linalg.eigvals(companion).astype(np.complex128)
-        if not np.all(np.isfinite(eigenvalues)):
-            raise NumericalError("Companion eigenvalue computation produced non-finite values.")
-        moduli = np.abs(eigenvalues)
-        max_modulus = float(moduli.max())
-        n_unit_roots = int(np.count_nonzero(np.abs(moduli - 1.0) <= tol))
-        n_explosive = int(np.count_nonzero(moduli > 1.0 + tol))
-        is_stable = (n_explosive == 0) if allow_unit_roots else (max_modulus < 1.0 - tol)
-        return cls(
-            eigenvalues=eigenvalues,
-            max_modulus=max_modulus,
-            is_stable=is_stable,
-            n_unit_roots=n_unit_roots,
-            n_explosive=n_explosive,
-            tol=tol,
-        )
-
-    @classmethod
-    def assess_stability(
-        cls, ar_coeffs: npt.ArrayLike, *, tol: float = 1e-8, allow_unit_roots: bool = False
-    ) -> Self:
-        """Assess stationarity of an AR/VAR from its autoregressive coefficients.
-
-        Args:
-            ar_coeffs: Coefficients ``A_1, ..., A_p``; shape ``(p,)`` or ``(p, k, k)``.
-            tol: Modulus tolerance for classifying unit and explosive roots.
-            allow_unit_roots: If ``True``, unit roots are permitted (only strictly
-                explosive roots make the model unstable). Use for VECM and other
-                models that carry unit roots by design.
-
-        Returns:
-            A :class:`StabilityResult`.
-
-        Example:
-            >>> res = assess_stability([0.5])
-            >>> res.is_stable
-            True
-            >>> round(res.max_modulus, 4)
-            0.5
-        """
-        ar = np.asarray(ar_coeffs, dtype=np.float64)
-        if ar.size == 0:
-            return cls._trivial()
-        return cls._assess(companion_matrix(ar), tol=tol, allow_unit_roots=allow_unit_roots)
-
-    @classmethod
-    def assess_stability_from_companion(
-        cls, companion: npt.ArrayLike, *, tol: float = 1e-8, allow_unit_roots: bool = False
-    ) -> Self:
-        """Assess stability directly from a companion (or state-transition) matrix.
-
-        Args:
-            companion: A square matrix (e.g. a companion or an LGSS transition matrix).
-            tol: Modulus tolerance for classifying unit and explosive roots.
-            allow_unit_roots: If ``True``, unit roots are permitted.
-
-        Returns:
-            A :class:`StabilityResult`.
-
-        Raises:
-            DimensionError: If ``companion`` is not a square 2-D array.
-        """
-        mat = np.asarray(companion, dtype=np.float64)
-        if mat.ndim != 2 or mat.shape[0] != mat.shape[1]:
-            raise DimensionError(f"Companion matrix must be square 2-D; got shape {mat.shape}.")
-        return cls._assess(mat, tol=tol, allow_unit_roots=allow_unit_roots)
-
-    @classmethod
-    def is_stationary(cls, ar_coeffs: npt.ArrayLike, *, tol: float = 1e-8) -> bool:
-        """Convenience predicate: is the AR/VAR strictly stationary?
-
-        Example:
-            >>> is_stationary([1.5])
-            False
-        """
-        return cls.assess_stability(ar_coeffs, tol=tol, allow_unit_roots=False).is_stable
-
-    @classmethod
-    def is_invertible(cls, ma_coeffs: npt.ArrayLike, *, tol: float = 1e-8) -> bool:
-        """Is an MA/ARMA invertible? (companion of the MA polynomial, roots inside).
-
-        Args:
-            ma_coeffs: MA coefficients ``M_1, ..., M_q`` in the same layout as AR
-                coefficients; shape ``(q,)`` or ``(q, k, k)``.
-            tol: Modulus tolerance.
-
-        Returns:
-            ``True`` iff all companion eigenvalues lie strictly inside the unit circle.
-        """
-        ma = np.asarray(ma_coeffs, dtype=np.float64)
-        if ma.size == 0:
-            return True
-        return cls._assess(companion_matrix(ma), tol=tol, allow_unit_roots=False).is_stable
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -859,7 +944,7 @@ class _PredictiveCheckTest:
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class _ClarkWestTest:
+class _ClarkWestTest(_ForecastComparisonTest):
     """Verdict of the Clark-West (2007) test that a nesting model forecasts better.
 
     The one-sided alternative is that the larger model improves on the
@@ -881,19 +966,11 @@ class _ClarkWestTest:
         nobs: Evaluation origins.
     """
 
-    statistic: float
-    pvalue: float
     adjusted_differential: float
     mspe_restricted: float
     mspe_unrestricted: float
-    horizon: int
-    nobs: int
 
-    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
-        """Whether the smaller model is rejected in favor of the larger at level ``alpha``."""
-        return self.pvalue < alpha
-
-    def summary(self) -> SummaryTable:
+    def _summary_table(self) -> SummaryTable:
         """Render as a table."""
         verdict = "larger model improves" if self.reject() else "no improvement shown"
         rows = (("Clark-West adjusted MSPE", f"{self.statistic:.4f}", f"{self.pvalue:.4f}"),)
@@ -907,13 +984,9 @@ class _ClarkWestTest:
             "noise the larger model carries under the null, which is what makes Diebold-"
             "Mariano invalid for nested forecasts.",
         )
-        return SummaryTable(
+        return self._frame(
             title="Clark-West Nested Forecast Comparison",
-            metadata=(
-                ("Origins", str(self.nobs)),
-                ("Horizon", str(self.horizon)),
-                ("Verdict", verdict),
-            ),
+            verdict=verdict,
             columns=("test", "statistic", "p-value"),
             rows=rows,
             notes=notes,
@@ -927,7 +1000,7 @@ class _ClarkWestTest:
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class _MincerZarnowitzTest:
+class _MincerZarnowitzTest(_ForecastComparisonTest):
     """Verdict of the Mincer-Zarnowitz efficiency regression ``y = a + b f``.
 
     An unbiased, efficient point forecast has intercept zero and slope
@@ -949,17 +1022,9 @@ class _MincerZarnowitzTest:
 
     intercept: float
     slope: float
-    statistic: float
-    pvalue: float
     r_squared: float
-    horizon: int
-    nobs: int
 
-    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
-        """Whether efficiency is rejected at level ``alpha``."""
-        return self.pvalue < alpha
-
-    def summary(self) -> SummaryTable:
+    def _summary_table(self) -> SummaryTable:
         """Render as a table."""
         verdict = "efficiency rejected" if self.reject() else "efficiency not rejected"
         rows = (
@@ -985,13 +1050,9 @@ class _MincerZarnowitzTest:
                 else ""
             ),
         )
-        return SummaryTable(
+        return self._frame(
             title="Mincer-Zarnowitz Efficiency Regression",
-            metadata=(
-                ("Origins", str(self.nobs)),
-                ("Horizon", str(self.horizon)),
-                ("Verdict", verdict),
-            ),
+            verdict=verdict,
             columns=("quantity", "estimate", "p-value"),
             rows=rows,
             notes=notes,
@@ -1005,7 +1066,7 @@ class _MincerZarnowitzTest:
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class _EncompassingTest:
+class _EncompassingTest(_ForecastComparisonTest):
     """Verdict of the forecast encompassing test: does A already contain what B knows?
 
     Forecast A encompasses B when the optimal linear combination of the
@@ -1021,17 +1082,9 @@ class _EncompassingTest:
         nobs: Evaluation origins.
     """
 
-    statistic: float
-    pvalue: float
     weight: float
-    horizon: int
-    nobs: int
 
-    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
-        """Whether encompassing is rejected -- B adds information -- at level ``alpha``."""
-        return self.pvalue < alpha
-
-    def summary(self) -> SummaryTable:
+    def _summary_table(self) -> SummaryTable:
         """Render as a table."""
         verdict = "B adds information" if self.reject() else "A encompasses B"
         rows = (("HLN encompassing", f"{self.statistic:.4f}", f"{self.pvalue:.4f}"),)
@@ -1042,13 +1095,9 @@ class _EncompassingTest:
             f"correction, Bartlett long-run variance through horizon - 1 = {self.horizon - 1} "
             "lags, one-sided t reference (Harvey, Leybourne & Newbold, 1998).",
         )
-        return SummaryTable(
+        return self._frame(
             title="Forecast Encompassing",
-            metadata=(
-                ("Origins", str(self.nobs)),
-                ("Horizon", str(self.horizon)),
-                ("Verdict", verdict),
-            ),
+            verdict=verdict,
             columns=("test", "statistic", "p-value"),
             rows=rows,
             notes=notes,
@@ -1058,4 +1107,186 @@ class _EncompassingTest:
         return (
             f"EncompassingTest(statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, "
             f"weight={self.weight:.3f}, nobs={self.nobs})"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _UnitRootTest(_TabulatedTest):
+    """Verdict of a unit-root or stationarity test.
+
+    The family is not one hypothesis but two. The Dickey-Fuller line --
+    ADF, Phillips-Perron, DF-GLS, Ng-Perron, Zivot-Andrews -- puts the
+    unit root under the null and rejects in the lower tail; KPSS puts
+    stationarity under the null and rejects in the upper tail. The record
+    carries which, so that ``reject`` reads correctly for both and a
+    table of several tests can be read side by side: a series the ADF
+    cannot reject a unit root for and the KPSS cannot reject stationarity
+    for is one the sample does not decide, and that is a finding.
+
+    P-values are exact where the literature supplies a response surface
+    (MacKinnon for the Dickey-Fuller law) or a table dense enough to
+    interpolate (KPSS); the tests known only through asymptotic critical
+    values at three levels report ``pvalue=None`` and ``reject`` reads
+    the table.
+
+    Attributes:
+        trend: Deterministic specification the test was run under.
+        lags: Augmentation lags or kernel bandwidth, as the test uses.
+        method: How ``lags`` was chosen or the kernel used.
+        break_index: For a break-allowing test, the first observation of
+            the new regime; ``None`` otherwise.
+    """
+
+    trend: str
+    lags: int
+    method: str
+    break_index: int | None = None
+
+    def _metadata(self) -> tuple[tuple[str, str], ...]:
+        out = [
+            ("Null", self.null),
+            ("Trend", self.trend),
+            ("Lags", str(self.lags)),
+            ("Method", self.method),
+            ("Observations", str(self.nobs)),
+        ]
+        if self.break_index is not None:
+            out.append(("Break at", str(self.break_index)))
+        return tuple(out)
+
+    def _repr_fields(self) -> tuple[str, ...]:
+        return (f"null={self.null!r}", f"trend={self.trend!r}", f"lags={self.lags}")
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _BreakTest(_TabulatedTest):
+    """Verdict of a test for one structural break at an unknown date.
+
+    Andrews' (1993) sup-Wald and Andrews and Ploberger's (1994) exp- and
+    ave-Wald share one limit process, a ``q``-dimensional Brownian bridge
+    over the trimmed window, and the p-values here come from that limit
+    simulated at the trimming actually used; the CUSUM tests of Brown,
+    Durbin and Evans (1975) compare a recursive-residual path with a
+    boundary, and the record carries the path so the crossing can be
+    seen. Rejection always lies in the upper tail.
+
+    Attributes:
+        break_index: First observation of the new regime at the sup, or
+            the first boundary crossing; ``None`` when nothing is located.
+        n_restrictions: Coefficients allowed to change, ``q``.
+        trimming: Fraction of the sample excluded at each end, or
+            ``None`` for a boundary test.
+        path: The statistic path over candidate dates, or the CUSUM path.
+        bounds: The boundary at the tabulated levels, ``(3, n)``, for a
+            CUSUM test; ``None`` otherwise.
+    """
+
+    break_index: int | None
+    n_restrictions: int
+    trimming: float | None
+    path: npt.NDArray[np.float64] | None = field(default=None, repr=False)
+    bounds: npt.NDArray[np.float64] | None = field(default=None, repr=False)
+
+    def _verdict(self) -> str:
+        try:
+            rejected = self.reject()
+        except SpecificationError:
+            return "see critical values"
+        return "break" if rejected else "no break"
+
+    def _title(self) -> str:
+        return f"{self.name} Structural Break Test"
+
+    def _metadata(self) -> tuple[tuple[str, str], ...]:
+        out = [
+            ("Null", self.null),
+            ("Restrictions", str(self.n_restrictions)),
+            ("Observations", str(self.nobs)),
+        ]
+        if self.trimming is not None:
+            out.append(("Trimming", f"{self.trimming:.2f}"))
+        if self.break_index is not None:
+            out.append(("Break at", str(self.break_index)))
+        return tuple(out)
+
+    def _notes(self) -> tuple[str, ...]:
+        return ()
+
+    def _repr_fields(self) -> tuple[str, ...]:
+        return (f"break_index={self.break_index}",)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _MultipleBreakTest:
+    """Bai and Perron's (1998, 2003) multiple-break analysis of a linear regression.
+
+    For every number of breaks up to ``max_breaks`` the record carries
+    the global least-squares partition; the selected number comes from
+    the information criterion asked for, or from the sequential
+    ``sup F(l + 1 | l)`` procedure whose p-values follow from the
+    single-break limit raised to the power ``l + 1``.
+
+    Attributes:
+        break_indices: First observation of each new regime under the
+            selected number of breaks.
+        n_breaks: The selected number.
+        criterion: ``"bic"``, ``"lwz"`` or ``"sequential"``.
+        ssr: Sum of squared residuals for ``0 .. max_breaks`` breaks.
+        bic: Bayesian information criterion for each count.
+        lwz: Liu-Wu-Zidek criterion for each count.
+        partitions: The global partition for each count.
+        sequential: The ``sup F(l + 1 | l)`` tests, one per step taken.
+        n_restrictions: Regression coefficients, ``q``.
+        trimming: Minimum segment length as a fraction of the sample.
+        nobs: Observations.
+    """
+
+    break_indices: tuple[int, ...]
+    n_breaks: int
+    criterion: str
+    ssr: npt.NDArray[np.float64] = field(repr=False)
+    bic: npt.NDArray[np.float64] = field(repr=False)
+    lwz: npt.NDArray[np.float64] = field(repr=False)
+    partitions: tuple[tuple[int, ...], ...] = field(repr=False)
+    sequential: tuple[_BreakTest, ...] = field(repr=False)
+    n_restrictions: int
+    trimming: float
+    nobs: int
+
+    @property
+    def max_breaks(self) -> int:
+        """Largest number of breaks considered."""
+        return int(self.ssr.shape[0] - 1)
+
+    def summary(self) -> SummaryTable:
+        """Render as a table over the number of breaks."""
+        rows = []
+        for m in range(self.max_breaks + 1):
+            dates = ", ".join(str(i) for i in self.partitions[m]) or "-"
+            rows.append(
+                (str(m), f"{self.ssr[m]:.4f}", f"{self.bic[m]:.4f}", f"{self.lwz[m]:.4f}", dates)
+            )
+        notes = tuple(
+            f"sup F({step + 1} | {step}) = {t.statistic:.3f}"
+            + ("" if t.pvalue is None else f", p = {t.pvalue:.4f}")
+            for step, t in enumerate(self.sequential)
+        )
+        return SummaryTable(
+            title="Bai-Perron Multiple Breaks",
+            metadata=(
+                ("Selected breaks", str(self.n_breaks)),
+                ("Criterion", self.criterion),
+                ("Break dates", ", ".join(str(i) for i in self.break_indices) or "none"),
+                ("Trimming", f"{self.trimming:.2f}"),
+                ("Observations", str(self.nobs)),
+            ),
+            columns=("breaks", "SSR", "BIC", "LWZ", "dates"),
+            rows=tuple(rows),
+            notes=notes,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"MultipleBreakTest(n_breaks={self.n_breaks}, break_indices={self.break_indices}, "
+            f"criterion={self.criterion!r}, nobs={self.nobs})"
         )

@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ._assessments import _StabilityAssessment
 from ._emitters import (
     _decay_nelson_siegel_state_space,
     _long_memory_quasi_state_space,
@@ -187,14 +188,16 @@ from ._substrates import (
 )
 from ._systems import _structural_matrices
 from ._tests import (
+    _BreakTest,
     _ClarkWestTest,
     _ConvergenceTest,
     _EncompassingTest,
     _JohansenRankTest,
     _LikelihoodRatioTest,
     _MincerZarnowitzTest,
+    _MultipleBreakTest,
     _PredictiveCheckTest,
-    _StabilityTest,
+    _UnitRootTest,
     _WaldTest,
 )
 
@@ -207,6 +210,7 @@ __all__ = [
     "_BayesianVectorAutoRegressionModel",
     "_BoxJenkinsFit",
     "_BoxJenkinsModel",
+    "_BreakTest",
     "_ClarkWestTest",
     "_CoDiagonalObjective",
     "_ComparisonMixin",
@@ -256,6 +260,7 @@ __all__ = [
     "_MixedHorizonObjective",
     "_ModelCombinationSelection",
     "_ModelConfidenceSetSelection",
+    "_MultipleBreakTest",
     "_NelsonSiegelFit",
     "_NelsonSiegelObjective",
     "_NelsonSiegelParameters",
@@ -293,7 +298,7 @@ __all__ = [
     "_SmoothTransitionModel",
     "_SmoothTransitionVectorAutoRegressionModel",
     "_SparseVectorAutoRegressionModel",
-    "_StabilityTest",
+    "_StabilityAssessment",
     "_StationarityMixin",
     "_StochasticVolatilityFit",
     "_StochasticVolatilityModel",
@@ -310,6 +315,7 @@ __all__ = [
     "_TrendVolatilityModel",
     "_TrendVolatilityParameters",
     "_UCSVPosterior",
+    "_UnitRootTest",
     "_UnobservedComponentsModel",
     "_VectorAutoRegressionFit",
     "_VectorAutoRegressionModel",

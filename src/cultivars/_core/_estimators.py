@@ -35,8 +35,27 @@ from scipy.stats import t as t_dist
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._converters import _as_chains
-from ._defaults import _BRIDGE_MAX_ITER, _BRIDGE_TOL, _LOG_2PI, _MHM_TAU, _MIN_CHAIN_DRAWS, _PENALTY
-from ._mappings import _DISCREPANCIES
+from ._defaults import (
+    _BRIDGE_MAX_ITER,
+    _BRIDGE_TOL,
+    _CRITICAL_LEVELS,
+    _LOG_2PI,
+    _MHM_TAU,
+    _MIN_CHAIN_DRAWS,
+    _PENALTY,
+)
+from ._mappings import (
+    _DISCREPANCIES,
+    _GLS_DETREND_C,
+    _KPSS_CRITICAL,
+    _MACKINNON_CRITICAL_2010,
+    _MACKINNON_TAU_LARGE,
+    _MACKINNON_TAU_MAX,
+    _MACKINNON_TAU_MIN,
+    _MACKINNON_TAU_SMALL,
+    _MACKINNON_TAU_STAR,
+)
+from ._matrices import deterministic_columns
 from ._transforms import _rank_normalize, _split_chains
 from ._types import CointegrationTrend
 from ._validators import _validate_posterior_draws
@@ -1179,6 +1198,39 @@ def _predictive_pvalues(
     return out
 
 
+def _berkowitz_likelihood_ratio(transformed: npt.NDArray[np.float64]) -> tuple[float, int, float]:
+    """Berkowitz's (2001) likelihood ratio on the normal-quantile transforms of PITs.
+
+    The unrestricted model is a Gaussian AR(1) with free mean, slope, and
+    variance, estimated by exact conditional maximum likelihood; the null
+    restricts to zero mean, zero slope, unit variance -- what a calibrated,
+    independent PIT series must look like on this scale.
+
+    Args:
+        transformed: ``(T,)`` normal quantiles of the PITs.
+
+    Returns:
+        ``(statistic, df, pvalue)`` with ``df = 3``.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> stat, df, p = _berkowitz_likelihood_ratio(rng.standard_normal(500))
+        >>> df, bool(p > 0.01)
+        (3, True)
+    """
+    lagged = transformed[:-1]
+    current = transformed[1:]
+    count = current.shape[0]
+    design = np.column_stack([np.ones(count), lagged])
+    coefficients, *_ = np.linalg.lstsq(design, current, rcond=None)
+    residual = current - design @ coefficients
+    variance = max(float(residual @ residual) / count, 1e-12)
+    llf_free = -0.5 * count * (np.log(2.0 * np.pi * variance) + 1.0)
+    llf_null = -0.5 * count * np.log(2.0 * np.pi) - 0.5 * float(current @ current)
+    statistic = max(2.0 * (llf_free - llf_null), 0.0)
+    return float(statistic), 3, float(chi2.sf(statistic, 3))
+
+
 def _bartlett_long_run_variance(centered: npt.NDArray[np.float64], horizon: int) -> float:
     """Long-run variance of a demeaned series with Bartlett weights through ``horizon - 1`` lags.
 
@@ -1507,3 +1559,641 @@ def _forecast_encompassing(
     corrected = statistic * adjust
     weight = mean / float((gap**2).mean())
     return corrected, float(t_dist.sf(corrected, count - 1)), weight
+
+
+def _newey_west_bandwidth(nobs: int) -> int:
+    """Newey and West's (1994) rule-of-thumb Bartlett bandwidth ``floor(4 (T/100)^(2/9))``.
+
+    Example:
+        >>> _newey_west_bandwidth(100), _newey_west_bandwidth(1000)
+        (4, 6)
+    """
+    return int(np.floor(4.0 * (nobs / 100.0) ** (2.0 / 9.0)))
+
+
+def _schwert_max_lags(nobs: int) -> int:
+    """Schwert's (1989) ceiling on the Dickey-Fuller augmentation, ``floor(12 (T/100)^(1/4))``.
+
+    Example:
+        >>> _schwert_max_lags(100), _schwert_max_lags(400)
+        (12, 16)
+    """
+    return int(np.floor(12.0 * (nobs / 100.0) ** 0.25))
+
+
+def _andrews_bandwidth(x: npt.NDArray[np.float64], kernel: str) -> float:
+    """Andrews' (1991) automatic bandwidth from an AR(1) plug-in.
+
+    Args:
+        x: ``(T,)`` series, already demeaned.
+        kernel: ``"bartlett"`` or ``"quadratic-spectral"``.
+
+    Returns:
+        The bandwidth ``S_T``; a Bartlett kernel truncates at ``floor(S_T)``.
+
+    Example:
+        >>> x = np.array([1.0, -1.0, 1.0, -1.0, 1.0, -1.0])
+        >>> _andrews_bandwidth(x, "bartlett") > 0
+        True
+    """
+    nobs = x.shape[0]
+    denominator = float(x[:-1] @ x[:-1])
+    rho = float(x[1:] @ x[:-1]) / denominator if denominator > 0.0 else 0.0
+    rho = float(np.clip(rho, -0.97, 0.97))
+    if kernel == "bartlett":
+        alpha = 4.0 * rho**2 / ((1.0 - rho) ** 2 * (1.0 + rho) ** 2)
+        return float(1.1447 * (alpha * nobs) ** (1.0 / 3.0))
+    alpha = 4.0 * rho**2 / (1.0 - rho) ** 4
+    return float(1.3221 * (alpha * nobs) ** (1.0 / 5.0))
+
+
+def _long_run_variance(
+    x: npt.NDArray[np.float64], *, kernel: str = "bartlett", bandwidth: float | None = None
+) -> float:
+    """Kernel estimate of the long-run variance ``sum_j gamma_j`` of a demeaned series.
+
+    Args:
+        x: ``(T,)`` series with its mean already removed.
+        kernel: ``"bartlett"`` (Newey-West) or ``"quadratic-spectral"``
+            (Andrews).
+        bandwidth: Kernel bandwidth. ``None`` selects Newey and West's
+            (1994) rule for the Bartlett kernel and Andrews' (1991) AR(1)
+            plug-in for the quadratic spectral.
+
+    Returns:
+        The long-run variance, floored at a tiny positive number.
+
+    Raises:
+        SpecificationError: If the kernel is unknown or the bandwidth is
+            negative.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> e = rng.standard_normal(4000)
+        >>> bool(abs(_long_run_variance(e - e.mean()) - 1.0) < 0.15)
+        True
+    """
+    if kernel not in ("bartlett", "quadratic-spectral"):
+        raise SpecificationError(
+            f"kernel must be 'bartlett' or 'quadratic-spectral'; got {kernel!r}."
+        )
+    nobs = x.shape[0]
+    if bandwidth is None:
+        width = (
+            float(_newey_west_bandwidth(nobs))
+            if kernel == "bartlett"
+            else _andrews_bandwidth(x, kernel)
+        )
+    else:
+        width = float(bandwidth)
+    if width < 0.0:
+        raise SpecificationError(f"bandwidth must be non-negative; got {bandwidth}.")
+    gamma0 = float(x @ x) / nobs
+    total = gamma0
+    max_lag = nobs - 1 if kernel == "quadratic-spectral" else int(np.floor(width))
+    for lag in range(1, max_lag + 1):
+        if kernel == "bartlett":
+            weight = 1.0 - lag / (width + 1.0)
+        else:
+            if width <= 0.0:
+                break
+            z = 6.0 * np.pi * (lag / width) / 5.0
+            weight = 3.0 / z**2 * (np.sin(z) / z - np.cos(z))
+            if lag > 20 * width:
+                break
+        gamma = float(x[lag:] @ x[:-lag]) / nobs
+        total += 2.0 * weight * gamma
+    return max(total, 1e-300)
+
+
+def _dickey_fuller_design(
+    y: npt.NDArray[np.float64], lags: int, trend: str, *, drop: int = 0
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Target and design of the augmented Dickey-Fuller regression.
+
+    ``dy_t = d_t' gamma + rho y_{t-1} + sum_{j<=lags} b_j dy_{t-j} + e_t``,
+    with the level lag in column ``0`` after the deterministic block.
+
+    Args:
+        y: ``(T,)`` series.
+        lags: Augmentation lags.
+        trend: ``"n"``, ``"c"`` or ``"ct"``.
+        drop: Extra leading observations to discard, so that fits with
+            different ``lags`` share a common effective sample.
+
+    Returns:
+        ``(target, design)`` with the level lag as the first column after
+        the deterministic terms.
+
+    Raises:
+        SpecificationError: If the sample is too short.
+    """
+    dy = np.diff(y)
+    start = max(lags, drop)
+    n_eff = dy.shape[0] - start
+    width = lags + 1 + (2 if trend == "ct" else 1 if trend == "c" else 0)
+    if n_eff < width + 3:
+        raise SpecificationError(
+            f"the sample of {y.shape[0]} observations is too short for {lags} lags."
+        )
+    target = dy[start:]
+    columns = [deterministic_columns(trend, n_eff, start=start + 2), y[start:-1, None]]
+    for j in range(1, lags + 1):
+        columns.append(dy[start - j : dy.shape[0] - j, None])
+    return target, np.hstack(columns)
+
+
+def _dickey_fuller_regression(
+    y: npt.NDArray[np.float64], lags: int, trend: str, *, drop: int = 0
+) -> tuple[float, float, npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
+    """Fit the ADF regression and return the ``tau`` statistic on the level lag.
+
+    Returns:
+        ``(tau, rho, coefficients, residuals, n_eff)`` where ``rho`` is the
+        coefficient on ``y_{t-1}`` and ``coefficients`` the full vector.
+
+    Raises:
+        SpecificationError: If the sample is too short.
+        NumericalError: If the design is singular.
+    """
+    target, design = _dickey_fuller_design(y, lags, trend, drop=drop)
+    n_eff, k = design.shape
+    coef, _, rank, _ = np.linalg.lstsq(design, target, rcond=None)
+    if rank < k:
+        raise NumericalError("the Dickey-Fuller design is singular.")
+    resid = target - design @ coef
+    sigma2 = float(resid @ resid) / (n_eff - k)
+    index = 2 if trend == "ct" else 1 if trend == "c" else 0
+    try:
+        inverse = np.linalg.inv(design.T @ design)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError("the Dickey-Fuller design is singular.") from error
+    se = float(np.sqrt(sigma2 * inverse[index, index]))
+    return float(coef[index] / se), float(coef[index]), coef, resid, n_eff
+
+
+def _select_dickey_fuller_lags(
+    y: npt.NDArray[np.float64], max_lags: int, trend: str, method: str
+) -> int:
+    """Choose the ADF augmentation on a common sample.
+
+    Args:
+        y: ``(T,)`` series.
+        max_lags: Largest augmentation considered.
+        trend: Deterministic specification.
+        method: ``"aic"``, ``"bic"`` (Gaussian criteria on the common
+            sample), ``"t-stat"`` (Ng-Perron 1995 general-to-specific at
+            the 10% level), or ``"maic"`` (Ng-Perron 2001 modified AIC).
+
+    Returns:
+        The chosen number of lags.
+
+    Raises:
+        SpecificationError: If the method is unknown.
+    """
+    if method not in ("aic", "bic", "t-stat", "maic"):
+        raise SpecificationError(
+            f"method must be 'aic', 'bic', 't-stat' or 'maic'; got {method!r}."
+        )
+    if method == "t-stat":
+        for lags in range(max_lags, 0, -1):
+            target, design = _dickey_fuller_design(y, lags, trend, drop=max_lags)
+            coef, _, _, _ = np.linalg.lstsq(design, target, rcond=None)
+            resid = target - design @ coef
+            n_eff, k = design.shape
+            sigma2 = float(resid @ resid) / (n_eff - k)
+            inverse = np.linalg.pinv(design.T @ design)
+            t_last = abs(coef[-1]) / float(np.sqrt(sigma2 * inverse[-1, -1]))
+            if t_last > 1.6449:
+                return lags
+        return 0
+    best_lags, best_value = 0, np.inf
+    for lags in range(max_lags + 1):
+        target, design = _dickey_fuller_design(y, lags, trend, drop=max_lags)
+        coef, _, _, _ = np.linalg.lstsq(design, target, rcond=None)
+        resid = target - design @ coef
+        n_eff, k = design.shape
+        sigma2 = float(resid @ resid) / n_eff
+        if method == "maic":
+            index = 2 if trend == "ct" else 1 if trend == "c" else 0
+            level = design[:, index]
+            tau_k = float(coef[index] ** 2 * (level @ level)) / sigma2
+            value = np.log(sigma2) + 2.0 * (tau_k + lags) / n_eff
+        elif method == "aic":
+            value = np.log(sigma2) + 2.0 * k / n_eff
+        else:
+            value = np.log(sigma2) + k * np.log(n_eff) / n_eff
+        if value < best_value:
+            best_lags, best_value = lags, value
+    return best_lags
+
+
+def _resolve_dickey_fuller_lags(
+    y: npt.NDArray[np.float64],
+    lags: int | None,
+    max_lags: int | None,
+    trend: str,
+    method: str,
+) -> tuple[int, str]:
+    """The Dickey-Fuller augmentation to use, and a label saying how it was chosen.
+
+    Args:
+        y: ``(T,)`` series the selection runs on.
+        lags: A fixed augmentation, or ``None`` to select.
+        max_lags: Largest augmentation under selection; ``None`` for
+            Schwert's rule.
+        trend: Deterministic specification of the selection regression.
+        method: Selection rule, as :func:`_select_dickey_fuller_lags`.
+
+    Returns:
+        ``(lags, label)`` with the label ``"fixed"`` or ``"<method> (max
+        <ceiling>)"``.
+
+    Raises:
+        SpecificationError: If a count is negative or the method unknown.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> _resolve_dickey_fuller_lags(rng.standard_normal(200), 3, None, "c", "aic")
+        (3, 'fixed')
+    """
+    if lags is not None:
+        if lags < 0:
+            raise SpecificationError(f"lags must be non-negative; got {lags}.")
+        return int(lags), "fixed"
+    ceiling = _schwert_max_lags(y.shape[0]) if max_lags is None else int(max_lags)
+    if ceiling < 0:
+        raise SpecificationError(f"max_lags must be non-negative; got {max_lags}.")
+    return _select_dickey_fuller_lags(y, ceiling, trend, method), f"{method} (max {ceiling})"
+
+
+def _mackinnon_pvalue(tau: float, trend: str) -> float:
+    """MacKinnon's (1994) response-surface p-value of a Dickey-Fuller ``tau`` statistic.
+
+    Example:
+        >>> round(_mackinnon_pvalue(-2.86, "c"), 2)
+        0.05
+    """
+    if tau < _MACKINNON_TAU_MIN[trend]:
+        return 0.0
+    if tau > _MACKINNON_TAU_MAX[trend]:
+        return 1.0
+    coefficients = (
+        _MACKINNON_TAU_SMALL[trend]
+        if tau <= _MACKINNON_TAU_STAR[trend]
+        else _MACKINNON_TAU_LARGE[trend]
+    )
+    value = sum(c * tau**i for i, c in enumerate(coefficients))
+    return float(norm.cdf(value))
+
+
+def _mackinnon_critical_values(trend: str, nobs: int) -> dict[str, float]:
+    """MacKinnon's (2010) finite-sample critical values of the Dickey-Fuller ``tau`` law.
+
+    Example:
+        >>> cv = _mackinnon_critical_values("c", 100)
+        >>> round(cv["5%"], 2)
+        -2.89
+    """
+    out: dict[str, float] = {}
+    for label, (b0, b1, b2, b3) in zip(
+        _CRITICAL_LEVELS, _MACKINNON_CRITICAL_2010[trend], strict=True
+    ):
+        out[label] = float(b0 + b1 / nobs + b2 / nobs**2 + b3 / nobs**3)
+    return out
+
+
+def _kpss_statistic(
+    y: npt.NDArray[np.float64], trend: str, *, kernel: str, bandwidth: float | None
+) -> tuple[float, float]:
+    """Kwiatkowski-Phillips-Schmidt-Shin LM statistic and the long-run variance behind it.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> e = rng.standard_normal(500)
+        >>> stat, _ = _kpss_statistic(e, "c", kernel="bartlett", bandwidth=None)
+        >>> bool(stat < 0.463)
+        True
+    """
+    nobs = y.shape[0]
+    design = deterministic_columns(trend, nobs)
+    coef, _, _, _ = np.linalg.lstsq(design, y, rcond=None)
+    resid = y - design @ coef
+    partial = np.cumsum(resid)
+    lrv = _long_run_variance(resid, kernel=kernel, bandwidth=bandwidth)
+    return float(partial @ partial) / (nobs**2 * lrv), lrv
+
+
+def _kpss_pvalue(statistic: float, trend: str) -> float:
+    """Interpolated p-value from the KPSS table, clipped to ``[0.01, 0.10]`` at the ends.
+
+    Example:
+        >>> round(_kpss_pvalue(0.463, "c"), 2)
+        0.05
+    """
+    table = _KPSS_CRITICAL[trend]
+    levels = np.array([p for p, _ in table])
+    values = np.array([cv for _, cv in table])
+    if statistic <= values[0]:
+        return float(levels[0])
+    if statistic >= values[-1]:
+        return float(levels[-1])
+    return float(np.interp(statistic, values, levels))
+
+
+def _phillips_perron(
+    y: npt.NDArray[np.float64], trend: str, *, kernel: str, bandwidth: float | None
+) -> tuple[float, float, int]:
+    """Phillips-Perron ``Z_t`` from the un-augmented Dickey-Fuller regression.
+
+    Returns:
+        ``(Z_t, long_run_variance, n_eff)``.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> walk = np.cumsum(rng.standard_normal(400))
+        >>> z, _, _ = _phillips_perron(walk, "c", kernel="bartlett", bandwidth=None)
+        >>> bool(z > -2.86)
+        True
+    """
+    tau, _, _, resid, n_eff = _dickey_fuller_regression(y, 0, trend)
+    _, design = _dickey_fuller_design(y, 0, trend)
+    k = design.shape[1]
+    sigma2 = float(resid @ resid) / (n_eff - k)
+    lrv = _long_run_variance(resid, kernel=kernel, bandwidth=bandwidth)
+    index = 2 if trend == "ct" else 1 if trend == "c" else 0
+    inverse = np.linalg.inv(design.T @ design)
+    se = float(np.sqrt(sigma2 * inverse[index, index]))
+    gamma0 = float(resid @ resid) / n_eff
+    z_t = np.sqrt(gamma0 / lrv) * tau - 0.5 * (lrv - gamma0) * n_eff * se / np.sqrt(lrv * sigma2)
+    return float(z_t), lrv, n_eff
+
+
+def _ng_perron_statistics(
+    detrended: npt.NDArray[np.float64], lags: int, trend: str
+) -> dict[str, float]:
+    """Ng and Perron's (2001) ``M`` statistics on a GLS-detrended series.
+
+    ``s_AR^2`` is the autoregressive spectral density at frequency zero
+    from the Dickey-Fuller regression with ``lags`` augmentation terms.
+
+    Returns:
+        ``{"MZa", "MZt", "MSB", "MPT"}``.
+    """
+    nobs = detrended.shape[0]
+    target, design = _dickey_fuller_design(detrended, lags, "n")
+    coef, _, _, _ = np.linalg.lstsq(design, target, rcond=None)
+    resid = target - design @ coef
+    s2_e = float(resid @ resid) / (design.shape[0] - design.shape[1])
+    s2_ar = s2_e / (1.0 - float(np.sum(coef[1:]))) ** 2
+    lagged = detrended[:-1]
+    sum_sq = float(lagged @ lagged) / nobs**2
+    mza = (detrended[-1] ** 2 / nobs - s2_ar) / (2.0 * sum_sq)
+    msb = float(np.sqrt(sum_sq / s2_ar))
+    mzt = mza * msb
+    c_bar = _GLS_DETREND_C[trend]
+    if trend == "c":
+        mpt = (c_bar**2 * sum_sq - c_bar * detrended[-1] ** 2 / nobs) / s2_ar
+    else:
+        mpt = (c_bar**2 * sum_sq + (1.0 - c_bar) * detrended[-1] ** 2 / nobs) / s2_ar
+    return {"MZa": float(mza), "MZt": float(mzt), "MSB": msb, "MPT": float(mpt)}
+
+
+def _zivot_andrews(
+    y: npt.NDArray[np.float64],
+    *,
+    model: str,
+    lags: int | None,
+    max_lags: int,
+    trimming: float,
+) -> tuple[float, int, int]:
+    """Minimum Dickey-Fuller ``t`` over candidate one-time breaks (Zivot & Andrews, 1992).
+
+    Args:
+        y: ``(T,)`` series.
+        model: ``"c"`` (intercept break), ``"t"`` (trend-slope break) or
+            ``"ct"`` (both).
+        lags: Fixed augmentation, or ``None`` for t-statistic selection on
+            the no-break regression, held fixed across candidates.
+        max_lags: Largest augmentation under selection.
+        trimming: Fraction of the sample excluded at each end.
+
+    Returns:
+        ``(statistic, break_index, lags_used)`` where ``break_index`` is
+        the first observation of the new regime and ``lags_used`` the
+        augmentation at the minimizing date.
+    """
+    nobs = y.shape[0]
+    first = max(int(np.floor(trimming * nobs)), 2)
+    last = nobs - first
+    best = (np.inf, -1, 0)
+    dy = np.diff(y)
+    k = _select_dickey_fuller_lags(y, max_lags, "ct", "t-stat") if lags is None else lags
+    for tb in range(first, last):
+        n_eff = dy.shape[0] - k
+        time = np.arange(k + 2, nobs + 1, dtype=np.float64)
+        columns = [np.ones((n_eff, 1)), time[:, None]]
+        if model in ("c", "ct"):
+            columns.append((time > tb + 1).astype(np.float64)[:, None])
+        if model in ("t", "ct"):
+            columns.append(np.where(time > tb + 1, time - tb - 1, 0.0)[:, None])
+        columns.append(y[k:-1, None])
+        for j in range(1, k + 1):
+            columns.append(dy[k - j : dy.shape[0] - j, None])
+        design = np.hstack(columns)
+        target = dy[k:]
+        coef, _, rank, _ = np.linalg.lstsq(design, target, rcond=None)
+        if rank < design.shape[1]:
+            continue
+        resid = target - design @ coef
+        sigma2 = float(resid @ resid) / (n_eff - design.shape[1])
+        index = design.shape[1] - k - 1
+        inverse = np.linalg.pinv(design.T @ design)
+        t_stat = float(coef[index] / np.sqrt(sigma2 * inverse[index, index]))
+        if t_stat < best[0]:
+            best = (t_stat, tb + 1, k)
+    if best[1] < 0:
+        raise NumericalError("every candidate break produced a singular design.")
+    return best
+
+
+def _segment_ssr(
+    y: npt.NDArray[np.float64], x: npt.NDArray[np.float64], min_size: int
+) -> npt.NDArray[np.float64]:
+    """Sum of squared residuals of every admissible segment ``[i, j)``.
+
+    Args:
+        y: ``(T,)`` target.
+        x: ``(T, q)`` design.
+        min_size: Smallest admissible segment length.
+
+    Returns:
+        A ``(T + 1, T + 1)`` array with ``ssr[i, j]`` for ``j - i >=
+        min_size`` and ``inf`` elsewhere.
+    """
+    nobs, q = x.shape
+    out = np.full((nobs + 1, nobs + 1), np.inf)
+    for i in range(nobs - min_size + 1):
+        xtx = np.zeros((q, q))
+        xty = np.zeros(q)
+        yty = 0.0
+        for j in range(i, nobs):
+            row = x[j]
+            xtx += np.outer(row, row)
+            xty += row * y[j]
+            yty += y[j] * y[j]
+            if j + 1 - i >= min_size:
+                try:
+                    beta = np.linalg.solve(xtx, xty)
+                except np.linalg.LinAlgError:
+                    continue
+                out[i, j + 1] = max(yty - float(beta @ xty), 0.0)
+    return out
+
+
+def _bai_perron_partition(
+    ssr: npt.NDArray[np.float64], n_breaks: int, min_size: int
+) -> tuple[float, tuple[int, ...]]:
+    """Global minimizer of the segmented sum of squares with ``n_breaks`` breaks.
+
+    Dynamic programming over the segment table (Bai & Perron, 2003).
+
+    Returns:
+        ``(ssr, break_indices)`` with each index the first observation of
+        a new regime.
+    """
+    nobs = ssr.shape[0] - 1
+    if n_breaks == 0:
+        return float(ssr[0, nobs]), ()
+    best = np.full((n_breaks + 1, nobs + 1), np.inf)
+    argmin = np.zeros((n_breaks + 1, nobs + 1), dtype=np.int64)
+    best[0] = ssr[0]
+    for m in range(1, n_breaks + 1):
+        for j in range((m + 1) * min_size, nobs + 1):
+            candidates = (
+                best[m - 1, m * min_size : j - min_size + 1]
+                + ssr[m * min_size : j - min_size + 1, j]
+            )
+            if candidates.size == 0:
+                continue
+            pick = int(np.argmin(candidates))
+            best[m, j] = candidates[pick]
+            argmin[m, j] = pick + m * min_size
+    if not np.isfinite(best[n_breaks, nobs]):
+        raise SpecificationError(
+            f"{n_breaks} breaks with segments of at least {min_size} do not fit {nobs} "
+            "observations."
+        )
+    breaks = []
+    j = nobs
+    for m in range(n_breaks, 0, -1):
+        j = int(argmin[m, j])
+        breaks.append(j)
+    return float(best[n_breaks, nobs]), tuple(sorted(breaks))
+
+
+def _bridge_functionals(
+    q: int, trimming: float, *, n_draws: int, grid: int, rng: np.random.Generator
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Draws of the sup, exp and ave functionals of the Andrews (1993) limit.
+
+    ``F(s) = ||B(s)||^2 / (s (1 - s))`` for a ``q``-dimensional Brownian
+    bridge ``B`` on ``[trimming, 1 - trimming]``.
+
+    Returns:
+        ``(sup, exp, ave)`` each ``(n_draws,)``.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> sup, _, _ = _bridge_functionals(1, 0.15, n_draws=200, grid=200, rng=rng)
+        >>> bool(6.0 < np.quantile(sup, 0.95) < 11.0)
+        True
+    """
+    s = np.arange(1, grid) / grid
+    keep = (s >= trimming) & (s <= 1.0 - trimming)
+    sup = np.empty(n_draws)
+    exp = np.empty(n_draws)
+    ave = np.empty(n_draws)
+    batch = max(1, int(2e6 // (grid * q)))
+    for start in range(0, n_draws, batch):
+        size = min(batch, n_draws - start)
+        increments = rng.standard_normal((size, grid, q)) / np.sqrt(grid)
+        motion = np.cumsum(increments, axis=1)
+        bridge = motion[:, :-1, :] - s[None, :, None] * motion[:, -1:, :]
+        f = np.sum(bridge**2, axis=2) / (s * (1.0 - s))[None, :]
+        window = f[:, keep]
+        sup[start : start + size] = window.max(axis=1)
+        exp[start : start + size] = logsumexp(0.5 * window, axis=1) - np.log(window.shape[1])
+        ave[start : start + size] = window.mean(axis=1)
+    return sup, exp, ave
+
+
+def _simulated_critical_values(
+    draws: npt.NDArray[np.float64], statistic: float
+) -> tuple[float, dict[str, float]]:
+    """P-value and critical values of an upper-tail statistic against simulated null draws.
+
+    Args:
+        draws: ``(R,)`` draws from the null law.
+        statistic: The observed statistic.
+
+    Returns:
+        ``(pvalue, critical_values)`` with the p-value the share of draws
+        at or above the statistic and the critical values keyed by
+        ``_CRITICAL_LEVELS``.
+
+    Example:
+        >>> p, cv = _simulated_critical_values(np.arange(1000.0), 950.0)
+        >>> round(p, 2), round(cv["5%"])
+        (0.05, 949)
+    """
+    pvalue = float(np.mean(draws >= statistic))
+    values = np.quantile(draws, [0.99, 0.95, 0.90])
+    return pvalue, {label: float(v) for label, v in zip(_CRITICAL_LEVELS, values, strict=True)}
+
+
+def _recursive_residuals(
+    y: npt.NDArray[np.float64], x: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
+    """Standardized recursive residuals of Brown, Durbin and Evans (1975).
+
+    Returns:
+        ``(T - q,)`` residuals from observation ``q + 1`` on.
+
+    Raises:
+        NumericalError: If the first ``q`` rows are singular.
+    """
+    nobs, q = x.shape
+    xtx = x[:q].T @ x[:q]
+    try:
+        inverse = np.linalg.inv(xtx)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError("the first q observations do not identify the regression.") from error
+    beta = inverse @ x[:q].T @ y[:q]
+    out = np.empty(nobs - q)
+    for t in range(q, nobs):
+        row = x[t]
+        f = 1.0 + float(row @ inverse @ row)
+        out[t - q] = (y[t] - float(row @ beta)) / np.sqrt(f)
+        gain = inverse @ row / f
+        beta = beta + gain * (y[t] - float(row @ beta))
+        inverse = inverse - np.outer(gain, row @ inverse)
+    return out
+
+
+def _cusum_squares_quantiles(
+    count: int, levels: tuple[float, ...], *, n_draws: int, rng: np.random.Generator
+) -> tuple[dict[float, float], npt.NDArray[np.float64]]:
+    """Null quantiles of ``max_t |S_t - t / n|`` for the CUSUM-of-squares path.
+
+    Under the null the recursive residuals are i.i.d. Gaussian, so the
+    exact finite-sample law is simulated directly.
+
+    Returns:
+        ``({level: quantile}, draws)``.
+    """
+    z = rng.standard_normal((n_draws, count)) ** 2
+    path = np.cumsum(z, axis=1) / z.sum(axis=1, keepdims=True)
+    expected = np.arange(1, count + 1) / count
+    draws = np.abs(path - expected[None, :]).max(axis=1)
+    return {level: float(np.quantile(draws, 1.0 - level)) for level in levels}, draws

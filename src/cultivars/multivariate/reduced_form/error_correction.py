@@ -24,7 +24,7 @@ from ..._internals import (
     _ConditionalLevels,
     _ErrorCorrectionResult,
     _ExogenousVectorErrorCorrectionModel,
-    _StabilityTest,
+    _StabilityAssessment,
     _SummaryMixin,
     _VectorErrorCorrectionFit,
     _VectorErrorCorrectionModel,
@@ -258,14 +258,14 @@ class VECMResult(
 
     # ------------------------------------------------------------- inference
 
-    def stability_check(self) -> _StabilityTest:
+    def stability_check(self) -> _StabilityAssessment:
         """Assess the levels companion, permitting the unit roots by design.
 
         A rank-``r`` system in ``k`` variables carries exactly ``k - r`` unit
         roots. Treating those as instability, which the reduced-form check does,
         would flag every correctly specified model in this family.
         """
-        return _StabilityTest.assess_stability(self.coefficients, allow_unit_roots=True)
+        return _StabilityAssessment.assess_stability(self.coefficients, allow_unit_roots=True)
 
     def forecast(self, steps: int = 1) -> npt.NDArray[np.float64]:
         """Point forecasts in levels.
@@ -630,7 +630,7 @@ class VECMXResult(VECMResult):
         self._refuse("the companion matrix")
         raise AssertionError  # pragma: no cover
 
-    def stability_check(self) -> _StabilityTest:
+    def stability_check(self) -> _StabilityAssessment:
         """Unavailable: stability is a property of the closed system."""
         self._refuse("a stability check")
         raise AssertionError  # pragma: no cover

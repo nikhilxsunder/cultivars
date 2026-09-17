@@ -58,7 +58,7 @@ import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
 
-from .._core import SummaryTable, pit_from_draws
+from .._core import SummaryTable, _berkowitz_likelihood_ratio, pit_from_draws
 from .._internals import _LikelihoodRatioTest, _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
@@ -253,6 +253,9 @@ class Calibration:
             pit[origin] = pit_from_draws(self._paths[origin], self._realized[origin])
         transformed = np.asarray(sst.norm.ppf(pit), dtype=np.float64)
         tests = tuple(
-            _LikelihoodRatioTest._berkowitz_test(transformed[:, index]) for index in range(k)
+            _LikelihoodRatioTest(statistic=stat, df=df, pvalue=p)
+            for stat, df, p in (
+                _berkowitz_likelihood_ratio(transformed[:, index]) for index in range(k)
+            )
         )
         return CalibrationResult(names=self._names, pit=pit, tests=tests)

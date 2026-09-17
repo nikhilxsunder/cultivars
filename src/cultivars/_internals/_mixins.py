@@ -60,10 +60,11 @@ from .._core import (
     to_polars_frame,
 )
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._assessments import _StabilityAssessment
 from ._covariances import _CoefficientCovariance
 from ._inferences import _CoefficientInference
 from ._simulators import _simulate_vector_autoregression
-from ._tests import _ConvergenceTest, _LikelihoodRatioTest, _StabilityTest, _WaldTest
+from ._tests import _ConvergenceTest, _LikelihoodRatioTest, _WaldTest
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -92,9 +93,9 @@ class _StationarityMixin:
         return self.ar_params
 
     @property
-    def stability(self) -> _StabilityTest:
+    def stability(self) -> _StabilityAssessment:
         """Full eigenvalue verdict for the autoregressive polynomial."""
-        return _StabilityTest.assess_stability(self._stationarity_ar())
+        return _StabilityAssessment.assess_stability(self._stationarity_ar())
 
     @property
     def is_stationary(self) -> bool:
@@ -388,9 +389,9 @@ class _InvertibilityMixin:
         return -self.ma_params
 
     @property
-    def invertibility(self) -> _StabilityTest:
+    def invertibility(self) -> _StabilityAssessment:
         """Full eigenvalue verdict for the moving-average polynomial."""
-        return _StabilityTest.assess_stability(self._invertibility_ma())
+        return _StabilityAssessment.assess_stability(self._invertibility_ma())
 
     @property
     def is_invertible(self) -> bool:
@@ -1007,18 +1008,18 @@ class _VectorPropagationMixin:
         """The ``(kp, kp)`` companion matrix of the autoregressive block."""
         return companion_matrix(self.coefficients)
 
-    def stability_check(self) -> _StabilityTest:
+    def stability_check(self) -> _StabilityAssessment:
         """Eigenvalue verdict for the companion matrix.
 
         Returns:
-            The :class:`_StabilityTest`; the process is stable, and so has a
+            The :class:`_StabilityAssessment`; the process is stable, and so has a
             convergent moving-average representation, exactly when every
             companion eigenvalue lies inside the unit circle. Every other
             method here presumes that: an impulse response computed from an
             explosive companion diverges rather than decays, and a forecast
             from one is meaningless at any horizon.
         """
-        return _StabilityTest.assess_stability(self.coefficients)
+        return _StabilityAssessment.assess_stability(self.coefficients)
 
     @property
     def is_stable(self) -> bool:
@@ -1337,7 +1338,7 @@ class _ConditionalSystemMixin:
         self._no_closed_system("a companion matrix")
         raise AssertionError  # pragma: no cover
 
-    def stability_check(self) -> _StabilityTest:
+    def stability_check(self) -> _StabilityAssessment:
         """Unavailable: stability is a property of the closed system."""
         self._no_closed_system("a stability check")
         raise AssertionError  # pragma: no cover

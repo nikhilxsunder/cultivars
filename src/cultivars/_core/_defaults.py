@@ -252,6 +252,12 @@ informative on the short evaluation windows macroeconomic forecasting has,
 where a 95% set routinely retains every model.
 """
 
+_CRITICAL_LEVELS: Final[tuple[str, str, str]] = ("1%", "5%", "10%")
+"""Labels of the three levels every tabulated critical-value record carries, in this order."""
+
+_CRITICAL_ALPHAS: Final[tuple[float, float, float]] = (0.01, 0.05, 0.10)
+"""The sizes behind ``_CRITICAL_LEVELS``, in the same order."""
+
 _SIMULATION_BURN: Final[int] = 100
 """Periods a fresh simulated sample discards before the kept part begins.
 

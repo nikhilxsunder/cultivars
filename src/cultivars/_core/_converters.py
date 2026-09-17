@@ -42,7 +42,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ._defaults import _MIN_CHAIN_DRAWS
+from ._defaults import _CRITICAL_LEVELS, _MIN_CHAIN_DRAWS
 from ._loaders import require_optional
 from ._mappings import _KASS_RAFTERY_SCALE
 from ._polynomials import _aggregation_weights
@@ -69,6 +69,22 @@ def _source_label(source: object) -> str:
     if callable(label):
         return str(label())
     return type(source).__name__
+
+
+def _critical_value_table(values: tuple[float, float, float]) -> dict[str, float]:
+    """Key three critical values by ``_CRITICAL_LEVELS``.
+
+    Args:
+        values: Critical values at the 1%, 5% and 10% levels, in that order.
+
+    Returns:
+        ``{"1%": ..., "5%": ..., "10%": ...}``.
+
+    Example:
+        >>> _critical_value_table((-3.43, -2.86, -2.57))
+        {'1%': -3.43, '5%': -2.86, '10%': -2.57}
+    """
+    return dict(zip(_CRITICAL_LEVELS, (float(v) for v in values), strict=True))
 
 
 def _mean_label(mean_order: tuple[int, int], *, has_const: bool) -> str:

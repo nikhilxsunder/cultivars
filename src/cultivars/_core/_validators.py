@@ -36,6 +36,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._matrices import deterministic_columns
 
 
 def validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -1085,6 +1086,43 @@ def _validate_hyperparameter_pair(
     if positive_first and first <= 0.0:
         raise SpecificationError(f"both entries of {name} must be positive; got {value!r}.")
     return first, second
+
+
+def _validate_regression(
+    endog: npt.ArrayLike, exog: npt.ArrayLike | None, trend: str
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Coerce a target and its regression design: deterministic terms, then regressors.
+
+    Args:
+        endog: The ``(T,)`` target.
+        exog: ``(T, k)`` or ``(T,)`` regressors, or ``None``.
+        trend: ``"n"``, ``"c"`` or ``"ct"``.
+
+    Returns:
+        ``(y, design)`` with ``design`` of shape ``(T, q)``, ``q >= 1``.
+
+    Raises:
+        SpecificationError: If the trend is unknown or the design has no
+            columns.
+        DimensionError: If the target is not one-dimensional or the
+            regressors do not align.
+        NumericalError: If a value is not finite or the design is rank
+            deficient.
+
+    Example:
+        >>> y, x = _validate_regression([1.0, 2.0, 3.0, 5.0], [0.0, 1.0, 0.0, 1.0], "c")
+        >>> x.shape
+        (4, 2)
+    """
+    validate_choice(trend, ("n", "c", "ct"), "trend")
+    y = validate_endog(endog)
+    nobs = y.shape[0]
+    design = np.hstack([deterministic_columns(trend, nobs), validate_exog(exog, nobs)])
+    if design.shape[1] == 0:
+        raise SpecificationError("the regression has no coefficients: pass exog or a trend.")
+    if np.linalg.matrix_rank(design) < design.shape[1]:
+        raise NumericalError("the regression design is rank deficient.")
+    return y, design
 
 
 def _validate_aligned_series(

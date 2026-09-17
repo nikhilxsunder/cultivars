@@ -72,7 +72,7 @@ from ..._core import (
 )
 from ..._internals import (
     _ComparisonMixin,
-    _StabilityTest,
+    _StabilityAssessment,
     _SummaryMixin,
     _VectorAutoRegressionModel,
     _VectorInferenceMixin,
@@ -180,18 +180,18 @@ class VARMAResult(
             psi[h] = acc
         return psi
 
-    def invertibility_check(self) -> _StabilityTest:
+    def invertibility_check(self) -> _StabilityAssessment:
         """Eigenvalue verdict for the moving-average companion matrix.
 
         Returns:
-            The :class:`_StabilityTest`; the moving-average polynomial is
+            The :class:`_StabilityAssessment`; the moving-average polynomial is
             invertible exactly when every root lies inside the unit circle.
             Invertibility is what makes the innovations recoverable from the
             observed history, so a non-invertible estimate means the residuals
             -- and everything computed from them -- identify a different,
             observationally equivalent representation.
         """
-        return _StabilityTest.assess_stability(self.ma_coefficients)
+        return _StabilityAssessment.assess_stability(self.ma_coefficients)
 
     @property
     def is_invertible(self) -> bool:
@@ -507,7 +507,7 @@ class VARMA(_VectorAutoRegressionModel[VARMAResult]):
         moments, design = self._stage_regression(innovations, max(p, h) + q)
         deterministic, ar, ma = self._unpack(moments)
 
-        refined = bool(_StabilityTest.assess_stability(ma).is_stable)
+        refined = bool(_StabilityAssessment.assess_stability(ma).is_stable)
         if refined:
             recursive = self._recursive_innovations(deterministic, ar, ma)
             moments, design = self._stage_regression(recursive, max(p, q) + p)

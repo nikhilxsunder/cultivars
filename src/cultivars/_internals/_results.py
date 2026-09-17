@@ -44,6 +44,7 @@ from .._core import (
     validate_choice,
 )
 from ..exceptions import SpecificationError
+from ._assessments import _StabilityAssessment
 from ._inferences import _CoefficientInference
 from ._mixins import (
     _ComparisonMixin,
@@ -54,7 +55,7 @@ from ._mixins import (
     _SummaryMixin,
 )
 from ._simulators import _simulate_two_regime
-from ._tests import _LikelihoodRatioTest, _StabilityTest
+from ._tests import _LikelihoodRatioTest
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -652,14 +653,14 @@ class _ObservedRegimeResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         return float(np.mean(self.regime_weight))
 
     @property
-    def lower_stability(self) -> _StabilityTest:
+    def lower_stability(self) -> _StabilityAssessment:
         """Companion-eigenvalue verdict for the lower-regime AR block."""
-        return _StabilityTest.assess_stability(self.lower_params[1:])
+        return _StabilityAssessment.assess_stability(self.lower_params[1:])
 
     @property
-    def upper_stability(self) -> _StabilityTest:
+    def upper_stability(self) -> _StabilityAssessment:
         """Companion-eigenvalue verdict for the upper-regime AR block."""
-        return _StabilityTest.assess_stability(self.upper_params[1:])
+        return _StabilityAssessment.assess_stability(self.upper_params[1:])
 
     @property
     def is_regimewise_stationary(self) -> bool:
@@ -954,14 +955,14 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
         return float(np.mean(self.regime_weight))
 
     @property
-    def lower_stability(self) -> _StabilityTest:
+    def lower_stability(self) -> _StabilityAssessment:
         """Companion-eigenvalue verdict for the lower regime's lag stack."""
-        return _StabilityTest.assess_stability(self.lower_coefficients)
+        return _StabilityAssessment.assess_stability(self.lower_coefficients)
 
     @property
-    def upper_stability(self) -> _StabilityTest:
+    def upper_stability(self) -> _StabilityAssessment:
         """Companion-eigenvalue verdict for the upper regime's lag stack."""
-        return _StabilityTest.assess_stability(self.upper_coefficients)
+        return _StabilityAssessment.assess_stability(self.upper_coefficients)
 
     @property
     def is_regimewise_stationary(self) -> bool:
@@ -1304,9 +1305,9 @@ class _RegimeSystemResult:
         """Number of endogenous variables."""
         return len(self.names)
 
-    def stability_check(self) -> _StabilityTest:
+    def stability_check(self) -> _StabilityAssessment:
         """Companion-eigenvalue verdict for this regime's lag stack."""
-        return _StabilityTest.assess_stability(self.coefficients)
+        return _StabilityAssessment.assess_stability(self.coefficients)
 
     @property
     def is_stable(self) -> bool:

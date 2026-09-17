@@ -318,3 +318,37 @@ def _rank_normalize(chains: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     ranks = rankdata(chains, method="average", axis=None).reshape(chains.shape)
     size = chains.size
     return np.asarray(norm.ppf((ranks - 0.375) / (size + 0.25)), dtype=np.float64)
+
+
+def _gls_detrend(y: npt.NDArray[np.float64], trend: str, c_bar: float) -> npt.NDArray[np.float64]:
+    """Elliott-Rothenberg-Stock GLS detrending under the local alternative ``1 + c_bar / T``.
+
+    The series and the deterministic terms are quasi-differenced at
+    ``alpha = 1 + c_bar / T``, the deterministic coefficients estimated
+    by least squares on the quasi-differenced pair, and the fitted
+    deterministic part removed from the *levels*.
+
+    Args:
+        y: ``(T,)`` series.
+        trend: ``"c"`` or ``"ct"``.
+        c_bar: The local-to-unity constant, negative.
+
+    Returns:
+        The detrended ``(T,)`` series.
+
+    Example:
+        >>> y = np.arange(1.0, 11.0)
+        >>> bool(np.abs(_gls_detrend(y, "ct", -13.5)).max() < 1e-8)
+        True
+    """
+    nobs = y.shape[0]
+    alpha = 1.0 + c_bar / nobs
+    z = (
+        np.ones((nobs, 1))
+        if trend == "c"
+        else np.column_stack([np.ones(nobs), np.arange(1, nobs + 1, dtype=np.float64)])
+    )
+    y_q = np.concatenate([[y[0]], y[1:] - alpha * y[:-1]])
+    z_q = np.vstack([z[:1], z[1:] - alpha * z[:-1]])
+    coef, _, _, _ = np.linalg.lstsq(z_q, y_q, rcond=None)
+    return np.asarray(y - z @ coef, dtype=np.float64)
