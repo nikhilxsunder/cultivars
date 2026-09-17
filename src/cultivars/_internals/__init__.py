@@ -140,6 +140,7 @@ from ._priors import (
     _VolatilityPrior,
 )
 from ._results import (
+    _BacktestResult,
     _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
     _ErrorCorrectionResult,
@@ -157,7 +158,11 @@ from ._results import (
     _VectorPosteriorDrawsResult,
     _VectorResult,
 )
-from ._selections import _MarginalLikelihoodSelection, _ModelCombinationSelection
+from ._selections import (
+    _MarginalLikelihoodSelection,
+    _ModelCombinationSelection,
+    _ModelConfidenceSetSelection,
+)
 from ._simulators import _impulse_responses, _simulate_pruned
 from ._solutions import _PerturbationSolution
 from ._solvers import _maximize_likelihood, _solve, _spectral_factor, solve_global
@@ -170,6 +175,7 @@ from ._substrates import (
 )
 from ._systems import _structural_matrices
 from ._tests import (
+    _ClarkWestTest,
     _ConvergenceTest,
     _JohansenRankTest,
     _LikelihoodRatioTest,
@@ -183,9 +189,11 @@ __all__ = [
     "_AdaptivePrior",
     "_AutoRegressionFit",
     "_AutoRegressionModel",
+    "_BacktestResult",
     "_BayesianVectorAutoRegressionModel",
     "_BoxJenkinsFit",
     "_BoxJenkinsModel",
+    "_ClarkWestTest",
     "_CoDiagonalObjective",
     "_ComparisonMixin",
     "_ConditionalLevels",
@@ -230,6 +238,7 @@ __all__ = [
     "_MidasProfileObjective",
     "_MixedHorizonObjective",
     "_ModelCombinationSelection",
+    "_ModelConfidenceSetSelection",
     "_NelsonSiegelFit",
     "_NelsonSiegelObjective",
     "_NelsonSiegelParameters",

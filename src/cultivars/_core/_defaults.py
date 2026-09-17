@@ -232,3 +232,22 @@ _UCSV_VOL_OF_VOL_PRIOR: Final[tuple[float, float]] = (3.0, 0.04)
 Prior mean ``0.02``, close to Stock and Watson's (2007) fixed ``gamma**2``
 and the value the unobserved-components model holds when ``gamma`` is stated.
 """
+
+_MIN_COMPARISON_ORIGINS: Final[int] = 8
+"""Fewest evaluation origins a forecast comparison test accepts.
+
+Below this the long-run variance of a loss differential is estimated from
+too few observations for either the Diebold-Mariano or the Clark-West
+statistic to have usable size.
+"""
+
+_MCS_BOOTSTRAP: Final[int] = 1000
+"""Stationary-bootstrap replications behind the model confidence set."""
+
+_MCS_ALPHA: Final[float] = 0.1
+"""Confidence level complement of the model confidence set.
+
+Hansen, Lunde and Nason (2011) report the 90% set: at 10% the set is
+informative on the short evaluation windows macroeconomic forecasting has,
+where a 95% set routinely retains every model.
+"""

@@ -145,3 +145,44 @@ def pit_from_draws(
     ties = (draws == realized[None, :]).sum(axis=0).astype(np.float64)
     value = (below + 0.5 * ties) / count
     return np.asarray(np.clip(value, 0.5 / count, 1.0 - 0.5 / count), dtype=np.float64)
+
+
+def _kernel_log_score(
+    draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
+    """Negative log predictive density at the outcome, per column, by Gaussian kernel.
+
+    The density is estimated on the draws with Silverman's rule of thumb
+    (the smaller of the standard deviation and the interquartile range
+    over 1.34, times ``0.9 n**-1/5``), floored so that a degenerate column
+    still scores. The one *estimated* score in the package: the CRPS and
+    energy score are exact functionals of the sample; this one is a
+    kernel estimate, and the most sensitive to tail misfit.
+
+    Args:
+        draws: ``(n_draws, m)`` predictive sample.
+        realized: ``(m,)`` outcomes.
+
+    Returns:
+        The ``(m,)`` negative log scores.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> value = float(_kernel_log_score(rng.standard_normal((20000, 1)), np.zeros(1))[0])
+        >>> bool(abs(value - 0.5 * np.log(2.0 * np.pi)) < 0.05)
+        True
+    """
+    _check_draws(draws, realized)
+    count = draws.shape[0]
+    spread = draws.std(axis=0, ddof=1)
+    quartiles = np.quantile(draws, [0.25, 0.75], axis=0)
+    robust = (quartiles[1] - quartiles[0]) / 1.34
+    width = 0.9 * np.minimum(spread, np.where(robust > 0.0, robust, spread))
+    width = np.maximum(width * count ** (-0.2), 1e-8 * np.maximum(spread, 1.0))
+    gap = (draws - realized[None, :]) / width[None, :]
+    peak = (-0.5 * gap**2).max(axis=0)
+    total = np.exp(-0.5 * gap**2 - peak[None, :]).sum(axis=0)
+    return np.asarray(
+        -(peak + np.log(total) - np.log(count) - np.log(width) - 0.5 * np.log(2.0 * np.pi)),
+        dtype=np.float64,
+    )

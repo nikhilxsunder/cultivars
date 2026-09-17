@@ -856,3 +856,71 @@ class _PredictiveCheckTest:
             f"PredictiveCheckTest({self.kind}, {self.n_replications} replications, "
             f"{len(self.statistics)} statistics x {len(self.names)} variables, {verdict})"
         )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ClarkWestTest:
+    """Verdict of the Clark-West (2007) test that a nesting model forecasts better.
+
+    The one-sided alternative is that the larger model improves on the
+    smaller; under the null the smaller model is true and the larger one's
+    extra parameters only add estimation noise, which the statistic
+    removes before testing. A rejection says the added structure has
+    predictive content; a non-rejection says it has not shown any on
+    this window.
+
+    Attributes:
+        statistic: The adjusted-MSPE t-type statistic.
+        pvalue: Its upper-tail standard normal p-value.
+        adjusted_differential: Mean of the adjusted loss differential,
+            ``e_r**2 - e_u**2 + (f_r - f_u)**2``; positive favors the
+            larger model.
+        mspe_restricted: Mean squared prediction error of the smaller model.
+        mspe_unrestricted: Mean squared prediction error of the larger model.
+        horizon: Forecast horizon behind the series.
+        nobs: Evaluation origins.
+    """
+
+    statistic: float
+    pvalue: float
+    adjusted_differential: float
+    mspe_restricted: float
+    mspe_unrestricted: float
+    horizon: int
+    nobs: int
+
+    def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
+        """Whether the smaller model is rejected in favor of the larger at level ``alpha``."""
+        return self.pvalue < alpha
+
+    def summary(self) -> SummaryTable:
+        """Render as a table."""
+        verdict = "larger model improves" if self.reject() else "no improvement shown"
+        rows = (("Clark-West adjusted MSPE", f"{self.statistic:.4f}", f"{self.pvalue:.4f}"),)
+        notes = (
+            f"Adjusted loss differential {self.adjusted_differential:+.5f} (positive favors "
+            "the larger model); raw MSPE "
+            f"{self.mspe_restricted:.5f} restricted versus {self.mspe_unrestricted:.5f} "
+            "unrestricted.",
+            "One-sided standard normal reference, Bartlett long-run variance through "
+            f"horizon - 1 = {self.horizon - 1} lags. The adjustment removes the estimation "
+            "noise the larger model carries under the null, which is what makes Diebold-"
+            "Mariano invalid for nested forecasts.",
+        )
+        return SummaryTable(
+            title="Clark-West Nested Forecast Comparison",
+            metadata=(
+                ("Origins", str(self.nobs)),
+                ("Horizon", str(self.horizon)),
+                ("Verdict", verdict),
+            ),
+            columns=("test", "statistic", "p-value"),
+            rows=rows,
+            notes=notes,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"ClarkWestTest(statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, "
+            f"horizon={self.horizon}, nobs={self.nobs})"
+        )

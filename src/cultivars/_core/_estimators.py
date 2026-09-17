@@ -1175,3 +1175,216 @@ def _predictive_pvalues(
     undefined = ~np.all(np.isfinite(replicated), axis=0) | ~np.isfinite(observed)
     out[undefined] = np.nan
     return out
+
+
+def _bartlett_long_run_variance(centered: npt.NDArray[np.float64], horizon: int) -> float:
+    """Long-run variance of a demeaned series with Bartlett weights through ``horizon - 1`` lags.
+
+    The variance an ``h``-step forecast-error functional needs: mechanically
+    an MA(``h - 1``), so autocovariances through lag ``h - 1`` enter, and
+    the Bartlett taper keeps the estimate positive.
+
+    Args:
+        centered: ``(T,)`` series with its mean removed.
+        horizon: The forecast horizon behind the series.
+
+    Returns:
+        The long-run variance, floored at a tiny positive number.
+
+    Example:
+        >>> z = np.array([1.0, -1.0, 1.0, -1.0])
+        >>> _bartlett_long_run_variance(z, 1)
+        1.0
+    """
+    count = centered.shape[0]
+    variance = float(centered @ centered) / count
+    for lag in range(1, horizon):
+        weight = 1.0 - lag / horizon
+        variance += 2.0 * weight * float(centered[lag:] @ centered[:-lag]) / count
+    return max(variance, 1e-300)
+
+
+def _clark_west(
+    realized: npt.NDArray[np.float64],
+    restricted: npt.NDArray[np.float64],
+    unrestricted: npt.NDArray[np.float64],
+    *,
+    horizon: int,
+) -> tuple[float, float, float]:
+    """Clark and West's (2007) adjusted MSPE test of a nested forecast.
+
+    Under the null that the restricted model is true, the unrestricted
+    model's forecast carries estimation noise the restricted one does not,
+    so its MSPE is *expected* to be larger; the adjustment removes that
+    noise term, ``(f_r - f_u)**2``, and tests whether what remains --
+    ``e_r**2 - e_u**2 + (f_r - f_u)**2`` -- has a positive mean, with the
+    Bartlett long-run variance through ``horizon - 1`` lags and a one-sided
+    standard normal reference.
+
+    Args:
+        realized: ``(T,)`` outcomes.
+        restricted: ``(T,)`` forecasts of the nested (smaller) model.
+        unrestricted: ``(T,)`` forecasts of the nesting (larger) model.
+        horizon: The forecast horizon behind the series.
+
+    Returns:
+        ``(statistic, pvalue, adjusted_differential)``: the t-type
+        statistic, its upper-tail p-value, and the mean of the adjusted
+        loss differential.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = rng.standard_normal(200)
+        >>> stat, p, _ = _clark_west(y, np.zeros(200), 0.05 * rng.standard_normal(200), horizon=1)
+        >>> bool(p > 0.05)
+        True
+    """
+    adjusted = (
+        (realized - restricted) ** 2
+        - (realized - unrestricted) ** 2
+        + (restricted - unrestricted) ** 2
+    )
+    count = adjusted.shape[0]
+    mean = float(adjusted.mean())
+    variance = _bartlett_long_run_variance(adjusted - mean, horizon)
+    statistic = mean / float(np.sqrt(variance / count))
+    return statistic, float(norm.sf(statistic)), mean
+
+
+def _stationary_bootstrap_indices(
+    count: int, *, expected_block: float, rng: np.random.Generator
+) -> npt.NDArray[np.intp]:
+    """Politis and Romano's (1994) stationary bootstrap resampling indices.
+
+    Blocks start at uniform positions and continue with probability
+    ``1 - 1 / expected_block``, wrapping circularly, so that the resample
+    keeps the dependence of a serially correlated series.
+
+    Args:
+        count: Length of the series and of the resample.
+        expected_block: Mean block length, at least one.
+        rng: Random generator.
+
+    Returns:
+        ``(count,)`` indices into the series.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> idx = _stationary_bootstrap_indices(10, expected_block=3.0, rng=rng)
+        >>> idx.shape, bool(idx.min() >= 0 and idx.max() < 10)
+        ((10,), True)
+    """
+    if expected_block < 1.0:
+        raise SpecificationError(f"expected_block must be at least 1; got {expected_block}.")
+    continue_probability = 1.0 - 1.0 / expected_block
+    out = np.empty(count, dtype=np.intp)
+    out[0] = rng.integers(count)
+    continued = rng.random(count - 1) < continue_probability
+    fresh = rng.integers(count, size=count - 1)
+    for t in range(1, count):
+        out[t] = (out[t - 1] + 1) % count if continued[t - 1] else fresh[t - 1]
+    return out
+
+
+def _model_confidence_set(
+    losses: npt.NDArray[np.float64],
+    *,
+    alpha: float,
+    n_bootstrap: int,
+    block_length: float,
+    statistic: str,
+    rng: np.random.Generator,
+) -> tuple[npt.NDArray[np.intp], npt.NDArray[np.float64]]:
+    """Hansen, Lunde and Nason's (2011) model confidence set by sequential elimination.
+
+    Starting from every model, the equivalence hypothesis ``E[d_ij] = 0``
+    for all pairs in the current set is tested with the range statistic
+    (largest studentized pairwise differential) or the max statistic
+    (largest studentized deviation from the set average), its null
+    distribution taken from a stationary bootstrap of the loss panel; the
+    worst model is eliminated and the test repeated until it no longer
+    rejects. Each model's MCS p-value is the running maximum of the
+    elimination p-values up to its own, which makes the set at level
+    ``alpha`` exactly the models with p-value at least ``alpha``.
+
+    Args:
+        losses: ``(T, M)`` losses, one column per model, negatively
+            oriented.
+        alpha: Level of the set.
+        n_bootstrap: Bootstrap replications.
+        block_length: Expected block length of the stationary bootstrap.
+        statistic: ``"range"`` for ``T_R`` or ``"max"`` for ``T_max``.
+        rng: Random generator.
+
+    Returns:
+        ``(order, pvalues)``: the models in elimination order (the last is
+        the best), and each model's MCS p-value indexed by model.
+
+    Raises:
+        SpecificationError: If the statistic is unknown or the panel is
+            too small.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> base = rng.standard_normal((150, 3)) ** 2
+        >>> base[:, 2] += 1.0
+        >>> order, p = _model_confidence_set(
+        ...     base, alpha=0.1, n_bootstrap=200, block_length=2.0, statistic="range", rng=rng
+        ... )
+        >>> int(order[0]), bool(p[2] < 0.1)
+        (2, True)
+    """
+    if statistic not in ("range", "max"):
+        raise SpecificationError(f"statistic must be 'range' or 'max'; got {statistic!r}.")
+    count, n_models = losses.shape
+    if n_models < 2:
+        raise SpecificationError("a model confidence set needs at least two models.")
+    if count < 2:
+        raise SpecificationError("a model confidence set needs at least two evaluation origins.")
+    indices = np.stack(
+        [
+            _stationary_bootstrap_indices(count, expected_block=block_length, rng=rng)
+            for _ in range(n_bootstrap)
+        ]
+    )
+    boot_means = losses[indices].mean(axis=1)  # (B, M)
+    sample_mean = losses.mean(axis=0)  # (M,)
+    remaining = list(range(n_models))
+    order: list[int] = []
+    elimination_p: list[float] = []
+    while len(remaining) > 1:
+        keep = np.array(remaining)
+        mean = sample_mean[keep]
+        boot = boot_means[:, keep]
+        if statistic == "range":
+            pair_mean = mean[:, None] - mean[None, :]
+            pair_boot = boot[:, :, None] - boot[:, None, :]
+            pair_var = ((pair_boot - pair_mean[None]) ** 2).mean(axis=0)
+            pair_var[np.arange(len(keep)), np.arange(len(keep))] = 1.0
+            scale = np.sqrt(np.maximum(pair_var, 1e-300))
+            observed = float(np.abs(pair_mean / scale).max())
+            simulated = np.abs((pair_boot - pair_mean[None]) / scale[None]).max(axis=(1, 2))
+            deviation = (mean[:, None] - mean[None, :]).mean(axis=1)
+            dev_var = ((boot - boot.mean(axis=1, keepdims=True) - deviation[None]) ** 2).mean(
+                axis=0
+            )
+        else:
+            deviation = mean - mean.mean()
+            boot_dev = boot - boot.mean(axis=1, keepdims=True)
+            dev_var = ((boot_dev - deviation[None]) ** 2).mean(axis=0)
+            scale_dev = np.sqrt(np.maximum(dev_var, 1e-300))
+            observed = float((deviation / scale_dev).max())
+            simulated = ((boot_dev - deviation[None]) / scale_dev[None]).max(axis=1)
+        pvalue = float((simulated >= observed).mean())
+        worst = int(np.argmax(deviation / np.sqrt(np.maximum(dev_var, 1e-300))))
+        order.append(int(keep[worst]))
+        elimination_p.append(pvalue)
+        remaining.remove(int(keep[worst]))
+    order.append(remaining[0])
+    elimination_p.append(1.0)
+    pvalues = np.empty(n_models)
+    running = 0.0
+    for model, p in zip(order, elimination_p, strict=True):
+        running = max(running, p)
+        pvalues[model] = running
+    return np.asarray(order, dtype=np.intp), pvalues

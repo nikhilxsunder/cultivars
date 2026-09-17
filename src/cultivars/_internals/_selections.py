@@ -446,3 +446,106 @@ class _ModelCombinationSelection:
             f"ModelCombinationSelection({self.n_models} models, {self.method}, "
             f"heaviest {self.names[top]!r} at {self.weights[top]:.3f})"
         )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ModelConfidenceSetSelection:
+    """The model confidence set: the forecasters not shown to be worse than the best.
+
+    Hansen, Lunde and Nason (2011): a set that contains the best model
+    with probability at least ``1 - alpha``, reached by eliminating the
+    worst model while the equivalence of the remaining ones is rejected.
+    Like a confidence interval it is honest about what the data can and
+    cannot separate: a short or noisy evaluation window keeps many models,
+    and that is the finding, not a failure.
+
+    Attributes:
+        names: Model labels, in the order the losses were given.
+        pvalues: ``(M,)`` MCS p-values; a model is in the set at level
+            ``alpha`` exactly when its p-value is at least ``alpha``.
+        mean_losses: ``(M,)`` mean loss of each model.
+        elimination_order: Model indices from first eliminated to the
+            survivor.
+        alpha: Level of the set.
+        statistic: ``"range"`` or ``"max"``.
+        n_bootstrap: Bootstrap replications.
+        block_length: Expected block length of the stationary bootstrap.
+        nobs: Evaluation origins.
+    """
+
+    names: tuple[str, ...]
+    pvalues: npt.NDArray[np.float64] = field(repr=False)
+    mean_losses: npt.NDArray[np.float64] = field(repr=False)
+    elimination_order: tuple[int, ...]
+    alpha: float
+    statistic: str
+    n_bootstrap: int
+    block_length: float
+    nobs: int
+
+    @property
+    def included(self) -> tuple[str, ...]:
+        """The models in the set, best mean loss first."""
+        kept = [i for i in range(len(self.names)) if self.pvalues[i] >= self.alpha]
+        kept.sort(key=lambda i: float(self.mean_losses[i]))
+        return tuple(self.names[i] for i in kept)
+
+    @property
+    def excluded(self) -> tuple[str, ...]:
+        """The models eliminated, in elimination order."""
+        return tuple(self.names[i] for i in self.elimination_order if self.pvalues[i] < self.alpha)
+
+    @property
+    def best(self) -> str:
+        """The survivor of the elimination sequence."""
+        return self.names[self.elimination_order[-1]]
+
+    def pvalue(self, name: str) -> float:
+        """One model's MCS p-value.
+
+        Raises:
+            SpecificationError: If the name is unknown.
+        """
+        if name not in self.names:
+            raise SpecificationError(f"unknown model {name!r}; expected one of {self.names}.")
+        return float(self.pvalues[self.names.index(name)])
+
+    def summary(self) -> SummaryTable:
+        """Render as a table in elimination order, survivor last."""
+        rows = tuple(
+            (
+                self.names[i],
+                f"{self.mean_losses[i]:.5f}",
+                f"{self.pvalues[i]:.3f}",
+                "in" if self.pvalues[i] >= self.alpha else "out",
+            )
+            for i in self.elimination_order
+        )
+        notes = [
+            f"{len(self.included)} of {len(self.names)} models in the {1 - self.alpha:.0%} "
+            f"set: {', '.join(self.included)}.",
+            f"Sequential elimination with the {self.statistic} statistic; null distribution "
+            f"from {self.n_bootstrap} stationary-bootstrap resamples with expected block "
+            f"length {self.block_length:g}. A model's p-value is the running maximum of the "
+            "elimination p-values up to its own (Hansen, Lunde & Nason, 2011).",
+            "The set contains the best model with probability at least the confidence "
+            "level; a set that keeps many models reports what the window can separate.",
+        ]
+        return SummaryTable(
+            title="Model Confidence Set",
+            metadata=(
+                ("Models", str(len(self.names))),
+                ("Origins", str(self.nobs)),
+                ("Level", f"{1 - self.alpha:.0%}"),
+                ("In set", str(len(self.included))),
+            ),
+            columns=("model", "mean loss", "MCS p", ""),
+            rows=rows,
+            notes=tuple(notes),
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"ModelConfidenceSetSelection({len(self.included)} of {len(self.names)} models at "
+            f"{1 - self.alpha:.0%}, best={self.best!r})"
+        )

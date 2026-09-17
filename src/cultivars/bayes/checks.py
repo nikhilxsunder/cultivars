@@ -83,7 +83,7 @@ from .._core import (
     _validate_statistics,
     _variable_names,
 )
-from .._internals import _PredictiveCheckTest as PredictiveCheckTest
+from ..diagnostics import PredictiveCheckTest
 from ..exceptions import SpecificationError
 
 

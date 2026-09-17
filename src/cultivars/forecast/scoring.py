@@ -61,7 +61,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable, crps_from_draws, energy_score
+from .._core import SummaryTable, _kernel_log_score, crps_from_draws, energy_score
 from .._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError
 
@@ -209,22 +209,12 @@ class DensityScore:
 
     def _kernel_log_score(self) -> npt.NDArray[np.float64]:
         """Negative log predictive density by Gaussian kernel, per cell."""
-        draws, horizons, k = self._paths.shape
-        out = np.empty((horizons, k))
-        for h in range(horizons):
-            block = self._paths[:, h, :]
-            spread = block.std(axis=0, ddof=1)
-            quartiles = np.quantile(block, [0.25, 0.75], axis=0)
-            robust = (quartiles[1] - quartiles[0]) / 1.34
-            width = 0.9 * np.minimum(spread, np.where(robust > 0.0, robust, spread))
-            width = np.maximum(width * draws ** (-0.2), 1e-8 * np.maximum(spread, 1.0))
-            gap = (block - self._realized[h][None, :]) / width[None, :]
-            peak = (-0.5 * gap**2).max(axis=0)
-            total = np.exp(-0.5 * gap**2 - peak[None, :]).sum(axis=0)
-            out[h] = -(
-                peak + np.log(total) - np.log(draws) - np.log(width) - 0.5 * np.log(2.0 * np.pi)
-            )
-        return out
+        return np.stack(
+            [
+                _kernel_log_score(self._paths[:, h, :], self._realized[h])
+                for h in range(self._paths.shape[1])
+            ]
+        )
 
     def compute(self) -> DensityScoreResult:
         """Evaluate every score.

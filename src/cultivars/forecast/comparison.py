@@ -73,11 +73,12 @@ import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
 
-from .._core import SummaryTable
+from .._core import _MIN_COMPARISON_ORIGINS, SummaryTable, _bartlett_long_run_variance, _clark_west
 from .._internals import _SummaryMixin
+from ..diagnostics import ClarkWestTest
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
-__all__ = ["ForecastComparison", "ForecastComparisonResult"]
+__all__ = ["ForecastComparison", "ForecastComparisonResult", "clark_west"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -198,10 +199,10 @@ class ForecastComparison:
                 f"the loss series must align origin by origin; got shapes "
                 f"{first.shape} and {second.shape}."
             )
-        if first.shape[0] < 8:
+        if first.shape[0] < _MIN_COMPARISON_ORIGINS:
             raise SpecificationError(
                 f"a comparison over {first.shape[0]} origins has no power "
-                "and unreliable size; provide at least 8."
+                f"and unreliable size; provide at least {_MIN_COMPARISON_ORIGINS}."
             )
         if not (np.all(np.isfinite(first)) and np.all(np.isfinite(second))):
             raise NumericalError("losses must be finite.")
@@ -239,7 +240,9 @@ class ForecastComparison:
             raise SpecificationError(
                 "the two loss series are numerically identical; there is no differential to test."
             )
-        variance = float(centered @ centered) / count
+        variance = _bartlett_long_run_variance(centered, horizon)
+        mean = float(differential.mean())
+        spread = float(np.sqrt(variance / count))
         for lag in range(1, horizon):
             weight = 1.0 - lag / horizon
             variance += 2.0 * weight * float(centered[lag:] @ centered[:-lag]) / count
@@ -274,3 +277,81 @@ class ForecastComparison:
             horizon=int(horizon),
             nobs=count,
         )
+
+
+def clark_west(
+    realized: npt.ArrayLike,
+    restricted: npt.ArrayLike,
+    unrestricted: npt.ArrayLike,
+    *,
+    horizon: int = 1,
+) -> ClarkWestTest:
+    """Clark-West (2007) test that a nesting model forecasts better than the model it nests.
+
+    Under the null that the smaller model is true, the larger one's extra
+    parameters are estimated noise, so its mean squared prediction error
+    is *expected* to exceed the smaller one's and Diebold-Mariano is biased
+    against it. Clark and West subtract the noise term ``(f_r - f_u)**2``
+    from the loss differential and test what remains with a one-sided
+    normal reference, which is approximately correctly sized in the
+    recursive and rolling schemes a backtest runs.
+
+    Args:
+        realized: ``(T,)`` outcomes.
+        restricted: ``(T,)`` point forecasts of the nested model.
+        unrestricted: ``(T,)`` point forecasts of the nesting model,
+            aligned origin by origin -- ``BacktestResult.point[:, h - 1,
+            j]`` from two backtests on the same schedule.
+        horizon: The forecast horizon behind the series; sets the
+            long-run variance's Bartlett window.
+
+    Returns:
+        The :class:`ClarkWestTest`.
+
+    Raises:
+        DimensionError: If the series do not align.
+        SpecificationError: If there are too few origins or the horizon
+            is not positive or too long for the window.
+        NumericalError: If a series is not finite.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> x = rng.standard_normal(200)
+        >>> y = 0.5 * x + rng.standard_normal(200)
+        >>> verdict = clark_west(y, np.zeros(200), 0.5 * x)
+        >>> bool(verdict.pvalue < 0.01)
+        True
+    """
+    series = [
+        np.asarray(block, dtype=np.float64).ravel()
+        for block in (realized, restricted, unrestricted)
+    ]
+    if not (series[0].shape == series[1].shape == series[2].shape):
+        raise DimensionError(
+            "realized, restricted, and unrestricted must align origin by origin; got shapes "
+            f"{series[0].shape}, {series[1].shape}, {series[2].shape}."
+        )
+    count = series[0].shape[0]
+    if count < _MIN_COMPARISON_ORIGINS:
+        raise SpecificationError(
+            f"a comparison over {count} origins has no power and unreliable size; provide at "
+            f"least {_MIN_COMPARISON_ORIGINS}."
+        )
+    if not all(np.all(np.isfinite(block)) for block in series):
+        raise NumericalError("realized and forecast series must be finite.")
+    if horizon < 1:
+        raise SpecificationError(f"horizon must be at least 1; got {horizon}.")
+    if horizon >= count // 2:
+        raise SpecificationError(
+            f"a horizon of {horizon} needs more than {2 * horizon} evaluation origins; got {count}."
+        )
+    statistic, pvalue, adjusted = _clark_west(series[0], series[1], series[2], horizon=horizon)
+    return ClarkWestTest(
+        statistic=statistic,
+        pvalue=pvalue,
+        adjusted_differential=adjusted,
+        mspe_restricted=float(((series[0] - series[1]) ** 2).mean()),
+        mspe_unrestricted=float(((series[0] - series[2]) ** 2).mean()),
+        horizon=int(horizon),
+        nobs=int(count),
+    )

@@ -33,8 +33,11 @@ from .._core import (
     CointegrationTrend,
     InformationCriteria,
     Regime,
+    SummaryTable,
     _companion_spectral_radius,
+    _kernel_log_score,
     companion_matrix,
+    crps_from_draws,
     deterministic_columns,
     validate_choice,
 )
@@ -1705,3 +1708,215 @@ class _ParticleSmootherResult(_SmootherResult):
     smoothed_state: npt.NDArray[np.float64]
     smoothed_state_std: npt.NDArray[np.float64]
     n_particles: int
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _BacktestResult(_SummaryMixin):
+    """The aligned record of a rolling-origin forecasting exercise.
+
+    One row per evaluation origin, one slab per horizon, one column per
+    series: what was forecast, what happened, and -- for a density
+    forecaster -- the predictive draws behind the forecast. Everything
+    downstream (a density score, a calibration record, a Diebold-Mariano
+    or Clark-West comparison, a model confidence set) reads from these
+    arrays, so the alignment the comparison tests cannot verify is
+    guaranteed here by construction: origin ``t``'s ``h``-step forecast
+    and the outcome at ``origins[t] + h - 1`` are stored in the same cell.
+
+    Attributes:
+        names: Series labels.
+        horizons: Longest horizon; every horizon ``1 .. horizons`` is kept.
+        origins: ``(T,)`` observations available at each origin, so the
+            first forecast target is row ``origins[t]`` of the sample.
+        realized: ``(T, H, k)`` outcomes.
+        point: ``(T, H, k)`` point forecasts -- the predictive mean for a
+            density forecaster.
+        paths: ``(T, S, H, k)`` predictive draws, or ``None`` for a point
+            forecaster.
+        scheme: ``"expanding"`` or ``"rolling"``.
+        window: Observations each estimation used under a rolling scheme;
+            the first origin's count under an expanding one.
+        step: Origins between successive evaluations.
+    """
+
+    names: tuple[str, ...]
+    horizons: int
+    origins: npt.NDArray[np.intp] = field(repr=False)
+    realized: npt.NDArray[np.float64] = field(repr=False)
+    point: npt.NDArray[np.float64] = field(repr=False)
+    paths: npt.NDArray[np.float64] | None = field(repr=False)
+    scheme: str
+    window: int
+    step: int
+
+    @property
+    def n_origins(self) -> int:
+        """Evaluation origins."""
+        return int(self.origins.shape[0])
+
+    @property
+    def k_endog(self) -> int:
+        """Series forecast."""
+        return len(self.names)
+
+    @property
+    def n_draws(self) -> int:
+        """Predictive draws per origin, zero for a point forecaster."""
+        return 0 if self.paths is None else int(self.paths.shape[1])
+
+    @property
+    def is_density(self) -> bool:
+        """Whether predictive draws were recorded."""
+        return self.paths is not None
+
+    @property
+    def errors(self) -> npt.NDArray[np.float64]:
+        """``(T, H, k)`` forecast errors ``point - realized``."""
+        return np.asarray(self.point - self.realized, dtype=np.float64)
+
+    def _horizon_index(self, horizon: int) -> int:
+        if not 1 <= horizon <= self.horizons:
+            raise SpecificationError(f"horizon must lie in 1 .. {self.horizons}; got {horizon}.")
+        return horizon - 1
+
+    def _series_index(self, name: str) -> int:
+        if name not in self.names:
+            raise SpecificationError(f"unknown series {name!r}; expected one of {self.names}.")
+        return self.names.index(name)
+
+    def _density_losses(self, kind: str) -> npt.NDArray[np.float64]:
+        """``(T, H, k)`` CRPS or log scores, one origin at a time."""
+        if self.paths is None:
+            raise SpecificationError(
+                f"{kind} losses need predictive draws; this backtest recorded point forecasts "
+                "only. Backtest a result exposing forecast_paths()."
+            )
+        scorer = crps_from_draws if kind == "crps" else _kernel_log_score
+        out = np.empty(self.realized.shape)
+        for t in range(self.n_origins):
+            for h in range(self.horizons):
+                out[t, h] = scorer(self.paths[t, :, h, :], self.realized[t, h])
+        return out
+
+    def losses(
+        self, kind: str = "squared", *, horizon: int = 1, name: str | None = None
+    ) -> npt.NDArray[np.float64]:
+        """One loss series per origin, aligned for a comparison test.
+
+        Args:
+            kind: ``"squared"`` or ``"absolute"`` on the point forecast;
+                ``"crps"`` or ``"log"`` on the predictive draws.
+            horizon: The horizon to score.
+            name: A series label for a ``(T,)`` series; ``None`` returns
+                ``(T, k)``.
+
+        Returns:
+            The losses, negatively oriented.
+
+        Raises:
+            SpecificationError: If the kind, horizon, or name is unknown,
+                or a density loss is asked of a point backtest.
+        """
+        if kind not in ("squared", "absolute", "crps", "log"):
+            raise SpecificationError(
+                f"kind must be 'squared', 'absolute', 'crps', or 'log'; got {kind!r}."
+            )
+        h = self._horizon_index(horizon)
+        if kind == "squared":
+            table = self.errors[:, h, :] ** 2
+        elif kind == "absolute":
+            table = np.abs(self.errors[:, h, :])
+        else:
+            table = self._density_losses(kind)[:, h, :]
+        if name is None:
+            return np.asarray(table, dtype=np.float64)
+        return np.asarray(table[:, self._series_index(name)], dtype=np.float64)
+
+    def record(self, horizon: int = 1) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """One horizon's ``(paths, realized)`` as ``(T, S, k)`` and ``(T, k)``.
+
+        The shapes a calibration record takes.
+
+        Raises:
+            SpecificationError: If the horizon is unknown or no draws were
+                recorded.
+        """
+        h = self._horizon_index(horizon)
+        if self.paths is None:
+            raise SpecificationError(
+                "a calibration record needs predictive draws; this backtest recorded point "
+                "forecasts only."
+            )
+        return (
+            np.asarray(self.paths[:, :, h, :], dtype=np.float64),
+            np.asarray(self.realized[:, h, :], dtype=np.float64),
+        )
+
+    @property
+    def rmse(self) -> npt.NDArray[np.float64]:
+        """``(H, k)`` root mean squared errors."""
+        return np.asarray(np.sqrt((self.errors**2).mean(axis=0)), dtype=np.float64)
+
+    @property
+    def mae(self) -> npt.NDArray[np.float64]:
+        """``(H, k)`` mean absolute errors."""
+        return np.asarray(np.abs(self.errors).mean(axis=0), dtype=np.float64)
+
+    @property
+    def mean_crps(self) -> npt.NDArray[np.float64]:
+        """``(H, k)`` mean continuous ranked probability scores; needs draws."""
+        return np.asarray(self._density_losses("crps").mean(axis=0), dtype=np.float64)
+
+    @property
+    def mean_log_score(self) -> npt.NDArray[np.float64]:
+        """``(H, k)`` mean negative log predictive densities; needs draws."""
+        return np.asarray(self._density_losses("log").mean(axis=0), dtype=np.float64)
+
+    def _summary_table(self) -> SummaryTable:
+        """Build the structured summary: one row per horizon and series."""
+        rmse, mae = self.rmse, self.mae
+        crps = self.mean_crps if self.paths is not None else None
+        rows = tuple(
+            (
+                str(h + 1),
+                name,
+                f"{rmse[h, j]:.4f}",
+                f"{mae[h, j]:.4f}",
+                "-" if crps is None else f"{crps[h, j]:.4f}",
+            )
+            for h in range(self.horizons)
+            for j, name in enumerate(self.names)
+        )
+        notes = [
+            f"{self.scheme.capitalize()} scheme, {self.n_origins} origins "
+            f"{self.step} apart, re-estimated at every origin; "
+            + (
+                f"rolling window of {self.window} observations."
+                if self.scheme == "rolling"
+                else f"first estimation on {self.window} observations."
+            ),
+            "Row t's h-step forecast is aligned with the outcome at origins[t] + h - 1; "
+            "losses(kind, horizon=h, name=...) hands the aligned series to a comparison test.",
+        ]
+        if crps is None:
+            notes.append(
+                "Point forecasts only: CRPS, log scores, and calibration need a result "
+                "exposing forecast_paths()."
+            )
+        else:
+            notes.append(
+                f"{self.n_draws} predictive draws per origin; record(h) feeds a calibration record."
+            )
+        return SummaryTable(
+            title="Backtest",
+            metadata=(
+                ("Origins", str(self.n_origins)),
+                ("Horizons", str(self.horizons)),
+                ("Series", str(self.k_endog)),
+                ("Scheme", self.scheme),
+                ("Draws", str(self.n_draws)),
+            ),
+            columns=("h", "series", "RMSE", "MAE", "mean CRPS"),
+            rows=rows,
+            notes=tuple(notes),
+        )
