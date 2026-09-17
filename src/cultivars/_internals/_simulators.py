@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
 import numpy.typing as npt
 
-from .._core import deterministic_columns
+from .._core import _SQRT_2_OVER_PI, deterministic_columns
 from ..exceptions import DimensionError, SpecificationError
+from ._matrices import _psd_factor
 from ._solutions import _PerturbationSolution
 
 
@@ -46,6 +49,64 @@ def _simulate_pruned(
         states[t] = solution.x_ss + x_dev
         controls[t] = solution.y_ss + y_dev
     return states, controls
+
+
+def _simulate_perturbation(
+    solution: _PerturbationSolution,
+    n: int,
+    *,
+    design: npt.NDArray[np.float64],
+    intercept: npt.NDArray[np.float64],
+    obs_cov: npt.NDArray[np.float64],
+    rng: np.random.Generator,
+    burn: int = 0,
+) -> npt.NDArray[np.float64]:
+    """One path of the observables of a perturbation solution.
+
+    Standard-normal structural shocks drive the pruned system from the
+    steady state; the first ``burn`` periods are discarded; the
+    observables read ``design @ [states; controls] + intercept`` plus
+    Gaussian measurement noise of covariance ``obs_cov``.
+
+    Args:
+        solution: The perturbation solution.
+        n: Observations kept.
+        design: ``(p, n_x + n_y)`` observation loading over
+            ``[states; controls]``.
+        intercept: ``(p,)`` observation intercept.
+        obs_cov: ``(p, p)`` measurement-noise covariance; zero is allowed.
+        rng: Random generator.
+        burn: Periods discarded from the start.
+
+    Returns:
+        An ``(n, p)`` array.
+
+    Raises:
+        SpecificationError: If the counts are not usable.
+
+    Example:
+        >>> import numpy as np
+        >>> from cultivars._internals._solutions import _PerturbationSolution
+        >>> sol = _PerturbationSolution(
+        ...     h_x=np.array([[0.5]]), g_x=np.array([[2.0]]), eta=np.array([[1.0]]),
+        ...     h_xx=np.zeros((1, 1)), g_xx=np.zeros((1, 1)), h_ss=np.zeros(1),
+        ...     g_ss=np.zeros(1), x_ss=np.zeros(1), y_ss=np.ones(1), order=1,
+        ... )
+        >>> y = _simulate_perturbation(
+        ...     sol, 2000, design=np.array([[0.0, 1.0]]), intercept=np.zeros(1),
+        ...     obs_cov=np.zeros((1, 1)), rng=np.random.default_rng(0), burn=100,
+        ... )
+        >>> y.shape, bool(abs(y.mean() - 1.0) < 0.3)
+        ((2000, 1), True)
+    """
+    if n < 1 or burn < 0:
+        raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
+    shocks = rng.standard_normal((burn + n, solution.n_shocks))
+    states, controls = _simulate_pruned(solution, shocks)
+    latent = np.hstack([states[burn:], controls[burn:]])
+    p = design.shape[0]
+    noise = rng.standard_normal((n, p)) @ _psd_factor(obs_cov).T
+    return np.asarray(latent @ design.T + intercept + noise, dtype=np.float64)
 
 
 def _impulse_responses(
@@ -205,3 +266,301 @@ def _simulate_stochastic_volatility(
         h[t] = mu + phi * (h[t - 1] - mu) + sigma * eta[t - 1]
     y = mean + np.exp(0.5 * h) * eps
     return np.asarray(y, dtype=np.float64), h
+
+
+def _simulate_arma(
+    n: int,
+    *,
+    ar: npt.NDArray[np.float64],
+    ma: npt.NDArray[np.float64],
+    sigma: float,
+    rng: np.random.Generator,
+    intercept: npt.NDArray[np.float64] | None = None,
+    burn: int = 0,
+) -> npt.NDArray[np.float64]:
+    """One path of ``u_t = sum phi_i u_{t-i} + e_t + sum theta_j e_{t-j}`` plus an intercept path.
+
+    Started from zeros and run ``burn`` extra periods first, which is how
+    a fresh sample from the stationary law is produced; ``intercept`` is
+    added to the kept part after the recursion, so it is a deterministic
+    mean path rather than a regressor inside the autoregression.
+
+    Args:
+        n: Observations kept.
+        ar: ``(p,)`` autoregressive coefficients (expanded seasonal
+            products included).
+        ma: ``(q,)`` moving-average coefficients of ``1 + theta_1 L + ...``.
+        sigma: Innovation standard deviation.
+        rng: Random generator.
+        intercept: ``(n,)`` deterministic mean path added to the kept part.
+        burn: Periods discarded from the start.
+
+    Returns:
+        The ``(n,)`` path.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = _simulate_arma(500, ar=np.array([0.9]), ma=np.zeros(0), sigma=1.0, rng=rng, burn=99)
+        >>> bool(abs(np.corrcoef(y[1:], y[:-1])[0, 1] - 0.9) < 0.05)
+        True
+    """
+    if n < 1:
+        raise SpecificationError(f"n must be at least 1; got {n}.")
+    if burn < 0:
+        raise SpecificationError(f"burn must be non-negative; got {burn}.")
+    p, q = ar.shape[0], ma.shape[0]
+    total = n + burn
+    shocks = sigma * rng.standard_normal(total)
+    u = np.zeros(total)
+    for t in range(total):
+        value = shocks[t]
+        for i in range(min(p, t)):
+            value += ar[i] * u[t - 1 - i]
+        for j in range(min(q, t)):
+            value += ma[j] * shocks[t - 1 - j]
+        u[t] = value
+    out = u[burn:]
+    if intercept is not None:
+        out = out + intercept
+    return np.asarray(out, dtype=np.float64)
+
+
+def _integrate(
+    w: npt.NDArray[np.float64], d: int, capital_d: int, s: int
+) -> npt.NDArray[np.float64]:
+    """Undo ``combined_difference`` from zero initial levels.
+
+    Seasonal integration is undone first, then the non-seasonal, so the
+    order matches the differencing that produced ``w``.
+
+    Example:
+        >>> _integrate(np.array([1.0, 1.0, 1.0]), 1, 0, 1)
+        array([1., 2., 3.])
+    """
+    y = np.asarray(w, dtype=np.float64)
+    for _ in range(capital_d):
+        out = np.empty_like(y)
+        for t in range(y.shape[0]):
+            out[t] = y[t] + (out[t - s] if t >= s else 0.0)
+        y = out
+    for _ in range(d):
+        y = np.cumsum(y)
+    return y
+
+
+def _simulate_conditional_variance(
+    n: int,
+    *,
+    vol: str,
+    omega: float,
+    alpha: npt.NDArray[np.float64],
+    gamma: npt.NDArray[np.float64],
+    beta: npt.NDArray[np.float64],
+    const: float,
+    ar: npt.NDArray[np.float64],
+    ma: npt.NDArray[np.float64],
+    rng: np.random.Generator,
+    burn: int = 0,
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """One path of an ARMA mean with a GARCH, GJR, or EGARCH variance.
+
+    The variance recursions mirror the estimators' exactly: linear in past
+    squared residuals and variances (with the sign-asymmetry term for
+    GJR), or linear in the log variance driven by standardized residuals
+    for EGARCH. Pre-sample terms start at the unconditional variance for
+    the linear families and at ``exp(omega / (1 - sum beta))`` for EGARCH.
+
+    Args:
+        n: Observations kept.
+        vol: ``"GARCH"``, ``"GJR"`` or ``"EGARCH"``.
+        omega: Variance intercept.
+        alpha: Coefficients on the shock magnitude.
+        gamma: Asymmetry coefficients; empty when symmetric.
+        beta: Persistence coefficients.
+        const: Mean intercept.
+        ar: Conditional-mean AR coefficients.
+        ma: Conditional-mean MA coefficients.
+        rng: Random generator.
+        burn: Periods discarded from the start.
+
+    Returns:
+        ``(y, sigma2)``, each ``(n,)``.
+
+    Raises:
+        SpecificationError: If the family is unknown or the counts are
+            not usable.
+    """
+    if vol not in ("GARCH", "GJR", "EGARCH"):
+        raise SpecificationError(f"vol must be 'GARCH', 'GJR', or 'EGARCH'; got {vol!r}.")
+    if n < 1 or burn < 0:
+        raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
+    total = n + burn
+    p, o, q = alpha.size, gamma.size, beta.size
+    persistence = float(alpha.sum() + beta.sum() + (0.5 * gamma.sum() if vol == "GJR" else 0.0))
+    if vol == "EGARCH":
+        start = float(np.exp(omega / max(1.0 - beta.sum(), 1e-6)))
+    else:
+        start = omega / max(1.0 - persistence, 1e-6) if persistence < 1.0 else omega
+    z = rng.standard_normal(total)
+    sigma2 = np.empty(total)
+    resid = np.zeros(total)
+    y = np.zeros(total)
+    log_s2 = np.empty(total)
+    for t in range(total):
+        if vol == "EGARCH":
+            s = omega
+            for i in range(p):
+                s += alpha[i] * ((abs(z[t - 1 - i]) - _SQRT_2_OVER_PI) if t - 1 - i >= 0 else 0.0)
+            for k in range(o):
+                s += gamma[k] * (z[t - 1 - k] if t - 1 - k >= 0 else 0.0)
+            for j in range(q):
+                s += beta[j] * (log_s2[t - 1 - j] if t - 1 - j >= 0 else np.log(start))
+            log_s2[t] = s
+            sigma2[t] = float(np.exp(s))
+        else:
+            s = omega
+            for i in range(p):
+                s += alpha[i] * (resid[t - 1 - i] ** 2 if t - 1 - i >= 0 else start)
+            for k in range(o):
+                if t - 1 - k >= 0:
+                    s += gamma[k] * resid[t - 1 - k] ** 2 * float(resid[t - 1 - k] < 0.0)
+                else:
+                    s += gamma[k] * start * 0.5
+            for j in range(q):
+                s += beta[j] * (sigma2[t - 1 - j] if t - 1 - j >= 0 else start)
+            sigma2[t] = s
+        resid[t] = float(np.sqrt(sigma2[t])) * z[t]
+        value = const + resid[t]
+        for i in range(min(ar.size, t)):
+            value += ar[i] * y[t - 1 - i]
+        for j in range(min(ma.size, t)):
+            value += ma[j] * resid[t - 1 - j]
+        y[t] = value
+    return np.asarray(y[burn:], dtype=np.float64), np.asarray(sigma2[burn:], dtype=np.float64)
+
+
+def _simulate_markov_switching(
+    n: int,
+    *,
+    transition: npt.NDArray[np.float64],
+    intercepts: npt.NDArray[np.float64],
+    ar_params: npt.NDArray[np.float64],
+    variances: npt.NDArray[np.float64],
+    rng: np.random.Generator,
+    burn: int = 0,
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
+    """One path of a Markov-switching autoregression and the regimes that generated it.
+
+    The regime chain starts from its ergodic distribution and the series
+    from zeros; ``burn`` periods are discarded.
+
+    Args:
+        n: Observations kept.
+        transition: ``(K, K)`` matrix with ``transition[i, j] = P(s_t = j |
+            s_{t-1} = i)``.
+        intercepts: ``(K,)`` regime intercepts.
+        ar_params: ``(K, p)`` regime autoregressive coefficients.
+        variances: ``(K,)`` regime innovation variances.
+        rng: Random generator.
+        burn: Periods discarded from the start.
+
+    Returns:
+        ``(y, regimes)`` of shapes ``(n,)`` and ``(n,)``.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y, s = _simulate_markov_switching(
+        ...     200,
+        ...     transition=np.array([[0.9, 0.1], [0.2, 0.8]]),
+        ...     intercepts=np.array([-1.0, 1.0]),
+        ...     ar_params=np.zeros((2, 0)),
+        ...     variances=np.ones(2),
+        ...     rng=rng,
+        ...     burn=50,
+        ... )
+        >>> bool(y[s == 1].mean() > y[s == 0].mean())
+        True
+    """
+    if n < 1 or burn < 0:
+        raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
+    n_regimes, p = ar_params.shape
+    if transition.shape != (n_regimes, n_regimes):
+        raise DimensionError(
+            f"transition must be ({n_regimes}, {n_regimes}); got {transition.shape}."
+        )
+    total = n + burn
+    values, vectors = np.linalg.eig(transition.T)
+    ergodic = np.real(vectors[:, np.argmin(np.abs(values - 1.0))])
+    ergodic = np.abs(ergodic) / np.abs(ergodic).sum()
+    regimes = np.empty(total, dtype=np.int64)
+    regimes[0] = rng.choice(n_regimes, p=ergodic)
+    for t in range(1, total):
+        regimes[t] = rng.choice(n_regimes, p=transition[regimes[t - 1]])
+    y = np.zeros(total)
+    shocks = rng.standard_normal(total)
+    for t in range(total):
+        k = regimes[t]
+        value = intercepts[k] + float(np.sqrt(variances[k])) * shocks[t]
+        for i in range(min(p, t)):
+            value += ar_params[k, i] * y[t - 1 - i]
+        y[t] = value
+    return np.asarray(y[burn:], dtype=np.float64), regimes[burn:]
+
+
+def _simulate_two_regime(
+    n: int,
+    *,
+    lower: npt.NDArray[np.float64],
+    upper: npt.NDArray[np.float64],
+    order: int,
+    delay: int,
+    sigma: float,
+    weight: Callable[[float], float],
+    rng: np.random.Generator,
+    burn: int = 0,
+) -> npt.NDArray[np.float64]:
+    """One path of a self-exciting two-regime autoregression, hard or smooth.
+
+    ``y_t = (1 - w_t) (c_L + phi_L y) + w_t (c_U + phi_U y) + sigma e_t``
+    with ``w_t = weight(y_{t-d})``: the indicator ``y_{t-d} > threshold``
+    for a threshold model, a logistic or exponential function of it for a
+    smooth-transition one.
+
+    Args:
+        n: Observations kept.
+        lower: ``(order + 1,)`` lower-regime coefficients, intercept first.
+        upper: ``(order + 1,)`` upper-regime coefficients, intercept first.
+        order: Autoregressive order.
+        delay: Delay of the transition variable, at least one.
+        sigma: Innovation standard deviation.
+        weight: Upper-regime weight as a function of ``y_{t-d}``.
+        rng: Random generator.
+        burn: Periods discarded from the start.
+
+    Returns:
+        The ``(n,)`` path.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = _simulate_two_regime(
+        ...     300, lower=np.array([0.5, 0.3]), upper=np.array([-0.5, 0.3]), order=1, delay=1,
+        ...     sigma=1.0, weight=lambda z: float(z > 0.0), rng=rng, burn=50
+        ... )
+        >>> y.shape
+        (300,)
+    """
+    if n < 1 or burn < 0:
+        raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
+    if delay < 1:
+        raise SpecificationError(f"delay must be at least 1; got {delay}.")
+    total = n + burn
+    y = np.zeros(total)
+    shocks = sigma * rng.standard_normal(total)
+    for t in range(total):
+        w = weight(float(y[t - delay])) if t >= delay else 0.5
+        low, up = lower[0], upper[0]
+        for i in range(min(order, t)):
+            low += lower[i + 1] * y[t - 1 - i]
+            up += upper[i + 1] * y[t - 1 - i]
+        y[t] = (1.0 - w) * low + w * up + shocks[t]
+    return np.asarray(y[burn:], dtype=np.float64)

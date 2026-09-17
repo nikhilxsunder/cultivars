@@ -50,6 +50,7 @@ from .._core import (
     _MIN_ESS_PER_CHAIN,
     _NO_CLOSED_SYSTEM,
     _RHAT_TOL,
+    _SIMULATION_BURN,
     Identification,
     InformationCriteria,
     SummaryTable,
@@ -1210,6 +1211,48 @@ class _VectorPropagationMixin:
             history = [point, *history[: p - 1]] if p else []
         return out
 
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path from the fitted system.
+
+        The estimated coefficients, deterministic terms, and innovation
+        covariance generate ``burn + n`` periods from a zero start with
+        Gaussian innovations; the first ``burn`` are discarded so the kept
+        part is a draw from the stationary law when the system is stable.
+        The deterministic time index runs ``1 .. n`` over the kept part,
+        so a trend model produces a sample a fit with the same ``trend``
+        would read as its own.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n, k)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable.
+        """
+        if n < 1:
+            raise SpecificationError(f"n must be at least 1; got {n}.")
+        if burn < 0:
+            raise SpecificationError(f"burn must be non-negative; got {burn}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        k, p = self.k_endog, self.order
+        beta = np.vstack([self.deterministic, *[self.coefficients[lag].T for lag in range(p)]])
+        chol = np.linalg.cholesky(0.5 * (self.sigma_u + self.sigma_u.T))
+        noise = rng.standard_normal((burn + n, k)) @ chol.T
+        path = _simulate_vector_autoregression(
+            beta, noise, order=p, trend=self.trend, presample=np.zeros((p, k)), start=1 - burn
+        )
+        return np.asarray(path[burn:], dtype=np.float64)
+
     def historical_decomposition(self) -> npt.NDArray[np.float64]:
         """Attribute each observation to the shocks that produced it.
 
@@ -1495,6 +1538,8 @@ class _ReplicationMixin:
     endog: npt.NDArray[np.float64]
     order: int
     trend: str
+    beta_mean: npt.NDArray[np.float64]
+    sigma_u: npt.NDArray[np.float64]
     beta_draws: npt.NDArray[np.float64]
     sigma_draws: npt.NDArray[np.float64]
 
@@ -1524,6 +1569,68 @@ class _ReplicationMixin:
     def _replication_notes(self) -> tuple[str, ...]:
         """Remarks a predictive check carries about how this result replicates."""
         return ()
+
+    def _simulation_noise(
+        self, draw: int | None, n: int, rng: np.random.Generator
+    ) -> npt.NDArray[np.float64]:
+        """``(n, k)`` fresh innovations at one draw, or at the posterior mean when ``None``.
+
+        The base law is i.i.d. Gaussian from the draw's covariance (or the
+        posterior-mean covariance); a heavy-tailed member overrides it.
+        """
+        sigma = self.sigma_u if draw is None else self.sigma_draws[draw]
+        chol = np.linalg.cholesky(0.5 * (sigma + sigma.T))
+        return np.asarray(rng.standard_normal((n, self.k_endog)) @ chol.T, dtype=np.float64)
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+        draw: int | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path from the fitted system at the posterior mean or at one draw.
+
+        ``burn + n`` periods are generated from a zero start and the first
+        ``burn`` discarded; the deterministic time index runs ``1 .. n``
+        over the kept part. At the posterior mean the path is a draw from
+        the model's law at a point estimate; at a retained draw it is a
+        draw from the posterior predictive of a fresh sample, and looping
+        over draws gives that predictive in full.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+            draw: Index of a retained draw, or ``None`` for the posterior
+                mean.
+
+        Returns:
+            An array of shape ``(n, k)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable or the draw
+                index is out of range.
+        """
+        if n < 1:
+            raise SpecificationError(f"n must be at least 1; got {n}.")
+        if burn < 0:
+            raise SpecificationError(f"burn must be non-negative; got {burn}.")
+        if draw is not None and not 0 <= draw < self.n_kept:
+            raise SpecificationError(f"draw must lie in 0 .. {self.n_kept - 1}; got {draw}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        k, p = self.k_endog, self.order
+        beta = self.beta_mean if draw is None else self.beta_draws[draw]
+        path = _simulate_vector_autoregression(
+            beta,
+            self._simulation_noise(draw, burn + n, rng),
+            order=p,
+            trend=self.trend,
+            presample=np.zeros((p, k)),
+            start=1 - burn,
+        )
+        return np.asarray(path[burn:], dtype=np.float64)
 
     def posterior_replications(
         self,

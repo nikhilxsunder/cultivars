@@ -215,6 +215,17 @@ class StudentBVARResult(_VectorPosteriorDrawsResult):
         shocks = rng.standard_normal((steps, self.k_endog)) / np.sqrt(mixing)[:, None]
         return np.asarray(shocks @ chol.T, dtype=np.float64)
 
+    def _simulation_noise(
+        self, draw: int | None, n: int, rng: np.random.Generator
+    ) -> npt.NDArray[np.float64]:
+        """Student-t innovations at one draw, or at the posterior mean when ``None``."""
+        if draw is not None:
+            return self._predictive_noise(draw, n, rng)
+        chol = np.linalg.cholesky(self.sigma_u)
+        mixing = np.asarray(rng.gamma(0.5 * self.df, 2.0 / self.df, size=n), dtype=np.float64)
+        shocks = rng.standard_normal((n, self.k_endog)) / np.sqrt(mixing)[:, None]
+        return np.asarray(shocks @ chol.T, dtype=np.float64)
+
     def _replication_noise(self, draw: int, rng: np.random.Generator) -> npt.NDArray[np.float64]:
         """Student-t in-sample innovations: a replication keeps the fat tails."""
         n = self.endog.shape[0] - self.order

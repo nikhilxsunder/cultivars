@@ -166,8 +166,14 @@ from ._selections import (
 )
 from ._simulators import (
     _impulse_responses,
+    _integrate,
+    _simulate_arma,
+    _simulate_conditional_variance,
+    _simulate_markov_switching,
+    _simulate_perturbation,
     _simulate_pruned,
     _simulate_stochastic_volatility,
+    _simulate_two_regime,
     _simulate_vector_autoregression,
 )
 from ._solutions import _PerturbationSolution
@@ -334,11 +340,17 @@ __all__ = [
     "_WhittleVolatilityObjective",
     "_decay_nelson_siegel_state_space",
     "_impulse_responses",
+    "_integrate",
     "_long_memory_quasi_state_space",
     "_maximize_likelihood",
     "_quasi_volatility_state_space",
+    "_simulate_arma",
+    "_simulate_conditional_variance",
+    "_simulate_markov_switching",
+    "_simulate_perturbation",
     "_simulate_pruned",
     "_simulate_stochastic_volatility",
+    "_simulate_two_regime",
     "_simulate_vector_autoregression",
     "_solve",
     "_spectral_factor",

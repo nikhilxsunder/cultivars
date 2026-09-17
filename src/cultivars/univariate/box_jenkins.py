@@ -55,13 +55,23 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import InformationCriteria, SummaryTable, expand_ar, expand_ma, n_deterministic
+from .._core import (
+    _SIMULATION_BURN,
+    InformationCriteria,
+    SummaryTable,
+    deterministic_columns,
+    expand_ar,
+    expand_ma,
+    n_deterministic,
+)
 from .._internals import (
     _BoxJenkinsFit,
     _BoxJenkinsModel,
     _ComparisonMixin,
+    _integrate,
     _InvertibilityMixin,
     _SeriesMixin,
+    _simulate_arma,
     _StationarityMixin,
     _SummaryMixin,
 )
@@ -151,6 +161,65 @@ class ARMAResult(
     def _invertibility_ma(self) -> npt.NDArray[np.float64]:
         """The multiplied polynomial ``theta(L) Theta(L**s)``, sign-corrected."""
         return -expand_ma(self.ma_params, self.seasonal_ma_params, self.seasonal_period)
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted parameters.
+
+        The stationary ARMA part -- seasonal and non-seasonal polynomials
+        multiplied out -- is generated from a zero start over ``burn + n``
+        periods with the first ``burn`` discarded; the deterministic block
+        is added on the differenced scale with the time index running
+        ``1 .. n``, exactly as the estimator laid it out; and the result
+        is integrated ``d`` and ``D`` times from zero initial levels.
+
+        Args:
+            n: Observations kept, on the level scale.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable or the fit
+                carries exogenous regressors, whose future the result
+                cannot know.
+        """
+        if self.k_exog:
+            raise SpecificationError(
+                "a fit with exogenous regressors cannot simulate its own sample: the "
+                "regressors' future is not part of the model."
+            )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        d, cap_d, s = self.order[1], self.seasonal_order[1], self.seasonal_order[3]
+        det = n_deterministic(self.trend)
+        differenced = n - d - s * cap_d
+        if differenced < 1:
+            raise SpecificationError(
+                f"n must exceed the integration orders ({d + s * cap_d}); got {n}."
+            )
+        intercept = (
+            deterministic_columns(self.trend, differenced) @ self.beta[:det]
+            if det
+            else np.zeros(differenced)
+        )
+        w = _simulate_arma(
+            differenced,
+            ar=expand_ar(self.ar_params, self.seasonal_ar_params, s),
+            ma=expand_ma(self.ma_params, self.seasonal_ma_params, s),
+            sigma=float(np.sqrt(self.sigma2)),
+            rng=rng,
+            intercept=intercept,
+            burn=burn,
+        )
+        levels = _integrate(w, d, cap_d, s)
+        return np.concatenate([np.zeros(n - differenced), levels])
 
     @property
     def params(self) -> dict[str, float]:

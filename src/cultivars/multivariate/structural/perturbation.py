@@ -63,13 +63,14 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable
+from ..._core import _SIMULATION_BURN, SummaryTable
 from ..._internals import (
     _impulse_responses,
     _PerturbationDSGEPosterior,
     _PerturbationFit,
     _PerturbationModel,
     _PerturbationSolution,
+    _simulate_perturbation,
     _SummaryMixin,
 )
 from ...exceptions import SpecificationError
@@ -159,6 +160,43 @@ class PerturbationDSGEResult(_SummaryMixin):
         if horizon < 1:
             raise SpecificationError(f"horizon must be at least 1; got {horizon}.")
         return _impulse_responses(self.solution, horizon=horizon, size=size)
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample of the observables at the estimate.
+
+        Standard-normal structural shocks drive the pruned solution from
+        the steady state, the first ``burn`` periods are discarded, and the
+        observables are read through the model's measurement equation
+        with its stated measurement noise.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n, p)`` in the order of the data columns.
+
+        Raises:
+            SpecificationError: If the counts are not usable.
+        """
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        design, intercept, obs_cov = self._engine._measurement(self.theta, self.solution)
+        return _simulate_perturbation(
+            self.solution,
+            n,
+            design=design,
+            intercept=intercept,
+            obs_cov=obs_cov,
+            rng=rng,
+            burn=burn,
+        )
 
     def _summary_table(self) -> SummaryTable:
         """Structured summary rendered by every display path."""

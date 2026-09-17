@@ -30,6 +30,7 @@ import numpy.typing as npt
 from .._core import (
     _CAPACITY_WARNING,
     _SCHEMA_VERSION,
+    _SIMULATION_BURN,
     CointegrationTrend,
     InformationCriteria,
     Regime,
@@ -52,6 +53,7 @@ from ._mixins import (
     _SeriesMixin,
     _SummaryMixin,
 )
+from ._simulators import _simulate_two_regime
 from ._tests import _LikelihoodRatioTest, _StabilityTest
 
 
@@ -560,6 +562,63 @@ class _ObservedRegimeResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         """
         raise NotImplementedError(
             f"{type(self).__name__} must define regime_weight to describe its transition."
+        )
+
+    def _weight_at(self, z: float) -> float:
+        """Weight on the upper regime at one value of the transition variable.
+
+        Args:
+            z: The transition variable.
+
+        Returns:
+            A weight in ``[0, 1]``.
+
+        Raises:
+            NotImplementedError: If the concrete result does not define one.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} must define _weight_at to simulate its transition."
+        )
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted parameters.
+
+        The transition variable is the series' own ``delay``-th lag, so
+        the regime weight at each step is read from the simulated past
+        through the fitted transition -- a hard switch or the smooth
+        function -- and the two autoregressions are blended by it.
+        ``burn`` initial periods from a zero start are discarded.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable, or the
+                transition variable is an external series whose future
+                the result cannot know.
+        """
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        return _simulate_two_regime(
+            n,
+            lower=self.lower_params,
+            upper=self.upper_params,
+            order=self.order,
+            delay=self.delay,
+            sigma=float(np.sqrt(self.sigma2)),
+            weight=self._weight_at,
+            rng=rng,
+            burn=burn,
         )
 
     def _series(self) -> dict[str, npt.NDArray[np.float64]]:

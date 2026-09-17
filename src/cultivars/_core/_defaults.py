@@ -251,3 +251,11 @@ Hansen, Lunde and Nason (2011) report the 90% set: at 10% the set is
 informative on the short evaluation windows macroeconomic forecasting has,
 where a 95% set routinely retains every model.
 """
+
+_SIMULATION_BURN: Final[int] = 100
+"""Periods a fresh simulated sample discards before the kept part begins.
+
+Enough for a stationary autoregression of moderate persistence to forget a
+zero start; a near-unit-root or long-memory law needs more, and every
+``simulate`` takes ``burn`` explicitly.
+"""

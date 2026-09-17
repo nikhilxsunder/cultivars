@@ -88,13 +88,20 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import InformationCriteria, ProbabilityType, SummaryTable, validate_choice
+from .._core import (
+    _SIMULATION_BURN,
+    InformationCriteria,
+    ProbabilityType,
+    SummaryTable,
+    validate_choice,
+)
 from .._internals import (
     _ComparisonMixin,
     _MarkovSwitchingFit,
     _MarkovSwitchingModel,
     _MarkovSwitchingStateSpace,
     _SeriesMixin,
+    _simulate_markov_switching,
     _StabilityTest,
     _SummaryMixin,
 )
@@ -440,6 +447,66 @@ class MSARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
                 for i in range(self.n_regimes)
             ),
             notes=("Rows sum to one, so K(K-1) of the K**2 entries are free.",),
+        )
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted parameters.
+
+        The regime chain is started from its ergodic distribution and
+        stepped through the fitted transition matrix; within each regime
+        the series follows that regime's intercept, autoregression and
+        innovation variance. ``burn`` initial periods are discarded. Use
+        :meth:`simulate_regimes` to keep the regime path as well.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable.
+        """
+        return self.simulate_regimes(n, seed=seed, burn=burn)[0]
+
+    def simulate_regimes(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.int64]]:
+        """A fresh sample path together with the regimes that generated it.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            ``(y, regimes)`` of shapes ``(n,)`` and ``(n,)``, the regime
+            labels ``0 .. K - 1`` in the order of :attr:`intercepts`.
+
+        Raises:
+            SpecificationError: If the counts are not usable.
+        """
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        return _simulate_markov_switching(
+            n,
+            transition=self.transition,
+            intercepts=self.intercepts,
+            ar_params=self.ar_params,
+            variances=self.variances,
+            rng=rng,
+            burn=burn,
         )
 
     def _comparison_label(self) -> str:

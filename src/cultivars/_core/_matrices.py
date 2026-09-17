@@ -915,3 +915,10 @@ def _conditional_restrictions(
     return np.asarray(rows, dtype=np.float64).reshape(len(rows), horizon * k), np.asarray(
         targets, dtype=np.float64
     )
+
+
+def _psd_factor(matrix: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """A square root ``L`` with ``L L' = matrix`` for a positive semidefinite matrix."""
+    sym = 0.5 * (matrix + matrix.T)
+    values, vectors = np.linalg.eigh(sym)
+    return np.asarray(vectors * np.sqrt(np.clip(values, 0.0, None)), dtype=np.float64)

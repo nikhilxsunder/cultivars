@@ -181,3 +181,20 @@ class ReplicatingModel(Protocol):
     def prior_replications(
         self, n_replications: int = ..., *, seed: int | np.random.Generator | None = ...
     ) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class SimulatingResult(Protocol):
+    """What a Monte Carlo study reads from a fitted result: a fresh sample at its parameters.
+
+    A result whose law of motion is closed can draw a new sample path of
+    any length from the model it estimated -- the parameters as fitted,
+    the innovations fresh -- which is the primitive behind every recovery
+    test, every size study, and every predictive simulation the package
+    runs. ``simulate`` returns ``(n,)`` for a univariate result and
+    ``(n, k)`` for a multivariate one.
+    """
+
+    def simulate(
+        self, n: int = ..., *, seed: int | np.random.Generator | None = ..., burn: int = ...
+    ) -> npt.NDArray[np.float64]: ...

@@ -85,7 +85,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable, trailing_lag
+from .._core import _SIMULATION_BURN, SummaryTable, trailing_lag
 from .._internals import (
     _ObservedRegimeResult,
     _ThresholdFit,
@@ -212,6 +212,44 @@ class SETARResult(_ObservedRegimeResult):
             center=float(np.mean(self.endog)),
             spread=float(np.var(self.endog)),
         )
+
+    def _weight_at(self, z: float) -> float:
+        """Indicator of the upper regime at one transition value."""
+        return 1.0 if z > self.threshold else 0.0
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted parameters.
+
+        The regime at each step is read from the simulated series' own
+        ``delay``-th lag with the estimator's ``z <= r`` assignment, so
+        only a self-exciting fit can simulate; a TAR fit's transition
+        variable is an external series whose future is not part of the
+        model.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable or the fit
+                is not self-exciting.
+        """
+        if not self.self_exciting:
+            raise SpecificationError(
+                "a TAR fit cannot simulate its own sample: the transition variable is an "
+                "external series whose future is not part of the model."
+            )
+        return _ObservedRegimeResult.simulate(self, n, seed=seed, burn=burn)
 
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""

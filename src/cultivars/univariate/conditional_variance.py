@@ -65,7 +65,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import InformationCriteria, SummaryTable, _mean_label
+from .._core import _SIMULATION_BURN, InformationCriteria, SummaryTable, _mean_label
 from .._internals import (
     _ConditionalVarianceResult,
     _FractionalVarianceFit,
@@ -73,8 +73,10 @@ from .._internals import (
     _InvertibilityMixin,
     _ShortMemoryVarianceFit,
     _ShortMemoryVarianceModel,
+    _simulate_conditional_variance,
     _StationarityMixin,
 )
+from ..exceptions import SpecificationError
 
 __all__ = [
     "ARGARCH",
@@ -192,6 +194,52 @@ class GARCHResult(_ConditionalVarianceResult):
             out[f"beta[{i}]"] = float(value)
         return out
 
+    def _mean_ma_params(self) -> npt.NDArray[np.float64]:
+        """Moving-average coefficients of the conditional mean; none here."""
+        return np.zeros(0)
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted parameters.
+
+        The variance recursion is the family's own -- linear for GARCH
+        and GJR, in logs for EGARCH -- started at the unconditional
+        variance and driven by Gaussian standardized shocks; the
+        conditional mean is applied on top. ``burn`` initial periods are
+        discarded so the kept sample does not remember the start.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable.
+        """
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        y, _ = _simulate_conditional_variance(
+            n,
+            vol=self.vol,
+            omega=self.omega,
+            alpha=self.alpha,
+            gamma=self.gamma,
+            beta=self.beta,
+            const=self.const or 0.0,
+            ar=self.ar_params,
+            ma=self._mean_ma_params(),
+            rng=rng,
+            burn=burn,
+        )
+        return y
+
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""
         p, o, q = self.order
@@ -303,6 +351,28 @@ class FIGARCHResult(_ConditionalVarianceResult):
         out["d"] = self.d
         out["beta"] = self.beta
         return out
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """Refused: a long-memory variance has no finite-state recursion to start from.
+
+        The FIGARCH variance is an infinite sum over past squared shocks
+        whose weights decay hyperbolically, so no burn-in of fixed length
+        makes a sample forget its start; a truncated simulation would
+        carry a bias the fitted model does not describe.
+
+        Raises:
+            SpecificationError: Always.
+        """
+        raise SpecificationError(
+            "FIGARCH results do not simulate: the long-memory variance recursion has no "
+            "finite-length burn-in after which the sample forgets its start."
+        )
 
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""
@@ -417,6 +487,10 @@ class ARMAGARCHResult(GARCHResult, _StationarityMixin, _InvertibilityMixin):
         for i, value in enumerate(self.beta, start=1):
             out[f"beta[{i}]"] = float(value)
         return out
+
+    def _mean_ma_params(self) -> npt.NDArray[np.float64]:
+        """Moving-average coefficients of the conditional mean."""
+        return self.ma_params
 
     def _variance_label(self) -> str:
         """Name the variance family and its order."""

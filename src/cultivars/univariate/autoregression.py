@@ -54,15 +54,17 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import InformationCriteria, SummaryTable
+from .._core import _SIMULATION_BURN, InformationCriteria, SummaryTable
 from .._internals import (
     _AutoRegressionFit,
     _AutoRegressionModel,
     _ComparisonMixin,
     _SeriesMixin,
+    _simulate_arma,
     _StationarityMixin,
     _SummaryMixin,
 )
+from ..exceptions import SpecificationError
 
 __all__ = ["AR", "ARResult"]
 
@@ -146,6 +148,57 @@ class ARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin, _StationarityMixin
             out[f"ar.L{i}"] = float(value)
         out["sigma2"] = self.sigma2
         return out
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted parameters.
+
+        ``burn + n`` periods of the zero-mean autoregression are generated
+        from a zero start with Gaussian innovations of variance ``sigma2``
+        and the first ``burn`` discarded. The constant and trend are
+        regressors *inside* the recursion, ``y_t = c + b t + sum phi_i
+        y_{t-i} + e_t``, so the mean path they imply -- ``A + B t`` with
+        ``B = b / (1 - sum phi_i)`` and ``A = (c - B sum i phi_i) / (1 -
+        sum phi_i)`` -- is what is added, with the time index running
+        ``1 .. n``.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable.
+        """
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        time = np.arange(1, n + 1, dtype=np.float64)
+        lags = np.arange(1, self.ar_params.shape[0] + 1, dtype=np.float64)
+        persistence = 1.0 - float(np.sum(self.ar_params))
+        if abs(persistence) < 1e-12:
+            raise SpecificationError(
+                "the autoregressive coefficients sum to one, so the fitted mean path is not "
+                "finite and the result has no stationary law to sample from."
+            )
+        slope = (self.trend_coeff or 0.0) / persistence
+        level = ((self.const or 0.0) - slope * float(lags @ self.ar_params)) / persistence
+        intercept = level + slope * time
+        return _simulate_arma(
+            n,
+            ar=self.ar_params,
+            ma=np.zeros(0),
+            sigma=float(np.sqrt(self.sigma2)),
+            rng=rng,
+            intercept=intercept,
+            burn=burn,
+        )
 
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""

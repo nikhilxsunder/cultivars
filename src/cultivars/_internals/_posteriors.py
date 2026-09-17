@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import numpy.typing as npt
 
-from .._core import _MHM_TAU, SummaryTable, _modified_harmonic_mean, _quantiles
+from .._core import _MHM_TAU, _SIMULATION_BURN, SummaryTable, _modified_harmonic_mean, _quantiles
 from ..exceptions import NumericalError, SpecificationError
 from ._emitters import (
     _trend_volatility_state_space,
@@ -16,7 +16,11 @@ from ._fits import _ParticleChainFit, _TrendVolatilityFit, _VolatilityDrawsFit
 from ._mixins import _ConvergenceMixin, _SeriesMixin, _SummaryMixin
 from ._parameters import _StochasticVolatilityParameters, _TrendVolatilityParameters
 from ._selections import _MarginalLikelihoodSelection
-from ._simulators import _impulse_responses, _simulate_stochastic_volatility
+from ._simulators import (
+    _impulse_responses,
+    _simulate_perturbation,
+    _simulate_stochastic_volatility,
+)
 from ._solutions import _PerturbationSolution
 from ._substrates import _LinearGaussianStateSpace, _NonlinearStateSpace
 
@@ -309,6 +313,52 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
                 rho=rho,
             )
         return out
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = 0,
+        draw: int | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the posterior mean or at one kept draw.
+
+        The log variance starts from its stationary law, so no burn-in is
+        needed; ``burn`` is honoured for uniformity with the other results.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+            draw: Index of a kept draw, or ``None`` for the posterior mean.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable, the draw
+                index is out of range, or the parameters leave the
+                stationary region.
+        """
+        if n < 1 or burn < 0:
+            raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
+        if draw is not None and not 0 <= draw < self.n_kept:
+            raise SpecificationError(f"draw must lie in 0 .. {self.n_kept - 1}; got {draw}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        if draw is None:
+            params = self.params
+            mu, phi, sigma2, mean = params.mu, params.phi, params.sigma2, params.mean
+            nu, rho = params.nu, params.rho
+        else:
+            mu, phi = float(self.mu_draws[draw]), float(self.phi_draws[draw])
+            sigma2, mean = float(self.sigma2_draws[draw]), float(self.mean_draws[draw])
+            nu = float(self.nu_draws[draw]) if self.nu_draws is not None else None
+            rho = float(self.rho_draws[draw]) if self.rho_draws is not None else 0.0
+        y, _ = _simulate_stochastic_volatility(
+            burn + n, mu=mu, phi=phi, sigma2=sigma2, mean=mean, rng=rng, nu=nu, rho=rho
+        )
+        return np.asarray(y[burn:], dtype=np.float64)
 
     def _series(self) -> dict[str, npt.NDArray[np.float64]]:
         """Aligned per-observation output."""
@@ -729,6 +779,40 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
             states.append(s_path)
             controls.append(c_path)
         return np.stack(states), np.stack(controls)
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = _SIMULATION_BURN,
+        draw: int | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample of the observables at the posterior mean or at one kept draw.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+            draw: Index of a kept parameter draw, or ``None`` for the
+                posterior mean.
+
+        Returns:
+            An array of shape ``(n, p)`` in the order of the data columns.
+
+        Raises:
+            SpecificationError: If the counts are not usable or the draw
+                index is out of range.
+        """
+        if draw is not None and not 0 <= draw < self.n_kept:
+            raise SpecificationError(f"draw must lie in 0 .. {self.n_kept - 1}; got {draw}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        theta = self.theta_mean if draw is None else self.theta_draws[draw]
+        solution = self._engine.solve(theta)
+        design, intercept, obs_cov = self._engine._measurement(theta, solution)
+        return _simulate_perturbation(
+            solution, n, design=design, intercept=intercept, obs_cov=obs_cov, rng=rng, burn=burn
+        )
 
     def _summary_table(self) -> SummaryTable:
         """Structured summary: posterior mean, sd, and a central interval."""

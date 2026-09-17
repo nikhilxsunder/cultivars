@@ -336,6 +336,51 @@ class UnobservedComponentsResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         out["irregular"] = self.irregular
         return out
 
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = 0,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted variances.
+
+        The unit-root components -- level, slope, seasonal -- start at
+        zero rather than from the approximate-diffuse initial covariance
+        the filter uses, so the sample is a random walk from the origin
+        and not from a draw of standard deviation a thousand; the cycle
+        starts from its stationary law. ``burn`` initial periods are
+        discarded.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable.
+        """
+        if n < 1 or burn < 0:
+            raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
+        design, transition, selection, state_cov, obs_cov, initial_cov, slices = (
+            _structural_matrices(
+                self._params, trend=self.trend, cycle=self.has_cycle, seasonal=self.seasonal_period
+            )
+        )
+        start_cov = np.zeros_like(initial_cov)
+        if "cycle" in slices:
+            block = slices["cycle"]
+            start_cov[block, block] = initial_cov[block, block]
+        system = LinearGaussianSSM(
+            design, obs_cov, transition, selection, state_cov, initial_state_cov=start_cov
+        )
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        path = system.simulate(burn + n, seed=rng)
+        return np.asarray(path[burn:, 0], dtype=np.float64)
+
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""
         pieces = [self.trend]

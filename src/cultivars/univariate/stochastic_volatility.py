@@ -63,6 +63,7 @@ from .._internals import (
     _ComparisonMixin,
     _quasi_volatility_state_space,
     _SeriesMixin,
+    _simulate_stochastic_volatility,
     _StochasticVolatilityFit,
     _StochasticVolatilityModel,
     _StochasticVolatilityParameters,
@@ -239,6 +240,46 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             "volatility_upper": upper,
             "standardized": (self.endog - self.mean) / self.volatility,
         }
+
+    def simulate(
+        self,
+        n: int = 200,
+        *,
+        seed: int | np.random.Generator | None = None,
+        burn: int = 0,
+    ) -> npt.NDArray[np.float64]:
+        """A fresh sample path at the fitted parameters.
+
+        The log variance starts from its stationary law and the series is
+        read from it with the fitted tails and leverage, so no burn-in is
+        needed; ``burn`` is honoured for uniformity with the other results.
+
+        Args:
+            n: Observations kept.
+            seed: Seed or generator.
+            burn: Periods discarded from the start.
+
+        Returns:
+            An array of shape ``(n,)``.
+
+        Raises:
+            SpecificationError: If the counts are not usable or the
+                parameters leave the stationary region.
+        """
+        if n < 1 or burn < 0:
+            raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
+        rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        y, _ = _simulate_stochastic_volatility(
+            burn + n,
+            mu=self.mu,
+            phi=self.phi,
+            sigma2=self.sigma2,
+            mean=self.mean,
+            rng=rng,
+            nu=self.nu,
+            rho=self.rho,
+        )
+        return np.asarray(y[burn:], dtype=np.float64)
 
     def _comparison_label(self) -> str:
         """Specification label used when this result appears in a ranking."""
