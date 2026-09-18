@@ -54,6 +54,7 @@ Example:
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from itertools import pairwise
 
 import numpy as np
@@ -63,6 +64,7 @@ from .._core import (
     _CRITICAL_ALPHAS,
     _CRITICAL_LEVELS,
     _CUSUM_BOUNDARY,
+    SummaryTable,
     _bai_perron_partition,
     _bridge_functionals,
     _cusum_squares_quantiles,
@@ -71,10 +73,145 @@ from .._core import (
     _simulated_critical_values,
     _validate_regression,
 )
+from .._internals import _TabulatedTest
 from ..exceptions import SpecificationError
-from . import BreakTest, MultipleBreakTest
 
 __all__ = ["BreakTest", "MultipleBreakTest", "bai_perron", "cusum", "sup_wald"]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class BreakTest(_TabulatedTest):
+    """Verdict of a test for one structural break at an unknown date.
+
+    Andrews' (1993) sup-Wald and Andrews and Ploberger's (1994) exp- and
+    ave-Wald share one limit process, a ``q``-dimensional Brownian bridge
+    over the trimmed window, and the p-values here come from that limit
+    simulated at the trimming actually used; the CUSUM tests of Brown,
+    Durbin and Evans (1975) compare a recursive-residual path with a
+    boundary, and the record carries the path so the crossing can be
+    seen. Rejection always lies in the upper tail.
+
+    Attributes:
+        break_index: First observation of the new regime at the sup, or
+            the first boundary crossing; ``None`` when nothing is located.
+        n_restrictions: Coefficients allowed to change, ``q``.
+        trimming: Fraction of the sample excluded at each end, or
+            ``None`` for a boundary test.
+        path: The statistic path over candidate dates, or the CUSUM path.
+        bounds: The boundary at the tabulated levels, ``(3, n)``, for a
+            CUSUM test; ``None`` otherwise.
+    """
+
+    break_index: int | None
+    n_restrictions: int
+    trimming: float | None
+    path: npt.NDArray[np.float64] | None = field(default=None, repr=False)
+    bounds: npt.NDArray[np.float64] | None = field(default=None, repr=False)
+
+    def _verdict(self) -> str:
+        try:
+            rejected = self.reject()
+        except SpecificationError:
+            return "see critical values"
+        return "break" if rejected else "no break"
+
+    def _title(self) -> str:
+        return f"{self.name} Structural Break Test"
+
+    def _metadata(self) -> tuple[tuple[str, str], ...]:
+        out = [
+            ("Null", self.null),
+            ("Restrictions", str(self.n_restrictions)),
+            ("Observations", str(self.nobs)),
+        ]
+        if self.trimming is not None:
+            out.append(("Trimming", f"{self.trimming:.2f}"))
+        if self.break_index is not None:
+            out.append(("Break at", str(self.break_index)))
+        return tuple(out)
+
+    def _notes(self) -> tuple[str, ...]:
+        return ()
+
+    def _repr_fields(self) -> tuple[str, ...]:
+        return (f"break_index={self.break_index}",)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class MultipleBreakTest:
+    """Bai and Perron's (1998, 2003) multiple-break analysis of a linear regression.
+
+    For every number of breaks up to ``max_breaks`` the record carries
+    the global least-squares partition; the selected number comes from
+    the information criterion asked for, or from the sequential
+    ``sup F(l + 1 | l)`` procedure whose p-values follow from the
+    single-break limit raised to the power ``l + 1``.
+
+    Attributes:
+        break_indices: First observation of each new regime under the
+            selected number of breaks.
+        n_breaks: The selected number.
+        criterion: ``"bic"``, ``"lwz"`` or ``"sequential"``.
+        ssr: Sum of squared residuals for ``0 .. max_breaks`` breaks.
+        bic: Bayesian information criterion for each count.
+        lwz: Liu-Wu-Zidek criterion for each count.
+        partitions: The global partition for each count.
+        sequential: The ``sup F(l + 1 | l)`` tests, one per step taken.
+        n_restrictions: Regression coefficients, ``q``.
+        trimming: Minimum segment length as a fraction of the sample.
+        nobs: Observations.
+    """
+
+    break_indices: tuple[int, ...]
+    n_breaks: int
+    criterion: str
+    ssr: npt.NDArray[np.float64] = field(repr=False)
+    bic: npt.NDArray[np.float64] = field(repr=False)
+    lwz: npt.NDArray[np.float64] = field(repr=False)
+    partitions: tuple[tuple[int, ...], ...] = field(repr=False)
+    sequential: tuple[BreakTest, ...] = field(repr=False)
+    n_restrictions: int
+    trimming: float
+    nobs: int
+
+    @property
+    def max_breaks(self) -> int:
+        """Largest number of breaks considered."""
+        return int(self.ssr.shape[0] - 1)
+
+    def summary(self) -> SummaryTable:
+        """Render as a table over the number of breaks."""
+        rows = []
+        for m in range(self.max_breaks + 1):
+            dates = ", ".join(str(i) for i in self.partitions[m]) or "-"
+            rows.append(
+                (str(m), f"{self.ssr[m]:.4f}", f"{self.bic[m]:.4f}", f"{self.lwz[m]:.4f}", dates)
+            )
+        notes = tuple(
+            f"sup F({step + 1} | {step}) = {t.statistic:.3f}"
+            + ("" if t.pvalue is None else f", p = {t.pvalue:.4f}")
+            for step, t in enumerate(self.sequential)
+        )
+        return SummaryTable(
+            title="Bai-Perron Multiple Breaks",
+            metadata=(
+                ("Selected breaks", str(self.n_breaks)),
+                ("Criterion", self.criterion),
+                ("Break dates", ", ".join(str(i) for i in self.break_indices) or "none"),
+                ("Trimming", f"{self.trimming:.2f}"),
+                ("Observations", str(self.nobs)),
+            ),
+            columns=("breaks", "SSR", "BIC", "LWZ", "dates"),
+            rows=tuple(rows),
+            notes=notes,
+        )
+
+    def __repr__(self) -> str:
+        """String representation."""
+        return (
+            f"MultipleBreakTest(n_breaks={self.n_breaks}, break_indices={self.break_indices}, "
+            f"criterion={self.criterion!r}, nobs={self.nobs})"
+        )
 
 
 def sup_wald(

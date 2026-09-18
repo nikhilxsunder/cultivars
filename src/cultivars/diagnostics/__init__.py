@@ -1,16 +1,9 @@
 """Diagnostics: hypothesis-test records and the unit-root and break tests of the package."""
 
-from .._internals import _BreakTest as BreakTest
-from .._internals import _ClarkWestTest as ClarkWestTest
 from .._internals import _ConvergenceTest as ConvergenceTest
-from .._internals import _EncompassingTest as EncompassingTest
 from .._internals import _JohansenRankTest as JohansenRankTest
 from .._internals import _LikelihoodRatioTest as LikelihoodRatioTest
-from .._internals import _MincerZarnowitzTest as MincerZarnowitzTest
-from .._internals import _MultipleBreakTest as MultipleBreakTest
-from .._internals import _PredictiveCheckTest as PredictiveCheckTest
 from .._internals import _StabilityAssessment as StabilityTest
-from .._internals import _UnitRootTest as UnitRootTest
 from .._internals import _WaldTest as WaldTest
 from .breaks import bai_perron, cusum, sup_wald
 from .unit_roots import (

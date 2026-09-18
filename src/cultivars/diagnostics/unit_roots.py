@@ -66,6 +66,8 @@ Example:
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 import numpy.typing as npt
 
@@ -92,8 +94,8 @@ from .._core import (
     validate_choice,
     validate_endog,
 )
+from .._internals import _TabulatedTest
 from ..exceptions import SpecificationError
-from . import UnitRootTest
 
 __all__ = [
     "UnitRootTest",
@@ -105,6 +107,54 @@ __all__ = [
     "phillips_perron",
     "zivot_andrews",
 ]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class UnitRootTest(_TabulatedTest):
+    """Verdict of a unit-root or stationarity test.
+
+    The family is not one hypothesis but two. The Dickey-Fuller line --
+    ADF, Phillips-Perron, DF-GLS, Ng-Perron, Zivot-Andrews -- puts the
+    unit root under the null and rejects in the lower tail; KPSS puts
+    stationarity under the null and rejects in the upper tail. The record
+    carries which, so that ``reject`` reads correctly for both and a
+    table of several tests can be read side by side: a series the ADF
+    cannot reject a unit root for and the KPSS cannot reject stationarity
+    for is one the sample does not decide, and that is a finding.
+
+    P-values are exact where the literature supplies a response surface
+    (MacKinnon for the Dickey-Fuller law) or a table dense enough to
+    interpolate (KPSS); the tests known only through asymptotic critical
+    values at three levels report ``pvalue=None`` and ``reject`` reads
+    the table.
+
+    Attributes:
+        trend: Deterministic specification the test was run under.
+        lags: Augmentation lags or kernel bandwidth, as the test uses.
+        method: How ``lags`` was chosen or the kernel used.
+        break_index: For a break-allowing test, the first observation of
+            the new regime; ``None`` otherwise.
+    """
+
+    trend: str
+    lags: int
+    method: str
+    break_index: int | None = None
+
+    def _metadata(self) -> tuple[tuple[str, str], ...]:
+        out = [
+            ("Null", self.null),
+            ("Trend", self.trend),
+            ("Lags", str(self.lags)),
+            ("Method", self.method),
+            ("Observations", str(self.nobs)),
+        ]
+        if self.break_index is not None:
+            out.append(("Break at", str(self.break_index)))
+        return tuple(out)
+
+    def _repr_fields(self) -> tuple[str, ...]:
+        return (f"null={self.null!r}", f"trend={self.trend!r}", f"lags={self.lags}")
 
 
 def adf(

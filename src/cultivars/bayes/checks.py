@@ -66,6 +66,7 @@ from __future__ import annotations
 
 import inspect
 from collections.abc import Sequence
+from dataclasses import dataclass, field
 from typing import Any, cast
 
 import numpy as np
@@ -74,17 +75,202 @@ import numpy.typing as npt
 from .._core import (
     _DISCREPANCY_NAMES,
     _DISCREPANCY_STATISTICS,
+    _EXTREME_PVALUE,
     _MIN_REPLICATIONS,
     ReplicatingModel,
     ReplicatingResult,
+    SummaryTable,
     _discrepancy_statistics,
+    _predictive_pvalues,
     _source_label,
     _validate_replications,
     _validate_statistics,
     _variable_names,
 )
-from ..diagnostics import PredictiveCheckTest
 from ..exceptions import SpecificationError
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class PredictiveCheckTest:
+    """A prior or posterior predictive check: the data against replicated data.
+
+    Each replication is a data set simulated from one draw of the
+    parameters -- from the posterior, to ask whether the fitted model
+    reproduces the features of the sample it was fitted to; from the
+    prior, to ask what the prior says on the scale of the data before any
+    sample touches it. A discrepancy statistic ``T`` is evaluated on the
+    data and on every replication, and the tail probability ``P(T(y_rep)
+    >= T(y))`` locates the data in the replicated distribution: near zero
+    or one, the model does not produce data like these in that respect.
+
+    The posterior version is not a frequentist test. Under a correctly
+    specified model its p-value is concentrated near one half rather than
+    uniform (Meng, 1994), because the same data fit the parameters and
+    judge the fit, so a p-value in a tail understates the evidence of
+    misspecification rather than overstating it. The prior version is
+    not a test at all -- the data are one draw the prior may or may not
+    cover -- and its table is read for the range of the replicated
+    statistics as much as for the tail probability.
+
+    Attributes:
+        kind: ``"posterior"`` or ``"prior"``.
+        statistics: Names of the discrepancy statistics, in row order.
+        names: Variable labels, in column order.
+        observed: ``(m, k)`` statistics of the data.
+        replicated: ``(R, m, k)`` statistics of the replications.
+        n_replications: Replicated data sets ``R``.
+        nobs: Rows in the data set replicated -- the effective sample.
+        source: What was checked, for the summary title.
+        notes: Remarks from the replicating result or model.
+    """
+
+    kind: str
+    statistics: tuple[str, ...]
+    names: tuple[str, ...]
+    observed: npt.NDArray[np.float64] = field(repr=False)
+    replicated: npt.NDArray[np.float64] = field(repr=False)
+    n_replications: int
+    nobs: int
+    source: str
+    notes: tuple[str, ...] = ()
+
+    @property
+    def pvalues(self) -> npt.NDArray[np.float64]:
+        """``(m, k)`` tail probabilities ``P(T(y_rep) >= T(y))``, ties counted as one half."""
+        return _predictive_pvalues(self.observed, self.replicated)
+
+    def pvalue(self, statistic: str, name: str | None = None) -> npt.NDArray[np.float64] | float:
+        """One statistic's tail probabilities, for every variable or for one.
+
+        Args:
+            statistic: A name from :attr:`statistics`.
+            name: A variable label; ``None`` returns the ``(k,)`` row.
+
+        Raises:
+            SpecificationError: If the statistic or the variable is unknown.
+        """
+        if statistic not in self.statistics:
+            raise SpecificationError(
+                f"unknown statistic {statistic!r}; this check computed {self.statistics}."
+            )
+        row = self.pvalues[self.statistics.index(statistic)]
+        if name is None:
+            return row
+        if name not in self.names:
+            raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
+        return float(row[self.names.index(name)])
+
+    def replicated_quantiles(
+        self, levels: tuple[float, ...] = (0.05, 0.5, 0.95)
+    ) -> npt.NDArray[np.float64]:
+        """Quantiles of each replicated statistic, ``(len(levels), m, k)``."""
+        return np.asarray(np.quantile(self.replicated, levels, axis=0), dtype=np.float64)
+
+    def _flags(self, level: float) -> npt.NDArray[np.bool_]:
+        """Which ``(m, k)`` cells sit in a tail of the replicated distribution."""
+        p = self.pvalues
+        with np.errstate(invalid="ignore"):
+            return np.asarray((p < level) | (p > 1.0 - level))
+
+    def extreme(self, *, level: float = _EXTREME_PVALUE) -> tuple[str, ...]:
+        """Labels ``statistic[variable]`` with a tail probability outside ``(level, 1 - level)``.
+
+        Args:
+            level: The tail size on each side.
+
+        Raises:
+            SpecificationError: If the level is not inside ``(0, 0.5)``.
+        """
+        if not 0.0 < level < 0.5:
+            raise SpecificationError(f"level must lie strictly inside (0, 0.5); got {level}.")
+        flags = self._flags(level)
+        return tuple(
+            f"{self.statistics[i]}[{self.names[j]}]"
+            for i in range(len(self.statistics))
+            for j in range(len(self.names))
+            if flags[i, j]
+        )
+
+    def adequate(self, *, level: float = _EXTREME_PVALUE) -> bool:
+        """Whether no statistic sits in a tail of its replicated distribution."""
+        return not self.extreme(level=level)
+
+    def summary(self, *, level: float = _EXTREME_PVALUE) -> SummaryTable:
+        """Render as a table: one row per statistic and variable.
+
+        Args:
+            level: The tail size on each side that marks a row.
+
+        Raises:
+            SpecificationError: If the level is not inside ``(0, 0.5)``.
+        """
+        if not 0.0 < level < 0.5:
+            raise SpecificationError(f"level must lie strictly inside (0, 0.5); got {level}.")
+        p = self.pvalues
+        bands = self.replicated_quantiles((0.05, 0.5, 0.95))
+        flags = self._flags(level)
+        rows = tuple(
+            (
+                self.statistics[i],
+                self.names[j],
+                f"{self.observed[i, j]:.4g}",
+                f"{bands[0, i, j]:.4g}",
+                f"{bands[1, i, j]:.4g}",
+                f"{bands[2, i, j]:.4g}",
+                "nan" if np.isnan(p[i, j]) else f"{p[i, j]:.3f}",
+                "*" if flags[i, j] else "",
+            )
+            for i in range(len(self.statistics))
+            for j in range(len(self.names))
+        )
+        extreme = self.extreme(level=level)
+        verdict = "no statistic in a tail" if not extreme else f"{len(extreme)} in a tail"
+        metadata = (
+            ("Kind", f"{self.kind} predictive"),
+            ("Replications", str(self.n_replications)),
+            ("Observations", str(self.nobs)),
+            ("Statistics", str(len(self.statistics))),
+            ("Variables", str(len(self.names))),
+            ("Verdict", verdict),
+        )
+        notes: list[str] = list(self.notes)
+        if extreme:
+            notes.append(
+                f"* p-value below {level:g} or above {1.0 - level:g}: {', '.join(extreme[:8])}"
+                + (" ..." if len(extreme) > 8 else "")
+                + "."
+            )
+        if self.kind == "posterior":
+            notes.append(
+                "Posterior predictive p-values concentrate near 0.5 under a correctly "
+                "specified model (Meng, 1994); a tail reading understates misspecification."
+            )
+        else:
+            notes.append(
+                "A prior predictive check locates the data in what the prior generates; the "
+                "replicated quantiles say what the prior deems plausible on the data's scale."
+            )
+        if self.n_replications < 200:
+            notes.append(
+                f"{self.n_replications} replications resolve a tail probability to about "
+                f"{1.0 / self.n_replications:.3f}; more replications sharpen the p-values."
+            )
+        return SummaryTable(
+            title=f"{self.kind.capitalize()} predictive check: {self.source}",
+            metadata=metadata,
+            columns=("statistic", "variable", "observed", "q05", "median", "q95", "p", ""),
+            rows=rows,
+            notes=tuple(notes),
+        )
+
+    def __repr__(self) -> str:
+        """Represent the predictive check as a string."""
+        extreme = self.extreme()
+        verdict = "no statistic in a tail" if not extreme else f"{len(extreme)} in a tail"
+        return (
+            f"PredictiveCheckTest({self.kind}, {self.n_replications} replications, "
+            f"{len(self.statistics)} statistics x {len(self.names)} variables, {verdict})"
+        )
 
 
 def replication_check(

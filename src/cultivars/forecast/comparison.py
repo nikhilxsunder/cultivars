@@ -82,8 +82,7 @@ from .._core import (
     _mincer_zarnowitz,
     _validate_aligned_series,
 )
-from .._internals import _SummaryMixin
-from ..diagnostics import ClarkWestTest, EncompassingTest, MincerZarnowitzTest
+from .._internals import _ForecastComparisonTest, _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = [
@@ -93,6 +92,173 @@ __all__ = [
     "encompassing",
     "mincer_zarnowitz",
 ]
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class ClarkWestTest(_ForecastComparisonTest):
+    """Verdict of the Clark-West (2007) test that a nesting model forecasts better.
+
+    The one-sided alternative is that the larger model improves on the
+    smaller; under the null the smaller model is true and the larger one's
+    extra parameters only add estimation noise, which the statistic
+    removes before testing. A rejection says the added structure has
+    predictive content; a non-rejection says it has not shown any on
+    this window.
+
+    Attributes:
+        statistic: The adjusted-MSPE t-type statistic.
+        pvalue: Its upper-tail standard normal p-value.
+        adjusted_differential: Mean of the adjusted loss differential,
+            ``e_r**2 - e_u**2 + (f_r - f_u)**2``; positive favors the
+            larger model.
+        mspe_restricted: Mean squared prediction error of the smaller model.
+        mspe_unrestricted: Mean squared prediction error of the larger model.
+        horizon: Forecast horizon behind the series.
+        nobs: Evaluation origins.
+    """
+
+    adjusted_differential: float
+    mspe_restricted: float
+    mspe_unrestricted: float
+
+    def _summary_table(self) -> SummaryTable:
+        """Render as a table."""
+        verdict = "larger model improves" if self.reject() else "no improvement shown"
+        rows = (("Clark-West adjusted MSPE", f"{self.statistic:.4f}", f"{self.pvalue:.4f}"),)
+        notes = (
+            f"Adjusted loss differential {self.adjusted_differential:+.5f} (positive favors "
+            "the larger model); raw MSPE "
+            f"{self.mspe_restricted:.5f} restricted versus {self.mspe_unrestricted:.5f} "
+            "unrestricted.",
+            "One-sided standard normal reference, Bartlett long-run variance through "
+            f"horizon - 1 = {self.horizon - 1} lags. The adjustment removes the estimation "
+            "noise the larger model carries under the null, which is what makes Diebold-"
+            "Mariano invalid for nested forecasts.",
+        )
+        return self._frame(
+            title="Clark-West Nested Forecast Comparison",
+            verdict=verdict,
+            columns=("test", "statistic", "p-value"),
+            rows=rows,
+            notes=notes,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"ClarkWestTest(statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, "
+            f"horizon={self.horizon}, nobs={self.nobs})"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class MincerZarnowitzTest(_ForecastComparisonTest):
+    """Verdict of the Mincer-Zarnowitz efficiency regression ``y = a + b f``.
+
+    An unbiased, efficient point forecast has intercept zero and slope
+    one. A slope below one says the forecast overreacts -- shrinking it
+    toward its mean would help -- and above one that it underreacts; an
+    intercept away from zero is bias. The joint restriction is tested
+    with a HAC Wald statistic, since multi-step errors overlap.
+
+    Attributes:
+        intercept: Estimated ``a``.
+        slope: Estimated ``b``.
+        statistic: Wald statistic for ``(a, b) = (0, 1)``, chi-squared scale.
+        pvalue: Upper-tail p-value of ``statistic / 2`` under ``F(2, T - 2)``.
+        r_squared: Fit of the regression, the forecast's explanatory
+            share of the outcome.
+        horizon: Forecast horizon behind the series.
+        nobs: Evaluation origins.
+    """
+
+    intercept: float
+    slope: float
+    r_squared: float
+
+    def _summary_table(self) -> SummaryTable:
+        """Render as a table."""
+        verdict = "efficiency rejected" if self.reject() else "efficiency not rejected"
+        rows = (
+            ("intercept (0 under H0)", f"{self.intercept:.4f}", ""),
+            ("slope (1 under H0)", f"{self.slope:.4f}", ""),
+            ("Wald, F(2, T - 2) reference", f"{self.statistic:.4f}", f"{self.pvalue:.4f}"),
+        )
+        reading = (
+            "a slope below one says the forecast overreacts and would gain from shrinkage "
+            "toward its mean; above one, that it underreacts."
+        )
+        notes = (
+            f"R-squared {self.r_squared:.3f}. Under the null the forecast is unbiased and "
+            "efficient with respect to itself; " + reading,
+            "HAC covariance with Bartlett weights through "
+            f"horizon - 1 = {self.horizon - 1} lags and T / (T - 2) scaling, W / 2 referred "
+            "to F(2, T - 2) (Mincer & Zarnowitz, 1969)."
+            + (
+                " At multi-step horizons the truncated kernel understates the long-run "
+                "variance and the test over-rejects -- roughly 13% at nominal 5% for a "
+                "four-step horizon on 100 origins -- so read a marginal rejection with care."
+                if self.horizon > 1
+                else ""
+            ),
+        )
+        return self._frame(
+            title="Mincer-Zarnowitz Efficiency Regression",
+            verdict=verdict,
+            columns=("quantity", "estimate", "p-value"),
+            rows=rows,
+            notes=notes,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"MincerZarnowitzTest(intercept={self.intercept:.4f}, slope={self.slope:.4f}, "
+            f"statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, nobs={self.nobs})"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class EncompassingTest(_ForecastComparisonTest):
+    """Verdict of the forecast encompassing test: does A already contain what B knows?
+
+    Forecast A encompasses B when the optimal linear combination of the
+    two puts zero weight on B. The one-sided alternative is that B carries
+    information A lacks; a rejection says combining would help, and the
+    reported weight is the least-squares share B would get.
+
+    Attributes:
+        statistic: The HLN-corrected statistic on ``e_A (e_A - e_B)``.
+        pvalue: Its upper-tail ``t`` p-value.
+        weight: Least-squares combination weight on B; zero under the null.
+        horizon: Forecast horizon behind the series.
+        nobs: Evaluation origins.
+    """
+
+    weight: float
+
+    def _summary_table(self) -> SummaryTable:
+        """Render as a table."""
+        verdict = "B adds information" if self.reject() else "A encompasses B"
+        rows = (("HLN encompassing", f"{self.statistic:.4f}", f"{self.pvalue:.4f}"),)
+        notes = (
+            f"Least-squares combination weight on B: {self.weight:+.3f} (zero under the null "
+            "that A encompasses B; one would say B encompasses A).",
+            "Diebold-Mariano machinery on e_A (e_A - e_B) with the Harvey-Leybourne-Newbold "
+            f"correction, Bartlett long-run variance through horizon - 1 = {self.horizon - 1} "
+            "lags, one-sided t reference (Harvey, Leybourne & Newbold, 1998).",
+        )
+        return self._frame(
+            title="Forecast Encompassing",
+            verdict=verdict,
+            columns=("test", "statistic", "p-value"),
+            rows=rows,
+            notes=notes,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"EncompassingTest(statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, "
+            f"weight={self.weight:.3f}, nobs={self.nobs})"
+        )
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
