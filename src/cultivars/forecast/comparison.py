@@ -86,8 +86,11 @@ from .._internals import _ForecastComparisonTest, _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = [
+    "ClarkWestTest",
+    "EncompassingTest",
     "ForecastComparison",
     "ForecastComparisonResult",
+    "MincerZarnowitzTest",
     "clark_west",
     "encompassing",
     "mincer_zarnowitz",
@@ -144,6 +147,7 @@ class ClarkWestTest(_ForecastComparisonTest):
         )
 
     def __repr__(self) -> str:
+        """Represent the test as a string."""
         return (
             f"ClarkWestTest(statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, "
             f"horizon={self.horizon}, nobs={self.nobs})"
@@ -210,6 +214,7 @@ class MincerZarnowitzTest(_ForecastComparisonTest):
         )
 
     def __repr__(self) -> str:
+        """Represent the test as a string."""
         return (
             f"MincerZarnowitzTest(intercept={self.intercept:.4f}, slope={self.slope:.4f}, "
             f"statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, nobs={self.nobs})"
@@ -255,6 +260,7 @@ class EncompassingTest(_ForecastComparisonTest):
         )
 
     def __repr__(self) -> str:
+        """Represent the test as a string."""
         return (
             f"EncompassingTest(statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, "
             f"weight={self.weight:.3f}, nobs={self.nobs})"

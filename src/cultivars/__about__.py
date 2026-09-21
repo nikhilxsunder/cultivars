@@ -31,6 +31,7 @@ __description__ = (
     "A modern computing library in python for providing vector autoregressions and other"
     " autoregressive economic models."
 )
+__summary__ = "A modern computing library in python for providing vector autoregressions."
 __version__ = "1.0.0"
 __copyright__ = "Copyright (c) 2026 Nikhil Sunder"
 __author__ = "Nikhil Sunder"

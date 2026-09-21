@@ -1,4 +1,4 @@
-"""Latent-regime multivariate models."""
+"""Latent-regime models."""
 
 from .markov_switching import (
     MarkovSwitchingDFM,

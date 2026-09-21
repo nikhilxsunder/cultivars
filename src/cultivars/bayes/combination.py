@@ -80,35 +80,23 @@ import numpy as np
 import numpy.typing as npt
 from scipy.special import logsumexp
 
-from .._core import PredictiveResult, _stacking_weights, _validate_log_density_matrix
+from .._core import (
+    _stacking_weights,
+    _validate_log_density_matrix,
+    _validate_names,
+    _validate_predictive,
+)
 from .._internals import _MarginalLikelihoodSelection as MarginalLikelihoodSelection
 from .._internals import _ModelCombinationSelection as ModelCombinationSelection
 from ..exceptions import DimensionError, SpecificationError
 from .evidence import marginal_likelihood
 
-__all__ = ["ModelCombinationSelection", "bayesian_model_average", "stacking"]
-
-
-def _check_predictive(results: Sequence[object]) -> tuple[PredictiveResult, ...]:
-    """Every result must expose ``forecast_paths``, and there must be at least two."""
-    if len(results) < 2:
-        raise SpecificationError(f"A combination needs at least two models; got {len(results)}.")
-    for result in results:
-        if not isinstance(result, PredictiveResult):
-            raise SpecificationError(
-                f"{type(result).__name__} exposes no forecast_paths(); a combination can only "
-                "mix results that simulate their posterior predictive."
-            )
-    return tuple(results)  # type: ignore[arg-type]
-
-
-def _labels(names: Sequence[str] | None, fallback: Sequence[str]) -> tuple[str, ...]:
-    labels = tuple(fallback) if names is None else tuple(names)
-    if len(labels) != len(fallback):
-        raise DimensionError(f"Got {len(labels)} names for {len(fallback)} models.")
-    if len(set(labels)) != len(labels):
-        raise SpecificationError(f"Model names must be distinct; got {labels}.")
-    return labels
+__all__ = [
+    "MarginalLikelihoodSelection",
+    "ModelCombinationSelection",
+    "bayesian_model_average",
+    "stacking",
+]
 
 
 def bayesian_model_average(
@@ -139,7 +127,7 @@ def bayesian_model_average(
         DimensionError: If ``records``, ``names`` or ``prior_probabilities``
             do not match the number of results.
     """
-    predictive = _check_predictive(results)
+    predictive = _validate_predictive(results)
     evidence = (
         tuple(marginal_likelihood(result) for result in predictive)
         if records is None
@@ -184,7 +172,7 @@ def bayesian_model_average(
             "the difference of two log ML estimates with their Monte Carlo errors."
         )
     return ModelCombinationSelection(
-        names=_labels(names, [record.source for record in evidence]),
+        names=_validate_names(names, [record.source for record in evidence]),
         weights=np.asarray(weights, dtype=np.float64),
         method="bayesian model average",
         scores=log_values,
@@ -219,7 +207,7 @@ def stacking(
         SpecificationError: If fewer than two models or too few origins.
     """
     matrix = _validate_log_density_matrix(log_density)
-    predictive = _check_predictive(results)
+    predictive = _validate_predictive(results)
     if matrix.shape[1] != len(predictive):
         raise DimensionError(
             f"log_density has {matrix.shape[1]} columns for {len(predictive)} results."
@@ -232,7 +220,7 @@ def stacking(
         "the finding, not a failure to choose.",
     ]
     return ModelCombinationSelection(
-        names=_labels(names, [f"model[{m}]" for m in range(len(predictive))]),
+        names=_validate_names(names, [f"model[{m}]" for m in range(len(predictive))]),
         weights=weights,
         method="stacking",
         scores=np.asarray(own, dtype=np.float64),

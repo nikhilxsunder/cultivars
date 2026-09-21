@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from . import (
     bayes,
+    data,
     diagnostics,
     forecast,
     multivariate,
@@ -24,6 +25,7 @@ from . import (
 
 __all__ = [
     "bayes",
+    "data",
     "diagnostics",
     "forecast",
     "multivariate",

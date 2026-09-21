@@ -335,7 +335,10 @@ def link_matrix(
 
 
 def _lower_cholesky(matrix: npt.NDArray[np.float64], label: str) -> npt.NDArray[np.float64]:
-    """The lower Cholesky factor, with a specification error rather than LinAlgError.
+    """The lower Cholesky factor, with a numerical error rather than LinAlgError.
+
+    The matrix is symmetrized first, so a covariance that is symmetric
+    only to rounding does not fail on the asymmetry.
 
     Args:
         matrix: A symmetric matrix expected to be positive definite.
@@ -350,7 +353,7 @@ def _lower_cholesky(matrix: npt.NDArray[np.float64], label: str) -> npt.NDArray[
             factorization into ``k`` independent shocks exists.
     """
     try:
-        return np.linalg.cholesky(matrix)
+        return np.linalg.cholesky(0.5 * (matrix + matrix.T))
     except np.linalg.LinAlgError as error:
         raise NumericalError(
             f"{label} is not positive definite, so no factorization into "

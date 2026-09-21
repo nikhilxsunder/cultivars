@@ -66,59 +66,164 @@ Example:
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
 from .._core import (
+    SummaryTable,
     _conditional_restrictions,
     _draw_conditional_shocks,
+    _lower_cholesky,
     _moving_average_from_stack,
     _moving_average_paths,
     _source_label,
+    _validate_conditions,
 )
-from .._internals import _ConditionalForecastResult as ConditionalForecastResult
-from .._internals import _simulate_vector_autoregression
-from ..exceptions import DimensionError, NumericalError, SpecificationError
+from .._internals import _simulate_vector_autoregression, _SummaryMixin
+from ..exceptions import DimensionError, SpecificationError
 
 __all__ = ["ConditionalForecastResult", "conditional_forecast"]
 
 
-def _condition_grid(
-    conditions: Mapping[str, Sequence[float | None]], names: tuple[str, ...], steps: int
-) -> npt.NDArray[np.float64]:
-    """Lay the stated conditions on a ``(steps, k)`` grid, ``nan`` where free."""
-    grid = np.full((steps, len(names)), np.nan)
-    if not conditions:
-        raise SpecificationError("at least one variable must be conditioned.")
-    for name, path in conditions.items():
-        if name not in names:
-            raise SpecificationError(f"unknown variable {name!r}; expected one of {names}.")
-        values = list(path)
-        if len(values) > steps:
-            raise DimensionError(
-                f"the condition on {name!r} states {len(values)} horizons; the forecast has "
-                f"{steps}."
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class ConditionalForecastResult(_SummaryMixin):
+    """A forecast of the whole system given stated future paths of some of it.
+
+    Waggoner and Zha (1999): the future is written in moving-average form,
+    the conditions become linear restrictions on the future shocks, and
+    the forecast is the system's law given those restrictions -- the
+    minimum-norm shock path that delivers the conditions at the center,
+    and the conditional Gaussian of the remaining shock directions around
+    it. Under a sampled result every retained parameter draw contributes
+    its own conditional paths, so the bands carry parameter uncertainty
+    as well.
+
+    Attributes:
+        names: Series labels.
+        steps: Horizons ahead.
+        conditions: ``(steps, k)`` conditioned values, ``nan`` where free.
+        unconditional: ``(steps, k)`` mean path with no conditions imposed
+            (averaged over draws under a sampled result).
+        mean: ``(steps, k)`` conditional mean path.
+        paths: ``(S, steps, k)`` conditional predictive paths; conditioned
+            cells equal their conditions on every path.
+        implied_shocks: ``(steps, k)`` minimum-norm standardized shocks
+            that deliver the conditions, in the orthogonalized (impact
+            matrix) basis; averaged over draws under a sampled result.
+        modesty: ``||eps*||**2`` of the minimum-norm shocks relative to
+            the number of conditions -- one when the scenario needs shocks
+            of typical size, large when it needs shocks the model deems
+            improbable (Leeper & Zha, 2003).
+        modesty_pvalue: Upper-tail chi-squared probability of
+            ``||eps*||**2`` on ``n_conditions`` degrees of freedom.
+        n_conditions: Cells conditioned.
+        source: The result forecast.
+        parameter_uncertainty: Whether the paths mix over parameter draws.
+    """
+
+    names: tuple[str, ...]
+    steps: int
+    conditions: npt.NDArray[np.float64] = field(repr=False)
+    unconditional: npt.NDArray[np.float64] = field(repr=False)
+    mean: npt.NDArray[np.float64] = field(repr=False)
+    paths: npt.NDArray[np.float64] = field(repr=False)
+    implied_shocks: npt.NDArray[np.float64] = field(repr=False)
+    modesty: float
+    modesty_pvalue: float
+    n_conditions: int
+    source: str
+    parameter_uncertainty: bool
+
+    @property
+    def k_endog(self) -> int:
+        """Series forecast."""
+        return len(self.names)
+
+    @property
+    def n_draws(self) -> int:
+        """Conditional paths."""
+        return int(self.paths.shape[0])
+
+    @property
+    def conditioned(self) -> npt.NDArray[np.bool_]:
+        """``(steps, k)`` mask of conditioned cells."""
+        return np.asarray(~np.isnan(self.conditions))
+
+    def forecast_paths(
+        self, steps: int | None = None, *, seed: int | np.random.Generator | None = None
+    ) -> npt.NDArray[np.float64]:
+        """The conditional paths, in the shape every scorer and fan chart reads.
+
+        Args:
+            steps: Must equal :attr:`steps` when given; the paths were
+                simulated once, at construction.
+            seed: Ignored; kept for the predictive-result signature.
+
+        Raises:
+            SpecificationError: If a different horizon is asked for.
+        """
+        if steps is not None and steps != self.steps:
+            raise SpecificationError(
+                f"the conditional forecast was simulated for {self.steps} steps; asked for "
+                f"{steps}. Build a new one for another horizon."
             )
-        for h, value in enumerate(values):
-            if value is None:
-                continue
-            number = float(value)
-            if not np.isfinite(number):
-                continue
-            grid[h, names.index(name)] = number
-    if not np.any(np.isfinite(grid)):
-        raise SpecificationError("every stated condition is None or nan; nothing to condition on.")
-    return grid
+        return np.asarray(self.paths, dtype=np.float64)
 
+    def quantiles(
+        self, levels: tuple[float, ...] = (0.05, 0.16, 0.5, 0.84, 0.95)
+    ) -> npt.NDArray[np.float64]:
+        """``(len(levels), steps, k)`` pointwise quantiles of the conditional paths."""
+        return np.asarray(np.quantile(self.paths, levels, axis=0), dtype=np.float64)
 
-def _impact(sigma: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-    """Lower Cholesky factor of an innovation covariance."""
-    try:
-        return np.linalg.cholesky(0.5 * (sigma + sigma.T))
-    except np.linalg.LinAlgError as error:
-        raise NumericalError("the innovation covariance is not positive definite.") from error
+    def _summary_table(self) -> SummaryTable:
+        """Build the structured summary: mean paths, conditioned cells marked."""
+        low, high = np.quantile(self.paths, [0.16, 0.84], axis=0)
+        mask = self.conditioned
+        rows = tuple(
+            (
+                str(h + 1),
+                name,
+                f"{self.unconditional[h, j]:.4f}",
+                f"{self.mean[h, j]:.4f}",
+                f"[{low[h, j]:.4f}, {high[h, j]:.4f}]",
+                "*" if mask[h, j] else "",
+            )
+            for h in range(self.steps)
+            for j, name in enumerate(self.names)
+        )
+        notes = [
+            f"* conditioned cell ({self.n_conditions} of {self.steps * self.k_endog}); the "
+            "conditional path equals the condition there on every draw.",
+            f"Modesty {self.modesty:.2f} (p = {self.modesty_pvalue:.3f}): the minimum-norm "
+            "shocks that deliver the scenario have squared norm "
+            f"{self.modesty * self.n_conditions:.2f} against {self.n_conditions} expected under "
+            "the model. Well above one, the scenario is one the model finds improbable and "
+            "agents would notice (Leeper & Zha, 2003).",
+            (
+                "Bands mix parameter draws and conditional shock draws."
+                if self.parameter_uncertainty
+                else "Bands carry conditional shock uncertainty at fixed parameters; the "
+                "point result offers no parameter draws to propagate."
+            ),
+            "Hard conditions only: each conditioned cell is met exactly. Interval (soft) "
+            "conditions are not implemented.",
+        ]
+        return SummaryTable(
+            title=f"Conditional Forecast: {self.source}",
+            metadata=(
+                ("Steps", str(self.steps)),
+                ("Series", str(self.k_endog)),
+                ("Conditions", str(self.n_conditions)),
+                ("Draws", str(self.n_draws)),
+                ("Modesty", f"{self.modesty:.2f}"),
+            ),
+            columns=("h", "series", "unconditional", "conditional", "16-84%", ""),
+            rows=rows,
+            notes=tuple(notes),
+        )
 
 
 def conditional_forecast(
@@ -169,7 +274,7 @@ def conditional_forecast(
             f"{type(result).__name__} carries no variable names; a conditional forecast needs a "
             "closed multivariate system."
         )
-    grid = _condition_grid(conditions, names, steps)
+    grid = _validate_conditions(conditions, names, steps)
     rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
     k = len(names)
     beta_draws = getattr(result, "beta_draws", None)
@@ -198,7 +303,7 @@ def conditional_forecast(
                 start=endog.shape[0] + 1,
             )
             psi = _moving_average_from_stack(stack, steps)
-            impact = _impact(sigma_draws[draw])
+            impact = _lower_cholesky(sigma_draws[draw], "the innovationcovariance")
             restriction, target = _conditional_restrictions(psi, impact, grid - mean)
             shocks, star = _draw_conditional_shocks(restriction, target, n_draws=1, rng=rng)
             paths[s] = _moving_average_paths(psi, impact, shocks.reshape(1, steps, k), mean)[0]
@@ -228,7 +333,7 @@ def conditional_forecast(
                 f"ma_representation({steps - 1}) returned shape {psi.shape}; expected "
                 f"({steps}, {k}, {k})."
             )
-        impact = _impact(np.asarray(sigma, dtype=np.float64))
+        impact = _lower_cholesky(np.asarray(sigma, dtype=np.float64), "the innovationcovariance")
         restriction, target = _conditional_restrictions(psi, impact, grid - mean)
         shocks, star = _draw_conditional_shocks(restriction, target, n_draws=n_draws, rng=rng)
         paths = _moving_average_paths(psi, impact, shocks.reshape(n_draws, steps, k), mean)

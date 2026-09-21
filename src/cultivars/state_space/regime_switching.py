@@ -74,9 +74,6 @@ from .._internals import (
     _MarkovSwitchingStateSpace as MarkovSwitchingSSM,
 )
 from .._internals import (
-    _ParticleFilterResult as ParticleFilterResult,
-)
-from .._internals import (
     _RegimeSwitchingLinearStateSpace as RegimeSwitchingLinearSSM,
 )
 
@@ -85,6 +82,5 @@ __all__ = [
     "KimFilterResult",
     "KimSmootherResult",
     "MarkovSwitchingSSM",
-    "ParticleFilterResult",
     "RegimeSwitchingLinearSSM",
 ]

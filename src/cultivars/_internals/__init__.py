@@ -141,8 +141,6 @@ from ._priors import (
     _VolatilityPrior,
 )
 from ._results import (
-    _BacktestResult,
-    _ConditionalForecastResult,
     _ConditionalVarianceResult,
     _DurbinKoopmanSmootherResult,
     _ErrorCorrectionResult,
@@ -201,7 +199,6 @@ __all__ = [
     "_AdaptivePrior",
     "_AutoRegressionFit",
     "_AutoRegressionModel",
-    "_BacktestResult",
     "_BayesianVectorAutoRegressionModel",
     "_BoxJenkinsFit",
     "_BoxJenkinsModel",
@@ -209,7 +206,6 @@ __all__ = [
     "_ClarkWestTest",
     "_CoDiagonalObjective",
     "_ComparisonMixin",
-    "_ConditionalForecastResult",
     "_ConditionalLevels",
     "_ConditionalVarianceMixin",
     "_ConditionalVarianceResult",

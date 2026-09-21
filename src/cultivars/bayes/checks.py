@@ -89,6 +89,13 @@ from .._core import (
 )
 from ..exceptions import SpecificationError
 
+__all__ = [
+    "PredictiveCheckTest",
+    "posterior_predictive_check",
+    "prior_predictive_check",
+    "replication_check",
+]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class PredictiveCheckTest:

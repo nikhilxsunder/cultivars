@@ -37,6 +37,7 @@ import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._matrices import deterministic_columns
+from ._protocols import PredictiveResult
 
 
 def validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -1088,6 +1089,55 @@ def _validate_hyperparameter_pair(
     return first, second
 
 
+def _validate_conditions(
+    conditions: Mapping[str, Sequence[float | None]], names: tuple[str, ...], steps: int
+) -> npt.NDArray[np.float64]:
+    """Lay stated future values on a ``(steps, k)`` grid, ``nan`` where a cell is free.
+
+    Args:
+        conditions: Variable name to its conditioned path from the first
+            horizon; ``None`` or ``nan`` leaves a horizon free, and a
+            path shorter than ``steps`` leaves the rest free.
+        names: The system's variable names, fixing the column order.
+        steps: Forecast horizons.
+
+    Returns:
+        The ``(steps, k)`` grid.
+
+    Raises:
+        SpecificationError: If nothing is conditioned, a name is unknown,
+            or every stated value is free.
+        DimensionError: If a path is longer than ``steps``.
+
+    Example:
+        >>> _validate_conditions({"b": [1.0, None]}, ("a", "b"), 3)
+        array([[nan,  1.],
+               [nan, nan],
+               [nan, nan]])
+    """
+    if not conditions:
+        raise SpecificationError("at least one variable must be conditioned.")
+    grid = np.full((steps, len(names)), np.nan)
+    for name, path in conditions.items():
+        if name not in names:
+            raise SpecificationError(f"unknown variable {name!r}; expected one of {names}.")
+        values = list(path)
+        if len(values) > steps:
+            raise DimensionError(
+                f"the condition on {name!r} states {len(values)} horizons; the forecast has "
+                f"{steps}."
+            )
+        for h, value in enumerate(values):
+            if value is None:
+                continue
+            number = float(value)
+            if np.isfinite(number):
+                grid[h, names.index(name)] = number
+    if not np.any(np.isfinite(grid)):
+        raise SpecificationError("every stated condition is None or nan; nothing to condition on.")
+    return grid
+
+
 def _validate_regression(
     endog: npt.ArrayLike, exog: npt.ArrayLike | None, trend: str
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
@@ -1174,3 +1224,70 @@ def _validate_aligned_series(
             f"a horizon of {horizon} needs more than {2 * horizon} evaluation origins; got {count}."
         )
     return blocks, count
+
+
+def _validate_predictive(
+    results: Sequence[object], *, minimum: int = 2, purpose: str = "a combination"
+) -> tuple[PredictiveResult, ...]:
+    """Check that every result simulates its predictive and that there are enough of them.
+
+    Args:
+        results: Candidate fitted results.
+        minimum: Fewest results the caller can work with.
+        purpose: What the results are for, used in messages.
+
+    Returns:
+        The results as a tuple, typed as :class:`PredictiveResult`.
+
+    Raises:
+        SpecificationError: If there are too few results or one exposes
+            no ``forecast_paths``.
+
+    Example:
+        >>> _validate_predictive([object()], minimum=1)
+        Traceback (most recent call last):
+        ...
+        cultivars.exceptions.SpecificationError: object exposes no forecast_paths(); ...
+    """
+    if len(results) < minimum:
+        raise SpecificationError(f"{purpose} needs at least {minimum} models; got {len(results)}.")
+    for result in results:
+        if not isinstance(result, PredictiveResult):
+            raise SpecificationError(
+                f"{type(result).__name__} exposes no forecast_paths(); {purpose} can only use "
+                "results that simulate their posterior predictive."
+            )
+    return tuple(results)  # type: ignore[arg-type]
+
+
+def _validate_names(
+    names: Sequence[str] | None, fallback: Sequence[str], *, label: str = "models"
+) -> tuple[str, ...]:
+    """Resolve optional labels against a default, requiring the count to match and no repeats.
+
+    Args:
+        names: Labels supplied by the caller, or ``None`` for the default.
+        fallback: Default labels, one per item; also fixes the count.
+        label: What is being named, used in messages.
+
+    Returns:
+        The labels as a tuple of strings.
+
+    Raises:
+        DimensionError: If the count does not match.
+        SpecificationError: If a label repeats.
+
+    Example:
+        >>> _validate_names(None, ["a", "b"])
+        ('a', 'b')
+        >>> _validate_names(["x", "x"], ["a", "b"])
+        Traceback (most recent call last):
+        ...
+        cultivars.exceptions.SpecificationError: models names must be distinct; got ('x', 'x').
+    """
+    labels = tuple(fallback) if names is None else tuple(str(name) for name in names)
+    if len(labels) != len(fallback):
+        raise DimensionError(f"{len(labels)} names for {len(fallback)} {label}.")
+    if len(set(labels)) != len(labels):
+        raise SpecificationError(f"{label} names must be distinct; got {labels}.")
+    return labels

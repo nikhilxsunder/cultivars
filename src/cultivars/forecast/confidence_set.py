@@ -61,7 +61,13 @@ from collections.abc import Sequence
 import numpy as np
 import numpy.typing as npt
 
-from .._core import _MCS_ALPHA, _MCS_BOOTSTRAP, _model_confidence_set, _variable_names
+from .._core import (
+    _MCS_ALPHA,
+    _MCS_BOOTSTRAP,
+    _model_confidence_set,
+    _validate_names,
+    _variable_names,
+)
 from .._internals import _ModelConfidenceSetSelection as ModelConfidenceSetSelection
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
@@ -120,7 +126,7 @@ def model_confidence_set(
         raise SpecificationError(f"alpha must lie strictly inside (0, 1); got {alpha}.")
     if n_bootstrap < 100:
         raise SpecificationError(f"n_bootstrap must be at least 100; got {n_bootstrap}.")
-    labels = _variable_names(None, n_models) if names is None else tuple(str(n) for n in names)
+    labels = _validate_names(names, _variable_names(None, n_models))
     if len(labels) != n_models:
         raise DimensionError(f"{len(labels)} names for {n_models} models.")
     if len(set(labels)) != n_models:
