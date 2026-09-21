@@ -43,6 +43,7 @@ import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._defaults import _CRITICAL_LEVELS, _MIN_CHAIN_DRAWS
+from ._estimators import _seasonal_frequencies
 from ._loaders import require_optional
 from ._mappings import _KASS_RAFTERY_SCALE
 from ._polynomials import _aggregation_weights
@@ -326,3 +327,11 @@ def _per_column(
     stack, scalar = _stack(chains)
     values = np.array([statistic(stack[:, :, j]) for j in range(stack.shape[2])])
     return float(values[0]) if scalar else values
+
+
+def _frequency_labels(period: int) -> tuple[str, ...]:
+    """Names of the seasonal frequencies in the order the estimators use, Nyquist first."""
+    labels = ["pi (Nyquist)"]
+    for k, theta in enumerate(_seasonal_frequencies(period), start=1):
+        labels.append(f"2 pi {k} / {period} ({theta:.3f})")
+    return tuple(labels)

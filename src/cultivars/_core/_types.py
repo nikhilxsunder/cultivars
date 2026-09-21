@@ -145,3 +145,6 @@ type _Residuals = Callable[
     ],
     npt.NDArray[np.float64],
 ]
+
+type _FTest = tuple[float, float, int, int]
+"""F-test result: (statistic, p-value, numerator df, denominator df)."""

@@ -27,7 +27,7 @@ from functools import lru_cache
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize
+from scipy.optimize import minimize, minimize_scalar
 from scipy.special import logsumexp
 from scipy.stats import chi2, invwishart, norm
 from scipy.stats import f as f_dist
@@ -55,10 +55,10 @@ from ._mappings import (
     _MACKINNON_TAU_SMALL,
     _MACKINNON_TAU_STAR,
 )
-from ._matrices import deterministic_columns
-from ._transforms import _rank_normalize, _split_chains
-from ._types import CointegrationTrend
-from ._validators import _validate_posterior_draws
+from ._matrices import deterministic_columns, lag_matrix
+from ._transforms import _rank_normalize, _split_chains, fractional_difference_weights
+from ._types import CointegrationTrend, _FTest
+from ._validators import _validate_posterior_draws, bandwidth
 
 
 def ols(
@@ -126,36 +126,12 @@ def periodogram(
     return freqs[1:], ordinates[1:]
 
 
-def bandwidth(nobs: int, m: int | None, exponent: float) -> int:
-    """Resolve the number of Fourier frequencies for a semiparametric estimator.
-
-    Args:
-        nobs: Series length.
-        m: Explicit bandwidth, or ``None`` to derive it from ``exponent``.
-        exponent: Exponent in the default rule ``m = floor(n ** exponent)``.
-
-    Returns:
-        The bandwidth, never below 2.
-
-    Raises:
-        SpecificationError: If an explicit ``m`` is below 2, or ``exponent``
-            does not lie in ``(0, 1)``.
-
-    Example:
-        >>> bandwidth(400, None, 0.5)
-        20
-    """
-    if m is not None:
-        if m < 2:
-            raise SpecificationError(f"bandwidth m must be >= 2; got {m}.")
-        return int(m)
-    if not (0.0 < exponent < 1.0):
-        raise SpecificationError(f"bandwidth_exponent must lie in (0, 1); got {exponent}.")
-    return max(2, int(np.floor(nobs**exponent)))
-
-
 def local_whittle_d(
-    y: npt.NDArray[np.float64], m: int | None = None, exponent: float = 0.65
+    y: npt.NDArray[np.float64],
+    m: int | None = None,
+    exponent: float = 0.65,
+    *,
+    bounds: tuple[float, float] | None = None,
 ) -> tuple[float, int]:
     """Local Whittle estimate of the fractional differencing parameter.
 
@@ -163,6 +139,8 @@ def local_whittle_d(
         y: The series.
         m: Explicit bandwidth, or ``None`` for the default rule.
         exponent: Exponent in the default bandwidth rule.
+        bounds: Search interval; ``None`` confines it to the stationary
+            range ``(-_D_MAX, _D_MAX)`` an ARFIMA start value needs.
 
     Returns:
         A tuple ``(d_hat, m_eff)``.
@@ -171,6 +149,7 @@ def local_whittle_d(
 
     from ._defaults import _D_MAX
 
+    low, high = (-_D_MAX, _D_MAX) if bounds is None else bounds
     freqs, ordinates = periodogram(y)
     m_eff = min(bandwidth(y.shape[0], m, exponent), freqs.shape[0])
     lam = freqs[:m_eff]
@@ -183,7 +162,7 @@ def local_whittle_d(
             return 1e10
         return float(np.log(g) - 2.0 * d * log_lam_mean)
 
-    result = minimize_scalar(objective, bounds=(-_D_MAX, _D_MAX), method="bounded")
+    result = minimize_scalar(objective, bounds=(low, high), method="bounded")
     return float(result.x), m_eff
 
 
@@ -1561,6 +1540,79 @@ def _forecast_encompassing(
     return corrected, float(t_dist.sf(corrected, count - 1)), weight
 
 
+def _giacomini_white(
+    differential: npt.NDArray[np.float64],
+    instruments: npt.NDArray[np.float64],
+    *,
+    horizon: int,
+) -> tuple[float, float, npt.NDArray[np.float64]]:
+    """Giacomini and White's (2006) conditional predictive ability Wald statistic.
+
+    With ``d_t`` the loss differential of a forecast made at origin ``t``
+    and ``h_t`` the ``q`` instruments known at that origin, the null of
+    equal conditional predictive ability is ``E[d_t | F_t] = 0``, which
+    implies ``E[h_t d_t] = 0``. The statistic is ``T zbar' Omega^{-1}
+    zbar`` for ``z_t = h_t d_t``, chi-squared with ``q`` degrees of
+    freedom, where ``Omega`` is the uncentered sample covariance of
+    ``z_t`` at one step -- the paper's ``T R**2`` form -- and its HAC
+    version with Bartlett weights through ``horizon - 1`` lags beyond,
+    since an ``h``-step differential is mechanically an MA(``h - 1``).
+
+    The OLS coefficients of ``d_t`` on ``h_t`` come back alongside: they
+    are the paper's decision rule, whose fitted sign at a fresh ``h_t``
+    says which forecaster to use next.
+
+    Args:
+        differential: ``(T,)`` loss differential, first minus second.
+        instruments: ``(T, q)`` instruments aligned with it, each row
+            known at that origin; a constant column makes the
+            unconditional test a special case.
+        horizon: The forecast horizon behind the differential.
+
+    Returns:
+        ``(statistic, pvalue, coefficients)``.
+
+    Raises:
+        NumericalError: If the instruments are collinear or the moment
+            covariance is singular.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> d = rng.standard_normal(200)
+        >>> h = np.column_stack([np.ones(199), d[:-1]])
+        >>> stat, p, beta = _giacomini_white(d[1:], h, horizon=1)
+        >>> bool(p > 0.05), beta.shape
+        (True, (2,))
+    """
+    count, q = instruments.shape
+    if np.linalg.matrix_rank(instruments) < q:
+        raise NumericalError(
+            "the Giacomini-White instruments are collinear; drop the redundant column."
+        )
+    scores = instruments * differential[:, None]
+    mean = scores.mean(axis=0)
+    meat = scores.T @ scores / count
+    for lag in range(1, horizon):
+        weight = 1.0 - lag / horizon
+        cross = scores[lag:].T @ scores[:-lag] / count
+        meat += weight * (cross + cross.T)
+    try:
+        solved = np.linalg.solve(meat, mean)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            "the conditional moment covariance is singular; the losses carry no usable "
+            "variation for the Giacomini-White test."
+        ) from error
+    statistic = float(count * mean @ solved)
+    if not np.isfinite(statistic) or statistic < 0.0:
+        raise NumericalError(
+            "the Giacomini-White covariance is not positive definite at this horizon; "
+            "the evaluation window is too short for the Bartlett window."
+        )
+    coefficients = np.linalg.lstsq(instruments, differential, rcond=None)[0]
+    return statistic, float(chi2.sf(statistic, q)), np.asarray(coefficients, dtype=np.float64)
+
+
 def _newey_west_bandwidth(nobs: int) -> int:
     """Newey and West's (1994) rule-of-thumb Bartlett bandwidth ``floor(4 (T/100)^(2/9))``.
 
@@ -2129,26 +2181,34 @@ def _bridge_functionals(
 
 
 def _simulated_critical_values(
-    draws: npt.NDArray[np.float64], statistic: float
+    draws: npt.NDArray[np.float64], statistic: float, *, lower_tail: bool = False
 ) -> tuple[float, dict[str, float]]:
-    """P-value and critical values of an upper-tail statistic against simulated null draws.
+    """P-value and critical values of a statistic against simulated null draws.
 
     Args:
         draws: ``(R,)`` draws from the null law.
         statistic: The observed statistic.
+        lower_tail: Whether rejection lies in the lower tail.
 
     Returns:
         ``(pvalue, critical_values)`` with the p-value the share of draws
-        at or above the statistic and the critical values keyed by
-        ``_CRITICAL_LEVELS``.
+        at or beyond the statistic in the rejection direction and the
+        critical values keyed by ``_CRITICAL_LEVELS``.
 
     Example:
         >>> p, cv = _simulated_critical_values(np.arange(1000.0), 950.0)
         >>> round(p, 2), round(cv["5%"])
         (0.05, 949)
+        >>> p, cv = _simulated_critical_values(np.arange(1000.0), 50.0, lower_tail=True)
+        >>> round(p, 2), round(cv["5%"])
+        (0.05, 50)
     """
-    pvalue = float(np.mean(draws >= statistic))
-    values = np.quantile(draws, [0.99, 0.95, 0.90])
+    if lower_tail:
+        pvalue = float(np.mean(draws <= statistic))
+        values = np.quantile(draws, [0.01, 0.05, 0.10])
+    else:
+        pvalue = float(np.mean(draws >= statistic))
+        values = np.quantile(draws, [0.99, 0.95, 0.90])
     return pvalue, {label: float(v) for label, v in zip(_CRITICAL_LEVELS, values, strict=True)}
 
 
@@ -2197,3 +2257,880 @@ def _cusum_squares_quantiles(
     expected = np.arange(1, count + 1) / count
     draws = np.abs(path - expected[None, :]).max(axis=1)
     return {level: float(np.quantile(draws, 1.0 - level)) for level in levels}, draws
+
+
+def _nested_f_test(
+    ssr_restricted: float, ssr_unrestricted: float, df_num: int, df_den: int
+) -> tuple[float, float]:
+    """F statistic and p-value for nested least-squares fits.
+
+    Args:
+        ssr_restricted: Residual sum of squares under the null.
+        ssr_unrestricted: Residual sum of squares under the alternative.
+        df_num: Restrictions.
+        df_den: Residual degrees of freedom of the unrestricted fit.
+
+    Returns:
+        ``(statistic, pvalue)``.
+
+    Raises:
+        NumericalError: If the unrestricted fit is exact or the degrees of
+            freedom are exhausted.
+
+    Example:
+        >>> stat, p = _nested_f_test(10.0, 5.0, 2, 20)
+        >>> round(stat, 2), bool(p < 0.01)
+        (10.0, True)
+    """
+    if df_den < 1 or df_num < 1:
+        raise NumericalError(
+            f"the F test has no degrees of freedom left ({df_num}, {df_den}); shorten the order."
+        )
+    if ssr_unrestricted <= 1e-300:
+        raise NumericalError("the unrestricted regression fits exactly; the series is degenerate.")
+    statistic = max((ssr_restricted - ssr_unrestricted) / df_num, 0.0) / (ssr_unrestricted / df_den)
+    return float(statistic), float(f_dist.sf(statistic, df_num, df_den))
+
+
+def _autoregressive_design(
+    y: npt.NDArray[np.float64], order: int, delay: int
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Target, ``[1, lags]`` design and delayed threshold variable of a nonlinearity test.
+
+    The sample starts at ``max(order, delay)`` so that every row has its
+    full lag history and its transition variable ``y_{t - delay}``.
+
+    Args:
+        y: ``(T,)`` series.
+        order: Autoregressive order ``p``.
+        delay: Delay ``d`` of the transition variable.
+
+    Returns:
+        ``(target, design, transition)`` with ``design`` of shape
+        ``(T - start, 1 + p)``.
+
+    Example:
+        >>> target, design, z = _autoregressive_design(np.arange(6.0), 2, 1)
+        >>> target, z
+        (array([2., 3., 4., 5.]), array([1., 2., 3., 4.]))
+    """
+    n = y.shape[0]
+    start = max(order, delay)
+    design = np.column_stack([np.ones(n - start), lag_matrix(y, order, start=start)])
+    return y[start:], design, y[start - delay : n - delay]
+
+
+def _terasvirta_lm(
+    y: npt.NDArray[np.float64], order: int, delay: int
+) -> tuple[_FTest, tuple[_FTest, _FTest, _FTest]]:
+    """Teräsvirta's (1994) linearity test against smooth transition, with its escalation.
+
+    The auxiliary regression of the AR(``p``) residual on ``w_t = (1,
+    y_{t-1}, ..., y_{t-p})`` and ``w~_t y_{t-d}^j`` for ``j = 1, 2, 3``
+    (``w~_t`` the lags alone) tests linearity through the ``3p`` cubic
+    terms; the F form is used throughout because the chi-squared form
+    over-rejects in the sample sizes the test meets. The sequence
+    ``H04: b3 = 0``, ``H03: b2 = 0 | b3 = 0`` and ``H02: b1 = 0 | b2 = b3
+    = 0`` is Teräsvirta's model-selection device: a quadratic term that
+    is the strongest of the three points to ESTAR, otherwise LSTAR.
+
+    Args:
+        y: ``(T,)`` series.
+        order: Autoregressive order.
+        delay: Delay of the transition variable.
+
+    Returns:
+        ``((F, pvalue, df1, df2), (H04, H03, H02))``, each inner tuple
+        ``(F, pvalue, df1, df2)``.
+
+    Raises:
+        NumericalError: If the auxiliary regressions are degenerate.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = np.zeros(300)
+        >>> for t in range(1, 300):
+        ...     y[t] = 0.5 * y[t - 1] + rng.standard_normal()
+        >>> (stat, p, df1, df2), _ = _terasvirta_lm(y, 1, 1)
+        >>> (df1, df2), bool(p > 0.01)
+        ((3, 294), True)
+    """
+    target, design, z = _autoregressive_design(y, order, delay)
+    lags = design[:, 1:]
+    count = target.shape[0]
+    _beta, ssr0 = ols(design, target)
+    blocks = [lags * (z[:, None] ** j) for j in (1, 2, 3)]
+    _b, ssr3 = ols(np.column_stack([design, *blocks]), target)
+    _b, ssr2 = ols(np.column_stack([design, *blocks[:2]]), target)
+    _b, ssr1 = ols(np.column_stack([design, blocks[0]]), target)
+    df4, df3, df2 = (count - (1 + k * order) for k in (4, 3, 2))
+    overall = (*_nested_f_test(ssr0, ssr3, 3 * order, df4), 3 * order, df4)
+    h04 = (*_nested_f_test(ssr2, ssr3, order, df4), order, df4)
+    h03 = (*_nested_f_test(ssr1, ssr2, order, df3), order, df3)
+    h02 = (*_nested_f_test(ssr0, ssr1, order, df2), order, df2)
+    return overall, (h04, h03, h02)
+
+
+def _tsay_arranged(
+    y: npt.NDArray[np.float64], order: int, delay: int
+) -> tuple[float, float, int, int]:
+    """Tsay's (1989) arranged-autoregression test for a threshold.
+
+    Sort the AR(``p``) rows by the threshold variable ``y_{t-d}``, fit
+    least squares recursively down the sorted sample, and collect the
+    standardized one-step predictive residuals from ``m = 3 sqrt(T) + p``
+    on. Under linearity those residuals are orthogonal to the regressors;
+    under a threshold their mean shifts as the recursion crosses it. The
+    regression of the predictive residuals on ``(1, lags)`` gives an
+    ``F(p + 1, m' - p - 1)`` statistic, ``m'`` the number of predictive
+    residuals.
+
+    Args:
+        y: ``(T,)`` series.
+        order: Autoregressive order.
+        delay: Delay of the threshold variable.
+
+    Returns:
+        ``(statistic, pvalue, df1, df2)``.
+
+    Raises:
+        NumericalError: If the arranged recursion cannot start or the
+            final regression is degenerate.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = np.zeros(300)
+        >>> for t in range(1, 300):
+        ...     y[t] = 0.5 * y[t - 1] + rng.standard_normal()
+        >>> stat, p, df1, df2 = _tsay_arranged(y, 1, 1)
+        >>> df1, bool(p > 0.01)
+        (2, True)
+    """
+    target, design, z = _autoregressive_design(y, order, delay)
+    count, width = design.shape
+    start = int(np.ceil(3.0 * np.sqrt(count))) + order
+    if start >= count - width - 1:
+        raise NumericalError(
+            f"the arranged autoregression needs more than {start + width + 1} rows to start its "
+            f"recursion; got {count}."
+        )
+    order_index = np.argsort(z, kind="stable")
+    x_sorted = design[order_index]
+    y_sorted = target[order_index]
+    gram_inverse = np.linalg.pinv(x_sorted[:start].T @ x_sorted[:start])
+    beta = gram_inverse @ x_sorted[:start].T @ y_sorted[:start]
+    predictive = np.empty(count - start)
+    for i in range(start, count):
+        x = x_sorted[i]
+        gain = gram_inverse @ x
+        leverage = float(x @ gain)
+        error = float(y_sorted[i] - x @ beta)
+        predictive[i - start] = error / np.sqrt(1.0 + leverage)
+        beta = beta + gain * error / (1.0 + leverage)
+        gram_inverse = gram_inverse - np.outer(gain, gain) / (1.0 + leverage)
+    regressors = x_sorted[start:]
+    _b, ssr = ols(regressors, predictive)
+    total = float(predictive @ predictive)
+    df2 = predictive.shape[0] - width
+    return (*_nested_f_test(total, ssr, width, df2), width, df2)
+
+
+def _reset_test(
+    y: npt.NDArray[np.float64], order: int, powers: int
+) -> tuple[float, float, int, int]:
+    """Ramsey's (1969) RESET on an AR(``p``): powers of the fitted values as omitted regressors.
+
+    Args:
+        y: ``(T,)`` series.
+        order: Autoregressive order.
+        powers: Highest power of the fitted value added; ``2`` adds the
+            square alone.
+
+    Returns:
+        ``(statistic, pvalue, df1, df2)`` with ``df1 = powers - 1``.
+
+    Raises:
+        NumericalError: If the augmented regression is degenerate.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = np.zeros(300)
+        >>> for t in range(1, 300):
+        ...     y[t] = 0.5 * y[t - 1] + rng.standard_normal()
+        >>> stat, p, df1, df2 = _reset_test(y, 1, 3)
+        >>> (df1, df2), bool(p > 0.01)
+        ((2, 295), True)
+    """
+    target, design, _z = _autoregressive_design(y, order, 1)
+    beta, ssr0 = ols(design, target)
+    fitted = design @ beta
+    scale = float(np.abs(fitted).max())
+    if scale <= 1e-12:
+        raise NumericalError("the fitted values are zero; RESET has nothing to raise to a power.")
+    extra = np.column_stack([(fitted / scale) ** k for k in range(2, powers + 1)])
+    _b, ssr1 = ols(np.column_stack([design, extra]), target)
+    df1 = powers - 1
+    df2 = target.shape[0] - design.shape[1] - df1
+    return (*_nested_f_test(ssr0, ssr1, df1, df2), df1, df2)
+
+
+def _bds(
+    y: npt.NDArray[np.float64], dimension: int, epsilon: float
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Brock-Dechert-Scheinkman (1996) statistics for embedding dimensions ``2 .. dimension``.
+
+    ``W_m = sqrt(n_m) (C_m - C_1^m) / sigma_m`` with ``C_m`` the
+    correlation integral of the ``m``-histories at radius ``epsilon``,
+    ``C_1`` re-computed on the same ``n_m = T - m + 1`` points so the two
+    are comparable, and ``sigma_m`` the Brock et al. asymptotic standard
+    deviation built from the full-sample ``C`` and the three-point
+    integral ``K``. The pairwise indicator matrix is formed once and the
+    ``m``-history matrices follow by shifting and multiplying, so the
+    cost is ``O(m T^2)`` memory-bound.
+
+    Args:
+        y: ``(T,)`` series, typically residuals.
+        dimension: Largest embedding dimension.
+        epsilon: Radius, in the units of ``y``.
+
+    Returns:
+        ``(statistics, pvalues)`` for ``m = 2 .. dimension``, two-sided
+        standard normal p-values.
+
+    Raises:
+        NumericalError: If the radius leaves no pairs close or every pair
+            close.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> w, p = _bds(rng.standard_normal(500), 3, 1.0)
+        >>> w.shape, bool(np.all(p > 0.001))
+        ((2,), True)
+    """
+    count = y.shape[0]
+    close = (np.abs(y[:, None] - y[None, :]) <= epsilon).astype(np.float64)
+    np.fill_diagonal(close, 0.0)
+    pairs = count * (count - 1)
+    c_full = float(close.sum()) / pairs
+    if c_full <= 0.0 or c_full >= 1.0:
+        raise NumericalError(
+            f"a radius of {epsilon:g} leaves the correlation integral at {c_full:g}; choose "
+            "epsilon between half and twice the standard deviation."
+        )
+    rows = close.sum(axis=1)
+    k_full = float((rows**2 - rows).sum()) / (count * (count - 1) * (count - 2))
+    statistics = np.empty(dimension - 1)
+    pvalues = np.empty(dimension - 1)
+    history = close.copy()
+    for m in range(2, dimension + 1):
+        history = history[:-1, :-1] * close[m - 1 :, m - 1 :]
+        n_m = count - m + 1
+        c_m = float(history.sum()) / (n_m * (n_m - 1))
+        one = close[:n_m, :n_m]
+        c_1 = float(one.sum()) / (n_m * (n_m - 1))
+        variance = k_full**m + 2.0 * sum(k_full ** (m - j) * c_full ** (2 * j) for j in range(1, m))
+        variance += (m - 1) ** 2 * c_full ** (2 * m) - m**2 * k_full * c_full ** (2 * m - 2)
+        variance *= 4.0
+        if variance <= 0.0:
+            raise NumericalError(
+                f"the BDS variance is not positive at dimension {m}; the radius is too extreme."
+            )
+        statistics[m - 2] = np.sqrt(n_m) * (c_m - c_1**m) / np.sqrt(variance)
+        pvalues[m - 2] = 2.0 * norm.sf(abs(statistics[m - 2]))
+    return statistics, pvalues
+
+
+def _hansen_threshold(
+    y: npt.NDArray[np.float64],
+    order: int,
+    delays: tuple[int, ...],
+    *,
+    trim: float,
+    n_grid: int,
+    replications: int,
+    rng: np.random.Generator,
+) -> tuple[float, float, float, int, npt.NDArray[np.float64]]:
+    """Hansen's (1996) sup-F test of a threshold autoregression with simulated p-value.
+
+    Under linearity the threshold is not identified, so the sup over the
+    grid has no chi-squared law; Hansen replaces the response by standard
+    normal draws with the regressors and candidate splits held fixed and
+    reads the p-value off the simulated sup. Only the sup-statistic's
+    numerator changes across draws, so each candidate split is reduced
+    once to orthonormal bases of its two regime blocks and every draw is
+    projected on all of them at once. The delay is searched jointly when
+    several are passed, and the simulated sup ranges over the same
+    delays, which is the size-correct treatment of a searched delay.
+
+    Args:
+        y: ``(T,)`` series.
+        order: Autoregressive order.
+        delays: Candidate delays of the threshold variable.
+        trim: Fraction of the sorted threshold variable excluded at each
+            end of the grid.
+        n_grid: Candidate thresholds per delay, on the quantile grid.
+        replications: Simulated sup statistics behind the p-value.
+        rng: Random generator.
+
+    Returns:
+        ``(statistic, pvalue, threshold, delay, simulated)``; ``simulated``
+        are the replicated sup statistics.
+
+    Raises:
+        NumericalError: If no admissible split exists or the linear fit is
+            exact.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = np.zeros(200)
+        >>> for t in range(1, 200):
+        ...     y[t] = 0.5 * y[t - 1] + rng.standard_normal()
+        >>> stat, p, r, d, sims = _hansen_threshold(
+        ...     y, 1, (1,), trim=0.15, n_grid=50, replications=200, rng=rng
+        ... )
+        >>> d, sims.shape, bool(p > 0.01)
+        (1, (200,), True)
+    """
+    n = y.shape[0]
+    start = max(order, max(delays))
+    target = y[start:]
+    count = target.shape[0]
+    design = np.column_stack([np.ones(count), lag_matrix(y, order, start=start)])
+    width = design.shape[1]
+    min_regime = width + 1
+    q_full, _r = np.linalg.qr(design)
+    ssr0 = float(target @ target) - float((q_full.T @ target) @ (q_full.T @ target))
+    if ssr0 <= 1e-300:
+        raise NumericalError("the linear autoregression fits exactly; the series is degenerate.")
+    bases: list[npt.NDArray[np.float64]] = []
+    labels: list[tuple[int, float]] = []
+    for d in delays:
+        z = y[start - d : n - d]
+        for r in np.unique(np.quantile(z, np.linspace(trim, 1.0 - trim, n_grid))):
+            lower = z <= r
+            n_lo = int(lower.sum())
+            if n_lo < min_regime or count - n_lo < min_regime:
+                continue
+            q_lo, _ = np.linalg.qr(design * lower[:, None])
+            q_hi, _ = np.linalg.qr(design * (~lower)[:, None])
+            bases.append(np.column_stack([q_lo, q_hi]))
+            labels.append((d, float(r)))
+    if not bases:
+        raise NumericalError(
+            "threshold grid search found no admissible split; relax trim or shorten order."
+        )
+    stack = np.stack(bases)  # (G, count, 2 width)
+    fitted = np.einsum("gnk,n->gk", stack, target)
+    ssr1 = float(target @ target) - np.einsum("gk,gk->g", fitted, fitted)
+    ssr1 = np.maximum(ssr1, 1e-300)
+    path = count * (ssr0 - ssr1) / ssr1
+    best = int(np.argmax(path))
+    statistic = float(path[best])
+    draws = rng.standard_normal((count, replications))
+    total = np.einsum("nr,nr->r", draws, draws)
+    linear = q_full.T @ draws
+    ssr0_sim = total - np.einsum("kr,kr->r", linear, linear)
+    projected = np.einsum("gnk,nr->gkr", stack, draws)
+    ssr1_sim = total[None, :] - np.einsum("gkr,gkr->gr", projected, projected)
+    ssr1_sim = np.maximum(ssr1_sim, 1e-300)
+    simulated = (count * (ssr0_sim[None, :] - ssr1_sim) / ssr1_sim).max(axis=0)
+    pvalue = float((simulated >= statistic).mean())
+    return statistic, pvalue, labels[best][1], labels[best][0], simulated
+
+
+def _gph(y: npt.NDArray[np.float64], m: int) -> tuple[float, float]:
+    """Geweke and Porter-Hudak's (1983) log-periodogram estimate of ``d`` with its standard error.
+
+    ``log I(lambda_j) = c - d log(4 sin^2(lambda_j / 2)) + e_j`` over the
+    first ``m`` Fourier frequencies; the error is asymptotically
+    ``log chi^2_2 / 2`` with variance ``pi^2 / 6``, so the slope's
+    standard error is ``sqrt(pi^2 / (6 sum (x_j - x_bar)^2))``, which is
+    ``pi / sqrt(24 m)`` in the limit.
+
+    Args:
+        y: ``(T,)`` series.
+        m: Fourier frequencies used.
+
+    Returns:
+        ``(d, se)``.
+
+    Raises:
+        NumericalError: If a periodogram ordinate is zero, so its log is
+            undefined.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> d, se = _gph(rng.standard_normal(1000), 31)
+        >>> bool(abs(d) < 3 * se), round(se, 3)
+        (True, 0.137)
+    """
+    freqs, ordinates = periodogram(y)
+    lam = freqs[:m]
+    power = ordinates[:m]
+    if np.any(power <= 0.0):
+        raise NumericalError("a periodogram ordinate is zero; the series is degenerate.")
+    regressor = np.log(4.0 * np.sin(lam / 2.0) ** 2)
+    centered = regressor - regressor.mean()
+    spread = float(centered @ centered)
+    slope = float(centered @ (np.log(power) - np.log(power).mean())) / spread
+    return -slope, float(np.sqrt(np.pi**2 / (6.0 * spread)))
+
+
+def _exact_local_whittle(
+    y: npt.NDArray[np.float64], m: int, *, bounds: tuple[float, float]
+) -> tuple[float, float]:
+    """Shimotsu and Phillips' (2005) exact local Whittle estimate of ``d`` with unknown mean.
+
+    The Whittle objective is evaluated on the periodogram of ``(1 - L)^d
+    (y - mu(d))`` rather than on ``lambda^{2d} I_y(lambda)``, which keeps
+    the estimator consistent and ``N(0, 1/4)`` in ``sqrt(m)`` units for
+    every ``d``, stationary or not, instead of only for ``d < 3/4``. The
+    mean is Shimotsu's (2010) weighted estimate ``w(d) y_bar + (1 - w(d))
+    y_1`` with ``w`` falling from one at ``d = 1/2`` to zero at ``d =
+    3/4``, so that a unit-root series is anchored at its first value
+    and a stationary one at its mean.
+
+    Args:
+        y: ``(T,)`` series.
+        m: Fourier frequencies used.
+        bounds: Search interval for ``d``.
+
+    Returns:
+        ``(d, se)`` with ``se = 1 / (2 sqrt(m))``.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> walk = np.cumsum(rng.standard_normal(500))
+        >>> d, se = _exact_local_whittle(walk, 56, bounds=(-0.5, 2.0))
+        >>> bool(abs(d - 1.0) < 3 * se)
+        True
+    """
+    n = y.shape[0]
+    lam = 2.0 * np.pi * np.arange(1, m + 1) / n
+    log_lam_mean = float(np.log(lam).mean())
+    first = float(y[0])
+    mean = float(y.mean())
+
+    def weight(d: float) -> float:
+        if d <= 0.5:
+            return 1.0
+        if d >= 0.75:
+            return 0.0
+        return 0.5 * (1.0 + np.cos(4.0 * np.pi * d))
+
+    def objective(d: float) -> float:
+        w = weight(d)
+        centered = y - (w * mean + (1.0 - w) * first)
+        differenced = np.convolve(centered, fractional_difference_weights(d, n))[:n]
+        transform = np.fft.rfft(differenced)[1 : m + 1]
+        power = (np.abs(transform) ** 2) / n
+        g = float(power.mean())
+        if not np.isfinite(g) or g <= 0.0:
+            return 1e10
+        return float(np.log(g) - 2.0 * d * log_lam_mean)
+
+    result = minimize_scalar(objective, bounds=bounds, method="bounded")
+    return float(result.x), float(1.0 / (2.0 * np.sqrt(m)))
+
+
+def _seasonal_frequencies(period: int) -> tuple[float, ...]:
+    """Harmonic seasonal frequencies ``2 pi k / s`` for ``k = 1 .. s/2 - 1``.
+
+    Example:
+        >>> np.round(_seasonal_frequencies(4), 4)
+        array([1.5708])
+    """
+    return tuple(2.0 * np.pi * k / period for k in range(1, period // 2))
+
+
+def _hegy_regressors(y: npt.NDArray[np.float64], period: int) -> npt.NDArray[np.float64]:
+    """The HEGY level regressors at every ``t >= s - 1``, one block per unit root of ``1 - L^s``.
+
+    Column ``0`` is ``sum_{j<s} y_{t-j}``, which keeps only the zero-frequency
+    root; column ``1`` is ``sum_{j<s} cos((j + 1) pi) y_{t-j}``, which keeps
+    only the Nyquist root; columns ``2k, 2k + 1`` for each harmonic
+    ``theta_k = 2 pi k / s`` are ``sum_{j<s} cos((j + 1) theta_k) y_{t-j}``
+    and ``-sum_{j<s} sin((j + 1) theta_k) y_{t-j}``, the pair that keeps
+    the complex root at ``theta_k``. Each column is the series filtered by
+    ``(1 - L^s)`` with that root's factor removed, so its coefficient in
+    the HEGY regression is the test of that root alone. At ``s = 4`` the
+    columns are Hylleberg et al.'s ``y_1, y_2, y_3(t-1), y_3(t)`` up to
+    sign.
+
+    Args:
+        y: ``(T,)`` series.
+        period: Seasonal period ``s``, even and at least 2.
+
+    Returns:
+        ``(T - s + 1, s)`` array, row ``i`` for ``t = i + s - 1``.
+
+    Example:
+        >>> r = _hegy_regressors(np.arange(1.0, 9.0), 4)
+        >>> r.shape, float(r[0, 0]), float(r[0, 1])
+        ((5, 4), 10.0, -2.0)
+    """
+    n = y.shape[0]
+    rows = n - period + 1
+    lags = np.column_stack([y[period - 1 - j : n - j] for j in range(period)])  # (rows, s)
+    j = np.arange(1, period + 1)
+    columns = [lags.sum(axis=1), lags @ np.cos(np.pi * j)]
+    for theta in _seasonal_frequencies(period):
+        columns.append(lags @ np.cos(theta * j))
+        columns.append(-(lags @ np.sin(theta * j)))
+    out = np.column_stack(columns)
+    assert out.shape == (rows, period)
+    return out
+
+
+def _seasonal_trig_columns(period: int, nobs: int, *, start: int = 1) -> npt.NDArray[np.float64]:
+    """Trigonometric seasonal regressors, a ``(cos, sin)`` pair per harmonic and ``(-1)^t`` last.
+
+    Spans the same space as ``s - 1`` centered seasonal dummies, ordered
+    by frequency so that a test of one frequency selects a contiguous
+    block: two columns per harmonic, one for the Nyquist frequency.
+
+    Args:
+        period: Seasonal period ``s``.
+        nobs: Rows.
+        start: Time index of the first row.
+
+    Returns:
+        ``(nobs, s - 1)`` array.
+
+    Example:
+        >>> _seasonal_trig_columns(4, 4).round(6)
+        array([[ 0.,  1., -1.],
+               [-1.,  0.,  1.],
+               [-0., -1., -1.],
+               [ 1., -0.,  1.]])
+    """
+    t = np.arange(start, start + nobs, dtype=np.float64)
+    columns = []
+    for theta in _seasonal_frequencies(period):
+        columns.append(np.cos(theta * t))
+        columns.append(np.sin(theta * t))
+    columns.append(np.cos(np.pi * t))
+    return np.column_stack(columns)
+
+
+def _seasonal_deterministics(
+    period: int, nobs: int, trend: str, *, seasonal: bool, start: int
+) -> npt.NDArray[np.float64]:
+    """Deterministic block of a seasonal regression: trend terms, then seasonal terms.
+
+    Example:
+        >>> _seasonal_deterministics(4, 3, "c", seasonal=True, start=1).shape
+        (3, 4)
+    """
+    blocks = [deterministic_columns(trend, nobs, start=start)]
+    if seasonal:
+        blocks.append(_seasonal_trig_columns(period, nobs, start=start))
+    return np.column_stack(blocks)
+
+
+def _hegy_design(
+    y: npt.NDArray[np.float64], period: int, trend: str, lags: int, *, seasonal: bool, drop: int = 0
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
+    """Target, design and the column offset of the ``pi`` block in the HEGY regression.
+
+    Args:
+        y: ``(T,)`` series.
+        period: Seasonal period ``s``.
+        trend: ``"n"``, ``"c"`` or ``"ct"``.
+        lags: Augmentation lags of the seasonal difference.
+        seasonal: Whether seasonal dummies (in trigonometric form) enter.
+        drop: Extra leading observations to discard, so that fits with
+            different ``lags`` share a sample.
+
+    Returns:
+        ``(target, design, offset)`` with the ``s`` level regressors at
+        ``design[:, offset:offset + s]``.
+
+    Example:
+        >>> target, design, offset = _hegy_design(np.arange(20.0), 4, "c", 1, seasonal=False)
+        >>> target.shape, design.shape, offset
+        ((15,), (15, 6), 1)
+    """
+    n = y.shape[0]
+    start = period + max(lags, drop)
+    target = y[start:] - y[start - period : n - period]
+    count = target.shape[0]
+    levels = _hegy_regressors(y, period)[start - period : start - period + count]
+    seasonal_difference = y[period:] - y[:-period]
+    augmentation = (
+        lag_matrix(seasonal_difference, lags, start=start - period)
+        if lags
+        else np.zeros((count, 0))
+    )
+    deterministic = _seasonal_deterministics(
+        period, count, trend, seasonal=seasonal, start=start + 1
+    )
+    return target, np.column_stack([deterministic, levels, augmentation]), deterministic.shape[1]
+
+
+def _hegy_statistics(
+    y: npt.NDArray[np.float64], period: int, trend: str, lags: int, *, seasonal: bool
+) -> tuple[npt.NDArray[np.float64], int]:
+    """HEGY statistics: ``t`` at the two real roots, ``F`` at each harmonic pair, and joint ``F``.
+
+    ``(1 - L^s) y_t = d_t' gamma + sum_i pi_i x_{i,t-1} + sum_j phi_j
+    (1 - L^s) y_{t-j} + e_t`` with ``x`` the :func:`_hegy_regressors`.
+    The returned vector is ``[t(pi_0), t(pi_{s/2}), F_1, ..., F_{s/2-1},
+    F_seasonal, F_all]`` where ``F_k`` tests the ``k``-th harmonic pair,
+    ``F_seasonal`` every coefficient but ``pi_0`` and ``F_all`` every
+    ``pi``. Under the null of a seasonal random walk none of these has a
+    standard law, so p-values come from :func:`_hegy_null_draws`.
+
+    Args:
+        y: ``(T,)`` series.
+        period: Seasonal period ``s``.
+        trend: ``"n"``, ``"c"`` or ``"ct"``.
+        lags: Augmentation lags of the seasonal difference.
+        seasonal: Whether seasonal dummies (in trigonometric form) enter.
+
+    Returns:
+        ``(statistics, nobs)``.
+
+    Raises:
+        NumericalError: If the regression is exact or singular.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = np.cumsum(rng.standard_normal(200))
+        >>> stats, nobs = _hegy_statistics(y, 4, "c", 0, seasonal=True)
+        >>> stats.shape, nobs
+        ((5,), 196)
+    """
+    target, design, offset = _hegy_design(y, period, trend, lags, seasonal=seasonal)
+    count, width = design.shape
+    if count <= width:
+        raise NumericalError(
+            f"the HEGY regression has {width} regressors on {count} observations; shorten the lags."
+        )
+    beta, ssr = ols(design, target)
+    df = count - width
+    if ssr <= 1e-300:
+        raise NumericalError("the HEGY regression fits exactly; the series is degenerate.")
+    sigma2 = ssr / df
+    try:
+        inverse = np.linalg.inv(design.T @ design)
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            "the HEGY regression is singular; the series may be constant."
+        ) from error
+    pi = beta[offset : offset + period]
+    covariance = sigma2 * inverse[offset : offset + period, offset : offset + period]
+
+    def wald(indices: list[int]) -> float:
+        block = covariance[np.ix_(indices, indices)]
+        vector = pi[indices]
+        return float(vector @ np.linalg.solve(block, vector)) / len(indices)
+
+    statistics = [pi[0] / np.sqrt(covariance[0, 0]), pi[1] / np.sqrt(covariance[1, 1])]
+    for k in range(period // 2 - 1):
+        statistics.append(wald([2 + 2 * k, 3 + 2 * k]))
+    statistics.append(wald(list(range(1, period))))
+    statistics.append(wald(list(range(period))))
+    return np.asarray(statistics, dtype=np.float64), count
+
+
+def _select_hegy_lags(
+    y: npt.NDArray[np.float64],
+    period: int,
+    trend: str,
+    max_lags: int,
+    method: str,
+    *,
+    seasonal: bool,
+) -> int:
+    """Choose the HEGY augmentation on the common sample the largest candidate leaves.
+
+    Args:
+        y: ``(T,)`` series.
+        period: Seasonal period.
+        trend: Deterministic specification.
+        max_lags: Largest augmentation considered.
+        method: ``"aic"``, ``"bic"`` (Gaussian criteria on the common
+            sample) or ``"t-stat"`` (general-to-specific at the 10% level).
+        seasonal: Whether seasonal dummies enter.
+
+    Returns:
+        The chosen number of lags.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = np.cumsum(rng.standard_normal(200))
+        >>> _select_hegy_lags(y, 4, "c", 4, "bic", seasonal=True)
+        0
+    """
+    if method == "t-stat":
+        for lags in range(max_lags, 0, -1):
+            target, design, _ = _hegy_design(
+                y, period, trend, lags, seasonal=seasonal, drop=max_lags
+            )
+            beta, ssr = ols(design, target)
+            n_eff, k = design.shape
+            sigma2 = ssr / (n_eff - k)
+            inverse = np.linalg.pinv(design.T @ design)
+            if abs(beta[-1]) / float(np.sqrt(sigma2 * inverse[-1, -1])) > 1.6449:
+                return lags
+        return 0
+    best_lags, best_value = 0, np.inf
+    for lags in range(max_lags + 1):
+        target, design, _ = _hegy_design(y, period, trend, lags, seasonal=seasonal, drop=max_lags)
+        _beta, ssr = ols(design, target)
+        n_eff, k = design.shape
+        penalty = 2.0 * k / n_eff if method == "aic" else k * np.log(n_eff) / n_eff
+        value = np.log(max(ssr / n_eff, 1e-300)) + penalty
+        if value < best_value:
+            best_lags, best_value = lags, value
+    return best_lags
+
+
+def _hegy_null_draws(
+    period: int,
+    nobs: int,
+    trend: str,
+    *,
+    seasonal: bool,
+    replications: int,
+    rng: np.random.Generator,
+) -> npt.NDArray[np.float64]:
+    """Draws of the HEGY statistics under the seasonal random walk with the same deterministics.
+
+    Simulating the null directly at the sample size in hand, rather than
+    interpolating the published quarterly and monthly tables, gives every
+    statistic its finite-sample law at once and works for any period;
+    the augmentation is left at zero because under the null it changes
+    the law only through the degrees of freedom.
+
+    Args:
+        period: Seasonal period.
+        nobs: Length of the series the test was run on.
+        trend: Deterministic specification.
+        seasonal: Whether seasonal dummies enter.
+        replications: Draws.
+        rng: Random generator.
+
+    Returns:
+        ``(replications, s / 2 + 3)`` draws in the order of
+        :func:`_hegy_statistics`.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> draws = _hegy_null_draws(4, 100, "c", seasonal=True, replications=50, rng=rng)
+        >>> draws.shape, bool(np.quantile(draws[:, 0], 0.05) < -2.0)
+        ((50, 5), True)
+    """
+    draws = np.empty((replications, period // 2 + 3))
+    for r in range(replications):
+        y = rng.standard_normal(nobs)
+        for phase in range(period):
+            y[phase::period] = np.cumsum(y[phase::period])
+        draws[r], _ = _hegy_statistics(y, period, trend, 0, seasonal=seasonal)
+    return draws
+
+
+def _von_mises_draws(
+    q: int, *, n_draws: int, grid: int, rng: np.random.Generator
+) -> npt.NDArray[np.float64]:
+    """Draws of the generalized von Mises law, ``integral ||B_q(r)||^2 dr`` over a Brownian bridge.
+
+    The limit of the Canova-Hansen (and KPSS, at ``q = 1``) statistic.
+    The 5% point at ``q = 1`` is 0.461 and at ``q = 2`` is 0.749, which
+    the grid of 1000 points reproduces to two decimals.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> draws = _von_mises_draws(1, n_draws=2000, grid=500, rng=rng)
+        >>> bool(0.40 < np.quantile(draws, 0.95) < 0.53)
+        True
+    """
+    s = np.arange(1, grid + 1) / grid
+    out = np.empty(n_draws)
+    batch = max(1, int(2e6 // (grid * q)))
+    for start in range(0, n_draws, batch):
+        size = min(batch, n_draws - start)
+        increments = rng.standard_normal((size, grid, q)) / np.sqrt(grid)
+        motion = np.cumsum(increments, axis=1)
+        bridge = motion - s[None, :, None] * motion[:, -1:, :]
+        out[start : start + size] = np.sum(bridge**2, axis=(1, 2)) / grid
+    return out
+
+
+def _canova_hansen(
+    y: npt.NDArray[np.float64],
+    period: int,
+    trend: str,
+    lags: int,
+    *,
+    bandwidth: int,
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.int64], int]:
+    """Canova and Hansen's (1995) LM statistics of stationary against unit-root seasonality.
+
+    Regress ``y_t`` on the deterministic block (trend terms, the ``s - 1``
+    trigonometric seasonal columns, ``lags`` lags of ``y``) and form, for
+    the seasonal columns ``z_t`` of the frequency under test, the partial
+    sums ``F_t = sum_{i<=t} z_i e_i``. The statistic ``T^{-2} sum_t F_t'
+    Omega^{-1} F_t`` uses the Bartlett long-run covariance of ``z_t e_t``
+    through ``bandwidth`` lags and converges to the generalized von
+    Mises law with ``q`` the number of columns tested: one at the
+    Nyquist frequency, two at each harmonic, ``s - 1`` jointly.
+
+    Args:
+        y: ``(T,)`` series.
+        period: Seasonal period.
+        trend: ``"n"``, ``"c"`` or ``"ct"``.
+        lags: Lags of ``y`` among the regressors.
+        bandwidth: Bartlett lags of the long-run covariance.
+
+    Returns:
+        ``(statistics, degrees, nobs)``: the statistics in the order
+        ``[Nyquist, harmonic_1, ..., harmonic_{s/2-1}, joint]``, their
+        ``q``, and the observations.
+
+    Raises:
+        NumericalError: If the long-run covariance is singular.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> t = np.arange(400)
+        >>> y = np.cos(np.pi * t / 2) + rng.standard_normal(400)
+        >>> stats, q, nobs = _canova_hansen(y, 4, "c", 0, bandwidth=4)
+        >>> stats.shape, q.tolist(), nobs
+        ((3,), [1, 2, 3], 400)
+    """
+    target = y[lags:]
+    count = target.shape[0]
+    deterministic = deterministic_columns(trend, count, start=lags + 1)
+    seasonal = _seasonal_trig_columns(period, count, start=lags + 1)
+    augmentation = lag_matrix(y, lags, start=lags) if lags else np.zeros((count, 0))
+    design = np.column_stack([deterministic, seasonal, augmentation])
+    beta, _ssr = ols(design, target)
+    residual = target - design @ beta
+    scores = seasonal * residual[:, None]
+    meat = scores.T @ scores / count
+    for lag in range(1, bandwidth + 1):
+        weight = 1.0 - lag / (bandwidth + 1)
+        cross = scores[lag:].T @ scores[:-lag] / count
+        meat += weight * (cross + cross.T)
+    partial = np.cumsum(scores, axis=0)
+    harmonics = period // 2 - 1
+    blocks = (
+        [[period - 2]] + [[2 * k, 2 * k + 1] for k in range(harmonics)] + [list(range(period - 1))]
+    )
+    statistics = np.empty(len(blocks))
+    degrees = np.empty(len(blocks), dtype=np.int64)
+    for i, indices in enumerate(blocks):
+        omega = meat[np.ix_(indices, indices)]
+        f = partial[:, indices]
+        try:
+            solved = np.linalg.solve(omega, f.T)
+        except np.linalg.LinAlgError as error:
+            raise NumericalError(
+                "the long-run covariance of the seasonal scores is singular; the series may "
+                "carry no variation at that frequency."
+            ) from error
+        statistics[i] = float(np.sum(f.T * solved)) / count**2
+        degrees[i] = len(indices)
+    return statistics, degrees, count

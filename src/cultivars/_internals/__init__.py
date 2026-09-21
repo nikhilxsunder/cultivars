@@ -186,8 +186,10 @@ from ._substrates import (
 )
 from ._systems import _structural_matrices
 from ._tests import (
+    _ChiSquaredTest,
     _ConvergenceTest,
     _ForecastComparisonTest,
+    _HypothesisTest,
     _JohansenRankTest,
     _LikelihoodRatioTest,
     _TabulatedTest,
@@ -203,6 +205,7 @@ __all__ = [
     "_BoxJenkinsFit",
     "_BoxJenkinsModel",
     "_BreakTest",
+    "_ChiSquaredTest",
     "_ClarkWestTest",
     "_CoDiagonalObjective",
     "_ComparisonMixin",
@@ -230,6 +233,7 @@ __all__ = [
     "_FunctionalCoefficientVectorAutoRegressionModel",
     "_GibbsBayesianVectorAutoRegressionModel",
     "_HamiltonFilterResult",
+    "_HypothesisTest",
     "_IdentificationModel",
     "_InvertibilityMixin",
     "_JohansenRankTest",

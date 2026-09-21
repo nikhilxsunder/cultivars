@@ -247,6 +247,52 @@ def conditional_design(
     return y[order:], np.column_stack([det, lags]), eff
 
 
+def _conditional_instruments(
+    differential: npt.NDArray[np.float64],
+    extra: npt.NDArray[np.float64] | None,
+    *,
+    horizon: int,
+    lags: int,
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Target and instrument matrix of a Giacomini-White regression.
+
+    A loss indexed by its forecast origin ``t`` is realized at ``t +
+    horizon``, so the most recent differential *known* at origin ``t`` is
+    ``d_{t - horizon}``, not ``d_{t-1}``: the ``lags`` lagged
+    differentials the instruments carry are ``d_{t - horizon}, ...,
+    d_{t - horizon - lags + 1}``, and the sample loses its first
+    ``horizon + lags - 1`` origins. A constant leads, and any caller
+    instruments follow, trimmed to the same origins.
+
+    Args:
+        differential: ``(T,)`` loss differential by origin.
+        extra: Optional ``(T, m)`` caller instruments, each row known at
+            that origin, or ``None``.
+        horizon: The forecast horizon behind the differential.
+        lags: Lagged differentials to include; ``0`` keeps only the
+            constant and ``extra``.
+
+    Returns:
+        ``(target, instruments)``: the differential over the retained
+        origins and its ``(T - drop, 1 + lags + m)`` instrument matrix.
+
+    Example:
+        >>> d = np.arange(6.0)
+        >>> target, h = _conditional_instruments(d, None, horizon=2, lags=1)
+        >>> target, h[:, 1]
+        (array([2., 3., 4., 5.]), array([0., 1., 2., 3.]))
+    """
+    drop = horizon + lags - 1 if lags > 0 else 0
+    count = differential.shape[0] - drop
+    columns = [np.ones(count)]
+    for j in range(lags):
+        offset = horizon + j
+        columns.append(differential[drop - offset : drop - offset + count])
+    if extra is not None:
+        columns.append(extra[drop:])
+    return differential[drop:], np.column_stack(columns)
+
+
 def psd_sqrt(matrix: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """A matrix square root valid for symmetric positive-semidefinite input.
 

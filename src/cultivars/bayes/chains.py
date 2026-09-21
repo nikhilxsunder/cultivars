@@ -78,7 +78,7 @@ from .._core import (
     _rhat,
     _stack,
 )
-from ..diagnostics import ConvergenceTest
+from .._internals import _ConvergenceTest as ConvergenceTest
 from ..exceptions import DimensionError
 
 __all__ = ["convergence", "ess_bulk", "ess_tail", "geweke", "mcse", "rhat"]

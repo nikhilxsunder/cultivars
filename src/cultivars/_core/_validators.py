@@ -36,6 +36,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._defaults import _MIN_SEASONAL_CYCLES
 from ._matrices import deterministic_columns
 from ._protocols import PredictiveResult
 
@@ -1005,6 +1006,74 @@ def _validate_statistics(
     return chosen
 
 
+def bandwidth(nobs: int, m: int | None, exponent: float) -> int:
+    """Resolve the number of Fourier frequencies for a semiparametric estimator.
+
+    Args:
+        nobs: Series length.
+        m: Explicit bandwidth, or ``None`` to derive it from ``exponent``.
+        exponent: Exponent in the default rule ``m = floor(n ** exponent)``.
+
+    Returns:
+        The bandwidth, never below 2.
+
+    Raises:
+        SpecificationError: If an explicit ``m`` is below 2, or ``exponent``
+            does not lie in ``(0, 1)``.
+
+    Example:
+        >>> bandwidth(400, None, 0.5)
+        20
+    """
+    if m is not None:
+        if m < 2:
+            raise SpecificationError(f"bandwidth m must be >= 2; got {m}.")
+        return int(m)
+    if not (0.0 < exponent < 1.0):
+        raise SpecificationError(f"bandwidth_exponent must lie in (0, 1); got {exponent}.")
+    return max(2, int(np.floor(nobs**exponent)))
+
+
+def _validate_semiparametric(
+    endog: npt.ArrayLike, m: int | None, exponent: float, *, minimum: int
+) -> tuple[npt.NDArray[np.float64], int]:
+    """Coerce a series for a frequency-domain estimator and resolve its bandwidth.
+
+    Args:
+        endog: The series.
+        m: Explicit bandwidth, or ``None`` to derive it from ``exponent``.
+        exponent: Exponent of the rule ``m = floor(T ** exponent)``.
+        minimum: Fewest observations accepted.
+
+    Returns:
+        ``(y, m)``: the series as a flat float array and the bandwidth.
+
+    Raises:
+        DimensionError: If the series is not one-dimensional.
+        NumericalError: If it is not finite.
+        SpecificationError: If it is shorter than ``minimum``, or the
+            bandwidth is unusable or exceeds the Fourier frequencies
+            available.
+
+    Example:
+        >>> y, m = _validate_semiparametric(np.arange(400.0), None, 0.5, minimum=64)
+        >>> y.shape, m
+        ((400,), 20)
+    """
+    y = validate_endog(endog)
+    n = y.shape[0]
+    if n < minimum:
+        raise SpecificationError(
+            f"a semiparametric estimate needs at least {minimum} observations; got {n}."
+        )
+    resolved = bandwidth(n, m, exponent)
+    if resolved > n // 2:
+        raise SpecificationError(
+            f"bandwidth {resolved} exceeds the {n // 2} Fourier frequencies available."
+        )
+    return y, resolved
+
+
 def _validate_replications(
     observed: npt.ArrayLike, replicated: npt.ArrayLike, *, minimum: int
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
@@ -1291,3 +1360,22 @@ def _validate_names(
     if len(set(labels)) != len(labels):
         raise SpecificationError(f"{label} names must be distinct; got {labels}.")
     return labels
+
+
+def _validate_seasonal(endog: npt.ArrayLike, period: int) -> npt.NDArray[np.float64]:
+    """Coerce the series and check the period against it.
+
+    Raises:
+        SpecificationError: If the period is odd or below 2, or the
+            series holds fewer than ``_MIN_SEASONAL_CYCLES`` full cycles.
+    """
+    y = validate_endog(endog)
+    period = validate_order(period, "period", minimum=2)
+    if period % 2:
+        raise SpecificationError(f"period must be even; got {period}.")
+    if y.shape[0] < _MIN_SEASONAL_CYCLES * period:
+        raise SpecificationError(
+            f"a seasonal unit-root test at period {period} needs at least "
+            f"{_MIN_SEASONAL_CYCLES * period} observations; got {y.shape[0]}."
+        )
+    return y

@@ -67,7 +67,7 @@ References:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
@@ -78,7 +78,9 @@ from .._core import (
     SummaryTable,
     _bartlett_long_run_variance,
     _clark_west,
+    _conditional_instruments,
     _forecast_encompassing,
+    _giacomini_white,
     _mincer_zarnowitz,
     _validate_aligned_series,
 )
@@ -90,9 +92,11 @@ __all__ = [
     "EncompassingTest",
     "ForecastComparison",
     "ForecastComparisonResult",
+    "GiacominiWhiteTest",
     "MincerZarnowitzTest",
     "clark_west",
     "encompassing",
+    "giacomini_white",
     "mincer_zarnowitz",
 ]
 
@@ -268,6 +272,80 @@ class EncompassingTest(_ForecastComparisonTest):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class GiacominiWhiteTest(_ForecastComparisonTest):
+    """Verdict of the Giacomini-White (2006) test of conditional predictive ability.
+
+    The null is not "the two forecasters lose the same on average" but
+    "nothing known at the origin predicts which will lose more," so a
+    rejection is a statement about a usable rule: the regression of the
+    differential on the instruments, whose fitted sign at a fresh origin
+    says which forecaster to run next. The constant-only case is the
+    unconditional test; with the differential lagged by the horizon as
+    the default instrument, a rejection with an insignificant mean says
+    the gap is there but switches sides, which the average hides.
+
+    Attributes:
+        statistic: The Wald statistic ``T zbar' Omega^{-1} zbar``.
+        pvalue: Its upper-tail chi-squared p-value on ``df`` degrees of
+            freedom.
+        df: Number of instruments, constant included.
+        coefficients: OLS coefficients of the differential on the
+            instruments, in the order ``constant, lagged differentials,
+            caller instruments``; the decision rule.
+        instruments: What the instruments are, in words.
+        share_a: Fraction of retained origins at which the fitted rule
+            favors the first forecaster (fitted differential negative).
+        mean_differential: Average of ``losses_a - losses_b`` over the
+            retained origins; negative favors the first forecaster.
+        horizon: Forecast horizon behind the series.
+        nobs: Origins retained after the instruments' lags.
+    """
+
+    df: int
+    coefficients: npt.NDArray[np.float64] = field(repr=False)
+    instruments: str
+    share_a: float
+    mean_differential: float
+
+    def _summary_table(self) -> SummaryTable:
+        """Render as a table."""
+        verdict = "gap is predictable" if self.reject() else "no conditional predictability shown"
+        rows = (
+            (
+                "Giacomini-White Wald",
+                f"{self.statistic:.4f}",
+                str(self.df),
+                f"{self.pvalue:.4f}",
+            ),
+        )
+        rule = ", ".join(f"{c:+.4f}" for c in self.coefficients)
+        notes = (
+            f"Instruments: {self.instruments}. Decision rule coefficients ({rule}); the "
+            f"fitted differential favors forecaster A at {100 * self.share_a:.1f}% of "
+            f"origins. Mean differential {self.mean_differential:+.5f} (negative favors A).",
+            "Chi-squared reference; the moment covariance is the uncentered sample "
+            "covariance at one step and Bartlett HAC through horizon - 1 = "
+            f"{self.horizon - 1} lags beyond, which over-rejects mildly at multi-step "
+            "horizons. The framework wants rolling-window estimation behind the losses, "
+            "whose finite memory keeps the null well-posed.",
+        )
+        return self._frame(
+            title="Giacomini-White Conditional Predictive Ability",
+            verdict=verdict,
+            columns=("test", "statistic", "df", "p-value"),
+            rows=rows,
+            notes=notes,
+        )
+
+    def __repr__(self) -> str:
+        """Represent the test as a string."""
+        return (
+            f"GiacominiWhiteTest(statistic={self.statistic:.4f}, pvalue={self.pvalue:.4g}, "
+            f"df={self.df}, horizon={self.horizon}, nobs={self.nobs})"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class ForecastComparisonResult(_SummaryMixin):
     """The verdict on a loss differential, unconditional and conditional.
 
@@ -283,10 +361,12 @@ class ForecastComparisonResult(_SummaryMixin):
             referred to a ``t`` distribution -- the number to trust in the
             short evaluation windows macroeconomics actually has.
         hln_pvalue: Its two-sided p-value.
-        gw_statistic: Giacomini-White conditional statistic (constant and
-            lagged differential as instruments), chi-squared with two
-            degrees of freedom under the null of no conditional
-            predictability.
+        gw_statistic: Giacomini-White conditional statistic with a
+            constant and the differential lagged by the horizon -- the
+            most recent one known at the origin -- as instruments,
+            chi-squared with two degrees of freedom under the null of no
+            conditional predictability; :func:`giacomini_white` opens
+            the instrument set.
         gw_pvalue: Its upper-tail p-value.
         horizon: The forecast horizon the losses were produced at, which
             sets the variance's serial-correlation window.
@@ -327,8 +407,8 @@ class ForecastComparisonResult(_SummaryMixin):
             "correction, referred to a t distribution; in short evaluation "
             "windows it is the number to trust.",
             "Giacomini-White asks whether the gap was *predictable* from a "
-            "constant and the lagged differential; its framework wants "
-            "rolling-window estimation behind the losses.",
+            "constant and the differential lagged by the horizon; its "
+            "framework wants rolling-window estimation behind the losses.",
             "These are tests about forecasts, not models: nested-model "
             "comparisons need the Clark-McCracken corrections, which are "
             "deliberately not implemented here.",
@@ -429,29 +509,13 @@ class ForecastComparison:
         variance = _bartlett_long_run_variance(centered, horizon)
         mean = float(differential.mean())
         spread = float(np.sqrt(variance / count))
-        for lag in range(1, horizon):
-            weight = 1.0 - lag / horizon
-            variance += 2.0 * weight * float(centered[lag:] @ centered[:-lag]) / count
-        mean = float(differential.mean())
-        spread = float(np.sqrt(max(variance, 1e-300) / count))
         dm = mean / spread
         dm_pvalue = 2.0 * float(sst.norm.sf(abs(dm)))
         adjust = float(np.sqrt((count + 1 - 2 * horizon + horizon * (horizon - 1) / count) / count))
         hln = dm * adjust
         hln_pvalue = 2.0 * float(sst.t.sf(abs(hln), count - 1))
-        instruments = np.column_stack([np.ones(count - 1), differential[:-1]])
-        moments = instruments * differential[1:, None]
-        mean_moment = moments.mean(axis=0)
-        outer = moments.T @ moments / (count - 1)
-        try:
-            solved = np.linalg.solve(outer, mean_moment)
-        except np.linalg.LinAlgError as error:
-            raise NumericalError(
-                "the conditional moment matrix is singular; the losses "
-                "carry no usable variation for the Giacomini-White test."
-            ) from error
-        gw = float((count - 1) * mean_moment @ solved)
-        gw_pvalue = float(sst.chi2.sf(gw, 2))
+        target, design = _conditional_instruments(differential, None, horizon=horizon, lags=1)
+        gw, gw_pvalue, _ = _giacomini_white(target, design, horizon=horizon)
         return ForecastComparisonResult(
             mean_differential=mean,
             dm_statistic=dm,
@@ -637,4 +701,114 @@ def encompassing(
     statistic, pvalue, weight = _forecast_encompassing(y - a, y - b, horizon=horizon)
     return EncompassingTest(
         statistic=statistic, pvalue=pvalue, weight=weight, horizon=int(horizon), nobs=int(count)
+    )
+
+
+def giacomini_white(
+    losses_a: npt.ArrayLike,
+    losses_b: npt.ArrayLike,
+    *,
+    horizon: int = 1,
+    lags: int = 1,
+    instruments: npt.ArrayLike | None = None,
+) -> GiacominiWhiteTest:
+    """Giacomini-White (2006) test that a loss gap was predictable at the origin.
+
+    The conditional null ``E[d_t | F_t] = 0`` is tested through the
+    instruments ``h_t``: a constant, ``lags`` lagged differentials, and
+    whatever the caller adds. Because a loss indexed by its origin is only
+    realized ``horizon`` steps later, the lagged differentials start at
+    ``d_{t - horizon}`` -- the most recent one actually known -- rather
+    than ``d_{t-1}``, and the sample drops its first ``horizon + lags -
+    1`` origins. ``lags=0`` with no instruments is the unconditional test,
+    a chi-squared cousin of Diebold-Mariano.
+
+    The test is built for rolling-window estimation, where parameter
+    estimates never converge and the forecasting *method* -- model,
+    window, estimator -- is what the null is about; under a recursive
+    scheme the null drifts as the window grows. Use
+    :class:`ForecastComparison` for the unconditional question with the
+    small-sample correction. At one step the size is close to nominal
+    from 100 origins on; at multi-step horizons the truncated Bartlett
+    kernel understates the moment covariance and the test over-rejects
+    mildly (about 7-9% at nominal 5% for a four-step horizon), which the
+    record's notes say.
+
+    Args:
+        losses_a: ``(T,)`` losses of the first forecaster, one per
+            evaluation origin, negatively oriented.
+        losses_b: ``(T,)`` losses of the second, aligned origin by origin.
+        horizon: The forecast horizon behind the losses; sets both the
+            instrument lag and the HAC window.
+        lags: Lagged differentials among the instruments.
+        instruments: Optional ``(T,)`` or ``(T, m)`` further instruments,
+            each row known at its origin -- a regime indicator, a
+            volatility proxy, the sign of the last error. The caller
+            vouches for measurability; the function cannot.
+
+    Returns:
+        The :class:`GiacominiWhiteTest`.
+
+    Raises:
+        DimensionError: If the series or instruments do not align.
+        SpecificationError: If there are too few origins, the horizon or
+            ``lags`` is invalid, or the series are numerically identical.
+        NumericalError: If a series is not finite or the instruments are
+            collinear.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> regime = np.repeat([1.0, -1.0], 100)
+        >>> a = rng.standard_normal(200) ** 2 + 0.6 * regime
+        >>> b = rng.standard_normal(200) ** 2 - 0.6 * regime
+        >>> verdict = giacomini_white(a, b, instruments=regime)
+        >>> bool(verdict.pvalue < 0.01)
+        True
+    """
+    series, count = _validate_aligned_series(
+        losses_a, losses_b, horizon=horizon, minimum=_MIN_COMPARISON_ORIGINS, labels="losses"
+    )
+    if lags < 0:
+        raise SpecificationError(f"lags must be non-negative; got {lags}.")
+    differential = series[0] - series[1]
+    if float(np.abs(differential - differential.mean()).max()) <= 1e-14 * max(
+        float(np.abs(differential).max()), 1.0
+    ):
+        raise SpecificationError(
+            "the two loss series are numerically identical; there is no differential to test."
+        )
+    extra: npt.NDArray[np.float64] | None = None
+    labels = ["constant", *(f"d[t-{horizon + j}]" for j in range(lags))]
+    if instruments is not None:
+        extra = np.asarray(instruments, dtype=np.float64)
+        if extra.ndim == 1:
+            extra = extra[:, None]
+        if extra.ndim != 2 or extra.shape[0] != count:
+            raise DimensionError(
+                f"instruments must be (T,) or (T, m) with T = {count} origins; got shape "
+                f"{extra.shape}."
+            )
+        if not np.all(np.isfinite(extra)):
+            raise NumericalError("instruments must be finite.")
+        labels.extend(f"z{k + 1}" for k in range(extra.shape[1]))
+    drop = horizon + lags - 1 if lags > 0 else 0
+    retained = count - drop
+    if retained < max(_MIN_COMPARISON_ORIGINS, 2 * horizon + 1, 2 * len(labels)):
+        raise SpecificationError(
+            f"{retained} origins remain after the instruments' lags, too few for "
+            f"{len(labels)} instruments at horizon {horizon}; provide more origins or fewer lags."
+        )
+    target, design = _conditional_instruments(differential, extra, horizon=horizon, lags=lags)
+    statistic, pvalue, coefficients = _giacomini_white(target, design, horizon=horizon)
+    fitted = design @ coefficients
+    return GiacominiWhiteTest(
+        statistic=statistic,
+        pvalue=pvalue,
+        df=int(design.shape[1]),
+        coefficients=coefficients,
+        instruments=", ".join(labels),
+        share_a=float(np.mean(fitted < 0.0)),
+        mean_differential=float(target.mean()),
+        horizon=int(horizon),
+        nobs=int(target.shape[0]),
     )

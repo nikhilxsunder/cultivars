@@ -265,3 +265,32 @@ Enough for a stationary autoregression of moderate persistence to forget a
 zero start; a near-unit-root or long-memory law needs more, and every
 ``simulate`` takes ``burn`` explicitly.
 """
+
+_HANSEN_REPLICATIONS: Final[int] = 1000
+"""Fixed-regressor simulations behind Hansen's sup-F p-value."""
+
+_BDS_RADIUS: Final[float] = 1.5
+"""BDS radius in standard deviations of the series; the best-sized choice in Brock et al."""
+
+
+_LW_BOUNDS: Final[tuple[float, float]] = (-0.5, 1.0)
+"""Bounds for the local Whittle estimator."""
+
+_ELW_BOUNDS: Final[tuple[float, float]] = (-0.5, 2.0)
+"""Bounds for the exact local Whittle estimator."""
+
+_METHOD_LABELS: Final[dict[str, str]] = {
+    "gph": "GPH",
+    "local_whittle": "Local Whittle",
+    "exact_local_whittle": "Exact Local Whittle",
+}
+"""Labels for the long-memory estimation methods."""
+
+_MIN_LONG_MEMORY_OBS: Final[int] = 64
+"""Minimum number of observations required for long-memory estimation."""
+
+_HEGY_REPLICATIONS: Final[int] = 2000
+"""Seasonal random walks simulated behind the HEGY p-values."""
+
+_MIN_SEASONAL_CYCLES: Final[int] = 6
+"""Minimum number of seasonal cycles required for a seasonal unit-root test."""

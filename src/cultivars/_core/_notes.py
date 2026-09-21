@@ -104,3 +104,5 @@ _LABEL_NOTE = (
     "is positive: a convention, not an economic identification. An economic "
     "name for any shock is a claim to be argued from outside the model."
 )
+
+_NULL = "linear AR({order}) is correctly specified"
