@@ -3134,3 +3134,111 @@ def _canova_hansen(
         statistics[i] = float(np.sum(f.T * solved)) / count**2
         degrees[i] = len(indices)
     return statistics, degrees, count
+
+
+def _hamilton_regression(
+    y: npt.NDArray[np.float64], horizon: int, lags: int
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Hamilton's (2018) regression filter: ``y_{t+h}`` on a constant and ``y_t, ..., y_{t-p+1}``.
+
+    The fitted value is the trend at ``t + h`` -- what could be predicted
+    ``h`` steps ahead from the level's own recent history -- and the
+    residual is the cycle. Both start at observation ``h + p - 1``.
+
+    Args:
+        y: ``(T,)`` series.
+        horizon: Steps ahead ``h``; 8 quarterly, 24 monthly.
+        lags: Regressors ``p``; 4 quarterly, 12 monthly.
+
+    Returns:
+        ``(trend, cycle)`` each of length ``T - h - p + 1``.
+
+    Raises:
+        NumericalError: If the regression has no degrees of freedom.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> y = np.cumsum(rng.standard_normal(200))
+        >>> trend, cycle = _hamilton_regression(y, 8, 4)
+        >>> trend.shape, bool(abs(cycle.mean()) < 1e-8)
+        ((189,), True)
+    """
+    offset = horizon + lags - 1
+    count = y.shape[0] - offset
+    if count <= lags + 1:
+        raise NumericalError(
+            f"the Hamilton regression needs more than {offset + lags + 1} observations; got "
+            f"{y.shape[0]}."
+        )
+    target = y[offset:]
+    design = np.column_stack(
+        [np.ones(count), *(y[lags - 1 - j : lags - 1 - j + count] for j in range(lags))]
+    )
+    beta, _ssr = ols(design, target)
+    trend = design @ beta
+    return trend, target - trend
+
+
+def _beveridge_nelson(
+    z: npt.NDArray[np.float64],
+    resid: npt.NDArray[np.float64],
+    ar: npt.NDArray[np.float64],
+    ma: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
+    """Sum of all future forecasts of a demeaned ARMA series at each date, in companion form.
+
+    For ``z_t = phi(L)^{-1} theta(L) e_t`` write the state ``x_t = (z_t,
+    ..., z_{t-p+1}, e_t, ..., e_{t-q+1})``, ``z_t`` always present, with
+    companion ``F``; then
+    ``sum_{k>=1} E_t z_{t+k} = e_1' F (I - F)^{-1} x_t`` (Morley 2002).
+    Added to the level, that sum is the Beveridge-Nelson trend; its
+    negative is the cycle.
+
+    Args:
+        z: ``(n,)`` demeaned first differences.
+        resid: ``(n,)`` innovations aligned with ``z``.
+        ar: ``(p,)`` autoregressive coefficients.
+        ma: ``(q,)`` moving-average coefficients.
+
+    Returns:
+        ``(n,)`` the forecast sums.
+
+    Raises:
+        NumericalError: If ``I - F`` is singular, which is a unit root in
+            the differences.
+
+    Example:
+        >>> rng = np.random.default_rng(0)
+        >>> e = rng.standard_normal(300)
+        >>> z = np.zeros(300)
+        >>> for t in range(1, 300):
+        ...     z[t] = 0.5 * z[t - 1] + e[t]
+        >>> s = _beveridge_nelson(z, e, np.array([0.5]), np.zeros(0))
+        >>> bool(np.allclose(s, z))
+        True
+    """
+    p, q = ar.shape[0], ma.shape[0]
+    if p + q == 0:
+        return np.zeros_like(z)
+    width = max(p, 1)
+    size = width + q
+    companion = np.zeros((size, size))
+    companion[0, :p] = ar
+    companion[0, width:] = ma
+    for i in range(1, p):
+        companion[i, i - 1] = 1.0
+    for i in range(width + 1, size):
+        companion[i, i - 1] = 1.0
+    try:
+        weights = np.linalg.solve((np.eye(size) - companion).T, companion[0])
+    except np.linalg.LinAlgError as error:
+        raise NumericalError(
+            "the differenced series has a unit root; the Beveridge-Nelson trend is undefined."
+        ) from error
+    n = z.shape[0]
+    state = np.zeros((n, size))
+    for j in range(width):
+        state[j:, j] = z[: n - j]
+    for j in range(q):
+        state[j:, width + j] = resid[: n - j]
+    return state @ weights

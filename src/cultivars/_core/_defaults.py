@@ -294,3 +294,21 @@ _HEGY_REPLICATIONS: Final[int] = 2000
 
 _MIN_SEASONAL_CYCLES: Final[int] = 6
 """Minimum number of seasonal cycles required for a seasonal unit-root test."""
+
+_METHOD_TITLES: Final[dict[str, str]] = {
+    "hodrick-prescott": "Hodrick-Prescott",
+    "butterworth": "Butterworth",
+    "hamilton": "Hamilton",
+    "beveridge-nelson": "Beveridge-Nelson",
+}
+"""Titles for the trend-cycle decomposition methods."""
+
+_MIN_SPECTRUM_OBS: Final[int] = 32
+"""Minimum number of observations required for spectral estimation."""
+
+_SPECTRAL_METHOD_TITLES: Final[dict[str, str]] = {
+    "daniell": "Smoothed Periodogram",
+    "multitaper": "Multitaper",
+    "welch": "Welch",
+}
+"""Titles for the spectral estimation methods."""

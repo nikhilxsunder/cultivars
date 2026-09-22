@@ -31,10 +31,12 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
+from scipy.linalg import solveh_banded
 from scipy.stats import norm, rankdata
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._containers import Standardized
+from ._matrices import deterministic_columns
 
 
 def _as_finite(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -290,6 +292,48 @@ def combined_difference(
     return w
 
 
+def _penalized_trend(
+    y: npt.NDArray[np.float64], penalty: float, order: int
+) -> npt.NDArray[np.float64]:
+    """The trend minimizing ``sum (y - tau)^2 + penalty * sum (Delta^order tau)^2``.
+
+    Solves ``(I + penalty D'D) tau = y`` with ``D`` the ``(T - order, T)``
+    difference matrix, a symmetric system of bandwidth ``order`` solved
+    in banded form; ``order = 2`` is the Hodrick-Prescott filter, a
+    general ``order`` the Butterworth sine filter of Gomez (2001).
+    Columns of a panel are filtered together.
+
+    Args:
+        y: ``(T,)`` or ``(T, k)`` data.
+        penalty: The smoothing weight ``lambda``.
+        order: Differences penalized, at least 1.
+
+    Returns:
+        The trend, with the shape of ``y``.
+
+    Example:
+        >>> t = np.arange(50.0)
+        >>> bool(np.allclose(_penalized_trend(2.0 + 0.5 * t, 1600.0, 2), 2.0 + 0.5 * t))
+        True
+    """
+    n = y.shape[0]
+    coefficients = np.array([1.0])
+    for _ in range(order):
+        coefficients = np.convolve(coefficients, [1.0, -1.0])
+    rows = n - order
+    upper = np.zeros((order + 1, n))
+    index = np.arange(n)
+    for k in range(order + 1):
+        band = np.zeros(n)
+        for m in range(order + 1 - k):
+            valid = (index - m >= 0) & (index - m < rows)
+            band += coefficients[m] * coefficients[m + k] * valid
+        upper[order - k, k:] = penalty * band[: n - k]
+    upper[order] += 1.0
+    solution = solveh_banded(upper, y)
+    return np.asarray(solution, dtype=np.float64).reshape(y.shape)
+
+
 def _split_chains(chains: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Halve every chain, so ``(C, N)`` becomes ``(2C, N // 2)``.
 
@@ -352,3 +396,26 @@ def _gls_detrend(y: npt.NDArray[np.float64], trend: str, c_bar: float) -> npt.ND
     z_q = np.vstack([z[:1], z[1:] - alpha * z[:-1]])
     coef, _, _, _ = np.linalg.lstsq(z_q, y_q, rcond=None)
     return np.asarray(y - z @ coef, dtype=np.float64)
+
+
+def _ols_detrend(panel: npt.NDArray[np.float64], trend: str) -> npt.NDArray[np.float64]:
+    """Remove the least-squares fit of the deterministic terms from every column.
+
+    Args:
+        panel: ``(T, k)`` data.
+        trend: ``"n"`` (unchanged), ``"c"`` (demean) or ``"ct"`` (linear
+            detrend).
+
+    Returns:
+        The residual panel, shape preserved.
+
+    Example:
+        >>> t = np.arange(10.0)
+        >>> bool(np.allclose(_ols_detrend((1.0 + 2.0 * t)[:, None], "ct"), 0.0))
+        True
+    """
+    if trend == "n":
+        return panel
+    design = deterministic_columns(trend, panel.shape[0])
+    beta, _, _, _ = np.linalg.lstsq(design, panel, rcond=None)
+    return np.asarray(panel - design @ beta, dtype=np.float64)

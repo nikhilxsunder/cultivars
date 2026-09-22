@@ -36,6 +36,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._converters import _variable_names
 from ._defaults import _MIN_SEASONAL_CYCLES
 from ._matrices import deterministic_columns
 from ._protocols import PredictiveResult
@@ -1074,6 +1075,48 @@ def _validate_semiparametric(
     return y, resolved
 
 
+def _validate_spectrum_panel(
+    data: npt.ArrayLike, detrend: str, names: tuple[str, ...] | None, *, minimum: int
+) -> tuple[npt.NDArray[np.float64], str, tuple[str, ...]]:
+    """Coerce a panel for a frequency-domain estimate and resolve its detrending and labels.
+
+    Args:
+        data: ``(T, k)`` panel or one-dimensional series.
+        detrend: ``"n"``, ``"c"`` or ``"ct"``.
+        names: Series labels, or ``None`` to read them from the source or
+            fall back to ``y1 .. yk``.
+        minimum: Fewest observations accepted.
+
+    Returns:
+        ``(panel, detrend, labels)`` with the panel untouched -- the
+        detrending itself is a transform, applied by the caller.
+
+    Raises:
+        DimensionError: If the panel is malformed.
+        NumericalError: If it is not finite.
+        SpecificationError: If the trend is unknown, the panel is shorter
+            than ``minimum``, or the label count is wrong.
+
+    Example:
+        >>> panel, trend, labels = _validate_spectrum_panel(
+        ...     np.ones((40, 2)), "c", None, minimum=32
+        ... )
+        >>> panel.shape, trend, labels
+        ((40, 2), 'c', ('y1', 'y2'))
+    """
+    panel = validate_endog_matrix(data)
+    detrend = validate_choice(detrend, ("n", "c", "ct"), "detrend")
+    n, k = panel.shape
+    if n < minimum:
+        raise SpecificationError(
+            f"a nonparametric spectrum needs at least {minimum} observations; got {n}."
+        )
+    labels = _variable_names(data, k) if names is None else tuple(names)
+    if len(labels) != k:
+        raise SpecificationError(f"names must have {k} entries; got {len(labels)}.")
+    return panel, detrend, labels
+
+
 def _validate_replications(
     observed: npt.ArrayLike, replicated: npt.ArrayLike, *, minimum: int
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
@@ -1320,13 +1363,15 @@ def _validate_predictive(
     """
     if len(results) < minimum:
         raise SpecificationError(f"{purpose} needs at least {minimum} models; got {len(results)}.")
+    checked: list[PredictiveResult] = []
     for result in results:
         if not isinstance(result, PredictiveResult):
             raise SpecificationError(
                 f"{type(result).__name__} exposes no forecast_paths(); {purpose} can only use "
                 "results that simulate their posterior predictive."
             )
-    return tuple(results)  # type: ignore[arg-type]
+        checked.append(result)
+    return tuple(checked)
 
 
 def _validate_names(
