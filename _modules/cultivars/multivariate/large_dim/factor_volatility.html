@@ -1,0 +1,900 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.large_dim.factor_volatility &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/large_dim/factor_volatility';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/large_dim/factor_volatility.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.large_dim.factor_volatility</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.large_dim.factor_volatility</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/large_dim/factor_volatility.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Factor stochastic volatility: a moving covariance matrix built from a few paths.</span>
+
+<span class="sd">A multivariate GARCH of even moderate dimension drowns in parameters; a</span>
+<span class="sd">factor model with stochastic volatility does not. Let ``r`` common factors</span>
+<span class="sd">drive the panel's comovement, give each factor and each idiosyncratic</span>
+<span class="sd">error its own latent log-AR(1) variance, and the ``(k, k)`` covariance at</span>
+<span class="sd">every date is ``Lambda H_t Lambda' + D_t`` -- ``k + r`` volatility paths</span>
+<span class="sd">and a loading matrix, whatever ``k`` is (Pitt and Shephard 1999; Chib,</span>
+<span class="sd">Nardari, and Shephard 2006). The time variation in correlations comes from</span>
+<span class="sd">the factor volatilities moving against the idiosyncratic ones, which is</span>
+<span class="sd">the mechanism, and it is readable rather than implicit.</span>
+
+<span class="sd">Estimation is Bayesian, by an exact Gibbs sampler: the factors are one</span>
+<span class="sd">Gaussian per period given everything else, the loadings one weighted</span>
+<span class="sd">regression per row, and every log-variance path and its parameters follow</span>
+<span class="sd">the Kim-Shephard-Chib blocks the univariate model uses. Identification is</span>
+<span class="sd">the triangular convention -- ``Lambda`` lower triangular with a unit</span>
+<span class="sd">diagonal in its leading ``r`` rows, so factor ``j`` is scaled and signed by</span>
+<span class="sd">series ``j`` and the order of the series is a modelling choice the user</span>
+<span class="sd">makes. What comes back is a posterior, and the object holds it: loadings,</span>
+<span class="sd">factors and volatility paths as draws, and the conditional covariance and</span>
+<span class="sd">correlation as posterior means.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Pitt, M. K., &amp; Shephard, N. (1999). Time-varying covariances: A factor</span>
+<span class="sd">        stochastic volatility approach. In *Bayesian Statistics 6* (pp.</span>
+<span class="sd">        547-570). Oxford University Press.</span>
+<span class="sd">    Chib, S., Nardari, F., &amp; Shephard, N. (2006). Analysis of high</span>
+<span class="sd">        dimensional multivariate stochastic volatility models. *Journal of</span>
+<span class="sd">        Econometrics*, 134(2), 341-371.</span>
+<span class="sd">    Kastner, G., Fruehwirth-Schnatter, S., &amp; Lopes, H. F. (2017). Efficient</span>
+<span class="sd">        Bayesian inference for multivariate factor stochastic volatility</span>
+<span class="sd">        models. *Journal of Computational and Graphical Statistics*, 26(4),</span>
+<span class="sd">        905-917.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryTable</span><span class="p">,</span> <span class="n">_validate_quantiles</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ConvergenceMixin</span><span class="p">,</span>
+    <span class="n">_FactorVolatilityFit</span><span class="p">,</span>
+    <span class="n">_FactorVolatilityModel</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...bayes</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolatilityPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"FactorSV"</span><span class="p">,</span> <span class="s2">"FactorSVResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="FactorSVResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSVResult.html#cultivars.multivariate.FactorSVResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FactorSVResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_ConvergenceMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The posterior of a factor stochastic-volatility model.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        panel: The observed ``(nobs, k)`` panel.</span>
+<span class="sd">        series_names: One label per series.</span>
+<span class="sd">        loading_draws: ``(S, k, r)`` posterior draws of the loading matrix.</span>
+<span class="sd">        factor_draws: ``(S, T, r)`` posterior draws of the factor paths.</span>
+<span class="sd">        h_factor_draws: ``(S, T, r)`` posterior draws of the factor log</span>
+<span class="sd">            variances.</span>
+<span class="sd">        h_idio_draws: ``(S, T, k)`` posterior draws of the idiosyncratic</span>
+<span class="sd">            log variances.</span>
+<span class="sd">        mu_factor_draws: ``(S, r)`` factor log-variance means.</span>
+<span class="sd">        phi_factor_draws: ``(S, r)`` factor log-variance persistences.</span>
+<span class="sd">        sigma2_factor_draws: ``(S, r)`` factor log-variance innovation</span>
+<span class="sd">            variances.</span>
+<span class="sd">        mu_idio_draws: ``(S, k)`` idiosyncratic log-variance means.</span>
+<span class="sd">        phi_idio_draws: ``(S, k)`` idiosyncratic persistences.</span>
+<span class="sd">        sigma2_idio_draws: ``(S, k)`` idiosyncratic innovation variances.</span>
+<span class="sd">        means: ``(k,)`` series means removed before sampling.</span>
+<span class="sd">        n_draws: Total sampler iterations.</span>
+<span class="sd">        n_burn: Burn-in discarded.</span>
+<span class="sd">        thin: Post-burn thinning.</span>
+<span class="sd">    """</span>
+
+    <span class="n">panel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">series_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">loading_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">factor_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">h_factor_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">h_idio_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mu_factor_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">phi_factor_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma2_factor_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mu_idio_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">phi_idio_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma2_idio_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">means</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="n">_FactorVolatilityFit</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">FactorSV</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FactorSVResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">panel</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">panel</span><span class="p">,</span>
+            <span class="n">series_names</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">series_names</span><span class="p">,</span>
+            <span class="n">loading_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">loading_draws</span><span class="p">,</span>
+            <span class="n">factor_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">factor_draws</span><span class="p">,</span>
+            <span class="n">h_factor_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">h_factor_draws</span><span class="p">,</span>
+            <span class="n">h_idio_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">h_idio_draws</span><span class="p">,</span>
+            <span class="n">mu_factor_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">mu_factor_draws</span><span class="p">,</span>
+            <span class="n">phi_factor_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">phi_factor_draws</span><span class="p">,</span>
+            <span class="n">sigma2_factor_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma2_factor_draws</span><span class="p">,</span>
+            <span class="n">mu_idio_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">mu_idio_draws</span><span class="p">,</span>
+            <span class="n">phi_idio_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">phi_idio_draws</span><span class="p">,</span>
+            <span class="n">sigma2_idio_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma2_idio_draws</span><span class="p">,</span>
+            <span class="n">means</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">means</span><span class="p">,</span>
+            <span class="n">n_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_draws</span><span class="p">,</span>
+            <span class="n">n_burn</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_burn</span><span class="p">,</span>
+            <span class="n">thin</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">thin</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of series."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series_names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of factors."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loading_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Panel length."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_kept</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Posterior draws retained."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loading_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loadings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior-mean loading matrix, ``(k, r)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loading_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">factors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior-mean factor paths, ``(T, r)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FactorSVResult.factor_volatility">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSVResult.html#cultivars.multivariate.FactorSVResult.factor_volatility">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">factor_volatility</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior quantiles of one factor's standard deviation, ``(len(quantiles), T)``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            factor: Factor index.</span>
+<span class="sd">            quantiles: Probability levels, each in ``(0, 1)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the index is out of range or a quantile</span>
+<span class="sd">                is outside the open unit interval.</span>
+<span class="sd">        """</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">_validate_quantiles</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_factors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"factor index </span><span class="si">{</span><span class="n">factor</span><span class="si">}</span><span class="s2"> is out of range for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_factors</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_factor_draws</span><span class="p">[:,</span> <span class="p">:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor</span><span class="p">)]),</span> <span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FactorSVResult.idiosyncratic_volatility">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSVResult.html#cultivars.multivariate.FactorSVResult.idiosyncratic_volatility">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">idiosyncratic_volatility</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior quantiles of one series' idiosyncratic standard deviation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            series: A series label or column index.</span>
+<span class="sd">            quantiles: Probability levels, each in ``(0, 1)``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(len(quantiles), T)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the series is unknown or a quantile is</span>
+<span class="sd">                outside the open unit interval.</span>
+<span class="sd">        """</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">_validate_quantiles</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
+        <span class="n">column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_idio_draws</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">column</span><span class="p">]),</span> <span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FactorSVResult.conditional_covariance">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSVResult.html#cultivars.multivariate.FactorSVResult.conditional_covariance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conditional_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior-mean conditional covariance ``Lambda H_t Lambda' + D_t``, ``(T, k, k)``.</span>
+
+<span class="sd">        Averaged over draws, so it is the posterior mean of the covariance</span>
+<span class="sd">        rather than the covariance at the posterior mean; the two differ</span>
+<span class="sd">        by the posterior uncertainty in loadings and paths.</span>
+<span class="sd">        """</span>
+        <span class="n">n_kept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_kept</span><span class="p">):</span>
+            <span class="n">lam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loading_draws</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">scaled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_factor_draws</span><span class="p">[</span><span class="n">index</span><span class="p">])[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">lam</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">out</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"tij,kj-&gt;tik"</span><span class="p">,</span> <span class="n">scaled</span><span class="p">,</span> <span class="n">lam</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="p">)</span>
+            <span class="n">out</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_idio_draws</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">out</span> <span class="o">/</span> <span class="n">n_kept</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FactorSVResult.conditional_correlation">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSVResult.html#cultivars.multivariate.FactorSVResult.conditional_correlation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conditional_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Conditional correlations implied by :meth:`conditional_covariance`, ``(T, k, k)``."""</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditional_covariance</span><span class="p">()</span>
+        <span class="n">sd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"tii-&gt;ti"</span><span class="p">,</span> <span class="n">cov</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cov</span> <span class="o">/</span> <span class="p">(</span><span class="n">sd</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">sd</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FactorSVResult.communality">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSVResult.html#cultivars.multivariate.FactorSVResult.communality">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">communality</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Time-averaged share of each series' variance carried by the factors, ``(k,)``.</span>
+
+<span class="sd">        Computed draw by draw from the model's own decomposition</span>
+<span class="sd">        ``diag(Lambda H_t Lambda') / (diag(Lambda H_t Lambda') + D_t)`` and</span>
+<span class="sd">        averaged over time and draws.</span>
+<span class="sd">        """</span>
+        <span class="n">shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="p">):</span>
+            <span class="n">lam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loading_draws</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">common</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_factor_draws</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">@</span> <span class="p">(</span><span class="n">lam</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">private</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_idio_draws</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="n">shares</span> <span class="o">+=</span> <span class="p">(</span><span class="n">common</span> <span class="o">/</span> <span class="p">(</span><span class="n">common</span> <span class="o">+</span> <span class="n">private</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">shares</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Resolve a series label or index to a column."""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">series</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">series_names</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown series </span><span class="si">{</span><span class="n">series</span><span class="si">!r}</span><span class="s2">; have </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">series_names</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"series index </span><span class="si">{</span><span class="n">series</span><span class="si">}</span><span class="s2"> is out of range for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">lam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loadings</span>
+        <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loading_draws</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">shares</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">communality</span><span class="p">()</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series_names</span><span class="p">):</span>
+            <span class="n">cells</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_factors</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"1 (fixed)"</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"0 (fixed)"</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">lam</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">lo</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">hi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">cells</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">shares</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="n">persistence_f</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_factor_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"Gibbs sampler with exact blocks: factors one Gaussian per period, loadings "</span>
+            <span class="s2">"one weighted regression per row, and Kim-Shephard-Chib mixture steps for "</span>
+            <span class="s2">"every log-variance path. Draws are a Markov chain; loadings and factor "</span>
+            <span class="s2">"scales mix slowly without the Kastner et al. interweaving, which is not "</span>
+            <span class="s2">"done here -- thin accordingly."</span><span class="p">,</span>
+            <span class="s2">"Identification is the triangular convention: loadings are lower triangular "</span>
+            <span class="s2">"with a unit diagonal in the leading r rows, so factor j is scaled and signed "</span>
+            <span class="s2">"by series j. The order of the series is a modelling choice, not a fact."</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Factor log-variance persistence: </span><span class="si">{</span><span class="n">persistence_f</span><span class="si">}</span><span class="s2">. The conditional "</span>
+            <span class="s2">"covariance moves through r factor volatilities and k idiosyncratic ones; "</span>
+            <span class="s2">"conditional_correlation() shows what that does to the correlations."</span><span class="p">,</span>
+            <span class="s2">"No llf, parameter count, or information criteria are reported: a posterior has none."</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Factor Stochastic Volatility (posterior)"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Series"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Factors"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_factors</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Draws kept"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Burn-in"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_burn</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Thin"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thin</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">"series"</span><span class="p">,</span>
+                <span class="o">*</span><span class="p">[</span><span class="sa">f</span><span class="s2">"loading f</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> (68%)"</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_factors</span><span class="p">)],</span>
+                <span class="s2">"communality"</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="FactorSV">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSV.html#cultivars.multivariate.FactorSV">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FactorSV</span><span class="p">(</span><span class="n">_FactorVolatilityModel</span><span class="p">[</span><span class="n">FactorSVResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Factor stochastic volatility, Chib-Nardari-Shephard.</span>
+
+<span class="sd">    ``y_t = Lambda f_t + eps_t`` with a log-AR(1) variance on every factor</span>
+<span class="sd">    and every idiosyncratic error: a time-varying covariance matrix for a</span>
+<span class="sd">    wide panel from ``k + r`` volatility paths. Estimation is by Gibbs</span>
+<span class="sd">    sampling and the result is a posterior.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        panel: The observed ``(nobs, k)`` panel (returns, typically); the</span>
+<span class="sd">            sample mean of each series is removed.</span>
+<span class="sd">        n_factors: Number of latent factors, at least one and below ``k``.</span>
+<span class="sd">        series_names: One label per series. Defaults to ``x1 ... xk``.</span>
+<span class="sd">            The first ``n_factors`` series scale and sign the factors, so</span>
+<span class="sd">            put the series that should anchor each factor first.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; n, k = 300, 5</span>
+<span class="sd">        &gt;&gt;&gt; h = np.zeros(n)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, n):</span>
+<span class="sd">        ...     h[t] = 0.95 * h[t - 1] + 0.3 * rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; f = np.exp(h / 2) * rng.standard_normal(n)</span>
+<span class="sd">        &gt;&gt;&gt; lam = np.array([1.0, 0.8, 0.6, 0.4, 0.2])</span>
+<span class="sd">        &gt;&gt;&gt; y = np.outer(f, lam) + 0.5 * rng.standard_normal((n, k))</span>
+<span class="sd">        &gt;&gt;&gt; res = FactorSV(y, n_factors=1).fit(n_draws=300, n_burn=100, seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; res.loadings.shape</span>
+<span class="sd">        (5, 1)</span>
+<span class="sd">        &gt;&gt;&gt; bool(res.communality()[0] &gt; res.communality()[-1])</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+<div class="viewcode-block" id="FactorSV.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FactorSV.html#cultivars.multivariate.FactorSV.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">,</span>
+        <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">prior</span><span class="p">:</span> <span class="n">VolatilityPrior</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">loading_prior_precision</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FactorSVResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sample the posterior.</span>
+
+<span class="sd">        Every log-variance path carries the Kim-Shephard-Chib prior --</span>
+<span class="sd">        Gaussian on the mean, Beta on ``(phi + 1) / 2``, inverse-gamma on</span>
+<span class="sd">        the innovation variance -- and each free loading an independent</span>
+<span class="sd">        Gaussian prior of the given precision.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_draws: Total sampler iterations.</span>
+<span class="sd">            n_burn: Burn-in discarded.</span>
+<span class="sd">            thin: Keep every ``thin``-th post-burn draw.</span>
+<span class="sd">            prior: The prior on each factor's volatility law, an instance of</span>
+<span class="sd">                :class:`VolatilityPrior` or ``None`` to use the default</span>
+<span class="sd">                Kim-Shephard-Chib prior.</span>
+<span class="sd">            loading_prior_precision: Prior precision on each free loading.</span>
+<span class="sd">            seed: Seed or generator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`FactorSVResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the draw bookkeeping or the loading</span>
+<span class="sd">                prior is inconsistent.</span>
+<span class="sd">        """</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample</span><span class="p">(</span>
+            <span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span>
+            <span class="n">n_burn</span><span class="o">=</span><span class="n">n_burn</span><span class="p">,</span>
+            <span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span>
+            <span class="n">prior</span><span class="o">=</span><span class="n">VolatilityPrior</span><span class="p">()</span> <span class="k">if</span> <span class="n">prior</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prior</span><span class="p">,</span>
+            <span class="n">loading_prior_precision</span><span class="o">=</span><span class="n">loading_prior_precision</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">FactorSVResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

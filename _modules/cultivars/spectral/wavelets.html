@@ -1,0 +1,982 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.spectral.wavelets &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/spectral/wavelets';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/spectral/wavelets.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.spectral.wavelets</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.spectral.wavelets</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Wavelet analysis: the MODWT multiresolution decomposition and Morlet wavelet coherence.</span>
+
+<span class="sd">A spectrum answers "at which frequencies" and a filter "what is the</span>
+<span class="sd">cycle"; a wavelet decomposition answers both at once, by frequency band</span>
+<span class="sd">and by date. The maximal-overlap discrete wavelet transform (MODWT) of</span>
+<span class="sd">Percival and Walden splits a series into details at dyadic scales</span>
+<span class="sd">``1, 2, 4, ...`` observations plus a smooth, additively, aligned in time</span>
+<span class="sd">and defined for any sample length; its wavelet variance is an</span>
+<span class="sd">analysis of variance by scale with a chi-squared band, and it is the</span>
+<span class="sd">usual way to ask which horizon carries a series' variability. Wavelet</span>
+<span class="sd">coherence, on Torrence and Compo's continuous Morlet transform, is the</span>
+<span class="sd">local squared coherence of two series across scale and time, with the</span>
+<span class="sd">phase difference reading which leads; it is the instrument behind</span>
+<span class="sd">"co-movement of output and inflation at business-cycle frequencies</span>
+<span class="sd">broke down after 1985" and its like. Both are descriptive: the cone of</span>
+<span class="sd">influence and the surrogate significance level say where the picture</span>
+<span class="sd">can be trusted, not that a model holds.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Percival, D. B., &amp; Walden, A. T. (2000). *Wavelet Methods for Time</span>
+<span class="sd">        Series Analysis*. Cambridge University Press.</span>
+<span class="sd">    Torrence, C., &amp; Compo, G. P. (1998). A practical guide to wavelet</span>
+<span class="sd">        analysis. *Bulletin of the American Meteorological Society*,</span>
+<span class="sd">        79(1), 61-78.</span>
+<span class="sd">    Grinsted, A., Moore, J. C., &amp; Jevrejeva, S. (2004). Application of</span>
+<span class="sd">        the cross wavelet transform and wavelet coherence to geophysical</span>
+<span class="sd">        time series. *Nonlinear Processes in Geophysics*, 11, 561-566.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">chi2</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_COHERENCE_SURROGATES</span><span class="p">,</span>
+    <span class="n">_DEFAULT_ALPHA</span><span class="p">,</span>
+    <span class="n">_MIN_SPECTRUM_OBS</span><span class="p">,</span>
+    <span class="n">_MORLET_OMEGA0</span><span class="p">,</span>
+    <span class="n">_SCALES_PER_OCTAVE</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_coherence_surrogates</span><span class="p">,</span>
+    <span class="n">_cone_of_influence</span><span class="p">,</span>
+    <span class="n">_modwt</span><span class="p">,</span>
+    <span class="n">_modwt_details</span><span class="p">,</span>
+    <span class="n">_modwt_filters</span><span class="p">,</span>
+    <span class="n">_modwt_variance</span><span class="p">,</span>
+    <span class="n">_morlet_scales</span><span class="p">,</span>
+    <span class="n">_wavelet_coherence</span><span class="p">,</span>
+    <span class="n">validate_aligned</span><span class="p">,</span>
+    <span class="n">validate_choice</span><span class="p">,</span>
+    <span class="n">validate_endog</span><span class="p">,</span>
+    <span class="n">validate_open_interval</span><span class="p">,</span>
+    <span class="n">validate_order</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_SummaryMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"MODWT"</span><span class="p">,</span> <span class="s2">"MODWTResult"</span><span class="p">,</span> <span class="s2">"WaveletCoherence"</span><span class="p">,</span> <span class="s2">"WaveletCoherenceResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="MODWTResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.MODWTResult.html#cultivars.spectral.MODWTResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MODWTResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A MODWT decomposition: coefficients, additive components, and variance by scale.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        coefficients: ``(J, T)`` wavelet coefficients ``W_j``, level by</span>
+<span class="sd">            level; level ``j`` responds to periods of ``2^j`` to</span>
+<span class="sd">            ``2^(j+1)`` observations.</span>
+<span class="sd">        scaling: ``(T,)`` level-``J`` scaling coefficients ``V_J``.</span>
+<span class="sd">        details: ``(J, T)`` multiresolution details ``D_j``; with</span>
+<span class="sd">            ``smooth`` they sum to the data exactly.</span>
+<span class="sd">        smooth: ``(T,)`` multiresolution smooth ``S_J``, the part of the</span>
+<span class="sd">            series at periods beyond ``2^(J+1)``.</span>
+<span class="sd">        variance: ``(J,)`` unbiased wavelet variance per level; the</span>
+<span class="sd">            levels' sum plus the smooth's variance is the series variance.</span>
+<span class="sd">        degrees_of_freedom: ``(J,)`` equivalent chi-squared degrees of</span>
+<span class="sd">            freedom behind :meth:`variance_interval`.</span>
+<span class="sd">        wavelet: The filter used.</span>
+<span class="sd">        nobs: Observations.</span>
+<span class="sd">    """</span>
+
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">scaling</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">details</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">variance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">degrees_of_freedom</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">wavelet</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">levels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of detail levels ``J``."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scales</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Physical scale ``2^(j-1)`` of each level, in observations."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">periods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The band of periods, in observations, each level responds to."""</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">**</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">**</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)))</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">))</span>
+
+<div class="viewcode-block" id="MODWTResult.variance_interval">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.MODWTResult.html#cultivars.spectral.MODWTResult.variance_interval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">variance_interval</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_DEFAULT_ALPHA</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Chi-squared confidence band for the wavelet variance at each level.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            alpha: Two-sided miscoverage.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``(lower, upper)`` each ``(J,)``, from ``nu v / chi2`` quantiles</span>
+<span class="sd">            with the level's equivalent degrees of freedom.</span>
+<span class="sd">        """</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span> <span class="o">/</span> <span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">nu</span><span class="p">)</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span> <span class="o">/</span> <span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">nu</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">upper</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Variance by scale with its band and share."""</span>
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance_interval</span><span class="p">()</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variance</span><span class="p">))</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smooth</span><span class="o">.</span><span class="n">var</span><span class="p">())</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">):</span>
+            <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">periods</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">share</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"D</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">low</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">high</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variance</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">lower</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">upper</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">]"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">share</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"&gt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">periods</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">smooth</span><span class="o">.</span><span class="n">var</span><span class="p">()</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="s2">""</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">smooth</span><span class="o">.</span><span class="n">var</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
+                <span class="s2">""</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"Periodic boundary treatment: the first (2^j - 1)(L - 1) coefficients at level j "</span>
+            <span class="s2">"wrap the sample end and are excluded from the variance; details near either end "</span>
+            <span class="s2">"carry that contamination."</span><span class="p">,</span>
+            <span class="s2">"Bands are chi-squared with Percival-Walden's eta_3 degrees of freedom, which is "</span>
+            <span class="s2">"conservative (over-covers) and assumes stationarity within the level; a trend "</span>
+            <span class="s2">"loads on the smooth."</span><span class="p">,</span>
+            <span class="s2">"Details and smooth sum to the data exactly and are aligned in time (zero phase)."</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"MODWT Decomposition"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Wavelet"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelet</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Levels"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Series variance"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">total</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"level"</span><span class="p">,</span> <span class="s2">"period band"</span><span class="p">,</span> <span class="s2">"variance"</span><span class="p">,</span> <span class="s2">"95% band"</span><span class="p">,</span> <span class="s2">"share"</span><span class="p">,</span> <span class="s2">"dof"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MODWT">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.MODWT.html#cultivars.spectral.MODWT">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MODWT</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Maximal-overlap discrete wavelet transform and multiresolution analysis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        wavelet: ``"haar"``, ``"d4"`` (Daubechies extremal phase, 4 taps)</span>
+<span class="sd">            or ``"la8"`` (least asymmetric, 8 taps; the default -- near-</span>
+<span class="sd">            zero phase and a sharper band split than Haar).</span>
+<span class="sd">        levels: Detail levels ``J``. By default the largest ``J`` for</span>
+<span class="sd">            which every level keeps a boundary-free coefficient,</span>
+<span class="sd">            ``floor(log2(T / (L - 1)))``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the wavelet is unknown or ``levels`` is</span>
+<span class="sd">            not positive.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = rng.standard_normal(256)</span>
+<span class="sd">        &gt;&gt;&gt; res = MODWT(wavelet="haar", levels=3).transform(y)</span>
+<span class="sd">        &gt;&gt;&gt; res.levels, bool(np.allclose(res.details.sum(axis=0) + res.smooth, y))</span>
+<span class="sd">        (3, True)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_levels"</span><span class="p">,</span> <span class="s2">"_wavelet"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wavelet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"la8"</span><span class="p">,</span> <span class="n">levels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the filter and depth."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wavelet</span> <span class="o">=</span> <span class="n">validate_choice</span><span class="p">(</span><span class="n">wavelet</span><span class="p">,</span> <span class="p">(</span><span class="s2">"haar"</span><span class="p">,</span> <span class="s2">"d4"</span><span class="p">,</span> <span class="s2">"la8"</span><span class="p">),</span> <span class="s2">"wavelet"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_levels</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">levels</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="s2">"levels"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MODWT.transform">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.MODWT.html#cultivars.spectral.MODWT.transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MODWTResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Decompose a series.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            endog: The ``(T,)`` series.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`MODWTResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the series is too short for the depth.</span>
+<span class="sd">        """</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">_MIN_SPECTRUM_OBS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"a wavelet decomposition needs at least </span><span class="si">{</span><span class="n">_MIN_SPECTRUM_OBS</span><span class="si">}</span><span class="s2"> observations; got </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">taps</span> <span class="o">=</span> <span class="n">_modwt_filters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wavelet</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">deepest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="p">(</span><span class="n">taps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">deepest</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_levels</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_levels</span>
+        <span class="k">if</span> <span class="n">levels</span> <span class="o">&gt;</span> <span class="n">deepest</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">levels</span><span class="si">}</span><span class="s2"> levels of the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_wavelet</span><span class="si">}</span><span class="s2"> wavelet exceed what </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> observations "</span>
+                <span class="sa">f</span><span class="s2">"support without every coefficient touching the boundary (at most </span><span class="si">{</span><span class="n">deepest</span><span class="si">}</span><span class="s2">)."</span>
+            <span class="p">)</span>
+        <span class="n">coefficients</span><span class="p">,</span> <span class="n">scaling</span> <span class="o">=</span> <span class="n">_modwt</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wavelet</span><span class="p">,</span> <span class="n">levels</span><span class="p">)</span>
+        <span class="n">details</span><span class="p">,</span> <span class="n">smooth</span> <span class="o">=</span> <span class="n">_modwt_details</span><span class="p">(</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">scaling</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wavelet</span><span class="p">)</span>
+        <span class="n">variance</span><span class="p">,</span> <span class="n">degrees</span> <span class="o">=</span> <span class="n">_modwt_variance</span><span class="p">(</span><span class="n">coefficients</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wavelet</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MODWTResult</span><span class="p">(</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="n">coefficients</span><span class="p">,</span>
+            <span class="n">scaling</span><span class="o">=</span><span class="n">scaling</span><span class="p">,</span>
+            <span class="n">details</span><span class="o">=</span><span class="n">details</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+            <span class="n">variance</span><span class="o">=</span><span class="n">variance</span><span class="p">,</span>
+            <span class="n">degrees_of_freedom</span><span class="o">=</span><span class="n">degrees</span><span class="p">,</span>
+            <span class="n">wavelet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wavelet</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="WaveletCoherenceResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.WaveletCoherenceResult.html#cultivars.spectral.WaveletCoherenceResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WaveletCoherenceResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Squared wavelet coherence and phase of two series over scale and time.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        coherence: ``(S, T)`` squared coherence in ``[0, 1]``.</span>
+<span class="sd">        phase: ``(S, T)`` phase difference in radians, ``arg(W_xy)``;</span>
+<span class="sd">            positive means the first series leads at that scale.</span>
+<span class="sd">        scales: ``(S,)`` wavelet scales, in observations.</span>
+<span class="sd">        periods: ``(S,)`` equivalent Fourier periods.</span>
+<span class="sd">        cone: ``(S, T)`` flags, ``True`` where the coefficient lies inside</span>
+<span class="sd">            the cone of influence and edge padding contaminates it.</span>
+<span class="sd">        significance: ``(S,)`` per-scale coherence level exceeded with</span>
+<span class="sd">            probability ``alpha`` by independent AR(1) surrogates, or</span>
+<span class="sd">            ``None`` when no surrogates were run.</span>
+<span class="sd">        alpha: Level behind ``significance``.</span>
+<span class="sd">        omega0: Morlet centre frequency.</span>
+<span class="sd">        nobs: Observations.</span>
+<span class="sd">    """</span>
+
+    <span class="n">coherence</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">scales</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cone</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">significance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">omega0</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+
+<div class="viewcode-block" id="WaveletCoherenceResult.significant">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.WaveletCoherenceResult.html#cultivars.spectral.WaveletCoherenceResult.significant">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">significant</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Where coherence exceeds the surrogate level, outside the cone of influence.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If no surrogates were run.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">significance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"no significance level: rerun WaveletCoherence with surrogates &gt; 0."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coherence</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">significance</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">&amp;</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">cone</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WaveletCoherenceResult.lead">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.WaveletCoherenceResult.html#cultivars.spectral.WaveletCoherenceResult.lead">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lead</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale_band</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Mean lead of the first series, in observations, over a band of periods.</span>
+
+<span class="sd">        The phase difference at each date in the band is converted to</span>
+<span class="sd">        time as ``phase * period / (2 pi)`` and averaged over dates</span>
+<span class="sd">        outside the cone of influence and scales whose period lies in</span>
+<span class="sd">        ``scale_band``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scale_band: ``(low, high)`` periods, inclusive.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Positive when the first series leads, negative when it lags.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If no scale falls in the band.</span>
+<span class="sd">        """</span>
+        <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">scale_band</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periods</span> <span class="o">&gt;=</span> <span class="n">low</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periods</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"no scale has a period in [</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="si">}</span><span class="s2">]."</span><span class="p">)</span>
+        <span class="n">lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">periods</span><span class="p">[</span><span class="n">rows</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">cone</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">lag</span><span class="p">[</span><span class="n">keep</span><span class="p">]))</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">keep</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Mean coherence and lead per octave, outside the cone of influence."""</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">octaves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periods</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">octave</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">octaves</span><span class="p">):</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="n">octaves</span> <span class="o">==</span> <span class="n">octave</span>
+            <span class="n">keep</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">cone</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">keep</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">mean_coherence</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coherence</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">keep</span><span class="p">]))</span>
+            <span class="n">lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">periods</span><span class="p">[</span><span class="n">band</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">lead</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">lag</span><span class="p">[</span><span class="n">keep</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">significance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">share</span> <span class="o">=</span> <span class="s2">""</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">above</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coherence</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">significance</span><span class="p">[</span><span class="n">band</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span>
+                <span class="n">share</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">above</span><span class="p">[</span><span class="n">keep</span><span class="p">]))</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%"</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">2</span><span class="o">**</span><span class="n">octave</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="p">(</span><span class="n">octave</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mean_coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">lead</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="n">share</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"Coherence is Torrence-Webster smoothed (Gaussian in time, 0.6 octave in scale) "</span>
+            <span class="s2">"and is high in places by chance even for independent series; read it against "</span>
+            <span class="s2">"the significance level, not against zero."</span><span class="p">,</span>
+            <span class="s2">"Lead is the phase difference converted to observations at that period, averaged "</span>
+            <span class="s2">"outside the cone of influence; positive when the first series leads."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">significance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"No surrogate significance level was computed (surrogates=0)."</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Significance at </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">% from independent AR(1) "</span>
+                <span class="s2">"surrogates matched to each series' lag-one autocorrelation; the last column "</span>
+                <span class="s2">"is the share of dates above it."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Wavelet Coherence"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Morlet omega0"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">omega0</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Scales"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))),</span>
+                <span class="p">(</span><span class="s2">"Period range"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">periods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">periods</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"period band"</span><span class="p">,</span> <span class="s2">"mean coherence"</span><span class="p">,</span> <span class="s2">"lead"</span><span class="p">,</span> <span class="s2">"share significant"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="WaveletCoherence">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.WaveletCoherence.html#cultivars.spectral.WaveletCoherence">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WaveletCoherence</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Morlet wavelet coherence of two series, with cone of influence and surrogate significance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        omega0: Morlet centre frequency; ``6`` makes scale and Fourier</span>
+<span class="sd">            period nearly equal and satisfies admissibility.</span>
+<span class="sd">        per_octave: Voices per octave on the dyadic scale grid.</span>
+<span class="sd">        smallest: Smallest scale, in observations; ``2`` is the Nyquist</span>
+<span class="sd">            limit.</span>
+<span class="sd">        surrogates: AR(1) surrogate pairs behind the significance level;</span>
+<span class="sd">            ``0`` skips it and leaves ``significance`` as ``None``.</span>
+<span class="sd">        alpha: Level of the significance threshold.</span>
+<span class="sd">        seed: Seed for the surrogate draws.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If a setting is out of range.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; t = np.arange(256.0)</span>
+<span class="sd">        &gt;&gt;&gt; x = np.sin(2 * np.pi * t / 16)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.sin(2 * np.pi * (t - 2) / 16)</span>
+<span class="sd">        &gt;&gt;&gt; res = WaveletCoherence(per_octave=4, surrogates=0).compute(x, y)</span>
+<span class="sd">        &gt;&gt;&gt; bool(res.coherence[np.argmin(np.abs(res.periods - 16)), 128] &gt; 0.95)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; bool(1.5 &lt; res.lead((14.0, 18.0)) &lt; 2.5)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_alpha"</span><span class="p">,</span> <span class="s2">"_omega0"</span><span class="p">,</span> <span class="s2">"_per_octave"</span><span class="p">,</span> <span class="s2">"_seed"</span><span class="p">,</span> <span class="s2">"_smallest"</span><span class="p">,</span> <span class="s2">"_surrogates"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">omega0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_MORLET_OMEGA0</span><span class="p">,</span>
+        <span class="n">per_octave</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_SCALES_PER_OCTAVE</span><span class="p">,</span>
+        <span class="n">smallest</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">surrogates</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_COHERENCE_SURROGATES</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_DEFAULT_ALPHA</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the transform and significance settings."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_omega0</span> <span class="o">=</span> <span class="n">validate_open_interval</span><span class="p">(</span><span class="n">omega0</span><span class="p">,</span> <span class="s2">"omega0"</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_per_octave</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">per_octave</span><span class="p">,</span> <span class="s2">"per_octave"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_smallest</span> <span class="o">=</span> <span class="n">validate_open_interval</span><span class="p">(</span><span class="n">smallest</span><span class="p">,</span> <span class="s2">"smallest"</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surrogates</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">surrogates</span><span class="p">,</span> <span class="s2">"surrogates"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span> <span class="o">=</span> <span class="n">validate_open_interval</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
+
+<div class="viewcode-block" id="WaveletCoherence.compute">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.WaveletCoherence.html#cultivars.spectral.WaveletCoherence.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WaveletCoherenceResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Compute coherence and phase between two aligned series.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            first: The ``(T,)`` reference series; a positive phase means</span>
+<span class="sd">                it leads.</span>
+<span class="sd">            second: The other ``(T,)`` series.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`WaveletCoherenceResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DimensionError: If the series do not align.</span>
+<span class="sd">            SpecificationError: If they are too short.</span>
+<span class="sd">        """</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">validate_aligned</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">"second"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">_MIN_SPECTRUM_OBS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"wavelet coherence needs at least </span><span class="si">{</span><span class="n">_MIN_SPECTRUM_OBS</span><span class="si">}</span><span class="s2"> observations; got </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">scales</span> <span class="o">=</span> <span class="n">_morlet_scales</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">smallest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_smallest</span><span class="p">,</span> <span class="n">per_octave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_per_octave</span><span class="p">)</span>
+        <span class="n">coherence</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_wavelet_coherence</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">scales</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_per_octave</span><span class="p">)</span>
+        <span class="n">fourier</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_omega0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omega0</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">significance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surrogates</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">significance</span> <span class="o">=</span> <span class="n">_coherence_surrogates</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">y</span><span class="p">,</span>
+                <span class="n">scales</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_omega0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_per_octave</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_surrogates</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seed</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">WaveletCoherenceResult</span><span class="p">(</span>
+            <span class="n">coherence</span><span class="o">=</span><span class="n">coherence</span><span class="p">,</span>
+            <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+            <span class="n">scales</span><span class="o">=</span><span class="n">scales</span><span class="p">,</span>
+            <span class="n">periods</span><span class="o">=</span><span class="n">fourier</span> <span class="o">*</span> <span class="n">scales</span><span class="p">,</span>
+            <span class="n">cone</span><span class="o">=</span><span class="n">_cone_of_influence</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">scales</span><span class="p">),</span>
+            <span class="n">significance</span><span class="o">=</span><span class="n">significance</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">,</span>
+            <span class="n">omega0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_omega0</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

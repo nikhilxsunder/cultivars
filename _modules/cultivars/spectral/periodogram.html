@@ -1,0 +1,935 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.spectral.periodogram &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/spectral/periodogram';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/spectral/periodogram.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.spectral.periodogram</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.spectral.periodogram</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/spectral/periodogram.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Nonparametric spectra: the data's own frequency-domain story, model-free.</span>
+
+<span class="sd">:mod:`density` reads the spectrum off a fitted system and inherits every</span>
+<span class="sd">specification error the fit carries. This module estimates it from the</span>
+<span class="sd">data alone, on the same axes and with the same ``1 / (2 pi)``</span>
+<span class="sd">normalization, so the two can be drawn on one plot and their disagreement</span>
+<span class="sd">read as the model's misspecification at each frequency. The raw</span>
+<span class="sd">periodogram is inconsistent -- its variance never shrinks -- so every</span>
+<span class="sd">estimator here trades resolution for stability in a stated way. The</span>
+<span class="sd">smoothed periodogram averages adjacent Fourier ordinates with a Daniell</span>
+<span class="sd">kernel; Welch averages periodograms of overlapping tapered segments;</span>
+<span class="sd">Thomson's multitaper averages periodograms of the same full sample under</span>
+<span class="sd">orthogonal Slepian tapers, which is the least biased of the three at a</span>
+<span class="sd">given variance and the default. Each result carries its equivalent</span>
+<span class="sd">degrees of freedom, so a confidence band is one method call.</span>
+
+<span class="sd">The result is a distinct type from :class:`SpectralDensityResult` on</span>
+<span class="sd">purpose: a number from a periodogram and a number from a fitted model</span>
+<span class="sd">answer different questions, and the package never lets one be mistaken</span>
+<span class="sd">for the other.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Thomson, D. J. (1982). Spectrum estimation and harmonic analysis.</span>
+<span class="sd">        *Proceedings of the IEEE*, 70(9), 1055-1096.</span>
+<span class="sd">    Welch, P. D. (1967). The use of fast Fourier transform for the</span>
+<span class="sd">        estimation of power spectra. *IEEE Transactions on Audio and</span>
+<span class="sd">        Electroacoustics*, 15(2), 70-73.</span>
+<span class="sd">    Percival, D. B., &amp; Walden, A. T. (1993). *Spectral Analysis for</span>
+<span class="sd">        Physical Applications*. Cambridge University Press.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">chi2</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_MIN_SPECTRUM_OBS</span><span class="p">,</span>
+    <span class="n">_SPECTRAL_METHOD_TITLES</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_daniell_density</span><span class="p">,</span>
+    <span class="n">_multitaper_density</span><span class="p">,</span>
+    <span class="n">_ols_detrend</span><span class="p">,</span>
+    <span class="n">_validate_spectrum_panel</span><span class="p">,</span>
+    <span class="n">_welch_density</span><span class="p">,</span>
+    <span class="n">validate_order</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_SummaryMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"DaniellSpectrum"</span><span class="p">,</span> <span class="s2">"MultitaperSpectrum"</span><span class="p">,</span> <span class="s2">"SpectrumEstimate"</span><span class="p">,</span> <span class="s2">"WelchSpectrum"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SpectrumEstimate">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.SpectrumEstimate.html#cultivars.spectral.SpectrumEstimate">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpectrumEstimate</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A nonparametric spectral density matrix, with its resolution and degrees of freedom.</span>
+
+<span class="sd">    Frequencies are radians per observation on ``[0, pi]`` and the</span>
+<span class="sd">    density carries the ``1 / (2 pi)`` normalization, exactly as</span>
+<span class="sd">    :class:`SpectralDensityResult`, so twice the integral of a spectrum</span>
+<span class="sd">    over the grid is that series' sample variance and the two objects</span>
+<span class="sd">    overlay. Every ordinate is approximately ``f(w) chi^2_nu / nu``, and</span>
+<span class="sd">    :meth:`confidence_interval` uses that.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        names: Series labels, indexing the matrix axes.</span>
+<span class="sd">        frequencies: The ``(n,)`` Fourier grid on ``[0, pi]``.</span>
+<span class="sd">        density: The ``(n, k, k)`` complex Hermitian estimate.</span>
+<span class="sd">        method: ``"daniell"``, ``"multitaper"`` or ``"welch"``.</span>
+<span class="sd">        degrees_of_freedom: Equivalent chi-squared degrees of freedom of</span>
+<span class="sd">            each ordinate.</span>
+<span class="sd">        bandwidth: Half-width of the frequency window in radians, the</span>
+<span class="sd">            resolution below which two peaks merge.</span>
+<span class="sd">        nobs: Observations the estimate used.</span>
+<span class="sd">        detrend: The deterministic terms removed first.</span>
+<span class="sd">    """</span>
+
+    <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">frequencies</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">density</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">degrees_of_freedom</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">detrend</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of series."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Resolve a series label.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the label is unknown.</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"unknown series </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; the estimate has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+<div class="viewcode-block" id="SpectrumEstimate.periods">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.SpectrumEstimate.html#cultivars.spectral.SpectrumEstimate.periods">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">periods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Each grid frequency as a period in observations per cycle, zero mapping to infinity."""</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="mf">1e-300</span><span class="p">),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpectrumEstimate.spectrum">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.SpectrumEstimate.html#cultivars.spectral.SpectrumEstimate.spectrum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""One series' estimated power spectrum, the real diagonal of the density."""</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpectrumEstimate.coherence">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.SpectrumEstimate.html#cultivars.spectral.SpectrumEstimate.coherence">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coherence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Squared coherence between two series at each frequency.</span>
+
+<span class="sd">        ``|f_xy|^2 / (f_xx f_yy)``; with ``nu`` degrees of freedom the</span>
+<span class="sd">        estimate is biased upward by about ``2 / nu`` under zero</span>
+<span class="sd">        coherence, which the smoothing makes small.</span>
+<span class="sd">        """</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">(</span><span class="n">first</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+        <span class="n">cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">auto</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cross</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">auto</span><span class="p">,</span> <span class="mf">1e-300</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpectrumEstimate.confidence_interval">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.SpectrumEstimate.html#cultivars.spectral.SpectrumEstimate.confidence_interval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">confidence_interval</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Pointwise ``1 - alpha`` band for one spectrum from the chi-squared approximation.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``alpha`` is not inside ``(0, 1)``.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"alpha must lie strictly inside (0, 1); got </span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">power</span> <span class="o">*</span> <span class="n">nu</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">nu</span><span class="p">))</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">power</span> <span class="o">*</span> <span class="n">nu</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">nu</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Peak and variance per series, with the estimate's resolution."""</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">interior</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="n">power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectrum</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">peak</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">power</span><span class="p">[</span><span class="n">interior</span><span class="p">]))</span>
+            <span class="n">frequency</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="n">peak</span><span class="p">])</span>
+            <span class="n">period</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">frequency</span> <span class="k">if</span> <span class="n">frequency</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="n">variance</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapezoid</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">))</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">frequency</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">period</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">variance</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Equivalent degrees of freedom </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> per ordinate; the "</span>
+            <span class="sa">f</span><span class="s2">"frequency resolution is about </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> radians (periods closer than "</span>
+            <span class="s2">"that merge)."</span><span class="p">,</span>
+            <span class="s2">"Model-free: this is the data's periodogram, smoothed, and not a fitted model's "</span>
+            <span class="s2">"closed form; overlay it on SpectralDensity to read misspecification by "</span>
+            <span class="s2">"frequency."</span><span class="p">,</span>
+            <span class="s2">"Peak frequency excludes the zero-frequency point, where a trending series' "</span>
+            <span class="s2">"power legitimately concentrates."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">_SPECTRAL_METHOD_TITLES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">]</span><span class="si">}</span><span class="s2"> Spectrum"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Series"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Grid"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)</span><span class="si">}</span><span class="s2"> Fourier frequencies on [0, pi]"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Detrend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detrend</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"series"</span><span class="p">,</span> <span class="s2">"peak frequency"</span><span class="p">,</span> <span class="s2">"peak period"</span><span class="p">,</span> <span class="s2">"variance"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MultitaperSpectrum">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.MultitaperSpectrum.html#cultivars.spectral.MultitaperSpectrum">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MultitaperSpectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Thomson's multitaper spectral estimate.</span>
+
+<span class="sd">    ``K`` Slepian tapers of time-bandwidth product ``NW`` each give a</span>
+<span class="sd">    leakage-free periodogram; their concentration-weighted average has</span>
+<span class="sd">    ``2 K`` degrees of freedom and resolution ``2 pi NW / N``. The usual</span>
+<span class="sd">    ``NW = 4, K = 7`` is the default; raise both for a smoother</span>
+<span class="sd">    estimate, lower both to separate close peaks.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: A ``(nobs, k)`` panel or one-dimensional series.</span>
+<span class="sd">        bandwidth: Time-bandwidth product ``NW``.</span>
+<span class="sd">        n_tapers: Tapers ``K``; ``None`` takes ``2 NW - 1``.</span>
+<span class="sd">        detrend: ``"n"``, ``"c"`` (demean) or ``"ct"`` (linear detrend).</span>
+<span class="sd">        names: Series labels; ``None`` reads them from a frame or uses</span>
+<span class="sd">            ``y1 .. yk``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the bandwidth is below 1, the taper count</span>
+<span class="sd">            is unusable, or the panel is too short.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros(400)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 400):</span>
+<span class="sd">        ...     y[t] = 0.7 * y[t - 1] + rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; est = MultitaperSpectrum(y).compute()</span>
+<span class="sd">        &gt;&gt;&gt; est.density.shape, bool(est.spectrum("y")[1] &gt; est.spectrum("y")[-1])</span>
+<span class="sd">        ((201, 1, 1), True)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_bandwidth"</span><span class="p">,</span> <span class="s2">"_detrend"</span><span class="p">,</span> <span class="s2">"_names"</span><span class="p">,</span> <span class="s2">"_panel"</span><span class="p">,</span> <span class="s2">"_tapers"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>
+        <span class="n">n_tapers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">detrend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the panel and the taper design."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bandwidth</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"bandwidth NW must be at least 1; got </span><span class="si">{</span><span class="n">bandwidth</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">tapers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">bandwidth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_tapers</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">n_tapers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tapers</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">tapers</span><span class="p">,</span> <span class="s2">"n_tapers"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tapers</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">bandwidth</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"n_tapers must not exceed 2 NW = </span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bandwidth</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> for usable concentration; "</span>
+                <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tapers</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bandwidth</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">bandwidth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span> <span class="o">=</span> <span class="n">detrend</span>
+        <span class="n">panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="n">_validate_spectrum_panel</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">detrend</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_SPECTRUM_OBS</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span> <span class="o">=</span> <span class="n">_ols_detrend</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultitaperSpectrum.compute">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.MultitaperSpectrum.html#cultivars.spectral.MultitaperSpectrum.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectrumEstimate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate the density matrix."""</span>
+        <span class="n">frequencies</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">nu</span> <span class="o">=</span> <span class="n">_multitaper_density</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bandwidth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tapers</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">SpectrumEstimate</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
+            <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">"multitaper"</span><span class="p">,</span>
+            <span class="n">degrees_of_freedom</span><span class="o">=</span><span class="n">nu</span><span class="p">,</span>
+            <span class="n">bandwidth</span><span class="o">=</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bandwidth</span> <span class="o">/</span> <span class="n">n</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+            <span class="n">detrend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DaniellSpectrum">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.DaniellSpectrum.html#cultivars.spectral.DaniellSpectrum">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DaniellSpectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The periodogram smoothed with a modified Daniell kernel.</span>
+
+<span class="sd">    Adjacent Fourier ordinates are averaged with a flat kernel of</span>
+<span class="sd">    half-width ``span`` whose end weights are halved; ``2 span + 1``</span>
+<span class="sd">    ordinates enter each estimate. Default ``span`` is ``sqrt(N) / 2``,</span>
+<span class="sd">    the usual compromise between resolution and variance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: A ``(nobs, k)`` panel or one-dimensional series.</span>
+<span class="sd">        span: Kernel half-width in ordinates; ``None`` for the default.</span>
+<span class="sd">        detrend: ``"n"``, ``"c"`` (demean) or ``"ct"`` (linear detrend).</span>
+<span class="sd">        names: Series labels.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the span is below 1 or the panel is too</span>
+<span class="sd">            short.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; est = DaniellSpectrum(rng.standard_normal(400)).compute()</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(2.0 * np.pi * est.spectrum("y").mean() - 1.0) &lt; 0.2)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_detrend"</span><span class="p">,</span> <span class="s2">"_names"</span><span class="p">,</span> <span class="s2">"_panel"</span><span class="p">,</span> <span class="s2">"_span"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">span</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">detrend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the panel and the span."""</span>
+        <span class="n">panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="n">_validate_spectrum_panel</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">detrend</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_SPECTRUM_OBS</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span> <span class="o">=</span> <span class="n">_ols_detrend</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_span</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">default</span> <span class="k">if</span> <span class="n">span</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">span</span><span class="p">,</span> <span class="s2">"span"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_span</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"a span of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_span</span><span class="si">}</span><span class="s2"> averages more ordinates than the </span><span class="si">{</span><span class="n">n</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2"> available."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span> <span class="o">=</span> <span class="n">detrend</span>
+
+<div class="viewcode-block" id="DaniellSpectrum.compute">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.DaniellSpectrum.html#cultivars.spectral.DaniellSpectrum.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectrumEstimate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate the density matrix."""</span>
+        <span class="n">frequencies</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">nu</span> <span class="o">=</span> <span class="n">_daniell_density</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_span</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">SpectrumEstimate</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
+            <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">"daniell"</span><span class="p">,</span>
+            <span class="n">degrees_of_freedom</span><span class="o">=</span><span class="n">nu</span><span class="p">,</span>
+            <span class="n">bandwidth</span><span class="o">=</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_span</span> <span class="o">/</span> <span class="n">n</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+            <span class="n">detrend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="WelchSpectrum">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.WelchSpectrum.html#cultivars.spectral.WelchSpectrum">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WelchSpectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Welch's averaged periodogram over half-overlapped Hann segments.</span>
+
+<span class="sd">    The sample is cut into segments of ``segment`` observations</span>
+<span class="sd">    overlapping by half, each is demeaned, Hann-tapered and</span>
+<span class="sd">    transformed, and the periodograms are averaged. The grid is the</span>
+<span class="sd">    segment's, so resolution is ``2 pi / segment``; the default segment</span>
+<span class="sd">    is an eighth of the sample, at least 32.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: A ``(nobs, k)`` panel or one-dimensional series.</span>
+<span class="sd">        segment: Segment length; ``None`` for the default.</span>
+<span class="sd">        detrend: ``"n"``, ``"c"`` (demean) or ``"ct"`` (linear detrend).</span>
+<span class="sd">        names: Series labels.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the segment is shorter than 8 or longer</span>
+<span class="sd">            than the sample, or the panel is too short.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; est = WelchSpectrum(rng.standard_normal((800, 2)), segment=128).compute()</span>
+<span class="sd">        &gt;&gt;&gt; est.density.shape, bool(est.coherence("y1", "y2").mean() &lt; 0.3)</span>
+<span class="sd">        ((65, 2, 2), True)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_detrend"</span><span class="p">,</span> <span class="s2">"_names"</span><span class="p">,</span> <span class="s2">"_panel"</span><span class="p">,</span> <span class="s2">"_segment"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">segment</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">detrend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the panel and the segment length."""</span>
+        <span class="n">panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="n">_validate_spectrum_panel</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">detrend</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_SPECTRUM_OBS</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span> <span class="o">=</span> <span class="n">_ols_detrend</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">8</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">8</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span>
+            <span class="n">default</span> <span class="k">if</span> <span class="n">segment</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">segment</span><span class="p">,</span> <span class="s2">"segment"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">8</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"segment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="si">}</span><span class="s2"> exceeds the </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> observations available."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span> <span class="o">=</span> <span class="n">detrend</span>
+
+<div class="viewcode-block" id="WelchSpectrum.compute">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.WelchSpectrum.html#cultivars.spectral.WelchSpectrum.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectrumEstimate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate the density matrix."""</span>
+        <span class="n">frequencies</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">nu</span> <span class="o">=</span> <span class="n">_welch_density</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SpectrumEstimate</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
+            <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">"welch"</span><span class="p">,</span>
+            <span class="n">degrees_of_freedom</span><span class="o">=</span><span class="n">nu</span><span class="p">,</span>
+            <span class="n">bandwidth</span><span class="o">=</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">detrend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_detrend</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

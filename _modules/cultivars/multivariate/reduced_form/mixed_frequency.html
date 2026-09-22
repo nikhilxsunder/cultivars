@@ -1,0 +1,1623 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.reduced_form.mixed_frequency &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/reduced_form/mixed_frequency';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/reduced_form/mixed_frequency.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.reduced_form.mixed_frequency</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.reduced_form.mixed_frequency</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/var/reduced_form/mixed_frequency.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Mixed-frequency vector autoregressions: two models for two different problems.</span>
+
+<span class="sd">Both models here relate series sampled at different frequencies, and that is</span>
+<span class="sd">the whole of their resemblance. They differ in which frequency the *model*</span>
+<span class="sd">lives at, and the difference decides everything else -- estimator, result</span>
+<span class="sd">surface, and whether a maximum-likelihood ``fit`` is defensible at all.</span>
+
+<span class="sd">:class:`MFVAR` puts the model at the **high** frequency. The monthly path is</span>
+<span class="sd">latent, a quarterly reading is a linear functional of it, and the Kalman filter</span>
+<span class="sd">recovers the path. This is the Mariano-Murasawa state-space formulation. Its</span>
+<span class="sd">one structural elegance is that the observation matrix is *constant*: the</span>
+<span class="sd">calendar is not in ``Z``, it is in the missing-value pattern of the sample, and</span>
+<span class="sd">the filter already masks missing rows. Nothing about the model changes between</span>
+<span class="sd">a month in which the quarterly series is observed and one in which it is not.</span>
+
+<span class="sd">:class:`MIDASVAR` puts the model at the **low** frequency. The high-frequency</span>
+<span class="sd">regressor is compressed into one column per low-frequency date by a lag</span>
+<span class="sd">polynomial with two parameters, so a year of daily history costs two degrees of</span>
+<span class="sd">freedom rather than two hundred and fifty. This is Ghysels-Santa-Clara-Valkanov.</span>
+
+<span class="sd">The asymmetry in what they expose is deliberate and is documented at each</span>
+<span class="sd">class. :class:`MIDASVAR` estimates. :class:`MFVAR` does not, and the reason is</span>
+<span class="sd">recorded in its docstring rather than buried in a release note: with a</span>
+<span class="sd">temporally aggregated variable, the Gaussian likelihood is not merely flat in</span>
+<span class="sd">that variable's own innovation variance, it is *maximized away from the truth*,</span>
+<span class="sd">and the error grows with the sample. A model that returns a confident wrong</span>
+<span class="sd">number is worse than one that declines, so :class:`MFVAR` takes its parameters</span>
+<span class="sd">and filters with them.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Mariano, R. S., &amp; Murasawa, Y. (2003). A new coincident index of business</span>
+<span class="sd">        cycles based on monthly and quarterly series. *Journal of Applied</span>
+<span class="sd">        Econometrics*, 18(4), 427-443.</span>
+<span class="sd">    Ghysels, E., Santa-Clara, P., &amp; Valkanov, R. (2004). The MIDAS touch:</span>
+<span class="sd">        Mixed data sampling regression models. Working paper.</span>
+<span class="sd">    Ghysels, E. (2016). Macroeconomics and the reality of mixed frequency</span>
+<span class="sd">        data. *Journal of Econometrics*, 193(2), 294-314.</span>
+<span class="sd">    Schorfheide, F., &amp; Song, D. (2015). Real-time forecasting with a</span>
+<span class="sd">        mixed-frequency VAR. *Journal of Business &amp; Economic Statistics*,</span>
+<span class="sd">        33(3), 366-380.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_AGGREGATION_NOTE</span><span class="p">,</span>
+    <span class="n">_CHOLESKY_NOTE</span><span class="p">,</span>
+    <span class="n">_MIDAS_CONDITIONAL_NOTE</span><span class="p">,</span>
+    <span class="n">_UNSTABLE_NOTE</span><span class="p">,</span>
+    <span class="n">Frequency</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">Trend</span><span class="p">,</span>
+    <span class="n">_aggregation_weights</span><span class="p">,</span>
+    <span class="n">_midas_weights</span><span class="p">,</span>
+    <span class="n">_midas_windows</span><span class="p">,</span>
+    <span class="n">_mixed_frequency_system</span><span class="p">,</span>
+    <span class="n">_validate_observed</span><span class="p">,</span>
+    <span class="n">deterministic_columns</span><span class="p">,</span>
+    <span class="n">lag_matrix</span><span class="p">,</span>
+    <span class="n">validate_exog_matrix</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_DurbinKoopmanSmootherResult</span><span class="p">,</span>
+    <span class="n">_KalmanFilterResult</span><span class="p">,</span>
+    <span class="n">_LinearGaussianStateSpace</span><span class="p">,</span>
+    <span class="n">_maximize_likelihood</span><span class="p">,</span>
+    <span class="n">_MidasProfileObjective</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_VectorAutoRegressionModel</span><span class="p">,</span>
+    <span class="n">_VectorInferenceMixin</span><span class="p">,</span>
+    <span class="n">_VectorPropagationMixin</span><span class="p">,</span>
+    <span class="n">_VectorResult</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionError</span><span class="p">,</span> <span class="n">NumericalError</span><span class="p">,</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"MFVAR"</span><span class="p">,</span> <span class="s2">"MIDASVAR"</span><span class="p">,</span> <span class="s2">"MFVARResult"</span><span class="p">,</span> <span class="s2">"MIDASVARResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="MFVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVARResult.html#cultivars.multivariate.MFVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MFVARResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_VectorPropagationMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The latent high-frequency path implied by a mixed-frequency sample.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        observed: The mixed-frequency sample as supplied, ``nan`` preserved.</span>
+<span class="sd">        endog: The inferred latent path, ``(nobs, k)`` and complete. Named</span>
+<span class="sd">            ``endog`` rather than ``smoothed_state`` on purpose: it is what the</span>
+<span class="sd">            propagation surface consumes, so forecasting and impulse responses</span>
+<span class="sd">            work here unchanged, reading the inferred path exactly as a VAR</span>
+<span class="sd">            result reads its data.</span>
+<span class="sd">        latent_cov: Smoothed state covariances of the contemporaneous block,</span>
+<span class="sd">            ``(nobs, k, k)``.</span>
+<span class="sd">        coefficients: The ``(order, k, k)`` coefficients used, as supplied.</span>
+<span class="sd">        deterministic: Deterministic coefficients, one row per term; the</span>
+<span class="sd">            supplied intercept, or zero rows when there was none.</span>
+<span class="sd">        sigma_u: The ``(k, k)`` innovation covariance used, as supplied.</span>
+<span class="sd">        resid: Innovations of the inferred path over the effective sample:</span>
+<span class="sd">            ``z_t - c - A_1 z_{t-1} - ... - A_p z_{t-p}`` evaluated on the</span>
+<span class="sd">            smoothed path. This is what the historical decomposition and the</span>
+<span class="sd">            structural shocks consume.</span>
+<span class="sd">        loglikelihood: Log-likelihood of the observed entries.</span>
+<span class="sd">        kinds: The frequency role of each variable.</span>
+<span class="sd">        weights: Explicit per-variable sub-period weights, when supplied.</span>
+<span class="sd">        period: Sub-periods per low-frequency period.</span>
+<span class="sd">        names: Variable labels.</span>
+<span class="sd">        order: Autoregressive order.</span>
+<span class="sd">        trend: Deterministic specification implied by the intercept.</span>
+<span class="sd">        nobs: Effective sample size, the rows of :attr:`resid`.</span>
+<span class="sd">    """</span>
+
+    <span class="n">observed</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">latent_cov</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">deterministic</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma_u</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">resid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">loglikelihood</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">kinds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Frequency</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">period</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of variables."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">latent_stderr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Pointwise standard errors of the latent path, ``(nobs, k)``.</span>
+
+<span class="sd">        The diagonal of a smoothed covariance reaches zero from below by a few</span>
+<span class="sd">        units in the last place wherever a variable is directly observed, and</span>
+<span class="sd">        an unguarded square root would return ``nan`` for exactly the entries</span>
+<span class="sd">        the model knows best. The clip is not cosmetic.</span>
+<span class="sd">        """</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latent_cov</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">observed_fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Share of periods in which each variable was directly observed."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observed</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MFVARResult.implied_low_frequency">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVARResult.html#cultivars.multivariate.MFVARResult.implied_low_frequency">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">implied_low_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Aggregate the inferred latent path back to the observed frequency.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An ``(nobs, k)`` array whose entries are the model's fitted value</span>
+<span class="sd">            for a low-frequency reading ending at that period. Comparing this</span>
+<span class="sd">            with :attr:`observed` at the periods where a reading exists is the</span>
+<span class="sd">            residual check for a mixed-frequency model.</span>
+<span class="sd">        """</span>
+        <span class="n">nobs</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">nobs</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">kind</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kinds</span><span class="p">):</span>
+            <span class="n">supplied</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">_aggregation_weights</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">supplied</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nobs</span><span class="p">):</span>
+                <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">window</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="MFVARResult.nowcast">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVARResult.html#cultivars.multivariate.MFVARResult.nowcast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nowcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The latent value of every variable at one period.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index: Position in the sample; negative indexes from the end.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Mapping from variable name to its inferred value.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DimensionError: If ``index`` is out of range.</span>
+<span class="sd">        """</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="n">nobs</span> <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">index</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="n">nobs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2"> is out of range for </span><span class="si">{</span><span class="n">nobs</span><span class="si">}</span><span class="s2"> periods."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">[</span><span class="n">pos</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)}</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">stability</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_check</span><span class="p">()</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Stable: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_stable</span><span class="si">}</span><span class="s2">   max |companion root| = </span><span class="si">{</span><span class="n">stability</span><span class="o">.</span><span class="n">max_modulus</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">_AGGREGATION_NOTE</span><span class="p">,</span>
+            <span class="n">_CHOLESKY_NOTE</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_stable</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_UNSTABLE_NOTE</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kinds</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observed_fraction</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"MFVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">) Inference"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"MFVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">loglikelihood</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Sub-periods"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Periods"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"variable"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">,</span> <span class="s2">"observed"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MFVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVAR.html#cultivars.multivariate.MFVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MFVAR</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A latent high-frequency VAR observed through temporal aggregation.</span>
+
+<span class="sd">    The model is ``z_t = c + A_1 z_{t-1} + ... + A_p z_{t-p} + u_t`` at the high</span>
+<span class="sd">    frequency; what is observed is ``z`` itself for some variables and a</span>
+<span class="sd">    weighted sub-period sum for others, on a calendar expressed as ``nan`` in</span>
+<span class="sd">    the sample rather than as a time-varying observation matrix.</span>
+
+<span class="sd">    **This class does not estimate.** The omission is a finding, not an</span>
+<span class="sd">    unfinished feature. Simulating a three-variable monthly VAR with one</span>
+<span class="sd">    variable observed only as a quarterly average and estimating by EM:</span>
+
+<span class="sd">    =========  ===========  ===========  ===========</span>
+<span class="sd">    ``T``      ``|A err|``  ``Sigma11``  ``|S err|``</span>
+<span class="sd">    =========  ===========  ===========  ===========</span>
+<span class="sd">    control    0.051        1.100        0.060</span>
+<span class="sd">    1500       0.129        2.629        1.469</span>
+<span class="sd">    6000       0.183        3.104        1.944</span>
+<span class="sd">    =========  ===========  ===========  ===========</span>
+
+<span class="sd">    against a truth of ``Sigma11 = 1.160``. The control row is the identical</span>
+<span class="sd">    estimator with nothing aggregated, so the machinery is sound. The error in</span>
+<span class="sd">    the aggregated rows *grows* with the sample: this is convergence to a wrong</span>
+<span class="sd">    limit, not sampling noise, and the likelihood confirms it -- the wrong</span>
+<span class="sd">    answer scores about a hundred log-points above the truth. The mechanism is</span>
+<span class="sd">    that a quarterly reading constrains a three-month average, and a high</span>
+<span class="sd">    monthly innovation variance with weaker persistence is nearly</span>
+<span class="sd">    observationally equivalent to a low one with stronger persistence.</span>
+
+<span class="sd">    Priors do not rescue it. A Minnesota prior shrinks ``A`` and cannot reach</span>
+<span class="sd">    the unidentified direction, which lives in ``Sigma``. An inverse-Wishart</span>
+<span class="sd">    prior on ``Sigma`` anchored at an aggregation-implied scale fails for a</span>
+<span class="sd">    sharper reason: the correct anchor requires the high-frequency persistence,</span>
+<span class="sd">    which is precisely what is not identified. Anchoring even at the true value</span>
+<span class="sd">    needs a prior worth half the sample to recover the cell.</span>
+
+<span class="sd">    The route to an estimated mixed-frequency VAR is Gibbs sampling over</span>
+<span class="sd">    ``(A, Sigma)`` jointly with a proper prior -- integrating rather than</span>
+<span class="sd">    maximizing, as Schorfheide and Song do -- which belongs to</span>
+<span class="sd">    :mod:`cultivars.bayes` once a sampling backend exists. Until then, supply</span>
+<span class="sd">    parameters and filter.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coefficients: ``(order, k, k)`` latent autoregressive coefficients, or</span>
+<span class="sd">            ``(k, k)`` for an order of one.</span>
+<span class="sd">        sigma_u: ``(k, k)`` latent innovation covariance.</span>
+<span class="sd">        kinds: One :data:`Frequency` per variable.</span>
+<span class="sd">        period: High-frequency sub-periods per low-frequency period.</span>
+<span class="sd">        intercept: Optional ``(k,)`` latent intercept.</span>
+<span class="sd">        weights: Optional per-variable sub-period weights, most recent first.</span>
+<span class="sd">        names: Variable labels. Defaults to ``y1 ... yk``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the coefficient or covariance shapes disagree.</span>
+<span class="sd">        SpecificationError: If ``period`` is not a positive integer, ``kinds``</span>
+<span class="sd">            has the wrong length or an unrecognized entry, or every variable is</span>
+<span class="sd">            marked ``high`` -- in which case there is no mixed frequency and a</span>
+<span class="sd">            plain :class:`~cultivars.var.reduced_form.VAR` is the right model.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; A = np.array([[[0.5, 0.1], [0.0, 0.4]]])</span>
+<span class="sd">        &gt;&gt;&gt; S = np.eye(2)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.full((24, 2), np.nan)</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y[:, 0] = rng.standard_normal(24)</span>
+<span class="sd">        &gt;&gt;&gt; y[2::3, 1] = rng.standard_normal(8)</span>
+<span class="sd">        &gt;&gt;&gt; res = MFVAR(A, S, kinds=["high", "flow"], period=3).smooth(y)</span>
+<span class="sd">        &gt;&gt;&gt; res.endog.shape</span>
+<span class="sd">        (24, 2)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"_coefficients"</span><span class="p">,</span>
+        <span class="s2">"_intercept"</span><span class="p">,</span>
+        <span class="s2">"_kinds"</span><span class="p">,</span>
+        <span class="s2">"_names"</span><span class="p">,</span>
+        <span class="s2">"_period"</span><span class="p">,</span>
+        <span class="s2">"_sigma_u"</span><span class="p">,</span>
+        <span class="s2">"_weights"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="n">sigma_u</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">kinds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Frequency</span><span class="p">],</span>
+        <span class="n">period</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">intercept</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize the mixed-frequency VAR."""</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">coef</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">coef</span> <span class="o">=</span> <span class="n">coef</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">coef</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">coef</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">coef</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"coefficients must have shape (order, k, k); got </span><span class="si">{</span><span class="n">coef</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">coef</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span><span class="s2">"coefficients must be finite."</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sigma_u</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"sigma_u must have shape (</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">) to match coefficients; got </span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">sig</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span><span class="s2">"sigma_u must be finite."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">sig</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="s2">"sigma_u must be symmetric."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">((</span><span class="n">sig</span> <span class="o">+</span> <span class="n">sig</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)))</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1e-10</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="s2">"sigma_u must be positive semidefinite."</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">)</span> <span class="o">!=</span> <span class="n">period</span> <span class="ow">or</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"period must be an integer &gt;= 1; got </span><span class="si">{</span><span class="n">period</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"kinds must have one entry per variable (</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">); got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"high"</span><span class="p">,</span> <span class="s2">"stock"</span><span class="p">,</span> <span class="s2">"flow"</span><span class="p">}</span>
+        <span class="n">bad</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kinds</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">bad</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"unrecognized frequency roles </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2">; expected one of </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">allowed</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="s2">"high"</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kinds</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"every variable is marked 'high', so nothing is aggregated. Use "</span>
+                <span class="s2">"VAR, which estimates its parameters rather than taking them."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"weights must have one entry per variable (</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">); got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span> <span class="o">=</span> <span class="n">coef</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sigma_u</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span> <span class="o">+</span> <span class="n">sig</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="n">intercept</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">intercept</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">size</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"intercept must have shape (</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">,); got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">"y</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"names must have one entry per variable (</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">); got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="MFVAR.from_result">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVAR.html#cultivars.multivariate.MFVAR.from_result">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_result</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">kinds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Frequency</span><span class="p">],</span>
+        <span class="n">period</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build a filter from an already-estimated high-frequency VAR.</span>
+
+<span class="sd">        The intended workflow. Estimate the VAR on whatever high-frequency</span>
+<span class="sd">        sample exists -- a shorter span, a related vintage, a subset of the</span>
+<span class="sd">        variables -- then bring those parameters here to infer the latent path</span>
+<span class="sd">        over the mixed-frequency sample.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            result: Any fitted result exposing ``coefficients``, ``sigma_u``,</span>
+<span class="sd">                and ``names``.</span>
+<span class="sd">            kinds: One :data:`Frequency` per variable.</span>
+<span class="sd">            period: High-frequency sub-periods per low-frequency period.</span>
+<span class="sd">            weights: Optional per-variable sub-period weights.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A configured :class:`MFVAR`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``result`` lacks the required attributes.</span>
+<span class="sd">        """</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"coefficients"</span><span class="p">,</span> <span class="s2">"sigma_u"</span><span class="p">,</span> <span class="s2">"names"</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"result does not expose </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">; MFVAR.from_result needs a "</span>
+                <span class="s2">"fitted vector autoregression."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span>  <span class="c1"># type: ignore[attr-defined]</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span>  <span class="c1"># type: ignore[attr-defined]</span>
+            <span class="n">kinds</span><span class="o">=</span><span class="n">kinds</span><span class="p">,</span>
+            <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+            <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">names</span><span class="p">),</span>  <span class="c1"># type: ignore[attr-defined]</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of variables."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Latent autoregressive order."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_state_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LinearGaussianStateSpace</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the observable form."""</span>
+        <span class="n">design</span><span class="p">,</span> <span class="n">obs_cov</span><span class="p">,</span> <span class="n">transition</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">state_cov</span><span class="p">,</span> <span class="n">state_intercept</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">_mixed_frequency_system</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sigma_u</span><span class="p">,</span>
+                <span class="n">kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">,</span>
+                <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">,</span>
+                <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="p">,</span>
+                <span class="n">intercept</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_LinearGaussianStateSpace</span><span class="p">(</span>
+            <span class="n">design</span><span class="p">,</span>
+            <span class="n">obs_cov</span><span class="p">,</span>
+            <span class="n">transition</span><span class="p">,</span>
+            <span class="n">selection</span><span class="p">,</span>
+            <span class="n">state_cov</span><span class="p">,</span>
+            <span class="n">state_intercept</span><span class="o">=</span><span class="n">state_intercept</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="MFVAR.filter">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVAR.html#cultivars.multivariate.MFVAR.filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_KalmanFilterResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Run the forward pass over the mixed-frequency sample.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            endog: The ``(nobs, k)`` sample at the high frequency, ``nan``</span>
+<span class="sd">                wherever a variable is not observed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Kalman filter output over the stacked state.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_space</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_validate_observed</span><span class="p">(</span><span class="n">endog</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MFVAR.smooth">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVAR.html#cultivars.multivariate.MFVAR.smooth">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MFVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Infer the latent high-frequency path from the whole sample.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            endog: The ``(nobs, k)`` sample at the high frequency, ``nan``</span>
+<span class="sd">                wherever a variable is not observed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The inferred path and its uncertainty, carrying the full</span>
+<span class="sd">            propagation surface: because the smoothed path is complete, the</span>
+<span class="sd">            forecast, the impulse responses, and the decompositions read it</span>
+<span class="sd">            exactly as a VAR result reads its data.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DimensionError: If the sample has no rows beyond the</span>
+<span class="sd">                autoregressive order, leaving no innovation to compute.</span>
+<span class="sd">        """</span>
+        <span class="n">observed</span> <span class="o">=</span> <span class="n">_validate_observed</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_space</span><span class="p">()</span>
+        <span class="n">smoothed</span><span class="p">:</span> <span class="n">_DurbinKoopmanSmootherResult</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">observed</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">smoothed</span><span class="o">.</span><span class="n">smoothed_state</span><span class="p">[:,</span> <span class="p">:</span><span class="n">size</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">effective</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span>
+        <span class="k">if</span> <span class="n">effective</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"a sample of </span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> periods leaves no innovations at "</span>
+                <span class="sa">f</span><span class="s2">"order </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">; supply at least </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> rows."</span>
+            <span class="p">)</span>
+        <span class="n">fitted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">effective</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fitted</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">):</span>
+            <span class="n">fitted</span> <span class="o">+=</span> <span class="n">path</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span> <span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">stored</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="kc">None</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">MFVARResult</span><span class="p">(</span>
+            <span class="n">observed</span><span class="o">=</span><span class="n">observed</span><span class="p">,</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">latent_cov</span><span class="o">=</span><span class="n">smoothed</span><span class="o">.</span><span class="n">smoothed_state_cov</span><span class="p">[:,</span> <span class="p">:</span><span class="n">size</span><span class="p">,</span> <span class="p">:</span><span class="n">size</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span><span class="p">,</span>
+            <span class="n">deterministic</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="n">sigma_u</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sigma_u</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">path</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">fitted</span><span class="p">,</span>
+            <span class="n">loglikelihood</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">(</span><span class="n">observed</span><span class="p">),</span>
+            <span class="n">kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">,</span>
+            <span class="n">weights</span><span class="o">=</span><span class="n">stored</span><span class="p">,</span>
+            <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="s2">"n"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intercept</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"c"</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">effective</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MFVAR.nowcast">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MFVAR.html#cultivars.multivariate.MFVAR.nowcast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nowcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The latent value of every variable in the final period.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            endog: The mixed-frequency sample.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Mapping from variable name to its inferred current value.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span><span class="o">.</span><span class="n">nowcast</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MIDASVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MIDASVARResult.html#cultivars.multivariate.MIDASVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MIDASVARResult</span><span class="p">(</span>
+    <span class="n">_VectorResult</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_VectorInferenceMixin</span><span class="p">,</span>
+    <span class="n">_VectorPropagationMixin</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted MIDAS vector autoregression.</span>
+
+<span class="sd">    The reduced-form surface is inherited unchanged, and everything it reports</span>
+<span class="sd">    is conditional in exactly one place: the coefficient standard errors, and</span>
+<span class="sd">    every test built from them, take the estimated lag polynomial as known.</span>
+<span class="sd">    :meth:`joint_stderr` is the honest alternative and says what it costs.</span>
+
+<span class="sd">    :meth:`forecast` is conditional in the same sense a VARX forecast is: the</span>
+<span class="sd">    model holds no process for the high-frequency block, so it asks for the</span>
+<span class="sd">    future sub-period path and refuses without it.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The low-frequency sample.</span>
+<span class="sd">        exog_high: The high-frequency panel as supplied, chronological.</span>
+<span class="sd">        exog: The compressed regressor block over the effective sample, one</span>
+<span class="sd">            column per high-frequency series at the estimated polynomial.</span>
+<span class="sd">        names: Endogenous labels, in Cholesky order.</span>
+<span class="sd">        exog_names: High-frequency series labels.</span>
+<span class="sd">        order: Endogenous autoregressive order.</span>
+<span class="sd">        period: Sub-periods per low-frequency period.</span>
+<span class="sd">        midas_lags: Sub-periods each weight curve spans.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">        coefficients: ``(p, k, k)`` stack of ``A_1, ..., A_p``.</span>
+<span class="sd">        midas_coefficients: ``(k, m)`` slopes on the compressed regressors.</span>
+<span class="sd">        theta: ``(m, 2)`` estimated lag-polynomial parameters, one row per</span>
+<span class="sd">            high-frequency series.</span>
+<span class="sd">        deterministic: Deterministic coefficients, one row per term.</span>
+<span class="sd">        sigma_u: Residual covariance with the degrees-of-freedom correction.</span>
+<span class="sd">        sigma_ml: Residual covariance divided by the effective sample.</span>
+<span class="sd">        resid: Residuals over the effective sample.</span>
+<span class="sd">        fittedvalues: One-step conditional means over the effective sample.</span>
+<span class="sd">        design: The regressor matrix as estimated, compressed block last.</span>
+<span class="sd">        llf: Gaussian log-likelihood.</span>
+<span class="sd">        nobs: Effective sample size.</span>
+<span class="sd">        n_params: Free parameters -- coefficients, covariance, and the two</span>
+<span class="sd">            polynomial parameters per high-frequency series.</span>
+<span class="sd">    """</span>
+
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">deterministic</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">exog_high</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">exog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">exog_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">midas_coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">period</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">midas_lags</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_exog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of high-frequency series."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exog_names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">midas_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The estimated weight curves, ``(midas_lags, m)``, most recent first."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">_midas_weights</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_trailing_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The compressed-regressor coefficients, in design order."""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_coefficients</span><span class="o">.</span><span class="n">T</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_trailing_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Compressed-regressor column names."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exog_names</span>
+
+<div class="viewcode-block" id="MIDASVARResult.forecast">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MIDASVARResult.html#cultivars.multivariate.MIDASVARResult.forecast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exog_high_future</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Point forecasts conditional on a future high-frequency path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps: Horizon in low-frequency periods.</span>
+<span class="sd">            exog_high_future: A ``(steps * period, m)`` chronological path for</span>
+<span class="sd">                the high-frequency block, in the column order of</span>
+<span class="sd">                :attr:`exog_names`. Required.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(steps, k)`` array of conditional means.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``steps`` is not positive, or</span>
+<span class="sd">                ``exog_high_future`` is omitted.</span>
+<span class="sd">            DimensionError: If ``exog_high_future`` has the wrong shape.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"steps must be at least 1; got </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exog_high_future</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"a MIDASVAR forecast is conditional on the high-frequency path, so it "</span>
+                <span class="s2">"cannot be produced from the fitted model alone: pass exog_high_future "</span>
+                <span class="sa">f</span><span class="s2">"with </span><span class="si">{</span><span class="n">steps</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="si">}</span><span class="s2"> rows (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="si">}</span><span class="s2"> sub-periods per step) "</span>
+                <span class="sa">f</span><span class="s2">"and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="si">}</span><span class="s2"> columns for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exog_names</span><span class="si">}</span><span class="s2">. This model holds no "</span>
+                <span class="s2">"process for the high-frequency block and will not invent one, because "</span>
+                <span class="s2">"doing so would turn a conditional forecast into an unconditional "</span>
+                <span class="s2">"forecast without saying so."</span>
+            <span class="p">)</span>
+        <span class="n">future</span> <span class="o">=</span> <span class="n">validate_exog_matrix</span><span class="p">(</span>
+            <span class="n">exog_high_future</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">steps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"exog_high_future"</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">future</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"exog_high_future has </span><span class="si">{</span><span class="n">future</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns but the model was "</span>
+                <span class="sa">f</span><span class="s2">"fitted with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">low</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">exog_high</span><span class="p">,</span> <span class="n">future</span><span class="p">])</span>
+        <span class="n">windows</span> <span class="o">=</span> <span class="n">_midas_windows</span><span class="p">(</span>
+            <span class="n">full</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">low</span> <span class="o">+</span> <span class="n">steps</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">low</span>
+        <span class="p">)</span>
+        <span class="n">compressed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"tjm,jm-&gt;tm"</span><span class="p">,</span> <span class="n">windows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">midas_weights</span><span class="p">)</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">low</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">[</span><span class="n">low</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">det</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">history</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">midas_coefficients</span> <span class="o">@</span> <span class="n">compressed</span><span class="p">[</span><span class="n">h</span><span class="p">]</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="n">point</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="o">*</span><span class="n">history</span><span class="p">[:</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="MIDASVARResult.joint_stderr">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MIDASVARResult.html#cultivars.multivariate.MIDASVARResult.joint_stderr">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">joint_stderr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Standard errors that also account for estimating the lag polynomial.</span>
+
+<span class="sd">        The default surface -- ``bse``, ``tvalues``, ``conf_int``, and the</span>
+<span class="sd">        coefficient table -- conditions on the estimated polynomial, treating</span>
+<span class="sd">        the compressed regressor as data. Here the observed information of the</span>
+<span class="sd">        covariance-concentrated Gaussian likelihood is computed numerically</span>
+<span class="sd">        over the full parameter vector, every regression coefficient and every</span>
+<span class="sd">        polynomial parameter jointly, and inverted. The profile-likelihood</span>
+<span class="sd">        curvature is the correct marginal information for the retained</span>
+<span class="sd">        parameters, so concentrating the covariance out changes nothing about</span>
+<span class="sd">        the answer while removing ``k(k+1)/2`` dimensions from the Hessian.</span>
+
+<span class="sd">        The cost is quadratic in the parameter count -- each Hessian entry is</span>
+<span class="sd">        four likelihood evaluations -- which is why this is a method rather</span>
+<span class="sd">        than the default.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Mapping from parameter to its joint standard error: every key of</span>
+<span class="sd">            :attr:`params`, plus ``"theta1[x]"`` and ``"theta2[x]"`` per</span>
+<span class="sd">            high-frequency series.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NumericalError: If the observed information is not positive</span>
+<span class="sd">                definite at the estimate, which usually means the polynomial is</span>
+<span class="sd">                weakly identified -- a flat weight curve makes ``theta``</span>
+<span class="sd">                unidentifiable and its rows of the information singular.</span>
+<span class="sd">        """</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">design</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">effective</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span>
+        <span class="n">burn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">effective</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">[</span><span class="n">burn</span><span class="p">:]</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">design</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">width</span> <span class="o">-</span> <span class="n">m</span><span class="p">]</span>
+        <span class="n">windows</span> <span class="o">=</span> <span class="n">_midas_windows</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exog_high</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">,</span>
+            <span class="n">lags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">burn</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span><span class="p">]</span>
+        <span class="n">blocks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">))</span>
+        <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_coefficients</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">criterion</span><span class="p">(</span><span class="n">vector</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">vector</span><span class="p">[:</span> <span class="n">width</span> <span class="o">*</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+            <span class="n">packed</span> <span class="o">=</span> <span class="n">vector</span><span class="p">[</span><span class="n">width</span> <span class="o">*</span> <span class="n">k</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">curves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">_midas_weights</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">packed</span><span class="p">])</span>
+            <span class="n">compressed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"tjm,jm-&gt;tm"</span><span class="p">,</span> <span class="n">windows</span><span class="p">,</span> <span class="n">curves</span><span class="p">)</span>
+            <span class="n">resid</span> <span class="o">=</span> <span class="n">target</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">base</span><span class="p">,</span> <span class="n">compressed</span><span class="p">])</span> <span class="o">@</span> <span class="n">beta</span>
+            <span class="n">sign</span><span class="p">,</span> <span class="n">logdet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">slogdet</span><span class="p">(</span><span class="n">resid</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">resid</span> <span class="o">/</span> <span class="n">effective</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sign</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span>
+                    <span class="s2">"the residual covariance left the positive definite cone while "</span>
+                    <span class="s2">"differentiating; the joint information is not defined here."</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">effective</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">logdet</span><span class="p">)</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="mf">1e-4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">point</span><span class="p">))</span>
+        <span class="n">hessian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">count</span><span class="p">,</span> <span class="n">count</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+                <span class="n">pp</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">pp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">pp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">steps</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">pm</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">pm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">pm</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="n">steps</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">mp</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">mp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">mp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">steps</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">mm</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">mm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">mm</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="n">steps</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">criterion</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span> <span class="o">-</span> <span class="n">criterion</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span> <span class="o">-</span> <span class="n">criterion</span><span class="p">(</span><span class="n">mp</span><span class="p">)</span> <span class="o">+</span> <span class="n">criterion</span><span class="p">(</span><span class="n">mm</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="mf">4.0</span> <span class="o">*</span> <span class="n">steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">steps</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">hessian</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="n">hessian</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">covariance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">hessian</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span>
+                <span class="s2">"the observed information is singular at the estimate; the joint "</span>
+                <span class="s2">"standard errors are not identified."</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+        <span class="n">variances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">covariance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">variances</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span>
+                <span class="s2">"the observed information is not positive definite at the estimate; "</span>
+                <span class="s2">"the joint standard errors are not identified. This usually means "</span>
+                <span class="s2">"the lag polynomial is weakly identified -- a flat weight curve "</span>
+                <span class="s2">"makes theta unidentifiable."</span>
+            <span class="p">)</span>
+        <span class="n">stderr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variances</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">regressor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_regressor_labels</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">equation</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+                <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">equation</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">regressor</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stderr</span><span class="p">[</span><span class="n">r</span> <span class="o">*</span> <span class="n">k</span> <span class="o">+</span> <span class="n">e</span><span class="p">])</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">k</span>
+        <span class="k">for</span> <span class="n">q</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exog_names</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"theta1[</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">]"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stderr</span><span class="p">[</span><span class="n">offset</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">q</span><span class="p">])</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"theta2[</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">]"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stderr</span><span class="p">[</span><span class="n">offset</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short specification label for a ranking table."""</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="s2">""</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span> <span class="o">==</span> <span class="s2">"c"</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">", trend=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"MIDASVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="si">}{</span><span class="n">tail</span><span class="si">}</span><span class="s2">)"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="n">stability</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_check</span><span class="p">()</span>
+        <span class="n">polynomial</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: (</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">+.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">+.3f</span><span class="si">}</span><span class="s2">)"</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exog_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Stable: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_stable</span><span class="si">}</span><span class="s2">   max |companion root| = </span><span class="si">{</span><span class="n">stability</span><span class="o">.</span><span class="n">max_modulus</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Lag polynomial (theta_1, theta_2) over </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="si">}</span><span class="s2"> sub-periods: </span><span class="si">{</span><span class="n">polynomial</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+            <span class="s2">"Stability, impulse responses, and the variance decomposition read the "</span>
+            <span class="s2">"low-frequency endogenous block only. The high-frequency regressors are "</span>
+            <span class="s2">"conditioned on rather than shocked, so they do not enter the "</span>
+            <span class="s2">"moving-average representation."</span><span class="p">,</span>
+            <span class="s2">"Forecasts are conditional: forecast() requires the future high-frequency "</span>
+            <span class="s2">"path and will not extrapolate it."</span><span class="p">,</span>
+            <span class="n">_MIDAS_CONDITIONAL_NOTE</span><span class="p">,</span>
+            <span class="n">_CHOLESKY_NOTE</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_stable</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_UNSTABLE_NOTE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"MIDASVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="si">}</span><span class="s2">) Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"MIDASVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">midas_lags</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Endogenous"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">criteria</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"High-frequency"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">criteria</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Sub-periods"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"HQIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">criteria</span><span class="o">.</span><span class="n">hqic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficient_columns</span><span class="p">(),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficient_rows</span><span class="p">(),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MIDASVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MIDASVAR.html#cultivars.multivariate.MIDASVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MIDASVAR</span><span class="p">(</span><span class="n">_VectorAutoRegressionModel</span><span class="p">[</span><span class="n">MIDASVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""A low-frequency VAR reading high-frequency data through a lag polynomial.</span>
+
+<span class="sd">    The model is ``y_t = D d_t + A_1 y_{t-1} + ... + A_p y_{t-p} + B x_t(theta)</span>
+<span class="sd">    + u_t`` at the low frequency, where ``x_t(theta)`` compresses the last</span>
+<span class="sd">    ``midas_lags`` sub-period readings of each high-frequency series into one</span>
+<span class="sd">    number with normalized exponential-Almon weights. Two parameters per series</span>
+<span class="sd">    buy the whole within-period history, which is the entire point of MIDAS:</span>
+<span class="sd">    the unrestricted alternative spends ``midas_lags`` coefficients per series</span>
+<span class="sd">    per equation and eats the sample.</span>
+
+<span class="sd">    **This class estimates**, unlike its state-space sibling, because nothing</span>
+<span class="sd">    here is temporally aggregated: every regressor is observed, the model is</span>
+<span class="sd">    linear conditional on the polynomial, and the likelihood identifies</span>
+<span class="sd">    everything it touches. Estimation profiles the polynomial -- an inner</span>
+<span class="sd">    least-squares solve conditional on ``theta``, an outer derivative-free</span>
+<span class="sd">    search over it, multi-started because the decay direction can be</span>
+<span class="sd">    multi-modal.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The ``(nobs, k)`` low-frequency panel.</span>
+<span class="sd">        exog_high: The ``(nobs * period, m)`` high-frequency panel,</span>
+<span class="sd">            chronological, exactly ``period`` sub-period rows per low-frequency</span>
+<span class="sd">            observation. Missing values are rejected: a ragged calendar is</span>
+<span class="sd">            :class:`MFVAR`'s problem statement, not this model's.</span>
+<span class="sd">        order: Endogenous autoregressive order.</span>
+<span class="sd">        period: Sub-periods per low-frequency period, at least two -- with one</span>
+<span class="sd">            sub-period nothing is mixed and</span>
+<span class="sd">            :class:`~cultivars.var.reduced_form.VARX` is the right model.</span>
+<span class="sd">        midas_lags: Sub-periods each weight curve spans. Defaults to</span>
+<span class="sd">            ``period``; longer windows reach into earlier low-frequency</span>
+<span class="sd">            periods and cost leading observations.</span>
+<span class="sd">        trend: Deterministic terms.</span>
+<span class="sd">        names: Endogenous labels. Defaults to ``y1 ... yk``.</span>
+<span class="sd">        exog_names: High-frequency labels. Defaults to ``x1 ... xm``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If ``period`` or ``midas_lags`` is malformed, or</span>
+<span class="sd">            the labels are malformed or collide.</span>
+<span class="sd">        DimensionError: If the two panels do not align at ``period`` rows per</span>
+<span class="sd">            observation, or the sample is too short for the specification.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_normal((120, 1))</span>
+<span class="sd">        &gt;&gt;&gt; y = np.column_stack(</span>
+<span class="sd">        ...     [x[2::3, 0] + 0.1 * rng.standard_normal(40), rng.standard_normal(40)]</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; res = MIDASVAR(y, x, order=1, period=3).fit()</span>
+<span class="sd">        &gt;&gt;&gt; res.forecast(2, exog_high_future=np.zeros((6, 1))).shape</span>
+<span class="sd">        (2, 2)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_exog_high"</span><span class="p">,</span> <span class="s2">"_exog_names"</span><span class="p">,</span> <span class="s2">"_midas_lags"</span><span class="p">,</span> <span class="s2">"_period"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="n">exog_high</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">period</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">midas_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trend</span><span class="p">:</span> <span class="n">Trend</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exog_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate both panels and the specification."""</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">)</span> <span class="o">!=</span> <span class="n">period</span> <span class="ow">or</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"period must be an integer &gt;= 2; got </span><span class="si">{</span><span class="n">period</span><span class="si">!r}</span><span class="s2">. With one sub-period "</span>
+                <span class="s2">"nothing is mixed, and VARX is that model."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exog_high</span> <span class="o">=</span> <span class="n">validate_exog_matrix</span><span class="p">(</span>
+            <span class="n">exog_high</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">rows</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"exog_high"</span>
+        <span class="p">)</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="k">if</span> <span class="n">midas_lags</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">midas_lags</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">lags</span><span class="p">)</span> <span class="o">!=</span> <span class="n">lags</span> <span class="ow">or</span> <span class="n">lags</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"midas_lags must be an integer &gt;= 1; got </span><span class="si">{</span><span class="n">lags</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lags</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exog_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_names</span><span class="p">(</span>
+            <span class="n">exog_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exog_high</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"exog_names"</span><span class="p">,</span> <span class="s2">"x"</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+        <span class="n">overlap</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exog_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">overlap</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"names and exog_names must not overlap, or a coefficient table cannot "</span>
+                <span class="sa">f</span><span class="s2">"say which block a row came from; both contain </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">overlap</span><span class="p">))</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exog_high</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The validated high-frequency panel."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exog_high</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exog_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""High-frequency labels."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exog_names</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_exog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of high-frequency series."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exog_high</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">period</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sub-periods per low-frequency period."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_period</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">midas_lags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sub-periods each weight curve spans."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_regressors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Regressors per equation, including the compressed block."""</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">n_regressors</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_burn_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Leading observations lost to the lags or to the weight window."""</span>
+        <span class="n">reach</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">reach</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_max_supported_lags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Largest endogenous order the sample can identify."""</span>
+        <span class="n">free</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic_columns</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">free</span> <span class="o">//</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_design</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">trim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Build the target and regressor matrix at flat weights.</span>
+
+<span class="sd">        Used by lag-order selection, where the candidates must differ in the</span>
+<span class="sd">        endogenous order and in nothing else: holding the polynomial flat keeps</span>
+<span class="sd">        the compressed block identical across candidates, so the criteria</span>
+<span class="sd">        compare lag structures rather than incidental re-estimates of the</span>
+<span class="sd">        weights.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            order: Endogenous order; defaults to the fitted order.</span>
+<span class="sd">            trim: Leading low-frequency observations to discard first.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The target block, the design, and the row count of both.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DimensionError: If the trimmed sample cannot supply the lags and</span>
+<span class="sd">                the weight window.</span>
+<span class="sd">        """</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">order</span>
+        <span class="n">burn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_burn_for</span><span class="p">(</span><span class="n">lags</span><span class="p">)</span>
+        <span class="n">panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">[</span><span class="n">trim</span><span class="p">:]</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exog_high</span><span class="p">[</span><span class="n">trim</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="p">:]</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">nobs</span> <span class="o">&lt;=</span> <span class="n">burn</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">nobs</span><span class="si">}</span><span class="s2"> observations is too few for a design of order </span><span class="si">{</span><span class="n">lags</span><span class="si">}</span><span class="s2"> with a "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span><span class="si">}</span><span class="s2">-sub-period weight window."</span>
+            <span class="p">)</span>
+        <span class="n">effective</span> <span class="o">=</span> <span class="n">nobs</span> <span class="o">-</span> <span class="n">burn</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trend</span><span class="p">,</span> <span class="n">effective</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">trim</span> <span class="o">+</span> <span class="n">burn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">windows</span> <span class="o">=</span> <span class="n">_midas_windows</span><span class="p">(</span>
+            <span class="n">high</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">burn</span>
+        <span class="p">)</span>
+        <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">compressed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"tjm,j-&gt;tm"</span><span class="p">,</span> <span class="n">windows</span><span class="p">,</span> <span class="n">flat</span><span class="p">)</span>
+        <span class="n">design</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">det</span><span class="p">,</span> <span class="n">lag_matrix</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">burn</span><span class="p">),</span> <span class="n">compressed</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">panel</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">design</span><span class="p">,</span> <span class="n">effective</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_blocks</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Assemble the fixed pieces the profile search reuses at every draw.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The target block, the deterministic-and-lag design, and the</span>
+<span class="sd">            ``(effective, midas_lags, m)`` window stack.</span>
+<span class="sd">        """</span>
+        <span class="n">burn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_burn_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">)</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">effective</span> <span class="o">=</span> <span class="n">nobs</span> <span class="o">-</span> <span class="n">burn</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trend</span><span class="p">,</span> <span class="n">effective</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">burn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">det</span><span class="p">,</span> <span class="n">lag_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">burn</span><span class="p">)])</span>
+        <span class="n">windows</span> <span class="o">=</span> <span class="n">_midas_windows</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exog_high</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">,</span>
+            <span class="n">lags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">burn</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">base</span><span class="p">,</span> <span class="n">windows</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_seeds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Starting points: flat weights, gentle decay, and steep decay."""</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">decay</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">decay</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="MIDASVAR.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MIDASVAR.html#cultivars.multivariate.MIDASVAR.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MIDASVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate the system by profiled maximum likelihood.</span>
+
+<span class="sd">        Conditional on the polynomial parameters the model is linear, so the</span>
+<span class="sd">        inner problem is one least-squares solve with the covariance</span>
+<span class="sd">        concentrated out; the outer search is derivative-free over the two</span>
+<span class="sd">        parameters per high-frequency series, multi-started because the decay</span>
+<span class="sd">        direction can be multi-modal.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted result.</span>
+<span class="sd">        """</span>
+        <span class="n">target</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">windows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_blocks</span><span class="p">()</span>
+        <span class="n">objective</span> <span class="o">=</span> <span class="n">_MidasProfileObjective</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">base_design</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">windows</span><span class="o">=</span><span class="n">windows</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_seeds</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_maximize_likelihood</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
+        <span class="n">design</span> <span class="o">=</span> <span class="n">objective</span><span class="o">.</span><span class="n">design</span><span class="p">(</span><span class="n">theta</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+        <span class="n">moments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gaussian_moments</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">design</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic_columns</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span>
+        <span class="k">return</span> <span class="n">MIDASVARResult</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">,</span>
+            <span class="n">exog_high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exog_high</span><span class="p">,</span>
+            <span class="n">exog</span><span class="o">=</span><span class="n">design</span><span class="p">[:,</span> <span class="n">head</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">,</span>
+            <span class="n">exog_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exog_names</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">,</span>
+            <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">,</span>
+            <span class="n">midas_lags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_midas_lags</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trend</span><span class="p">,</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lag_blocks</span><span class="p">(</span><span class="n">moments</span><span class="o">.</span><span class="n">coef</span><span class="p">),</span>
+            <span class="n">midas_coefficients</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">coef</span><span class="p">[</span><span class="n">head</span> <span class="p">:</span> <span class="n">head</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span>
+            <span class="n">deterministic</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">coef</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic_columns</span><span class="p">],</span>
+            <span class="n">sigma_u</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span>
+            <span class="n">sigma_ml</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">sigma_ml</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">design</span><span class="o">=</span><span class="n">design</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="n">k</span> <span class="o">*</span> <span class="n">moments</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

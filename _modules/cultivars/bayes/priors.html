@@ -1,0 +1,1497 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.bayes.priors &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/bayes/priors';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/bayes/priors.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.bayes.priors</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.bayes.priors</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Cultivars Bayesian priors module."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">_draw_generalized_inverse_gaussian</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AdaptivePrior</span><span class="p">,</span> <span class="n">_Prior</span><span class="p">,</span> <span class="n">_PriorContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_NoPrior</span> <span class="k">as</span> <span class="n">NoPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_RandomWalkVolatilityPrior</span> <span class="k">as</span> <span class="n">RandomWalkVolatilityPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_VolatilityPrior</span> <span class="k">as</span> <span class="n">VolatilityPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionError</span><span class="p">,</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"DirichletLaplacePrior"</span><span class="p">,</span>
+    <span class="s2">"DummyInitialObservationPrior"</span><span class="p">,</span>
+    <span class="s2">"HorseshoePrior"</span><span class="p">,</span>
+    <span class="s2">"IndependentNormalWishartPrior"</span><span class="p">,</span>
+    <span class="s2">"MinnesotaPrior"</span><span class="p">,</span>
+    <span class="s2">"NoPrior"</span><span class="p">,</span>
+    <span class="s2">"NormalGammaPrior"</span><span class="p">,</span>
+    <span class="s2">"NormalInverseWishartPrior"</span><span class="p">,</span>
+    <span class="s2">"RandomWalkVolatilityPrior"</span><span class="p">,</span>
+    <span class="s2">"SpikeAndSlabPrior"</span><span class="p">,</span>
+    <span class="s2">"SumOfCoefficientsPrior"</span><span class="p">,</span>
+    <span class="s2">"VolatilityPrior"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="MinnesotaPrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.MinnesotaPrior.html#cultivars.bayes.MinnesotaPrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MinnesotaPrior</span><span class="p">(</span><span class="n">_Prior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Litterman's prior: shrink toward independent random walks.</span>
+
+<span class="sd">    Five hyperparameters, and each one answers a different question.</span>
+
+<span class="sd">    ``tightness`` is how much the prior is believed at all; it scales every</span>
+<span class="sd">    variance and is the one people tune. ``cross_equation`` says how much less</span>
+<span class="sd">    a variable's dependence on *other* variables is believed than its</span>
+<span class="sd">    dependence on itself, which is the prior's central economic claim -- most</span>
+<span class="sd">    of what a series does is explained by its own past -- and is the</span>
+<span class="sd">    hyperparameter that a dummy-observation implementation cannot express.</span>
+<span class="sd">    ``decay`` tightens longer lags toward zero, encoding that distant history</span>
+<span class="sd">    matters less. ``exogenous`` loosens the intercept and any exogenous block,</span>
+<span class="sd">    and defaults large: those coefficients carry levels and slopes that nobody</span>
+<span class="sd">    means to shrink, and a tight default there is a silent and expensive</span>
+<span class="sd">    mistake. ``sum_of_coefficients`` is the only one that cannot be a variance</span>
+<span class="sd">    -- it restricts a *sum* of coefficients, so it enters as artificial rows.</span>
+
+<span class="sd">    Prior variances, for equation ``i`` and variable ``j`` at lag ``l``:</span>
+
+<span class="sd">    ==================  ==================================================</span>
+<span class="sd">    own lag             ``(tightness / l ** decay) ** 2``</span>
+<span class="sd">    cross lag           ``(tightness * cross_equation * s_i /</span>
+<span class="sd">                        (l ** decay * s_j)) ** 2``</span>
+<span class="sd">    intercept, exog     ``(tightness * exogenous * s_i) ** 2``</span>
+<span class="sd">    ==================  ==================================================</span>
+
+<span class="sd">    The scale ratio is what makes variables measured in different units</span>
+<span class="sd">    comparable, so that shrinkage is a statement about dynamics rather than</span>
+<span class="sd">    about whether a series is quoted in percent or in levels.</span>
+
+<span class="sd">    With ``cross_equation`` other than one the prior variance no longer factors</span>
+<span class="sd">    as a Kronecker product, so there is no Normal-inverse-Wishart closed form</span>
+<span class="sd">    and estimation runs equation by equation conditional on the scales. That is</span>
+<span class="sd">    Litterman's original procedure and it is correct; it is also why this prior</span>
+<span class="sd">    and a conjugate one are different estimation paths rather than the same</span>
+<span class="sd">    object with different numbers.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tightness: Overall confidence, ``lambda_1``. Values near 0.1 to 0.3 are</span>
+<span class="sd">            usual for macroeconomic data; large recovers least squares.</span>
+<span class="sd">        cross_equation: How much harder cross-variable coefficients shrink,</span>
+<span class="sd">            ``lambda_2``. One treats them like own lags; smaller is tighter.</span>
+<span class="sd">        decay: Lag decay, ``lambda_3``.</span>
+<span class="sd">        exogenous: Looseness of the intercept and exogenous block,</span>
+<span class="sd">            ``lambda_4``. Large is flat.</span>
+<span class="sd">        sum_of_coefficients: Confidence that the variables sit at their</span>
+<span class="sd">            pre-sample means forever, ``lambda_5``. ``None`` omits the</span>
+<span class="sd">            restriction; larger imposes it harder.</span>
+<span class="sd">        persistence: Prior mean of each variable's own first lag. One is the</span>
+<span class="sd">            random-walk prior for levels; zero suits differenced data. Getting</span>
+<span class="sd">            this wrong shrinks toward the wrong place, so tightening makes the</span>
+<span class="sd">            estimate worse rather than better.</span>
+<span class="sd">    """</span>
+
+    <span class="n">tightness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">cross_equation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">exogenous</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span>
+    <span class="n">sum_of_coefficients</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">persistence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_persistence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Broadcast the prior mean to one value per variable."""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">persistence</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">persistence</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">persistence</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"persistence must be a scalar or have </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2"> entries; "</span>
+                <span class="sa">f</span><span class="s2">"got shape </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reject hyperparameters that do not describe a prior.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If a tightness is not positive or the decay is</span>
+<span class="sd">                negative.</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s2">"tightness"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"cross_equation"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cross_equation</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"exogenous"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exogenous</span><span class="p">),</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be positive; got </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"decay must be non-negative; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"sum_of_coefficients must be positive when given; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="MinnesotaPrior.coefficient_mean">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.MinnesotaPrior.html#cultivars.bayes.MinnesotaPrior.coefficient_mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Each variable's own first lag at ``persistence``, everything else zero."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistence</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">offset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">means</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="MinnesotaPrior.coefficient_variance">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.MinnesotaPrior.html#cultivars.bayes.MinnesotaPrior.coefficient_variance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Litterman's variances, tighter for cross terms and for longer lags.</span>
+
+<span class="sd">        Three kinds of column, three rules. A variable's own lag gets</span>
+<span class="sd">        ``(tightness / lag ** decay) ** 2``, which is the only rule with no</span>
+<span class="sd">        scale in it, because a coefficient on a variable's own past is</span>
+<span class="sd">        dimensionless. A cross lag gets the same thing multiplied by</span>
+<span class="sd">        ``cross_equation`` and by ``s_i / s_j``, the ratio that makes a</span>
+<span class="sd">        coefficient linking two variables measured in different units shrink by</span>
+<span class="sd">        the same amount it would if they were measured in the same ones.</span>
+<span class="sd">        Deterministic terms and exogenous regressors get</span>
+<span class="sd">        ``(tightness * exogenous * s_i) ** 2``, which with the default</span>
+<span class="sd">        ``exogenous`` is four orders of magnitude looser than an own lag and is</span>
+<span class="sd">        meant to be.</span>
+
+<span class="sd">        The deterministic block is a loop rather than a single row because its</span>
+<span class="sd">        width is a property of the family, not a constant: none for a trendless</span>
+<span class="sd">        specification, one for a constant, two for a constant and trend, and</span>
+<span class="sd">        one per unit for a fixed-effects panel. Writing it as ``out[0]`` was</span>
+<span class="sd">        silently one column short for every ``"ct"`` model and off by ``N - 1``</span>
+<span class="sd">        for every panel -- a prior whose columns do not line up with the design</span>
+<span class="sd">        shrinks the wrong coefficients and reports a number rather than</span>
+<span class="sd">        raising.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            context: What the prior needs to know about the sample.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(width, k)`` array of variances in design-column order.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If a tightness is not positive or the decay is</span>
+<span class="sd">                negative.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">size</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">scales</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">scales</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">loose</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">exogenous</span> <span class="o">*</span> <span class="n">scales</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">n_deterministic</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">loose</span>
+        <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">damped</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lag</span><span class="p">)</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay</span>
+            <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">column</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="n">lag</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">size</span> <span class="o">+</span> <span class="n">source</span>
+                <span class="n">own</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span> <span class="o">/</span> <span class="n">damped</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="n">cross</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tightness</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cross_equation</span> <span class="o">*</span> <span class="n">scales</span> <span class="o">/</span> <span class="p">(</span><span class="n">damped</span> <span class="o">*</span> <span class="n">scales</span><span class="p">[</span><span class="n">source</span><span class="p">])</span>
+                <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="n">source</span><span class="p">,</span> <span class="n">own</span><span class="p">,</span> <span class="n">cross</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">k_exog</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">offset</span> <span class="o">+</span> <span class="n">size</span> <span class="o">*</span> <span class="n">order</span> <span class="o">+</span> <span class="n">extra</span><span class="p">]</span> <span class="o">=</span> <span class="n">loose</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="MinnesotaPrior.dummy_observations">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.MinnesotaPrior.html#cultivars.bayes.MinnesotaPrior.dummy_observations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dummy_observations</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""The sum-of-coefficients rows, when that restriction is asked for.</span>
+
+<span class="sd">        One row per variable, saying that a series sitting at its pre-sample</span>
+<span class="sd">        average forever should stay there. That is a statement about the sum of</span>
+<span class="sd">        a variable's lag coefficients, which no diagonal variance can make,</span>
+<span class="sd">        which is why this hyperparameter alone enters as data.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MinnesotaPrior</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">dummy_observations</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="n">centre</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_persistence</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">presample_mean</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span>
+        <span class="p">)</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">)),</span> <span class="n">centre</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_exog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">centre</span><span class="p">,</span> <span class="n">block</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="s2">""</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">", l5=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"minnesota(l1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, l2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_equation</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"l3=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, l4=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exogenous</span><span class="si">:</span><span class="s2">g</span><span class="si">}{</span><span class="n">tail</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="NormalInverseWishartPrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.NormalInverseWishartPrior.html#cultivars.bayes.NormalInverseWishartPrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NormalInverseWishartPrior</span><span class="p">(</span><span class="n">_Prior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The conjugate Minnesota prior: Litterman's variances with the one weight pinned.</span>
+
+<span class="sd">    Exactly :class:`MinnesotaPrior` with ``cross_equation`` fixed at one --</span>
+<span class="sd">    and that is not a simplification but a purchase. Pinning the weight makes</span>
+<span class="sd">    the prior variance factor as ``Sigma x Omega``, which is the condition</span>
+<span class="sd">    for Normal-inverse-Wishart conjugacy (Banbura, Giannone &amp; Reichlin 2010):</span>
+<span class="sd">    the joint posterior over coefficients *and* covariance is then exact, its</span>
+<span class="sd">    marginal likelihood has a closed form, and hierarchical shrinkage a la</span>
+<span class="sd">    Giannone-Lenza-Primiceri becomes optimization of that closed form rather</span>
+<span class="sd">    than simulation. What is given up is Litterman's claim that cross-variable</span>
+<span class="sd">    coefficients deserve extra shrinkage; a caller who wants that claim back</span>
+<span class="sd">    passes a :class:`MinnesotaPrior` to the point-estimate path instead, and</span>
+<span class="sd">    the Bayesian model refuses it by construction rather than approximating.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tightness: Overall confidence, ``lambda_1``.</span>
+<span class="sd">        decay: Lag decay, ``lambda_3``.</span>
+<span class="sd">        exogenous: Looseness of the intercept and exogenous block,</span>
+<span class="sd">            ``lambda_4``. Large but finite: the marginal likelihood requires</span>
+<span class="sd">            a proper prior, so "flat" is not on offer here.</span>
+<span class="sd">        persistence: Prior mean of each variable's own first lag. One is the</span>
+<span class="sd">            random-walk prior for levels; zero suits differenced data.</span>
+<span class="sd">    """</span>
+
+    <span class="n">tightness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">exogenous</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span>
+    <span class="n">persistence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_minnesota</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MinnesotaPrior</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The equivalent Minnesota prior with the cross-equation weight pinned."""</span>
+        <span class="k">return</span> <span class="n">MinnesotaPrior</span><span class="p">(</span>
+            <span class="n">tightness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="p">,</span>
+            <span class="n">cross_equation</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">,</span>
+            <span class="n">exogenous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exogenous</span><span class="p">,</span>
+            <span class="n">sum_of_coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">persistence</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">persistence</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="NormalInverseWishartPrior.coefficient_mean">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.NormalInverseWishartPrior.html#cultivars.bayes.NormalInverseWishartPrior.coefficient_mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Each variable's own first lag at ``persistence``, everything else zero."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minnesota</span><span class="p">()</span><span class="o">.</span><span class="n">coefficient_mean</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NormalInverseWishartPrior.coefficient_variance">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.NormalInverseWishartPrior.html#cultivars.bayes.NormalInverseWishartPrior.coefficient_variance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Litterman's variances with the cross-equation weight at one."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minnesota</span><span class="p">()</span><span class="o">.</span><span class="n">coefficient_variance</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"niw(l1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, l3=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, l4=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exogenous</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span></div>
+
+
+
+<div class="viewcode-block" id="SumOfCoefficientsPrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.SumOfCoefficientsPrior.html#cultivars.bayes.SumOfCoefficientsPrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SumOfCoefficientsPrior</span><span class="p">(</span><span class="n">_Prior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The no-cointegration dummies of Doan, Litterman &amp; Sims.</span>
+
+<span class="sd">    One artificial observation per variable, each saying that a series</span>
+<span class="sd">    sitting at its pre-sample average forever should stay there -- a</span>
+<span class="sd">    restriction on the *sum* of a variable's lag coefficients, which no</span>
+<span class="sd">    diagonal variance can state, and which therefore enters as rows rather</span>
+<span class="sd">    than as moments. At the limit it pushes every equation toward a unit</span>
+<span class="sd">    root with no cross-variable error correction, which is why the</span>
+<span class="sd">    literature reads it as a no-cointegration prior.</span>
+
+<span class="sd">    This is the standalone, composable form of what</span>
+<span class="sd">    :attr:`MinnesotaPrior.sum_of_coefficients` embeds: written separately it</span>
+<span class="sd">    can be stacked onto the conjugate prior with ``+``, given its own</span>
+<span class="sd">    tightness, and later carried into the hierarchical layer as its own</span>
+<span class="sd">    hyperparameter, which is exactly how Giannone-Lenza-Primiceri treat it.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tightness: How hard the restriction binds -- larger is tighter,</span>
+<span class="sd">            matching the package's ``lambda_5`` convention; the</span>
+<span class="sd">            Giannone-Lenza-Primiceri ``mu`` is its reciprocal.</span>
+<span class="sd">    """</span>
+
+    <span class="n">tightness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reject a non-positive tightness.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``tightness`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tightness</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"tightness must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SumOfCoefficientsPrior.coefficient_mean">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.SumOfCoefficientsPrior.html#cultivars.bayes.SumOfCoefficientsPrior.coefficient_mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Zero: this prior's content is entirely in its rows."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SumOfCoefficientsPrior.coefficient_variance">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.SumOfCoefficientsPrior.html#cultivars.bayes.SumOfCoefficientsPrior.coefficient_variance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Infinite: no diagonal opinion about any coefficient."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SumOfCoefficientsPrior.dummy_observations">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.SumOfCoefficientsPrior.html#cultivars.bayes.SumOfCoefficientsPrior.dummy_observations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dummy_observations</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""One row per variable, centred on its pre-sample mean."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="n">centre</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">presample_mean</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tightness</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">_lead</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">)),</span> <span class="n">centre</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_exog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">centre</span><span class="p">,</span> <span class="n">block</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"soc(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span></div>
+
+
+
+<div class="viewcode-block" id="DummyInitialObservationPrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.DummyInitialObservationPrior.html#cultivars.bayes.DummyInitialObservationPrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DummyInitialObservationPrior</span><span class="p">(</span><span class="n">_Prior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Sims' co-persistence dummy, the single-unit-root prior.</span>
+
+<span class="sd">    One artificial observation in which every variable sits at its</span>
+<span class="sd">    pre-sample mean and the deterministic terms at one. Where the</span>
+<span class="sd">    sum-of-coefficients rows allow each variable its own unit root, this</span>
+<span class="sd">    single row says that if the system is that persistent, it is persistent</span>
+<span class="sd">    *jointly* -- a common stochastic trend rather than one per series -- and</span>
+<span class="sd">    it is what keeps the sum-of-coefficients restriction from ruling out</span>
+<span class="sd">    cointegration entirely. The pair is standard equipment in the</span>
+<span class="sd">    Giannone-Lenza-Primiceri hierarchy, each with its own tightness.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tightness: How hard the restriction binds -- larger is tighter; the</span>
+<span class="sd">            Giannone-Lenza-Primiceri ``delta`` is its reciprocal.</span>
+<span class="sd">    """</span>
+
+    <span class="n">tightness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reject a non-positive tightness.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``tightness`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tightness</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"tightness must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DummyInitialObservationPrior.coefficient_mean">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.DummyInitialObservationPrior.html#cultivars.bayes.DummyInitialObservationPrior.coefficient_mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Zero: this prior's content is entirely in its row."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DummyInitialObservationPrior.coefficient_variance">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.DummyInitialObservationPrior.html#cultivars.bayes.DummyInitialObservationPrior.coefficient_variance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Infinite: no diagonal opinion about any coefficient."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DummyInitialObservationPrior.dummy_observations">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.DummyInitialObservationPrior.html#cultivars.bayes.DummyInitialObservationPrior.dummy_observations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dummy_observations</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""A single artificial observation at the pre-sample means."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">presample_mean</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tightness</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">_lead</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">)),</span> <span class="n">mean</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_exog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">mean</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">block</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"dio(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span></div>
+
+
+
+<div class="viewcode-block" id="IndependentNormalWishartPrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.IndependentNormalWishartPrior.html#cultivars.bayes.IndependentNormalWishartPrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IndependentNormalWishartPrior</span><span class="p">(</span><span class="n">_Prior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Litterman's full prior under an independent inverse-Wishart pairing.</span>
+
+<span class="sd">    The variances are exactly :class:`MinnesotaPrior`'s, cross-equation</span>
+<span class="sd">    weight included -- and that is the point. The conjugate</span>
+<span class="sd">    Normal-inverse-Wishart pairing had to pin that weight to one because it</span>
+<span class="sd">    ties the coefficient variance to ``Sigma`` through a Kronecker product;</span>
+<span class="sd">    stating the prior on the coefficients *independently* of ``Sigma``</span>
+<span class="sd">    drops the factorization requirement, at the price of the closed form:</span>
+<span class="sd">    the posterior is reached by Gibbs sampling (coefficients given</span>
+<span class="sd">    covariance by generalized least squares, covariance given coefficients</span>
+<span class="sd">    by inverse-Wishart) rather than exactly, and there is no closed-form</span>
+<span class="sd">    marginal likelihood to report. That trade -- Litterman's economics</span>
+<span class="sd">    back, the evidence gone -- is the standard one (Koop &amp; Korobilis 2010),</span>
+<span class="sd">    and this class is its name.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tightness: Overall confidence, ``lambda_1``.</span>
+<span class="sd">        cross_equation: How much harder cross-variable coefficients shrink,</span>
+<span class="sd">            ``lambda_2`` -- the hyperparameter this pairing exists to keep.</span>
+<span class="sd">        decay: Lag decay, ``lambda_3``.</span>
+<span class="sd">        exogenous: Looseness of the intercept and exogenous block,</span>
+<span class="sd">            ``lambda_4``.</span>
+<span class="sd">        sum_of_coefficients: The no-cointegration restriction, ``lambda_5``;</span>
+<span class="sd">            ``None`` omits it.</span>
+<span class="sd">        persistence: Prior mean of each variable's own first lag.</span>
+<span class="sd">    """</span>
+
+    <span class="n">tightness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">cross_equation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">exogenous</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span>
+    <span class="n">sum_of_coefficients</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">persistence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_minnesota</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MinnesotaPrior</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The Minnesota prior whose moments this prior states."""</span>
+        <span class="k">return</span> <span class="n">MinnesotaPrior</span><span class="p">(</span>
+            <span class="n">tightness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="p">,</span>
+            <span class="n">cross_equation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_equation</span><span class="p">,</span>
+            <span class="n">decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">,</span>
+            <span class="n">exogenous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exogenous</span><span class="p">,</span>
+            <span class="n">sum_of_coefficients</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span><span class="p">,</span>
+            <span class="n">persistence</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">persistence</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="IndependentNormalWishartPrior.coefficient_mean">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.IndependentNormalWishartPrior.html#cultivars.bayes.IndependentNormalWishartPrior.coefficient_mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Each variable's own first lag at ``persistence``, everything else zero."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minnesota</span><span class="p">()</span><span class="o">.</span><span class="n">coefficient_mean</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IndependentNormalWishartPrior.coefficient_variance">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.IndependentNormalWishartPrior.html#cultivars.bayes.IndependentNormalWishartPrior.coefficient_variance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Litterman's variances, the cross-equation weight kept."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minnesota</span><span class="p">()</span><span class="o">.</span><span class="n">coefficient_variance</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IndependentNormalWishartPrior.dummy_observations">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.IndependentNormalWishartPrior.html#cultivars.bayes.IndependentNormalWishartPrior.dummy_observations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dummy_observations</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""The sum-of-coefficients rows, when that restriction is asked for."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minnesota</span><span class="p">()</span><span class="o">.</span><span class="n">dummy_observations</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="s2">""</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">", l5=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sum_of_coefficients</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"inw(l1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tightness</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, l2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_equation</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"l3=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, l4=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exogenous</span><span class="si">:</span><span class="s2">g</span><span class="si">}{</span><span class="n">tail</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="HorseshoePrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.HorseshoePrior.html#cultivars.bayes.HorseshoePrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HorseshoePrior</span><span class="p">(</span><span class="n">_AdaptivePrior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The horseshoe: aggressive shrinkage that lets large signals through.</span>
+
+<span class="sd">    Each standardized coefficient gets a half-Cauchy local scale and the</span>
+<span class="sd">    whole lag block shares a half-Cauchy global one (Carvalho, Polson &amp;</span>
+<span class="sd">    Scott 2010). The Cauchy tails are the substance: mass piles up at zero</span>
+<span class="sd">    hard enough to wipe out noise coefficients, while the poles let a</span>
+<span class="sd">    genuinely large coefficient escape shrinkage almost entirely -- the</span>
+<span class="sd">    behavior the Minnesota family cannot produce, because a Gaussian</span>
+<span class="sd">    variance shrinks everything proportionally. No hyperparameters to tune</span>
+<span class="sd">    is the other selling point, and it is real: the global scale learns the</span>
+<span class="sd">    overall sparsity from the data.</span>
+
+<span class="sd">    Sampling uses the Makalic-Schmidt inverse-Gamma augmentation, under</span>
+<span class="sd">    which every conditional in the hierarchy is inverse-Gamma -- exact</span>
+<span class="sd">    draws, no tuning, no rejection.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        deterministic_scale: Looseness of the unshrunk deterministic and</span>
+<span class="sd">            exogenous rows, in units of each equation's residual scale.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">        Carvalho, C. M., Polson, N. G., &amp; Scott, J. G. (2010). The horseshoe</span>
+<span class="sd">            estimator for sparse signals. *Biometrika*, 97(2), 465-480.</span>
+<span class="sd">        Makalic, E., &amp; Schmidt, D. F. (2016). A simple sampler for the</span>
+<span class="sd">            horseshoe estimator. *IEEE Signal Processing Letters*, 23(1),</span>
+<span class="sd">            179-182.</span>
+<span class="sd">    """</span>
+
+    <span class="n">deterministic_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reject a non-positive deterministic scale.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``deterministic_scale`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"deterministic_scale must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initial_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Unit local scales, unit global scale."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"lam2"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="s2">"nu"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="s2">"tau2"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="s2">"xi"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">standardized</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span>
+        <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span>
+        <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Makalic-Schmidt: four inverse-Gamma blocks, all exact."""</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">standardized</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">]</span>
+        <span class="n">squared</span> <span class="o">=</span> <span class="n">block</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">tau2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"tau2"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">lam2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"nu"</span><span class="p">]</span> <span class="o">+</span> <span class="n">squared</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">tau2</span><span class="p">))</span> <span class="o">/</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span>
+            <span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">squared</span><span class="o">.</span><span class="n">shape</span>
+        <span class="p">)</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">lam2</span><span class="p">)</span> <span class="o">/</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">squared</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"xi"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">squared</span> <span class="o">/</span> <span class="n">lam2</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">tau2</span> <span class="o">=</span> <span class="n">rate</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">((</span><span class="n">count</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">tau2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"lam2"</span><span class="p">:</span> <span class="n">lam2</span><span class="p">,</span>
+            <span class="s2">"nu"</span><span class="p">:</span> <span class="n">nu</span><span class="p">,</span>
+            <span class="s2">"tau2"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">tau2</span><span class="p">]),</span>
+            <span class="s2">"xi"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xi</span><span class="p">]),</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_variance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""``ratio**2 * tau**2 * lambda**2`` on the lag block, loose elsewhere."""</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_ratio</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratio</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"tau2"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"lam2"</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The local-global scale ``tau * lambda`` per lag coefficient."""</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"tau2"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"lam2"</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""What the averaged diagnostic is."""</span>
+        <span class="k">return</span> <span class="s2">"posterior mean local-global scale of the standardized coefficient"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="k">return</span> <span class="s2">"horseshoe"</span></div>
+
+
+
+<div class="viewcode-block" id="SpikeAndSlabPrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.SpikeAndSlabPrior.html#cultivars.bayes.SpikeAndSlabPrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpikeAndSlabPrior</span><span class="p">(</span><span class="n">_AdaptivePrior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Stochastic search variable selection: exclusion as a latent state.</span>
+
+<span class="sd">    George, Sun and Ni's (2008) BVAR prior. Each lag coefficient carries a</span>
+<span class="sd">    Bernoulli indicator choosing between a spike -- a normal tight enough</span>
+<span class="sd">    around zero that the coefficient is effectively excluded -- and a slab</span>
+<span class="sd">    loose enough that it is effectively free; the Gibbs sweep redraws the</span>
+<span class="sd">    indicators from their exact conditionals, and their average over kept</span>
+<span class="sd">    sweeps is a posterior inclusion probability per coefficient, which is</span>
+<span class="sd">    this prior's distinctive output and what</span>
+<span class="sd">    :meth:`~cultivars.multivariate.large_dim.GibbsBVARResult.inclusion_probabilities`</span>
+<span class="sd">    reports. SSVS is this object's sampler, not a second prior; the two</span>
+<span class="sd">    names in the literature name one thing.</span>
+
+<span class="sd">    The spike and slab widths follow the semiautomatic default: each</span>
+<span class="sd">    coefficient's least-squares standard error, times ``spike`` and</span>
+<span class="sd">    ``slab``. The inclusion probability is a fixed hyperparameter rather</span>
+<span class="sd">    than being given its own Beta layer, matching the reference treatment.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        spike: Spike width as a multiple of the coefficient's reference</span>
+<span class="sd">            standard error; small is a harder exclusion.</span>
+<span class="sd">        slab: Slab width on the same scale; large is freer.</span>
+<span class="sd">        inclusion: Prior inclusion probability of each lag coefficient.</span>
+<span class="sd">        deterministic_scale: Looseness of the unshrunk deterministic and</span>
+<span class="sd">            exogenous rows, in units of each equation's residual scale.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">        George, E. I., Sun, D., &amp; Ni, S. (2008). Bayesian stochastic search</span>
+<span class="sd">            for VAR model restrictions. *Journal of Econometrics*, 142(1),</span>
+<span class="sd">            553-580.</span>
+<span class="sd">    """</span>
+
+    <span class="n">spike</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">slab</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>
+    <span class="n">inclusion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">deterministic_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reject widths and probabilities that do not describe a prior.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the widths are not ordered and positive</span>
+<span class="sd">                or the inclusion probability is not interior.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">slab</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"spike and slab must satisfy 0 &lt; spike &lt; slab; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spike</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slab</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inclusion</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"inclusion must be strictly between 0 and 1; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inclusion</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"deterministic_scale must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initial_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Anchor both widths to the reference scale; start everything in."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">anchor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">reference</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_ratio</span><span class="p">(</span><span class="n">context</span><span class="p">)[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">],</span> <span class="mf">1e-8</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"tau0"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike</span> <span class="o">*</span> <span class="n">anchor</span><span class="p">,</span>
+            <span class="s2">"tau1"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slab</span> <span class="o">*</span> <span class="n">anchor</span><span class="p">,</span>
+            <span class="s2">"gamma"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">anchor</span><span class="p">),</span>
+            <span class="s2">"prob"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">anchor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inclusion</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">standardized</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span>
+        <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span>
+        <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Exact Bernoulli conditionals for the indicators."""</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">standardized</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">]</span>
+        <span class="n">tau0</span><span class="p">,</span> <span class="n">tau1</span> <span class="o">=</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"tau0"</span><span class="p">],</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"tau1"</span><span class="p">]</span>
+        <span class="n">gap</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclusion</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">inclusion</span><span class="p">))</span>
+            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tau0</span> <span class="o">/</span> <span class="n">tau1</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">block</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">tau0</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">tau1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">gap</span><span class="p">,</span> <span class="o">-</span><span class="mf">700.0</span><span class="p">,</span> <span class="mf">700.0</span><span class="p">)))</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">prob</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"tau0"</span><span class="p">:</span> <span class="n">tau0</span><span class="p">,</span> <span class="s2">"tau1"</span><span class="p">:</span> <span class="n">tau1</span><span class="p">,</span> <span class="s2">"gamma"</span><span class="p">:</span> <span class="n">gamma</span><span class="p">,</span> <span class="s2">"prob"</span><span class="p">:</span> <span class="n">prob</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_variance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Spike or slab variance per the current indicators, loose elsewhere."""</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_ratio</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">chosen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"gamma"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"tau1"</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"tau0"</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratio</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">chosen</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The Rao-Blackwellized inclusion probability per lag coefficient."""</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"prob"</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""What the averaged diagnostic is."""</span>
+        <span class="k">return</span> <span class="s2">"posterior inclusion probability"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"ssvs(spike=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spike</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, slab=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slab</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, p=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inclusion</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span></div>
+
+
+
+<div class="viewcode-block" id="DirichletLaplacePrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.DirichletLaplacePrior.html#cultivars.bayes.DirichletLaplacePrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DirichletLaplacePrior</span><span class="p">(</span><span class="n">_AdaptivePrior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Dirichlet-Laplace shrinkage: a simplex rations the prior's attention.</span>
+
+<span class="sd">    Bhattacharya, Pati, Pillai and Dunson's (2015) global-local prior. Each</span>
+<span class="sd">    standardized coefficient is Laplace-distributed with its own scale, the</span>
+<span class="sd">    scales are a global magnitude times a point on the simplex drawn from a</span>
+<span class="sd">    ``Dirichlet(concentration)``, and a small concentration makes the</span>
+<span class="sd">    simplex spiky: the prior can only pay attention to a few coefficients</span>
+<span class="sd">    at once, which is a budget constraint the horseshoe does not impose.</span>
+<span class="sd">    Among the continuous shrinkage priors it carries the strongest</span>
+<span class="sd">    theoretical warrant -- posterior contraction at the minimax rate for</span>
+<span class="sd">    sparse means when the concentration is set near ``1/m``.</span>
+
+<span class="sd">    Every conditional is exact: inverse-Gaussian for the local mixing</span>
+<span class="sd">    scales, generalized-inverse-Gaussian for the global magnitude and the</span>
+<span class="sd">    simplex.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        concentration: The Dirichlet concentration; ``0.5`` is the paper's</span>
+<span class="sd">            default, and values near ``1 / (k**2 * order)`` are its</span>
+<span class="sd">            theory's.</span>
+<span class="sd">        deterministic_scale: Looseness of the unshrunk deterministic and</span>
+<span class="sd">            exogenous rows, in units of each equation's residual scale.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">        Bhattacharya, A., Pati, D., Pillai, N. S., &amp; Dunson, D. B. (2015).</span>
+<span class="sd">            Dirichlet-Laplace priors for optimal shrinkage. *Journal of the</span>
+<span class="sd">            American Statistical Association*, 110(512), 1479-1490.</span>
+<span class="sd">    """</span>
+
+    <span class="n">concentration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">deterministic_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reject hyperparameters that do not describe a prior.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the concentration or the deterministic</span>
+<span class="sd">                scale is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">concentration</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"concentration must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">concentration</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"deterministic_scale must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initial_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Uniform simplex, unit local scales, unit global magnitude."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"psi"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="s2">"phi"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">count</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="s2">"tau"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">standardized</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span>
+        <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span>
+        <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""The exact conditionals of Bhattacharya et al. (2015)."""</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">standardized</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">]</span>
+        <span class="n">magnitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">block</span><span class="p">),</span> <span class="mf">1e-10</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concentration</span>
+        <span class="n">phi</span><span class="p">,</span> <span class="n">tau</span> <span class="o">=</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"tau"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">phi</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">/</span> <span class="n">magnitude</span><span class="p">,</span> <span class="mf">1e8</span><span class="p">)</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">wald</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="mf">1e-300</span><span class="p">)</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">_draw_generalized_inverse_gaussian</span><span class="p">(</span>
+                <span class="n">count</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">),</span>
+                <span class="mf">1.0</span><span class="p">,</span>
+                <span class="mf">2.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">magnitude</span> <span class="o">/</span> <span class="n">phi</span><span class="p">)),</span>
+                <span class="n">rng</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_draw_generalized_inverse_gaussian</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">magnitude</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">raw</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"psi"</span><span class="p">:</span> <span class="n">psi</span><span class="p">,</span> <span class="s2">"phi"</span><span class="p">:</span> <span class="n">phi</span><span class="p">,</span> <span class="s2">"tau"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">tau</span><span class="p">])}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_variance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""``ratio**2 * psi * (phi * tau)**2`` on the lag block, loose elsewhere."""</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_ratio</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ratio</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"psi"</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"tau"</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The local-global scale per lag coefficient."""</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"psi"</span><span class="p">])</span> <span class="o">*</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"tau"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""What the averaged diagnostic is."""</span>
+        <span class="k">return</span> <span class="s2">"posterior mean local-global scale of the standardized coefficient"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"dl(a=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">concentration</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span></div>
+
+
+
+<div class="viewcode-block" id="NormalGammaPrior">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.NormalGammaPrior.html#cultivars.bayes.NormalGammaPrior">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NormalGammaPrior</span><span class="p">(</span><span class="n">_AdaptivePrior</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Normal-Gamma shrinkage: the Bayesian lasso's adjustable-kurtosis parent.</span>
+
+<span class="sd">    Griffin and Brown's (2010) prior: each standardized coefficient is</span>
+<span class="sd">    normal with its own variance, and the variances are Gamma with shape</span>
+<span class="sd">    ``shape``. At ``shape = 1`` the marginal is exactly the Laplace of the</span>
+<span class="sd">    Bayesian lasso; pushing the shape below one puts more mass near zero</span>
+<span class="sd">    and fattens the tails simultaneously, which is the knob the lasso</span>
+<span class="sd">    lacks. The Gamma rate is the global tightness and gets its own Gamma</span>
+<span class="sd">    hyperprior, so overall shrinkage is learned rather than tuned. The</span>
+<span class="sd">    variance conditionals are generalized-inverse-Gaussian, drawn exactly.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        shape: The Gamma shape of the local variances; ``1`` is the</span>
+<span class="sd">            Bayesian lasso, smaller is spikier with fatter tails.</span>
+<span class="sd">        deterministic_scale: Looseness of the unshrunk deterministic and</span>
+<span class="sd">            exogenous rows, in units of each equation's residual scale.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">        Griffin, J. E., &amp; Brown, P. J. (2010). Inference with normal-gamma</span>
+<span class="sd">            prior distributions in regression problems. *Bayesian</span>
+<span class="sd">            Analysis*, 5(1), 171-188.</span>
+<span class="sd">    """</span>
+
+    <span class="n">shape</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">deterministic_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Reject hyperparameters that do not describe a prior.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the shape or the deterministic scale is</span>
+<span class="sd">                not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"shape must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"deterministic_scale must be positive; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initial_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Minnesota-tightness local variances; the rate that implies them."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mf">0.04</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"psi"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="s2">"rate"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">/</span> <span class="n">start</span><span class="p">]),</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_scales</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">standardized</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span><span class="p">,</span>
+        <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span>
+        <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""GIG conditionals for the variances, Gamma for the global rate.</span>
+
+<span class="sd">        Squared deviations are floored at ``1e-11``: at an exact zero the</span>
+<span class="sd">        variance conditional is improper for ``shape &lt; 1/2`` (a known</span>
+<span class="sd">        boundary of the hierarchy), and the floor -- three parts per</span>
+<span class="sd">        million on the standardized scale -- restores it without moving</span>
+<span class="sd">        anything statistically visible.</span>
+<span class="sd">        """</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">standardized</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span><span class="p">]</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"rate"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">squared</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">block</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1e-11</span><span class="p">)</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">_draw_generalized_inverse_gaussian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">rate</span><span class="p">,</span> <span class="n">squared</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">+</span> <span class="n">count</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">psi</span><span class="p">)))))</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"psi"</span><span class="p">:</span> <span class="n">psi</span><span class="p">,</span> <span class="s2">"rate"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">rate</span><span class="p">])}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_variance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""``ratio**2 * psi`` on the lag block, loose elsewhere."""</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_ratio</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deterministic_scale</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratio</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">scales</span><span class="p">[</span><span class="s2">"psi"</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scales</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="n">_PriorContext</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The local scale per lag coefficient."""</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">context</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">lag_offset</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="n">context</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">scales</span><span class="p">[</span><span class="s2">"psi"</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracked_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""What the averaged diagnostic is."""</span>
+        <span class="k">return</span> <span class="s2">"posterior mean local-global scale of the standardized coefficient"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short description for a summary table."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"ng(theta=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

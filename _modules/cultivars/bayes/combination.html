@@ -1,0 +1,724 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.bayes.combination &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/bayes/combination';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/bayes/combination.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.bayes.combination</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.bayes.combination</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/bayes/combination.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Model combination: Bayesian model averaging and predictive stacking.</span>
+
+<span class="sd">Two models fitted to the same sample rarely deserve a winner-take-all</span>
+<span class="sd">verdict. A combination weights them and predicts from the mixture, and the</span>
+<span class="sd">two principled ways to choose the weights answer different questions:</span>
+
+<span class="sd">* **Bayesian model averaging** weights by posterior model probability --</span>
+<span class="sd">  marginal likelihood times prior probability, normalized. It is the</span>
+<span class="sd">  coherent answer when one of the models is true, and it concentrates on</span>
+<span class="sd">  the best model as the sample grows. When none is true it still</span>
+<span class="sd">  concentrates, on the model closest in Kullback-Leibler terms, which is</span>
+<span class="sd">  the known weakness: an average over misspecified models ends up as a</span>
+<span class="sd">  single model with extra steps.</span>
+
+<span class="sd">* **Stacking** (Yao, Vehtari, Simpson, and Gelman, 2018) weights to</span>
+<span class="sd">  maximize the out-of-sample log predictive score of the mixture. It does</span>
+<span class="sd">  not assume any model is true and does not concentrate: two models that</span>
+<span class="sd">  err in different directions keep sharing weight indefinitely, which is</span>
+<span class="sd">  why stacking is the combination to use for forecasting. It needs held-out</span>
+<span class="sd">  predictive densities -- one per model per evaluation origin -- which a</span>
+<span class="sd">  rolling-origin backtest produces.</span>
+
+<span class="sd">Both return the same :class:`ModelCombinationSelection`, whose</span>
+<span class="sd">``forecast_paths`` draws from the mixture predictive by drawing a model in</span>
+<span class="sd">proportion to its weight and then one of that model's paths.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Hoeting, J. A., Madigan, D., Raftery, A. E., &amp; Volinsky, C. T. (1999).</span>
+<span class="sd">        Bayesian model averaging: A tutorial. *Statistical Science*, 14(4),</span>
+<span class="sd">        382-401.</span>
+<span class="sd">    Yao, Y., Vehtari, A., Simpson, D., &amp; Gelman, A. (2018). Using stacking</span>
+<span class="sd">        to average Bayesian predictive distributions. *Bayesian Analysis*,</span>
+<span class="sd">        13(3), 917-1007.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">    &gt;&gt;&gt; class Toy:</span>
+<span class="sd">    ...     def __init__(self, level):</span>
+<span class="sd">    ...         self.level = level</span>
+<span class="sd">    ...     def forecast_paths(self, steps=8, *, seed=None):</span>
+<span class="sd">    ...         return np.full((100, steps, 1), self.level)</span>
+<span class="sd">    &gt;&gt;&gt; good = -0.5 * rng.standard_normal(200) ** 2</span>
+<span class="sd">    &gt;&gt;&gt; weights = stacking(</span>
+<span class="sd">    ...     np.column_stack([good, good - 3.0]), (Toy(0.0), Toy(1.0)), names=("a", "b")</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; round(float(weights.weights[0]), 2)</span>
+<span class="sd">    1.0</span>
+<span class="sd">    &gt;&gt;&gt; float(weights.forecast_paths(4, seed=0).mean())</span>
+<span class="sd">    0.0</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_stacking_weights</span><span class="p">,</span>
+    <span class="n">_validate_log_density_matrix</span><span class="p">,</span>
+    <span class="n">_validate_names</span><span class="p">,</span>
+    <span class="n">_validate_predictive</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_MarginalLikelihoodSelection</span> <span class="k">as</span> <span class="n">MarginalLikelihoodSelection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ModelCombinationSelection</span> <span class="k">as</span> <span class="n">ModelCombinationSelection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionError</span><span class="p">,</span> <span class="n">SpecificationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.evidence</span><span class="w"> </span><span class="kn">import</span> <span class="n">marginal_likelihood</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"MarginalLikelihoodSelection"</span><span class="p">,</span>
+    <span class="s2">"ModelCombinationSelection"</span><span class="p">,</span>
+    <span class="s2">"bayesian_model_average"</span><span class="p">,</span>
+    <span class="s2">"stacking"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="bayesian_model_average">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.bayesian_model_average.html#cultivars.bayes.bayesian_model_average">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bayesian_model_average</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">results</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">records</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">MarginalLikelihoodSelection</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prior_probabilities</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelCombinationSelection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Weight models by posterior model probability.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *results: Two or more fitted results on the same sample, each</span>
+<span class="sd">            exposing ``forecast_paths``.</span>
+<span class="sd">        records: Their marginal likelihoods, in the same order; computed</span>
+<span class="sd">            through :func:`~cultivars.bayes.evidence.marginal_likelihood`</span>
+<span class="sd">            when omitted.</span>
+<span class="sd">        prior_probabilities: Prior model probabilities; default equal.</span>
+<span class="sd">        names: Row labels; default each record's ``source``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The combination, with weights ``p(M_m | y)``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If fewer than two results are given, one cannot</span>
+<span class="sd">            simulate its predictive, one has no marginal likelihood, the</span>
+<span class="sd">            records score different numbers of observations, or a prior</span>
+<span class="sd">            probability is negative.</span>
+<span class="sd">        DimensionError: If ``records``, ``names`` or ``prior_probabilities``</span>
+<span class="sd">            do not match the number of results.</span>
+<span class="sd">    """</span>
+    <span class="n">predictive</span> <span class="o">=</span> <span class="n">_validate_predictive</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="n">evidence</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">tuple</span><span class="p">(</span><span class="n">marginal_likelihood</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">predictive</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">records</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">evidence</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">predictive</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">evidence</span><span class="p">)</span><span class="si">}</span><span class="s2"> records for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">predictive</span><span class="p">)</span><span class="si">}</span><span class="s2"> results."</span><span class="p">)</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">nobs</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">evidence</span> <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">nobs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="s2">"The marginal likelihoods score different numbers of observations "</span>
+            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">sorted</span><span class="p">(</span><span class="n">counts</span><span class="p">))</span><span class="si">}</span><span class="s2">); posterior model probabilities "</span>
+            <span class="s2">"are only defined over models fitted to the same sample. Drop leading rows so "</span>
+            <span class="s2">"every model conditions on the same presample and refit."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">prior_probabilities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">prior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">evidence</span><span class="p">),</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">evidence</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">prior_probabilities</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prior</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">evidence</span><span class="p">),):</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Got </span><span class="si">{</span><span class="n">prior</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> prior probabilities for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">evidence</span><span class="p">)</span><span class="si">}</span><span class="s2"> models."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">prior</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">prior</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"Prior model probabilities must be non-negative, not all zero."</span>
+            <span class="p">)</span>
+        <span class="n">prior</span> <span class="o">=</span> <span class="n">prior</span> <span class="o">/</span> <span class="n">prior</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">log_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">record</span><span class="o">.</span><span class="n">log_value</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">evidence</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">log_post</span> <span class="o">=</span> <span class="n">log_values</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_post</span> <span class="o">-</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">log_post</span><span class="p">))</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"Weights are posterior model probabilities; they concentrate on one model as the "</span>
+        <span class="s2">"sample grows even when no model is true, so prefer stacking for forecasting "</span>
+        <span class="s2">"under misspecification."</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">record</span><span class="o">.</span><span class="n">mcse</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">evidence</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">errors</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)):</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s2">"Some marginal likelihoods are simulated; a weight ratio is only as precise as "</span>
+            <span class="s2">"the difference of two log ML estimates with their Monte Carlo errors."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ModelCombinationSelection</span><span class="p">(</span>
+        <span class="n">names</span><span class="o">=</span><span class="n">_validate_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="n">record</span><span class="o">.</span><span class="n">source</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">evidence</span><span class="p">]),</span>
+        <span class="n">weights</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">"bayesian model average"</span><span class="p">,</span>
+        <span class="n">scores</span><span class="o">=</span><span class="n">log_values</span><span class="p">,</span>
+        <span class="n">results</span><span class="o">=</span><span class="n">predictive</span><span class="p">,</span>
+        <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="stacking">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.stacking.html#cultivars.bayes.stacking">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stacking</span><span class="p">(</span>
+    <span class="n">log_density</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">results</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelCombinationSelection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Weight models to maximize the mixture's held-out log predictive score.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        log_density: ``(T, M)`` log predictive densities of the realized</span>
+<span class="sd">            outcome, one row per evaluation origin and one column per model,</span>
+<span class="sd">            in the order of ``results``. These must be out-of-sample --</span>
+<span class="sd">            from a rolling or expanding origin -- or the weights favour</span>
+<span class="sd">            whichever model overfits most.</span>
+<span class="sd">        results: The ``M`` fitted results, each exposing ``forecast_paths``.</span>
+<span class="sd">        names: Row labels; default ``model[0] .. model[M-1]``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The combination, with the log-score-optimal weights and each</span>
+<span class="sd">        model's own mean log score in ``scores``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the matrix, results and names disagree in count.</span>
+<span class="sd">        SpecificationError: If fewer than two models or too few origins.</span>
+<span class="sd">    """</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">_validate_log_density_matrix</span><span class="p">(</span><span class="n">log_density</span><span class="p">)</span>
+    <span class="n">predictive</span> <span class="o">=</span> <span class="n">_validate_predictive</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">predictive</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"log_density has </span><span class="si">{</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">predictive</span><span class="p">)</span><span class="si">}</span><span class="s2"> results."</span>
+        <span class="p">)</span>
+    <span class="n">weights</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">_stacking_weights</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+    <span class="n">own</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">"Stacked mean log score </span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> against the best single model's "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">own</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">; weights need not concentrate, and a spread across models is "</span>
+        <span class="s2">"the finding, not a failure to choose."</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">ModelCombinationSelection</span><span class="p">(</span>
+        <span class="n">names</span><span class="o">=</span><span class="n">_validate_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"model[</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">]"</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">predictive</span><span class="p">))]),</span>
+        <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">"stacking"</span><span class="p">,</span>
+        <span class="n">scores</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">own</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">results</span><span class="o">=</span><span class="n">predictive</span><span class="p">,</span>
+        <span class="n">n_origins</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

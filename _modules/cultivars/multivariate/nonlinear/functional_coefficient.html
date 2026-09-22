@@ -1,0 +1,989 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.nonlinear.functional_coefficient &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/nonlinear/functional_coefficient';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/nonlinear/functional_coefficient.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.nonlinear.functional_coefficient</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.nonlinear.functional_coefficient</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/nonlinear/functional_coefficient.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""The functional-coefficient VAR: every state value gets its own system.</span>
+
+<span class="sd">This is the nonparametric end of the observed-transition family. A threshold</span>
+<span class="sd">VAR assigns each value of an observable state one of two systems; a</span>
+<span class="sd">smooth-transition VAR blends the same two anchors; here the coefficient</span>
+<span class="sd">matrices are unknown smooth *functions* of the state (Chen &amp; Tsay 1993; Cai,</span>
+<span class="sd">Fan &amp; Yao 2000), estimated by local-linear kernel regression with nothing</span>
+<span class="sd">assumed about their shape but smoothness. The payoff is diagnostic as much as</span>
+<span class="sd">predictive: the estimated curves show whether transmission actually varies in</span>
+<span class="sd">the state, and whether its variation looks like a threshold, a smooth</span>
+<span class="sd">transition, or something neither parametric family can express -- which is</span>
+<span class="sd">why this model is the natural specification check on both.</span>
+
+<span class="sd">The price of assuming nothing is paid in two currencies the result reports</span>
+<span class="sd">honestly. Statistical: there is no likelihood and no parameter count -- the</span>
+<span class="sd">estimator's complexity is the trace of its smoother matrix, reported as</span>
+<span class="sd">``effective_params``, and no information criteria are derivable from a kernel</span>
+<span class="sd">fit. Practical: everything is local, so the curves are trustworthy only</span>
+<span class="sd">where the state has mass -- they are reported on a trimmed grid, refuse to</span>
+<span class="sd">extrapolate beyond it, and carry pointwise bands that are conditional on the</span>
+<span class="sd">bandwidth rather than accounting for its selection.</span>
+
+<span class="sd">One identification fact is handled by construction rather than by a warning.</span>
+<span class="sd">When the state is one of the design's own lag columns -- the usual</span>
+<span class="sd">self-exciting case -- the intercept function's local slope is *exactly*</span>
+<span class="sd">collinear with the design, so the intercept is fitted local-constant while</span>
+<span class="sd">every other coefficient stays local-linear; the engine's</span>
+<span class="sd">``_state_in_design`` note states the algebra.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Chen, R., &amp; Tsay, R. S. (1993). Functional-coefficient autoregressive</span>
+<span class="sd">        models. *Journal of the American Statistical Association*, 88(421),</span>
+<span class="sd">        298-308.</span>
+<span class="sd">    Cai, Z., Fan, J., &amp; Yao, Q. (2000). Functional-coefficient regression</span>
+<span class="sd">        models for nonlinear time series. *Journal of the American</span>
+<span class="sd">        Statistical Association*, 95(451), 941-956.</span>
+<span class="sd">    Hastie, T., &amp; Tibshirani, R. (1993). Varying-coefficient models.</span>
+<span class="sd">        *Journal of the Royal Statistical Society, Series B*, 55(4),</span>
+<span class="sd">        757-796.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryTable</span><span class="p">,</span> <span class="n">companion_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_FunctionalCoefficientVectorAutoRegressionModel</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_VectorFunctionalFit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"FunctionalCoefficientVAR"</span><span class="p">,</span> <span class="s2">"FunctionalCoefficientVARResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="FunctionalCoefficientVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVARResult.html#cultivars.multivariate.FunctionalCoefficientVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionalCoefficientVARResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted functional-coefficient VAR: coefficient curves over the state.</span>
+
+<span class="sd">    Deliberately absent: ``llf``, ``n_params``, information criteria. A</span>
+<span class="sd">    kernel estimator maximizes no likelihood; its complexity is</span>
+<span class="sd">    :attr:`effective_params`, the trace of the smoother matrix.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The observed panel.</span>
+<span class="sd">        names: Variable labels, in column order.</span>
+<span class="sd">        order: Autoregressive order.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">        delay: Delay of the state variable.</span>
+<span class="sd">        state_name: The state variable's label -- a variable name when</span>
+<span class="sd">            self-exciting, ``"external"`` otherwise.</span>
+<span class="sd">        state_values: The delayed state ``z_t``, aligned with ``resid``.</span>
+<span class="sd">        transition_series: The raw state series, aligned with ``endog``.</span>
+<span class="sd">        grid: ``(G,)`` state values the curves are evaluated on.</span>
+<span class="sd">        curves: ``(G, w, k)`` local-linear level coefficients, design-major:</span>
+<span class="sd">            ``curves[g, :, i]`` is equation ``i``'s coefficient vector at</span>
+<span class="sd">            ``grid[g]``, columns ordered deterministics first, then lags.</span>
+<span class="sd">        curve_se: ``(G, w, k)`` pointwise standard errors, conditional on</span>
+<span class="sd">            the bandwidth.</span>
+<span class="sd">        bandwidth: The bandwidth the curves were estimated at.</span>
+<span class="sd">        bandwidth_searched: Whether the bandwidth came from leave-one-out</span>
+<span class="sd">            cross-validation rather than the caller.</span>
+<span class="sd">        effective_params: Trace of the smoother matrix -- the kernel</span>
+<span class="sd">            estimator's analogue of a parameter count.</span>
+<span class="sd">        sigma_u: ``(k, k)`` innovation covariance, corrected by the</span>
+<span class="sd">            effective degrees of freedom and assumed constant in the state.</span>
+<span class="sd">        resid: Residuals of the local fits at the observed states.</span>
+<span class="sd">        fittedvalues: One-step conditional means at the observed states.</span>
+<span class="sd">        nobs: Effective sample size.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">state_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">state_values</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">transition_series</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">grid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">curves</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">curve_se</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">bandwidth_searched</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">effective_params</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">sigma_u</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">resid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fittedvalues</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">fit</span><span class="p">:</span> <span class="n">_VectorFunctionalFit</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">_FunctionalCoefficientVectorAutoRegressionModel</span><span class="p">[</span><span class="n">FunctionalCoefficientVARResult</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalCoefficientVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">delay</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span>
+            <span class="n">state_name</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">transition_name</span><span class="p">,</span>
+            <span class="n">state_values</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">state_values</span><span class="p">,</span>
+            <span class="n">transition_series</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">transition_series</span><span class="p">,</span>
+            <span class="n">grid</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+            <span class="n">curves</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">curves</span><span class="p">,</span>
+            <span class="n">curve_se</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">curve_se</span><span class="p">,</span>
+            <span class="n">bandwidth</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">,</span>
+            <span class="n">bandwidth_searched</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">bandwidth_searched</span><span class="p">,</span>
+            <span class="n">effective_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">effective_params</span><span class="p">,</span>
+            <span class="n">sigma_u</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of endogenous variables."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_n_deterministic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Deterministic columns per equation."""</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"n"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">:</span> <span class="mi">2</span><span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The state interval the curves are estimated on."""</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_regressor_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Per-equation regressor labels, in design order."""</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"const"</span><span class="p">,</span> <span class="s2">"trend"</span><span class="p">)[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic</span><span class="p">]</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">.L</span><span class="si">{</span><span class="n">lag</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="n">det</span><span class="p">,</span> <span class="o">*</span><span class="n">lags</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FunctionalCoefficientVARResult.coefficient_curve">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVARResult.html#cultivars.multivariate.FunctionalCoefficientVARResult.coefficient_curve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficient_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">regressor</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""One coefficient's estimated curve over the state grid.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            equation: An endogenous variable.</span>
+<span class="sd">            regressor: A per-equation regressor label -- ``"const"``,</span>
+<span class="sd">                ``"trend"``, or ``"{name}.L{lag}"``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(G, 3)`` array with columns ``(low, point, high)``, the band</span>
+<span class="sd">            one pointwise standard error each side -- conditional on the</span>
+<span class="sd">            bandwidth, so read it as precision at this smoothing, not as</span>
+<span class="sd">            inference over smoothings.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the equation or regressor is unknown.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">equation</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"unknown variable </span><span class="si">{</span><span class="n">equation</span><span class="si">!r}</span><span class="s2">; expected one of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regressor_labels</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">regressor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown regressor </span><span class="si">{</span><span class="n">regressor</span><span class="si">!r}</span><span class="s2">; expected one of </span><span class="si">{</span><span class="n">labels</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">column</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">regressor</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">equation</span><span class="p">)</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curves</span><span class="p">[:,</span> <span class="n">column</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">spread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curve_se</span><span class="p">[:,</span> <span class="n">column</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">point</span> <span class="o">-</span> <span class="n">spread</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">point</span> <span class="o">+</span> <span class="n">spread</span><span class="p">])</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_matrix_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The full ``(w, k)`` coefficient matrix at one state value.</span>
+
+<span class="sd">        Linear interpolation between the two bracketing grid points --</span>
+<span class="sd">        exact at grid points, and refusing to extrapolate: a kernel</span>
+<span class="sd">        estimate outside the data's state range is a guess about a region</span>
+<span class="sd">        the estimator never saw.</span>
+<span class="sd">        """</span>
+        <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_range</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">u</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"state value </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2"> lies outside the estimated range "</span>
+                <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">low</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">]; kernel estimates do not "</span>
+                <span class="s2">"extrapolate."</span>
+            <span class="p">)</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">"right"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">curves</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">curves</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">position</span><span class="p">]</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">u</span> <span class="o">-</span> <span class="n">left</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">))</span>
+        <span class="n">blended</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">weight</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">curves</span><span class="p">[</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">curves</span><span class="p">[</span><span class="n">position</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">blended</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FunctionalCoefficientVARResult.coefficients_at">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVARResult.html#cultivars.multivariate.FunctionalCoefficientVARResult.coefficients_at">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coefficients_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The lag stack ``A_1(u), ..., A_p(u)`` prevailing at one state value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            u: A state value inside :attr:`state_range`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(p, k, k)`` stack.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``u`` lies outside the estimated range.</span>
+<span class="sd">        """</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_at</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">matrix</span><span class="p">[</span><span class="n">offset</span> <span class="o">+</span> <span class="n">lag</span> <span class="o">*</span> <span class="n">k</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="n">lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FunctionalCoefficientVARResult.stability_curve">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVARResult.html#cultivars.multivariate.FunctionalCoefficientVARResult.stability_curve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stability_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Largest companion-root modulus of the local system along the grid.</span>
+
+<span class="sd">        A functional-coefficient process can be locally explosive over part</span>
+<span class="sd">        of the state space and globally stable -- excursions into the</span>
+<span class="sd">        explosive region get pulled back -- so a modulus above one here is</span>
+<span class="sd">        a prompt to look, not a verdict.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of length ``G``, aligned with :attr:`grid`.</span>
+<span class="sd">        """</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">):</span>
+            <span class="n">eigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">companion_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients_at</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">u</span><span class="p">))))</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigs</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="FunctionalCoefficientVARResult.irf">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVARResult.html#cultivars.multivariate.FunctionalCoefficientVARResult.irf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">irf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">u</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">orthogonalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">cumulative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Impulse responses at one state value, held frozen.</span>
+
+<span class="sd">        The family's usual linearization, in its continuous form: the</span>
+<span class="sd">        coefficients are frozen at ``A(u)``, so the response is exact only</span>
+<span class="sd">        while the shock does not move the state -- read it as the</span>
+<span class="sd">        transmission prevailing at ``u``. Orthogonalization uses the single</span>
+<span class="sd">        estimated covariance under the model's constant-covariance</span>
+<span class="sd">        assumption; the ordering of ``names`` is then an identifying</span>
+<span class="sd">        assumption, as for a linear VAR.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+<span class="sd">            u: A state value inside :attr:`state_range`.</span>
+<span class="sd">            orthogonalized: Rotate by the Cholesky factor of ``sigma_u``.</span>
+<span class="sd">            cumulative: Return running sums.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]``</span>
+<span class="sd">            is the response of variable ``i`` at lead ``h`` to shock ``j``,</span>
+<span class="sd">            as of state ``u``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``horizon`` is negative or ``u`` is</span>
+<span class="sd">                outside the estimated range.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">horizon</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"horizon must be non-negative; got </span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients_at</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">psi</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">psi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">*</span> <span class="n">p</span><span class="p">))</span>
+            <span class="n">selector</span><span class="p">[:,</span> <span class="p">:</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span>
+            <span class="n">companion</span> <span class="o">=</span> <span class="n">companion_matrix</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">psi</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="n">selector</span> <span class="o">@</span> <span class="n">power</span> <span class="o">@</span> <span class="n">selector</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">power</span> <span class="o">=</span> <span class="n">power</span> <span class="o">@</span> <span class="n">companion</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">psi</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">)</span> <span class="k">if</span> <span class="n">orthogonalized</span> <span class="k">else</span> <span class="n">psi</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">cumulative</span> <span class="k">else</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="FunctionalCoefficientVARResult.forecast">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVARResult.html#cultivars.multivariate.FunctionalCoefficientVARResult.forecast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The one-step-ahead conditional mean.</span>
+
+<span class="sd">        One step because that is what the observed state licenses: with</span>
+<span class="sd">        delay ``d &gt;= 1`` the state that governs period ``T + 1`` is already</span>
+<span class="sd">        observed at ``T``, so the forecast is an evaluation, not a</span>
+<span class="sd">        simulation. Further steps would need the state's own future, which</span>
+<span class="sd">        is the nonlinear simulation problem this result does not fake.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(k,)`` array.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the next period's state lies outside the</span>
+<span class="sd">                estimated range.</span>
+<span class="sd">        """</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">next_state</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transition_series</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">])</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_at</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"n"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"c"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="s2">"ct"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]}[</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">]</span>
+        <span class="n">regressors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)]</span>
+            <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">lag</span><span class="p">]</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">regressors</span> <span class="o">@</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regressor_labels</span><span class="p">()</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">own</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.L1"</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="ow">and</span> <span class="n">own</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+                <span class="n">column</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">own</span><span class="p">)</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">name</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">curves</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">column</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">curves</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">column</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">))</span>
+        <span class="n">roots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_curve</span><span class="p">()</span>
+        <span class="n">bandwidth_note</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Bandwidth </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> chosen by leave-one-out cross-validation."</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth_searched</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">"Bandwidth </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> stated by the caller."</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">bandwidth_note</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Effective parameters (trace of the smoother): "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">effective_params</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">. No likelihood, parameter count, "</span>
+            <span class="s2">"or information criteria exist for a kernel fit, so none are "</span>
+            <span class="s2">"reported."</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Max companion-root modulus along the grid: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">roots</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (local explosiveness with global "</span>
+            <span class="s2">"stability is possible; stability_curve() shows where)."</span><span class="p">,</span>
+            <span class="s2">"Curve bands are pointwise, one standard error, and conditional "</span>
+            <span class="s2">"on the bandwidth; they do not account for its selection."</span><span class="p">,</span>
+            <span class="s2">"Curves are reported on the trimmed state range only and "</span>
+            <span class="s2">"refuse to extrapolate beyond it; observations whose state "</span>
+            <span class="s2">"falls outside that range take the boundary system for their "</span>
+            <span class="s2">"fitted value."</span><span class="p">,</span>
+            <span class="s2">"irf(u=...) freezes the coefficients at one state value; read "</span>
+            <span class="s2">"it as the transmission prevailing there, exact only while the "</span>
+            <span class="s2">"shock does not move the state."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_range</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Functional-coefficient VAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">) Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"FC-VAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"State"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state_name</span><span class="si">}</span><span class="s2"> (delay </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"State range"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">low</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">]"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Kernel"</span><span class="p">,</span> <span class="s2">"Epanechnikov, local linear"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Grid points"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"equation"</span><span class="p">,</span> <span class="s2">"own L1 at state low"</span><span class="p">,</span> <span class="s2">"own L1 at state high"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="FunctionalCoefficientVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVAR.html#cultivars.multivariate.FunctionalCoefficientVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FunctionalCoefficientVAR</span><span class="p">(</span>
+    <span class="n">_FunctionalCoefficientVectorAutoRegressionModel</span><span class="p">[</span><span class="n">FunctionalCoefficientVARResult</span><span class="p">]</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Functional-coefficient VAR, Cai-Fan-Yao local-linear estimation.</span>
+
+<span class="sd">    Every coefficient is an unknown smooth function of an observable state</span>
+<span class="sd">    -- a named variable's own lag, or an external series -- estimated with</span>
+<span class="sd">    no assumption on its shape. The bandwidth is the one tuning constant;</span>
+<span class="sd">    left unstated, it is chosen by exact leave-one-out cross-validation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The observed panel, shape ``(nobs, k)``.</span>
+<span class="sd">        order: Autoregressive order, at least one.</span>
+<span class="sd">        transition_variable: A variable name from ``names`` (the state is</span>
+<span class="sd">            that variable's own lag) or an aligned external series.</span>
+<span class="sd">        delay: Delay of the state variable. Defaults to one.</span>
+<span class="sd">        trend: Deterministic terms.</span>
+<span class="sd">        names: One label per variable. Defaults to ``y1 ... yk``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((250, 2))</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 250):</span>
+<span class="sd">        ...     a = 0.8 * np.tanh(y[t - 1, 0])</span>
+<span class="sd">        ...     y[t, 0] = a * y[t - 1, 0] + 0.5 * rng.standard_normal()</span>
+<span class="sd">        ...     y[t, 1] = 0.4 * y[t - 1, 1] + 0.5 * rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; model = FunctionalCoefficientVAR(y, order=1, transition_variable="y1")</span>
+<span class="sd">        &gt;&gt;&gt; res = model.fit(bandwidth=1.2, n_grid=21)</span>
+<span class="sd">        &gt;&gt;&gt; res.coefficient_curve("y1", "y1.L1").shape</span>
+<span class="sd">        (21, 3)</span>
+<span class="sd">        &gt;&gt;&gt; res.irf(4, u=0.0).shape</span>
+<span class="sd">        (5, 2, 2)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+<div class="viewcode-block" id="FunctionalCoefficientVAR.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.FunctionalCoefficientVAR.html#cultivars.multivariate.FunctionalCoefficientVAR.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_grid</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">51</span><span class="p">,</span>
+        <span class="n">trim</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunctionalCoefficientVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate the coefficient curves by local-linear kernel regression.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bandwidth: Kernel bandwidth in the state variable's units, or</span>
+<span class="sd">                ``None`` to select by leave-one-out cross-validation on a</span>
+<span class="sd">                grid around the Silverman-scaled rule of thumb.</span>
+<span class="sd">            n_grid: Evaluation points for the reported curves.</span>
+<span class="sd">            trim: Quantile trimmed from each end of the state range before</span>
+<span class="sd">                the curve grid is laid down.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted :class:`FunctionalCoefficientVARResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If a stated bandwidth is not positive.</span>
+<span class="sd">            NumericalError: If no bandwidth identifies every local system.</span>
+<span class="sd">        """</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_functional</span><span class="p">(</span><span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">,</span> <span class="n">n_grid</span><span class="o">=</span><span class="n">n_grid</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FunctionalCoefficientVARResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

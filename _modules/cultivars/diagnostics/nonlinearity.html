@@ -1,0 +1,1108 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.diagnostics.nonlinearity &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/diagnostics/nonlinearity';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/diagnostics/nonlinearity.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.diagnostics.nonlinearity</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.diagnostics.nonlinearity</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/diagnostics/nonlinearity.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Nonlinearity gateways: the tests that justify a regime model before it is fit.</span>
+
+<span class="sd">A threshold or smooth-transition model is a claim that a linear</span>
+<span class="sd">autoregression is wrong in a specific way, and the claim should be</span>
+<span class="sd">tested on the linear model's own terms before the nonlinear one is</span>
+<span class="sd">estimated. Four tests do that from different directions. Teräsvirta's</span>
+<span class="sd">LM test nests the smooth transition in a cubic auxiliary regression and</span>
+<span class="sd">carries a device for choosing between logistic and exponential</span>
+<span class="sd">transitions. Tsay's arranged autoregression sorts the sample by the</span>
+<span class="sd">threshold variable and asks whether the recursive predictive residuals</span>
+<span class="sd">drift as the recursion crosses a threshold; it names no functional form.</span>
+<span class="sd">Hansen's sup-F is the likelihood-ratio test of a SETAR against its</span>
+<span class="sd">linear restriction, whose nuisance parameter -- the threshold -- is</span>
+<span class="sd">unidentified under the null, so its p-value is simulated. Ramsey's RESET</span>
+<span class="sd">is the general-purpose check that the linear fit has left a smooth</span>
+<span class="sd">function of itself in the residual. The BDS statistic is the odd one</span>
+<span class="sd">out: applied to residuals, it tests independence against any dependence</span>
+<span class="sd">at all, linear or not, and rejects for neglected conditional</span>
+<span class="sd">heteroskedasticity as readily as for a threshold, which is why it is</span>
+<span class="sd">read after an ARCH test and not instead of one.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Teräsvirta, T. (1994). Specification, estimation, and evaluation of</span>
+<span class="sd">        smooth transition autoregressive models. *Journal of the</span>
+<span class="sd">        American Statistical Association*, 89(425), 208-218.</span>
+<span class="sd">    Tsay, R. S. (1989). Testing and modeling threshold autoregressive</span>
+<span class="sd">        processes. *Journal of the American Statistical Association*,</span>
+<span class="sd">        84(405), 231-240.</span>
+<span class="sd">    Hansen, B. E. (1996). Inference when a nuisance parameter is not</span>
+<span class="sd">        identified under the null hypothesis. *Econometrica*, 64(2),</span>
+<span class="sd">        413-430.</span>
+<span class="sd">    Ramsey, J. B. (1969). Tests for specification errors in classical</span>
+<span class="sd">        linear least-squares regression analysis. *Journal of the Royal</span>
+<span class="sd">        Statistical Society B*, 31(2), 350-371.</span>
+<span class="sd">    Brock, W. A., Dechert, W. D., Scheinkman, J. A., &amp; LeBaron, B.</span>
+<span class="sd">        (1996). A test for independence based on the correlation</span>
+<span class="sd">        dimension. *Econometric Reviews*, 15(3), 197-235.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_BDS_RADIUS</span><span class="p">,</span>
+    <span class="n">_CRITICAL_LEVELS</span><span class="p">,</span>
+    <span class="n">_DEFAULT_GRID</span><span class="p">,</span>
+    <span class="n">_DEFAULT_TRIM</span><span class="p">,</span>
+    <span class="n">_HANSEN_REPLICATIONS</span><span class="p">,</span>
+    <span class="n">_NULL</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_bds</span><span class="p">,</span>
+    <span class="n">_hansen_threshold</span><span class="p">,</span>
+    <span class="n">_reset_test</span><span class="p">,</span>
+    <span class="n">_simulated_critical_values</span><span class="p">,</span>
+    <span class="n">_terasvirta_lm</span><span class="p">,</span>
+    <span class="n">_tsay_arranged</span><span class="p">,</span>
+    <span class="n">validate_endog</span><span class="p">,</span>
+    <span class="n">validate_open_interval</span><span class="p">,</span>
+    <span class="n">validate_order</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_HypothesisTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"BDSTest"</span><span class="p">,</span>
+    <span class="s2">"LinearityTest"</span><span class="p">,</span>
+    <span class="s2">"bds"</span><span class="p">,</span>
+    <span class="s2">"hansen_threshold"</span><span class="p">,</span>
+    <span class="s2">"reset"</span><span class="p">,</span>
+    <span class="s2">"terasvirta"</span><span class="p">,</span>
+    <span class="s2">"tsay"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="LinearityTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.LinearityTest.html#cultivars.diagnostics.LinearityTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LinearityTest</span><span class="p">(</span><span class="n">_HypothesisTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of a test of a linear autoregression against a nonlinear alternative.</span>
+
+<span class="sd">    The four members share a null -- the AR(``order``) is correctly</span>
+<span class="sd">    specified -- and differ in the alternative they aim at, which the</span>
+<span class="sd">    record names: a rejection by Tsay says "threshold", a rejection by</span>
+<span class="sd">    Teräsvirta says "smooth transition" and, through the escalation</span>
+<span class="sd">    sequence carried as ``companions``, which kind. Hansen's test alone</span>
+<span class="sd">    locates the threshold it found and reports simulated critical</span>
+<span class="sd">    values, since its sup statistic has no tabulated law.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: The test.</span>
+<span class="sd">        statistic: The test statistic, ``F`` for the regression tests</span>
+<span class="sd">            and sup-``F`` for Hansen.</span>
+<span class="sd">        pvalue: Its p-value.</span>
+<span class="sd">        df: ``(numerator, denominator)`` degrees of freedom of an</span>
+<span class="sd">            ``F`` reference; ``None`` for a simulated law.</span>
+<span class="sd">        null: The hypothesis under test.</span>
+<span class="sd">        alternative: What a rejection points to.</span>
+<span class="sd">        order: Autoregressive order of the linear null.</span>
+<span class="sd">        delay: Delay of the transition variable, or ``None`` where the</span>
+<span class="sd">            test has none.</span>
+<span class="sd">        nobs: Observations in the auxiliary regression.</span>
+<span class="sd">        threshold: Hansen's estimated threshold; ``None`` otherwise.</span>
+<span class="sd">        critical_values: Simulated ``{"1%", "5%", "10%"}`` critical</span>
+<span class="sd">            values for Hansen; ``None`` otherwise.</span>
+<span class="sd">        suggestion: Teräsvirta's model-selection reading, ``"LSTAR"``</span>
+<span class="sd">            or ``"ESTAR"``; ``None`` otherwise.</span>
+<span class="sd">        companions: The steps of Teräsvirta's escalation sequence.</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">pvalue</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">df</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">null</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">alternative</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">critical_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">suggestion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">companions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">LinearityTest</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">(),</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_row</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""One table row."""</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="s2">""</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Render as a table, companions included."""</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">"reject linearity"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"keep linearity"</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">"Null"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">null</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Alternative"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alternative</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Order"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">"Verdict at 5%"</span><span class="p">,</span> <span class="n">verdict</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">(</span><span class="s2">"Delay"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Threshold"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="n">notes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cv</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_values</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Simulated critical values </span><span class="si">{</span><span class="n">cv</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suggestion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Escalation sequence H04, H03, H02 read by Teräsvirta's rule: the "</span>
+                <span class="sa">f</span><span class="s2">"strongest rejection points to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">suggestion</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> Linearity Test"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="s2">"statistic"</span><span class="p">,</span> <span class="s2">"df"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_row</span><span class="p">(),</span> <span class="o">*</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">_row</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">companions</span><span class="p">)),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""One-line verdict."""</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"LinearityTest(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"pvalue=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, order=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, nobs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BDSTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.BDSTest.html#cultivars.diagnostics.BDSTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BDSTest</span><span class="p">(</span><span class="n">_HypothesisTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of the BDS test of independence at one embedding dimension.</span>
+
+<span class="sd">    The record is the statistic at the largest dimension asked for, with</span>
+<span class="sd">    the lower dimensions as ``companions``; a dependence that shows at</span>
+<span class="sd">    every dimension is the usual signature of neglected conditional</span>
+<span class="sd">    heteroskedasticity, one that appears only at high dimension is rarer</span>
+<span class="sd">    and worth a look. The asymptotic normal reference is reliable from</span>
+<span class="sd">    about 500 observations and over-rejects below that -- roughly 8% at</span>
+<span class="sd">    nominal 5% on 250 Gaussian observations, 15% on 100 -- which the</span>
+<span class="sd">    record says.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        statistic: The standardized statistic ``W_m``.</span>
+<span class="sd">        pvalue: Its two-sided standard normal p-value.</span>
+<span class="sd">        dimension: The embedding dimension ``m``.</span>
+<span class="sd">        epsilon: The radius, in the units of the series.</span>
+<span class="sd">        nobs: Observations.</span>
+<span class="sd">        companions: The lower dimensions ``2 .. m - 1``.</span>
+<span class="sd">    """</span>
+
+    <span class="n">pvalue</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">dimension</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">companions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">BDSTest</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">(),</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_row</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""One table row."""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Render as a table over the embedding dimensions."""</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">"reject independence"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"keep independence"</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">_row</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">companions</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row</span><span class="p">())</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"Two-sided standard normal reference. On residuals, a rejection at every "</span>
+            <span class="s2">"dimension usually means neglected conditional heteroskedasticity; run an "</span>
+            <span class="s2">"ARCH test before reading it as a threshold."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nobs</span> <span class="o">&lt;</span> <span class="mi">500</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"With </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2"> observations the asymptotic reference over-rejects; "</span>
+                <span class="s2">"treat p-values near the level as inconclusive."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"BDS Independence Test"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Radius"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Verdict at 5%"</span><span class="p">,</span> <span class="n">verdict</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"dimension"</span><span class="p">,</span> <span class="s2">"statistic"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""One-line verdict."""</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"BDSTest(statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, pvalue=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"dimension=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="si">}</span><span class="s2">, nobs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_specification</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Refuse an order or delay the series cannot carry.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the sample is shorter than the auxiliary</span>
+<span class="sd">            regression needs.</span>
+<span class="sd">    """</span>
+    <span class="n">needed</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">10</span>
+    <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">needed</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"a nonlinearity test of order </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2"> and delay </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2"> needs at least </span><span class="si">{</span><span class="n">needed</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"observations; got </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="terasvirta">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.terasvirta.html#cultivars.diagnostics.terasvirta">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">terasvirta</span><span class="p">(</span><span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearityTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Teräsvirta's (1994) LM-type test of linearity against smooth transition.</span>
+
+<span class="sd">    The STAR alternative is replaced by its third-order Taylor expansion</span>
+<span class="sd">    in the transition variable ``y_{t - delay}``, so the null of</span>
+<span class="sd">    linearity becomes the exclusion of ``3 order`` cubic interaction</span>
+<span class="sd">    terms from an auxiliary regression of the AR residual, referred to</span>
+<span class="sd">    ``F`` because the chi-squared form over-rejects at the sample sizes</span>
+<span class="sd">    the test meets. The escalation sequence ``H04, H03, H02`` in</span>
+<span class="sd">    ``companions`` is the paper's rule for choosing the transition: when</span>
+<span class="sd">    the quadratic step ``H03`` rejects most strongly the transition is</span>
+<span class="sd">    exponential (ESTAR), otherwise logistic (LSTAR). At order 1 the test</span>
+<span class="sd">    holds size at 4% on 100 observations and rejects a two-regime SETAR</span>
+<span class="sd">    or LSTAR with 250 observations essentially always.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        order: Autoregressive order of the linear null.</span>
+<span class="sd">        delay: Delay of the transition variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`LinearityTest` with ``suggestion`` set.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the order or delay is not positive or the</span>
+<span class="sd">            series is too short.</span>
+<span class="sd">        NumericalError: If the auxiliary regressions are degenerate.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros(300)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 300):</span>
+<span class="sd">        ...     g = 1.0 / (1.0 + np.exp(-5.0 * y[t - 1]))</span>
+<span class="sd">        ...     y[t] = 0.8 * y[t - 1] - 1.4 * y[t - 1] * g + rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; verdict = terasvirta(y, order=1)</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.reject()), verdict.suggestion</span>
+<span class="sd">        (True, 'LSTAR')</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="s2">"order"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="s2">"delay"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">_check_specification</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">),</span> <span class="n">steps</span> <span class="o">=</span> <span class="n">_terasvirta_lm</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span>
+    <span class="n">nobs</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span>
+    <span class="n">null</span> <span class="o">=</span> <span class="n">_NULL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+    <span class="n">companions</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">LinearityTest</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">statistic</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
+            <span class="n">pvalue</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+            <span class="n">df</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span>
+            <span class="n">null</span><span class="o">=</span><span class="n">hypothesis</span><span class="p">,</span>
+            <span class="n">alternative</span><span class="o">=</span><span class="s2">"smooth transition"</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">delay</span><span class="o">=</span><span class="n">delay</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">hypothesis</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">"H04"</span><span class="p">,</span> <span class="s2">"H03"</span><span class="p">,</span> <span class="s2">"H02"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"cubic terms vanish"</span><span class="p">,</span> <span class="s2">"quadratic terms vanish given cubic"</span><span class="p">,</span> <span class="s2">"linear terms vanish"</span><span class="p">),</span>
+            <span class="n">steps</span><span class="p">,</span>
+            <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">suggestion</span> <span class="o">=</span> <span class="s2">"ESTAR"</span> <span class="k">if</span> <span class="n">steps</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">steps</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="k">else</span> <span class="s2">"LSTAR"</span>
+    <span class="k">return</span> <span class="n">LinearityTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"Teräsvirta"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+        <span class="n">df</span><span class="o">=</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">),</span>
+        <span class="n">null</span><span class="o">=</span><span class="n">null</span><span class="p">,</span>
+        <span class="n">alternative</span><span class="o">=</span><span class="s2">"smooth transition"</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">delay</span><span class="o">=</span><span class="n">delay</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span>
+        <span class="n">suggestion</span><span class="o">=</span><span class="n">suggestion</span><span class="p">,</span>
+        <span class="n">companions</span><span class="o">=</span><span class="n">companions</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="tsay">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.tsay.html#cultivars.diagnostics.tsay">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tsay</span><span class="p">(</span><span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearityTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tsay's (1989) arranged-autoregression test of linearity against a threshold.</span>
+
+<span class="sd">    The AR rows are sorted by ``y_{t - delay}`` and fitted recursively</span>
+<span class="sd">    down the sorted sample from ``3 sqrt(T) + order`` rows on; under</span>
+<span class="sd">    linearity the standardized one-step predictive residuals are white</span>
+<span class="sd">    and orthogonal to the regressors, while a threshold shifts their</span>
+<span class="sd">    mean once the recursion crosses it. The ``F`` test of the predictive</span>
+<span class="sd">    residuals on the regressors is the statistic. It assumes no</span>
+<span class="sd">    functional form for the transition and is the natural first look</span>
+<span class="sd">    before a SETAR; at order 1 it holds 5% size on 100 observations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        order: Autoregressive order of the linear null.</span>
+<span class="sd">        delay: Delay of the threshold variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`LinearityTest`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the order or delay is not positive or the</span>
+<span class="sd">            series is too short.</span>
+<span class="sd">        NumericalError: If the recursion cannot start or the final</span>
+<span class="sd">            regression is degenerate.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros(300)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 300):</span>
+<span class="sd">        ...     slope = 0.8 if y[t - 1] &lt;= 0.0 else -0.5</span>
+<span class="sd">        ...     y[t] = slope * y[t - 1] + rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; bool(tsay(y, order=1).reject())</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="s2">"order"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="s2">"delay"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">_check_specification</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">df1</span><span class="p">,</span> <span class="n">df2</span> <span class="o">=</span> <span class="n">_tsay_arranged</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">LinearityTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"Tsay"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+        <span class="n">df</span><span class="o">=</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">),</span>
+        <span class="n">null</span><span class="o">=</span><span class="n">_NULL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">),</span>
+        <span class="n">alternative</span><span class="o">=</span><span class="s2">"threshold"</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">delay</span><span class="o">=</span><span class="n">delay</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">delay</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reset">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.reset.html#cultivars.diagnostics.reset">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">powers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearityTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Ramsey's RESET on an autoregression: do powers of the fitted value explain the residual?</span>
+
+<span class="sd">    Powers ``2 .. powers`` of the AR(``order``) fitted value are added to</span>
+<span class="sd">    the regression and their joint exclusion tested by ``F``. The test</span>
+<span class="sd">    names no alternative -- any smooth misspecification of the</span>
+<span class="sd">    conditional mean raises the fitted value's powers -- so it is the</span>
+<span class="sd">    general-purpose check to run when the regime tests disagree.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        order: Autoregressive order of the linear null.</span>
+<span class="sd">        powers: Highest power of the fitted value added; ``2`` tests</span>
+<span class="sd">            the square alone.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`LinearityTest`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the order is not positive, ``powers`` is</span>
+<span class="sd">            below 2, or the series is too short.</span>
+<span class="sd">        NumericalError: If the augmented regression is degenerate.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros(300)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 300):</span>
+<span class="sd">        ...     y[t] = 0.5 * y[t - 1] + rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; bool(reset(y, order=1).pvalue &gt; 0.05)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="s2">"order"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">powers</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">powers</span><span class="p">,</span> <span class="s2">"powers"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">_check_specification</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">df1</span><span class="p">,</span> <span class="n">df2</span> <span class="o">=</span> <span class="n">_reset_test</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">powers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">LinearityTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"RESET"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+        <span class="n">df</span><span class="o">=</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">),</span>
+        <span class="n">null</span><span class="o">=</span><span class="n">_NULL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">),</span>
+        <span class="n">alternative</span><span class="o">=</span><span class="s2">"smooth misspecification"</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">delay</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">order</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="hansen_threshold">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.hansen_threshold.html#cultivars.diagnostics.hansen_threshold">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hansen_threshold</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">trim</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_DEFAULT_TRIM</span><span class="p">,</span>
+    <span class="n">n_grid</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_DEFAULT_GRID</span><span class="p">,</span>
+    <span class="n">replications</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_HANSEN_REPLICATIONS</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearityTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Hansen's (1996) sup-F test of a SETAR against its linear restriction.</span>
+
+<span class="sd">    At every candidate threshold on the trimmed quantile grid of</span>
+<span class="sd">    ``y_{t - delay}`` the two-regime regression is fitted and the ``F``</span>
+<span class="sd">    statistic for equal coefficients computed; the sup over the grid is</span>
+<span class="sd">    the statistic, and its maximizer the threshold estimate. Because the</span>
+<span class="sd">    threshold is unidentified under the null the sup has no tabulated</span>
+<span class="sd">    law: the p-value comes from ``replications`` draws in which the</span>
+<span class="sd">    response is replaced by standard normal noise with the regressors</span>
+<span class="sd">    and splits held fixed, Hansen's fixed-regressor simulation. Leaving</span>
+<span class="sd">    ``delay`` as ``None`` searches ``1 .. order`` jointly, and the</span>
+<span class="sd">    simulated sup ranges over the same delays so the search is paid for.</span>
+<span class="sd">    Homoskedastic errors are assumed; on 100 observations at order 1 the</span>
+<span class="sd">    size is 5.5%, on 250 it is 3.5%.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        order: Autoregressive order per regime.</span>
+<span class="sd">        delay: Delay of the threshold variable; ``None`` searches</span>
+<span class="sd">            ``1 .. order``.</span>
+<span class="sd">        trim: Fraction of the sorted threshold variable excluded at</span>
+<span class="sd">            each end of the grid.</span>
+<span class="sd">        n_grid: Candidate thresholds per delay.</span>
+<span class="sd">        replications: Simulated sup statistics behind the p-value.</span>
+<span class="sd">        seed: Seed or generator for the simulation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`LinearityTest` with ``threshold`` and simulated</span>
+<span class="sd">        ``critical_values`` set.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the order, delay, trim, grid, or</span>
+<span class="sd">            replication count is unusable or the series is too short.</span>
+<span class="sd">        NumericalError: If no admissible split exists.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros(300)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 300):</span>
+<span class="sd">        ...     slope = 0.8 if y[t - 1] &lt;= 0.0 else -0.5</span>
+<span class="sd">        ...     y[t] = slope * y[t - 1] + rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; verdict = hansen_threshold(y, order=1, replications=500, seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.reject()), bool(abs(verdict.threshold) &lt; 0.5)</span>
+<span class="sd">        (True, True)</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="s2">"order"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">trim</span> <span class="o">=</span> <span class="n">validate_open_interval</span><span class="p">(</span><span class="n">trim</span><span class="p">,</span> <span class="s2">"trim"</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">n_grid</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">n_grid</span><span class="p">,</span> <span class="s2">"n_grid"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">replications</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"replications must be at least 200; got </span><span class="si">{</span><span class="n">replications</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">delays</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">delay</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="p">(</span><span class="n">validate_order</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="s2">"delay"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">),)</span>
+    <span class="p">)</span>
+    <span class="n">_check_specification</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">delays</span><span class="p">))</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">chosen</span><span class="p">,</span> <span class="n">simulated</span> <span class="o">=</span> <span class="n">_hansen_threshold</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">delays</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">,</span> <span class="n">n_grid</span><span class="o">=</span><span class="n">n_grid</span><span class="p">,</span> <span class="n">replications</span><span class="o">=</span><span class="n">replications</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span>
+    <span class="p">)</span>
+    <span class="n">_p</span><span class="p">,</span> <span class="n">critical_values</span> <span class="o">=</span> <span class="n">_simulated_critical_values</span><span class="p">(</span><span class="n">simulated</span><span class="p">,</span> <span class="n">statistic</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">LinearityTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"Hansen sup-F"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+        <span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="n">_NULL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">),</span>
+        <span class="n">alternative</span><span class="o">=</span><span class="s2">"threshold"</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">delay</span><span class="o">=</span><span class="n">chosen</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">delays</span><span class="p">)),</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="n">critical_values</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">critical_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_CRITICAL_LEVELS</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="bds">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.bds.html#cultivars.diagnostics.bds">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bds</span><span class="p">(</span><span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dimension</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BDSTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The BDS test of independence, usually on residuals.</span>
+
+<span class="sd">    The correlation integral of the ``m``-histories at radius</span>
+<span class="sd">    ``epsilon`` is compared with the ``m``-th power of the one-point</span>
+<span class="sd">    integral, which is what independence implies; the standardized gap</span>
+<span class="sd">    is asymptotically standard normal. The radius defaults to ``1.5``</span>
+<span class="sd">    standard deviations of the series, the choice with the best size in</span>
+<span class="sd">    the Brock et al. tables, and the reference is trustworthy from about</span>
+<span class="sd">    500 observations. On GARCH residuals with 500 observations the test</span>
+<span class="sd">    rejects about 90% of the time, which is its most common use: what</span>
+<span class="sd">    the ARCH test says with a form, BDS says without one.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series, typically standardized residuals.</span>
+<span class="sd">        dimension: Largest embedding dimension; ``2`` and every dimension</span>
+<span class="sd">            up to it are reported.</span>
+<span class="sd">        epsilon: Radius in the units of the series; ``None`` takes</span>
+<span class="sd">            ``1.5`` standard deviations.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`BDSTest` at ``dimension``, lower dimensions as</span>
+<span class="sd">        ``companions``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the dimension is below 2, the radius is</span>
+<span class="sd">            not positive, or the series is too short.</span>
+<span class="sd">        NumericalError: If the radius leaves no pairs close or every</span>
+<span class="sd">            pair close.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; bool(bds(rng.standard_normal(600)).pvalue &gt; 0.01)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="s2">"dimension"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">dimension</span> <span class="o">+</span> <span class="mi">50</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"the BDS test at dimension </span><span class="si">{</span><span class="n">dimension</span><span class="si">}</span><span class="s2"> needs at least </span><span class="si">{</span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dimension</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">50</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"observations; got </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">_BDS_RADIUS</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">std</span><span class="p">())</span> <span class="k">if</span> <span class="n">epsilon</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">radius</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"epsilon must be positive; got </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">statistics</span><span class="p">,</span> <span class="n">pvalues</span> <span class="o">=</span> <span class="n">_bds</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+    <span class="n">nobs</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">companions</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">BDSTest</span><span class="p">(</span><span class="n">statistic</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">pvalue</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">dimension</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dimension</span><span class="p">),</span> <span class="n">statistics</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">pvalues</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">BDSTest</span><span class="p">(</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">pvalues</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span>
+        <span class="n">companions</span><span class="o">=</span><span class="n">companions</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

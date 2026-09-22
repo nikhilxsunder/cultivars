@@ -1,0 +1,1314 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.structural.zero_restrictions &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/structural/zero_restrictions';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/structural/zero_restrictions.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.structural.zero_restrictions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.structural.zero_restrictions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/structural/zero_restrictions.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Zero-restriction identification: triangularity on impact or in the long run.</span>
+
+<span class="sd">A reduced-form innovation covariance admits infinitely many factorizations,</span>
+<span class="sd">and every one of them tells a different economic story. The two models here</span>
+<span class="sd">choose by the oldest device in the literature: zeros arranged as a triangle,</span>
+<span class="sd">imposed at one of two horizons. :class:`RecursiveSVAR` puts the triangle on</span>
+<span class="sd">*impact* -- a declared causal ordering in which each variable responds</span>
+<span class="sd">contemporaneously only to shocks at or before its own position, Sims (1980).</span>
+<span class="sd">:class:`LongRunSVAR` puts it at the *infinite horizon* -- an ordering of</span>
+<span class="sd">permanence in which each shock has no cumulated effect on the variables before</span>
+<span class="sd">its position, Blanchard-Quah (1989).</span>
+
+<span class="sd">Both are complete identifications computed in closed form, and both construct</span>
+<span class="sd">from a fitted closed reduced-form result rather than from data: the reduced</span>
+<span class="sd">form supplies every estimable quantity, and what these models add is exactly</span>
+<span class="sd">the restriction, declared as an argument someone chose.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Sims, C. A. (1980). Macroeconomics and reality. *Econometrica*, 48(1).</span>
+<span class="sd">    Blanchard, O. J., &amp; Quah, D. (1989). The dynamic effects of aggregate</span>
+<span class="sd">        demand and supply disturbances. *American Economic Review*, 79(4).</span>
+<span class="sd">    Kilian, L., &amp; Lutkepohl, H. (2017). *Structural Vector Autoregressive</span>
+<span class="sd">        Analysis*. Cambridge University Press.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">chi2</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_LOG_2PI</span><span class="p">,</span>
+    <span class="n">_PARTIAL_IDENTIFICATION_NOTE</span><span class="p">,</span>
+    <span class="n">_UNIT_SHOCK_NOTE</span><span class="p">,</span>
+    <span class="n">ClosedSystemResult</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_long_run_matrix</span><span class="p">,</span>
+    <span class="n">_lower_cholesky</span><span class="p">,</span>
+    <span class="n">_validate_impact_pattern</span><span class="p">,</span>
+    <span class="n">_validate_ordering</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_IdentificationModel</span><span class="p">,</span>
+    <span class="n">_maximize_likelihood</span><span class="p">,</span>
+    <span class="n">_MixedHorizonObjective</span><span class="p">,</span>
+    <span class="n">_ShortRunObjective</span><span class="p">,</span>
+    <span class="n">_solve</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumericalError</span><span class="p">,</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"LongRunSVAR"</span><span class="p">,</span> <span class="s2">"MixedSVAR"</span><span class="p">,</span> <span class="s2">"RecursiveSVAR"</span><span class="p">,</span> <span class="s2">"SVARResult"</span><span class="p">,</span> <span class="s2">"ShortRunSVAR"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SVARResult.html#cultivars.multivariate.SVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SVARResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A point-identified structural view of a fitted reduced-form system.</span>
+
+<span class="sd">    Carries exactly as many shock columns as the scheme identified: all ``k``</span>
+<span class="sd">    under a recursive or long-run ordering, one under a proxy instrument. The</span>
+<span class="sd">    surface is the same either way -- structural impulse responses, variance</span>
+<span class="sd">    shares, the recovered shock series, and each shock's historical</span>
+<span class="sd">    contribution -- and every method is computed per identified column, so a</span>
+<span class="sd">    partially identified result never reports a number its restrictions do</span>
+<span class="sd">    not support.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        source: The reduced-form result the identification was applied to.</span>
+<span class="sd">        impact: ``(k, s)`` impact columns; entry ``[i, j]`` is variable ``i``'s</span>
+<span class="sd">            response on impact to one standard deviation of shock ``j``.</span>
+<span class="sd">        shock_names: One label per identified shock column.</span>
+<span class="sd">        scheme: Short name of the identification scheme.</span>
+<span class="sd">        restriction: The identifying restriction, stated as a sentence.</span>
+<span class="sd">        diagnostics: Scheme-specific metadata pairs shown in the summary --</span>
+<span class="sd">            a proxy's first-stage strength, for instance.</span>
+<span class="sd">    """</span>
+
+    <span class="n">source</span><span class="p">:</span> <span class="n">ClosedSystemResult</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">impact</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">shock_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">scheme</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">restriction</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Variable labels, from the reduced form."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">names</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of variables."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_shocks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of identified shocks."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shock_names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether every structural shock is identified."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_shocks</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">long_run_impact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Cumulated response of each variable to each identified shock, ``(k, s)``."""</span>
+        <span class="n">ma</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"ma_coefficients"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_long_run_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">ma</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">impact</span>
+
+<div class="viewcode-block" id="SVARResult.irf">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SVARResult.html#cultivars.multivariate.SVARResult.irf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">irf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cumulative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Structural impulse responses of every variable to the identified shocks.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+<span class="sd">            cumulative: Return running sums, for differenced data and level</span>
+<span class="sd">                questions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(horizon + 1, k, s)``; entry ``[h, i, j]`` is</span>
+<span class="sd">            the response of variable ``i`` at lead ``h`` to one standard</span>
+<span class="sd">            deviation of identified shock ``j``.</span>
+<span class="sd">        """</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">ma_representation</span><span class="p">(</span><span class="n">horizon</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"hik,ks-&gt;his"</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">impact</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">cumulative</span> <span class="k">else</span> <span class="n">theta</span></div>
+
+
+<div class="viewcode-block" id="SVARResult.fevd">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SVARResult.html#cultivars.multivariate.SVARResult.fevd">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fevd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Share of forecast-error variance carried by each identified shock.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(horizon + 1, k, s)`` whose entry ``[h, i, j]``</span>
+<span class="sd">            is the share of variable ``i``'s ``h + 1``-step forecast-error</span>
+<span class="sd">            variance attributable to shock ``j``. Rows sum to one across</span>
+<span class="sd">            shocks only when the identification is complete; under partial</span>
+<span class="sd">            identification the shortfall is the variance the scheme does not</span>
+<span class="sd">            speak for.</span>
+<span class="sd">        """</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">ma_representation</span><span class="p">(</span><span class="n">horizon</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"hik,ks-&gt;his"</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">impact</span><span class="p">)</span>
+        <span class="n">explained</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">theta</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"hik,kl,hil-&gt;hi"</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span> <span class="n">psi</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">explained</span> <span class="o">/</span> <span class="n">total</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SVARResult.structural_shocks">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SVARResult.html#cultivars.multivariate.SVARResult.structural_shocks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">structural_shocks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The identified shock series, ``(nobs, s)``, unit variance by construction.</span>
+
+<span class="sd">        Recovered as ``b_j' Sigma^{-1} u_t``, which is the projection that</span>
+<span class="sd">        needs only the identified columns: a partially identified scheme can</span>
+<span class="sd">        recover its own shocks without ever knowing the rest of the impact</span>
+<span class="sd">        matrix.</span>
+<span class="sd">        """</span>
+        <span class="n">rotated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">resid</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">rotated</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">impact</span></div>
+
+
+<div class="viewcode-block" id="SVARResult.historical_decomposition">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SVARResult.html#cultivars.multivariate.SVARResult.historical_decomposition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">historical_decomposition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Each identified shock's cumulative contribution to each variable.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(nobs, k, s)``; entry ``[t, i, j]`` is shock</span>
+<span class="sd">            ``j``'s contribution to variable ``i`` at time ``t``. Summing over</span>
+<span class="sd">            identified shocks recovers the full stochastic path only under</span>
+<span class="sd">            complete identification; the remainder belongs to the shocks the</span>
+<span class="sd">            scheme leaves unnamed.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Costs ``O(nobs^2)`` moving-average terms, like its reduced-form</span>
+<span class="sd">            counterpart.</span>
+<span class="sd">        """</span>
+        <span class="n">shocks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_shocks</span><span class="p">()</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="n">shocks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">irf</span><span class="p">(</span><span class="n">nobs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nobs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_shocks</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nobs</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"lis,ls-&gt;is"</span><span class="p">,</span> <span class="n">theta</span><span class="p">[:</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">shocks</span><span class="p">[</span><span class="n">t</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">impact</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_shocks</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">restriction</span><span class="p">,</span> <span class="n">_UNIT_SHOCK_NOTE</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_complete</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_PARTIAL_IDENTIFICATION_NOTE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Structural VAR (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Scheme"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Identified shocks"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_shocks</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">diagnostics</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"impact of"</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">shock_names</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="RecursiveSVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.RecursiveSVAR.html#cultivars.multivariate.RecursiveSVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RecursiveSVAR</span><span class="p">(</span><span class="n">_IdentificationModel</span><span class="p">[</span><span class="n">SVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Recursive identification: a declared causal ordering, Sims (1980).</span>
+
+<span class="sd">    The impact matrix is the Cholesky factor of the innovation covariance in</span>
+<span class="sd">    the declared ordering: the first variable responds to no shock but its own</span>
+<span class="sd">    on impact, the second to the first and its own, and so on down the</span>
+<span class="sd">    triangle. This is the same arithmetic the reduced-form ``irf`` performs</span>
+<span class="sd">    with ``orthogonalized=True`` -- the difference, and the reason this model</span>
+<span class="sd">    exists, is that here the ordering is an argument someone chose rather than</span>
+<span class="sd">    an accident of column order.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: The fitted closed reduced-form result to identify.</span>
+<span class="sd">        order: The causal ordering, most exogenous first. ``None`` declares</span>
+<span class="sd">            the ordering to be the variables as they stand.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the result is not a closed system, or the</span>
+<span class="sd">            ordering is not a permutation of its variable names.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars.multivariate.reduced_form import VAR</span>
+<span class="sd">        &gt;&gt;&gt; y = np.diff(rng.standard_normal((121, 2)).cumsum(axis=0) * 0.1, axis=0)</span>
+<span class="sd">        &gt;&gt;&gt; svar = RecursiveSVAR(VAR(y, order=1).fit()).identify()</span>
+<span class="sd">        &gt;&gt;&gt; svar.impact.shape</span>
+<span class="sd">        (2, 2)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_perm"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">ClosedSystemResult</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the source system and the declared ordering."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_perm</span> <span class="o">=</span> <span class="n">_validate_ordering</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ordering</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The declared causal ordering."""</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perm</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RecursiveSVAR.identify">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.RecursiveSVAR.html#cultivars.multivariate.RecursiveSVAR.identify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Factor the innovation covariance in the declared ordering.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The complete structural result, shock columns in the declared</span>
+<span class="sd">            ordering.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NumericalError: If the innovation covariance is not positive</span>
+<span class="sd">                definite.</span>
+<span class="sd">        """</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perm</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">_lower_cholesky</span><span class="p">(</span><span class="n">sigma</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">perm</span><span class="p">)],</span> <span class="s2">"sigma_u"</span><span class="p">)</span>
+        <span class="n">impact</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
+        <span class="n">impact</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">perm</span><span class="p">),</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">factor</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordering</span>
+        <span class="k">return</span> <span class="n">SVARResult</span><span class="p">(</span>
+            <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">impact</span><span class="o">=</span><span class="n">impact</span><span class="p">,</span>
+            <span class="n">shock_names</span><span class="o">=</span><span class="n">ordering</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="s2">"recursive"</span><span class="p">,</span>
+            <span class="n">restriction</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">"Recursive ordering "</span>
+                <span class="o">+</span> <span class="s2">" -&gt; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">": each variable responds on impact only to shocks at or "</span>
+                <span class="s2">"before its own position. Permuting the ordering changes the "</span>
+                <span class="s2">"answer; that is the identifying assumption, not a numerical "</span>
+                <span class="s2">"artifact."</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LongRunSVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongRunSVAR.html#cultivars.multivariate.LongRunSVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LongRunSVAR</span><span class="p">(</span><span class="n">_IdentificationModel</span><span class="p">[</span><span class="n">SVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Long-run recursive identification, Blanchard-Quah (1989).</span>
+
+<span class="sd">    The restriction lives at the infinite horizon: the *cumulated* response</span>
+<span class="sd">    matrix is lower triangular in the declared ordering, so the first shock is</span>
+<span class="sd">    the only one with a permanent effect on the first variable, and so on. In</span>
+<span class="sd">    the bivariate Blanchard-Quah economy -- output growth first, unemployment</span>
+<span class="sd">    second -- the first shock is supply, the only one that moves the level of</span>
+<span class="sd">    output forever, and demand is whatever remains.</span>
+
+<span class="sd">    Computed in closed form: with ``F`` the long-run impact of the</span>
+<span class="sd">    innovations, the lower Cholesky factor of ``F Sigma F'`` is the long-run</span>
+<span class="sd">    impact of the shocks, and the impact matrix is ``F^{-1}`` times it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: The fitted closed, stationary reduced-form result to identify.</span>
+<span class="sd">        order: The ordering of permanence, most permanent first. ``None``</span>
+<span class="sd">            declares the variables as they stand.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the result is not a closed system, is not</span>
+<span class="sd">            stationary, or the ordering is not a permutation of its names.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars.multivariate.reduced_form import VAR</span>
+<span class="sd">        &gt;&gt;&gt; y = np.diff(rng.standard_normal((121, 2)).cumsum(axis=0) * 0.1, axis=0)</span>
+<span class="sd">        &gt;&gt;&gt; svar = LongRunSVAR(VAR(y, order=1).fit()).identify()</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(svar.long_run_impact[0, 1]) &lt; 1e-10)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_perm"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">ClosedSystemResult</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the source system, its stationarity, and the ordering."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"is_stable"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"long-run identification needs a stationary system: an "</span>
+                <span class="s2">"explosive or unit-root companion has no finite cumulated "</span>
+                <span class="s2">"response to restrict."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_perm</span> <span class="o">=</span> <span class="n">_validate_ordering</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ordering</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The declared ordering of permanence."""</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perm</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LongRunSVAR.identify">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongRunSVAR.html#cultivars.multivariate.LongRunSVAR.identify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Factor the long-run covariance and map back to impact.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The complete structural result, shock columns ordered by</span>
+<span class="sd">            permanence.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the autoregressive polynomial has a unit</span>
+<span class="sd">                root, so no long-run impact matrix exists.</span>
+<span class="sd">            NumericalError: If the recovered impact matrix fails to reproduce</span>
+<span class="sd">                the innovation covariance, which indicates the long-run matrix</span>
+<span class="sd">                is too ill-conditioned to identify through.</span>
+<span class="sd">        """</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perm</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">ma</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"ma_coefficients"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">_long_run_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">ma</span><span class="p">)</span>
+        <span class="n">long_run_cov</span> <span class="o">=</span> <span class="n">total</span> <span class="o">@</span> <span class="n">sigma</span> <span class="o">@</span> <span class="n">total</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">_lower_cholesky</span><span class="p">(</span><span class="n">long_run_cov</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">perm</span><span class="p">)],</span> <span class="s2">"the long-run covariance"</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
+        <span class="n">theta</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">perm</span><span class="p">),</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">factor</span>
+        <span class="n">impact</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+        <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">impact</span> <span class="o">@</span> <span class="n">impact</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span>
+                <span class="s2">"the long-run factorization does not reproduce the innovation "</span>
+                <span class="s2">"covariance; the long-run matrix is too ill-conditioned to "</span>
+                <span class="s2">"identify through, which usually means the system is close to "</span>
+                <span class="s2">"a unit root."</span>
+            <span class="p">)</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordering</span>
+        <span class="k">return</span> <span class="n">SVARResult</span><span class="p">(</span>
+            <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">impact</span><span class="o">=</span><span class="n">impact</span><span class="p">,</span>
+            <span class="n">shock_names</span><span class="o">=</span><span class="n">ordering</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="s2">"long-run"</span><span class="p">,</span>
+            <span class="n">restriction</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">"Long-run triangularity in the ordering "</span>
+                <span class="o">+</span> <span class="s2">" -&gt; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">": each shock has no permanent effect on the variables "</span>
+                <span class="s2">"before its position. The restriction binds cumulated "</span>
+                <span class="s2">"responses, so on differenced data it restricts levels."</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ShortRunSVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.ShortRunSVAR.html#cultivars.multivariate.ShortRunSVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShortRunSVAR</span><span class="p">(</span><span class="n">_IdentificationModel</span><span class="p">[</span><span class="n">SVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""General short-run zero restrictions: the AB model, Amisano-Giannini (1997).</span>
+
+<span class="sd">    ``A u_t = B e_t`` with unit-variance shocks: ``A`` carries the</span>
+<span class="sd">    contemporaneous relations among the innovations, ``B`` the loadings of the</span>
+<span class="sd">    shocks, and the impact matrix is ``A^{-1} B``. Restrictions are declared</span>
+<span class="sd">    cell by cell -- a finite entry fixes a coefficient, ``nan`` frees it --</span>
+<span class="sd">    which is what lifts the scheme past :class:`RecursiveSVAR`: zeros can sit</span>
+<span class="sd">    anywhere, not only above a diagonal, at the price of a likelihood search</span>
+<span class="sd">    where the triangle had a closed form.</span>
+
+<span class="sd">    The order condition is enforced at construction: the covariance supplies</span>
+<span class="sd">    ``k (k + 1) / 2`` equations, so at most that many coefficients can be</span>
+<span class="sd">    free. Fewer means over-identification, and the likelihood-ratio statistic</span>
+<span class="sd">    against the unrestricted covariance -- the classical over-identification</span>
+<span class="sd">    test -- is computed and reported on the result. The rank condition has no</span>
+<span class="sd">    clean a-priori check for arbitrary patterns; it shows up at ``identify``</span>
+<span class="sd">    time as a just-identified model that cannot reproduce the covariance, and</span>
+<span class="sd">    is reported as exactly that.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: The fitted closed reduced-form result to identify.</span>
+<span class="sd">        a: ``(k, k)`` pattern for the contemporaneous relations, ``nan`` for a</span>
+<span class="sd">            free coefficient. ``None`` fixes ``A`` to the identity, the</span>
+<span class="sd">            B-model of Bernanke (1986). Diagonal entries must be fixed --</span>
+<span class="sd">            conventionally one -- because a free diagonal trades scale with</span>
+<span class="sd">            ``B`` and nothing identifies the split.</span>
+<span class="sd">        b: ``(k, k)`` pattern for the shock loadings, ``nan`` for a free</span>
+<span class="sd">            coefficient. ``None`` frees the diagonal and fixes the rest to</span>
+<span class="sd">            zero, the A-model in which each equation has its own shock.</span>
+<span class="sd">        shock_names: One label per shock column. Defaults to the variable</span>
+<span class="sd">            names.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the result is not a closed system, both</span>
+<span class="sd">            patterns are omitted, a pattern is malformed, the diagonal of</span>
+<span class="sd">            ``a`` is free, no coefficient is free, or the order condition</span>
+<span class="sd">            fails.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars.multivariate.reduced_form import VAR</span>
+<span class="sd">        &gt;&gt;&gt; y = np.diff(rng.standard_normal((201, 2)).cumsum(axis=0) * 0.1, axis=0)</span>
+<span class="sd">        &gt;&gt;&gt; res = VAR(y, order=1).fit()</span>
+<span class="sd">        &gt;&gt;&gt; pattern = np.array([[np.nan, 0.0], [np.nan, np.nan]])</span>
+<span class="sd">        &gt;&gt;&gt; svar = ShortRunSVAR(res, b=pattern).identify()</span>
+<span class="sd">        &gt;&gt;&gt; svar.impact.shape</span>
+<span class="sd">        (2, 2)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_a_base"</span><span class="p">,</span> <span class="s2">"_a_free"</span><span class="p">,</span> <span class="s2">"_b_base"</span><span class="p">,</span> <span class="s2">"_b_free"</span><span class="p">,</span> <span class="s2">"_labels"</span><span class="p">,</span> <span class="s2">"_overid_df"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">:</span> <span class="n">ClosedSystemResult</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shock_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the source system, the patterns, and the order condition."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"declare at least one pattern: with neither a nor b restricted "</span>
+                <span class="s2">"there is nothing here that RecursiveSVAR does not already do "</span>
+                <span class="s2">"in closed form."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_a_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a_free</span> <span class="o">=</span> <span class="n">_validate_impact_pattern</span><span class="p">(</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span> <span class="n">default_diagonal</span><span class="o">=</span><span class="mf">1.0</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a_free</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"the diagonal of a must be fixed (conventionally 1): a free "</span>
+                <span class="s2">"diagonal trades scale with b, and nothing identifies the split."</span>
+            <span class="p">)</span>
+        <span class="n">b_pattern</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_free</span> <span class="o">=</span> <span class="n">_validate_impact_pattern</span><span class="p">(</span>
+            <span class="n">b_pattern</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"b"</span><span class="p">,</span> <span class="n">default_diagonal</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">free</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a_free</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_b_free</span><span class="p">)</span>
+        <span class="n">capacity</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">free</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"every coefficient is fixed; there is nothing to estimate and "</span>
+                <span class="s2">"the declared structure either reproduces the covariance or "</span>
+                <span class="s2">"contradicts it."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">free</span> <span class="o">&gt;</span> <span class="n">capacity</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"the order condition fails: </span><span class="si">{</span><span class="n">free</span><span class="si">}</span><span class="s2"> free coefficients against "</span>
+                <span class="sa">f</span><span class="s2">"the </span><span class="si">{</span><span class="n">capacity</span><span class="si">}</span><span class="s2"> equations the innovation covariance supplies. "</span>
+                <span class="s2">"Fix at least the difference."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overid_df</span> <span class="o">=</span> <span class="n">capacity</span> <span class="o">-</span> <span class="n">free</span>
+        <span class="k">if</span> <span class="n">shock_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shock_names</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span> <span class="o">!=</span> <span class="n">k</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">resolved</span><span class="p">))</span> <span class="o">!=</span> <span class="n">k</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"shock_names must be </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> unique labels; got </span><span class="si">{</span><span class="n">resolved</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">resolved</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_free</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Free coefficients across both matrices."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a_free</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_b_free</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overidentifying_restrictions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrictions beyond the count needed for exact identification."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overid_df</span>
+
+<div class="viewcode-block" id="ShortRunSVAR.identify">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.ShortRunSVAR.html#cultivars.multivariate.ShortRunSVAR.identify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate the free coefficients by maximum likelihood.</span>
+
+<span class="sd">        The likelihood is evaluated at the result's reported innovation</span>
+<span class="sd">        covariance, so a just-identified structure reproduces exactly the</span>
+<span class="sd">        matrix every other scheme factors and the whole result surface stays</span>
+<span class="sd">        internally consistent.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The complete structural result, with the over-identification</span>
+<span class="sd">            likelihood-ratio test in its diagnostics when restrictions exceed</span>
+<span class="sd">            the exactly identifying count.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NumericalError: If a just-identified structure cannot reproduce</span>
+<span class="sd">                the innovation covariance, which is the rank condition failing</span>
+<span class="sd">                at this pattern -- the restrictions are arranged so that some</span>
+<span class="sd">                free coefficient is not pinned down.</span>
+<span class="sd">        """</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">objective</span> <span class="o">=</span> <span class="n">_ShortRunObjective</span><span class="p">(</span>
+            <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">nobs</span><span class="p">),</span>
+            <span class="n">a_base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_a_base</span><span class="p">,</span>
+            <span class="n">a_free</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_a_free</span><span class="p">,</span>
+            <span class="n">b_base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_b_base</span><span class="p">,</span>
+            <span class="n">b_free</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_b_free</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="p">(</span><span class="n">a_hat</span><span class="p">,</span> <span class="n">b_hat</span><span class="p">),</span> <span class="n">llf</span> <span class="o">=</span> <span class="n">_maximize_likelihood</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
+        <span class="n">impact</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">a_hat</span><span class="p">,</span> <span class="n">b_hat</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">column</span> <span class="o">=</span> <span class="n">impact</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">column</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">column</span><span class="p">)))]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">impact</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">column</span>
+
+        <span class="n">saturated</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">_LOG_2PI</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">slogdet</span><span class="p">(</span><span class="n">sigma</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">k</span>
+        <span class="p">)</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">saturated</span> <span class="o">-</span> <span class="n">llf</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overid_df</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">impact</span> <span class="o">@</span> <span class="n">impact</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span>
+                    <span class="s2">"a just-identified pattern failed to reproduce the "</span>
+                    <span class="s2">"innovation covariance: the rank condition fails at this "</span>
+                    <span class="s2">"arrangement of zeros, so some free coefficient is not "</span>
+                    <span class="s2">"pinned down. Rearrange the restrictions."</span>
+                <span class="p">)</span>
+            <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Free parameters"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Identification"</span><span class="p">,</span> <span class="s2">"exact"</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pvalue</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">chi2</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">ratio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overid_df</span><span class="p">))</span>
+            <span class="n">diagnostics</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Free parameters"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Over-ID restrictions"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_overid_df</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Over-ID LR"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Over-ID p-value"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="n">fixed_a</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">k</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_a_free</span><span class="p">)</span>
+        <span class="n">fixed_b</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">k</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_b_free</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SVARResult</span><span class="p">(</span>
+            <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">impact</span><span class="o">=</span><span class="n">impact</span><span class="p">,</span>
+            <span class="n">shock_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="s2">"short-run"</span><span class="p">,</span>
+            <span class="n">restriction</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"AB model with </span><span class="si">{</span><span class="n">fixed_a</span><span class="si">}</span><span class="s2"> fixed cells in the contemporaneous "</span>
+                <span class="sa">f</span><span class="s2">"relations and </span><span class="si">{</span><span class="n">fixed_b</span><span class="si">}</span><span class="s2"> in the shock loadings, "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2"> coefficients estimated by maximum likelihood. "</span>
+                <span class="s2">"Where the restrictions exceed the exactly identifying count, "</span>
+                <span class="s2">"the over-identification test below is the data's verdict on "</span>
+                <span class="s2">"them; where they do not, the structure is an assumption the "</span>
+                <span class="s2">"data cannot contradict."</span>
+            <span class="p">),</span>
+            <span class="n">diagnostics</span><span class="o">=</span><span class="n">diagnostics</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MixedSVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MixedSVAR.html#cultivars.multivariate.MixedSVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MixedSVAR</span><span class="p">(</span><span class="n">_IdentificationModel</span><span class="p">[</span><span class="n">SVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Zero restrictions split across impact and the long run, Gali (1999).</span>
+
+<span class="sd">    The scheme that needs both horizons at once: a technology shock is the</span>
+<span class="sd">    only one moving productivity forever -- a long-run zero -- while a policy</span>
+<span class="sd">    shock is barred from moving output on impact -- a short-run zero. Neither</span>
+<span class="sd">    :class:`ShortRunSVAR` nor :class:`LongRunSVAR` can say both; this model</span>
+<span class="sd">    takes a pattern for each matrix and finds the one factorization</span>
+<span class="sd">    satisfying every declared cell.</span>
+
+<span class="sd">    The search runs where the problem lives: over rotations of the Cholesky</span>
+<span class="sd">    factor, so the innovation covariance is reproduced identically at every</span>
+<span class="sd">    candidate and the restrictions are the only thing being solved for. A</span>
+<span class="sd">    rotation has exactly ``k (k - 1) / 2`` degrees of freedom, which is why</span>
+<span class="sd">    exactly that many restrictions are required -- fewer is an under-</span>
+<span class="sd">    identified pattern, more is an over-identified one whose restricted</span>
+<span class="sd">    covariance estimation this model deliberately does not attempt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: The fitted closed, stationary reduced-form result to identify.</span>
+<span class="sd">        impact: ``(k, k)`` pattern on the impact matrix, ``nan`` for a free</span>
+<span class="sd">            cell and a finite value -- almost always zero -- for a fixed one.</span>
+<span class="sd">            ``None`` fixes nothing on impact.</span>
+<span class="sd">        long_run: ``(k, k)`` pattern on the cumulated long-run matrix, same</span>
+<span class="sd">            convention. Required: with nothing fixed at the long run,</span>
+<span class="sd">            :class:`ShortRunSVAR` is that model.</span>
+<span class="sd">        shock_names: One label per shock column. Defaults to the variable</span>
+<span class="sd">            names.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the result is not a closed system or not</span>
+<span class="sd">            stationary, the long-run pattern is omitted, a pattern is</span>
+<span class="sd">            malformed, or the restriction count differs from</span>
+<span class="sd">            ``k (k - 1) / 2``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars.multivariate.reduced_form import VAR</span>
+<span class="sd">        &gt;&gt;&gt; y = np.diff(rng.standard_normal((201, 2)).cumsum(axis=0) * 0.1, axis=0)</span>
+<span class="sd">        &gt;&gt;&gt; res = VAR(y, order=1).fit()</span>
+<span class="sd">        &gt;&gt;&gt; lr = np.array([[np.nan, 0.0], [np.nan, np.nan]])</span>
+<span class="sd">        &gt;&gt;&gt; svar = MixedSVAR(res, long_run=lr).identify()</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(svar.long_run_impact[0, 1]) &lt; 1e-8)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_impact_cells"</span><span class="p">,</span> <span class="s2">"_labels"</span><span class="p">,</span> <span class="s2">"_long_cells"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">:</span> <span class="n">ClosedSystemResult</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">impact</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">long_run</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shock_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the source system, both patterns, and the order condition."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"is_stable"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"mixed-horizon identification needs a stationary system: an "</span>
+                <span class="s2">"explosive or unit-root companion has no finite cumulated "</span>
+                <span class="s2">"response to restrict."</span>
+            <span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="k">if</span> <span class="n">long_run</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"long_run must fix at least one cell; with restrictions on "</span>
+                <span class="s2">"impact alone, ShortRunSVAR is that model."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_impact_cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_cells</span><span class="p">(</span><span class="n">impact</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="s2">"impact"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_cells</span><span class="p">(</span><span class="n">long_run</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="s2">"long_run"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"long_run must fix at least one cell; with restrictions on "</span>
+                <span class="s2">"impact alone, ShortRunSVAR is that model."</span>
+            <span class="p">)</span>
+        <span class="n">declared</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impact_cells</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span><span class="p">)</span>
+        <span class="n">needed</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">declared</span> <span class="o">!=</span> <span class="n">needed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"a rotation-solved mixed pattern needs exactly </span><span class="si">{</span><span class="n">needed</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"restrictions for </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> variables; got </span><span class="si">{</span><span class="n">declared</span><span class="si">}</span><span class="s2">. Fewer leaves "</span>
+                <span class="s2">"the rotation under-determined; more is an over-identified "</span>
+                <span class="s2">"pattern, whose restricted covariance estimation this model "</span>
+                <span class="s2">"does not attempt."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">shock_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shock_names</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span> <span class="o">!=</span> <span class="n">k</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">resolved</span><span class="p">))</span> <span class="o">!=</span> <span class="n">k</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"shock_names must be </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> unique labels; got </span><span class="si">{</span><span class="n">resolved</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">resolved</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fixed_cells</span><span class="p">(</span>
+        <span class="n">pattern</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The declared restrictions of one pattern, as (row, column, value)."""</span>
+        <span class="k">if</span> <span class="n">pattern</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">()</span>
+        <span class="n">base</span><span class="p">,</span> <span class="n">free</span> <span class="o">=</span> <span class="n">_validate_impact_pattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">free_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">free</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">base</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">free_set</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_restrictions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Declared restrictions across both horizons."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impact_cells</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MixedSVAR.identify">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.MixedSVAR.html#cultivars.multivariate.MixedSVAR.identify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Solve for the rotation satisfying every declared cell.</span>
+
+<span class="sd">        Both components of the orthogonal group are searched -- rotations</span>
+<span class="sd">        directly, reflections through a fixed sign flip of the factor -- so a</span>
+<span class="sd">        pattern with nonzero fixed values is reachable wherever it lives.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The complete structural result.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the autoregressive polynomial has a unit</span>
+<span class="sd">                root, so no long-run matrix exists.</span>
+<span class="sd">            NumericalError: If no rotation satisfies the restrictions, which</span>
+<span class="sd">                is the rank condition failing at this pattern -- the declared</span>
+<span class="sd">                cells are arranged so that no factorization of this covariance</span>
+<span class="sd">                can honor all of them at once.</span>
+<span class="sd">        """</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">ma</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"ma_coefficients"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">_long_run_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">ma</span><span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">_lower_cholesky</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="s2">"sigma_u"</span><span class="p">)</span>
+        <span class="n">reflect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">reflect</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+
+        <span class="n">best_impact</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_violation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="p">(</span><span class="n">factor</span><span class="p">,</span> <span class="n">factor</span> <span class="o">@</span> <span class="n">reflect</span><span class="p">):</span>
+            <span class="n">objective</span> <span class="o">=</span> <span class="n">_MixedHorizonObjective</span><span class="p">(</span>
+                <span class="n">impact_factor</span><span class="o">=</span><span class="n">base</span><span class="p">,</span>
+                <span class="n">long_factor</span><span class="o">=</span><span class="n">total</span> <span class="o">@</span> <span class="n">base</span><span class="p">,</span>
+                <span class="n">impact_cells</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_impact_cells</span><span class="p">,</span>
+                <span class="n">long_cells</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">rotation</span><span class="p">,</span> <span class="n">violation</span> <span class="o">=</span> <span class="n">_solve</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">violation</span> <span class="o">&lt;</span> <span class="n">best_violation</span><span class="p">:</span>
+                <span class="n">best_violation</span> <span class="o">=</span> <span class="n">violation</span>
+                <span class="n">best_impact</span> <span class="o">=</span> <span class="n">base</span> <span class="o">@</span> <span class="n">rotation</span>
+        <span class="k">assert</span> <span class="n">best_impact</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">best_violation</span> <span class="o">&gt;</span> <span class="n">tolerance</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span>
+                <span class="s2">"no factorization of the innovation covariance honors every "</span>
+                <span class="sa">f</span><span class="s2">"declared cell (best violation </span><span class="si">{</span><span class="n">best_violation</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">): the "</span>
+                <span class="s2">"rank condition fails at this pattern. Rearrange the "</span>
+                <span class="s2">"restrictions across the two horizons."</span>
+            <span class="p">)</span>
+        <span class="n">impact</span> <span class="o">=</span> <span class="n">best_impact</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">fixed_values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">value</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_impact_cells</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">j</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fixed_values</span><span class="p">):</span>
+                <span class="n">column</span> <span class="o">=</span> <span class="n">impact</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">column</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">column</span><span class="p">)))]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">impact</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">column</span>
+        <span class="k">return</span> <span class="n">SVARResult</span><span class="p">(</span>
+            <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">impact</span><span class="o">=</span><span class="n">impact</span><span class="p">,</span>
+            <span class="n">shock_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="s2">"mixed"</span><span class="p">,</span>
+            <span class="n">restriction</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impact_cells</span><span class="p">)</span><span class="si">}</span><span class="s2"> cells fixed on impact and "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span><span class="p">)</span><span class="si">}</span><span class="s2"> on the cumulated long-run matrix, "</span>
+                <span class="s2">"solved jointly over rotations of the Cholesky factor. The "</span>
+                <span class="s2">"covariance is reproduced identically; the restrictions alone "</span>
+                <span class="s2">"chose the rotation, and they are assumptions the data cannot "</span>
+                <span class="s2">"contradict at exact identification."</span>
+            <span class="p">),</span>
+            <span class="n">diagnostics</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Restrictions"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_restrictions</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"On impact"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_impact_cells</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"At the long run"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_long_cells</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Max violation"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">best_violation</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Identification"</span><span class="p">,</span> <span class="s2">"exact"</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1335 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.forecast.comparison &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/forecast/comparison';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/forecast/comparison.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.forecast.comparison</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.forecast.comparison</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/forecast/comparison.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Comparing forecasters: is the loss gap real, and does it persist?</span>
+
+<span class="sd">Diebold-Mariano (1995) asks the plain question -- is the average loss</span>
+<span class="sd">differential between two forecast series distinguishable from zero -- with</span>
+<span class="sd">a variance that respects the serial correlation multi-step forecast errors</span>
+<span class="sd">mechanically carry, and the Harvey-Leybourne-Newbold small-sample</span>
+<span class="sd">correction always applied alongside, because evaluation windows in</span>
+<span class="sd">macroeconomics are short. Giacomini-White (2006) sharpens the question to</span>
+<span class="sd">a conditional one: not "who was better on average" but "was the gap</span>
+<span class="sd">predictable from what we knew at the time," which is the version that</span>
+<span class="sd">matters for choosing a forecaster going forward.</span>
+
+<span class="sd">The inputs are aligned loss *series*, one value per evaluation origin, and</span>
+<span class="sd">producing them is deliberately the caller's job: the rolling-origin loop</span>
+<span class="sd">belongs in user driver code, because conflating model selection with model</span>
+<span class="sd">evaluation inside a package is how look-ahead bias gets laundered. The</span>
+<span class="sd">canonical loop, whose alignment this module cannot check and therefore</span>
+<span class="sd">depends on:</span>
+
+<span class="sd">    losses_a, losses_b = [], []</span>
+<span class="sd">    for origin in range(start, len(y) - horizon):</span>
+<span class="sd">        fit_a = ModelA(y[:origin], ...).fit(...)</span>
+<span class="sd">        fit_b = ModelB(y[:origin], ...).fit(...)</span>
+<span class="sd">        outcome = y[origin + horizon - 1]</span>
+<span class="sd">        losses_a.append(score(fit_a, outcome))</span>
+<span class="sd">        losses_b.append(score(fit_b, outcome))</span>
+
+<span class="sd">Two standard abuses are warned against rather than silently permitted.</span>
+<span class="sd">The test is about *forecasts*, not models: comparing nested models'</span>
+<span class="sd">recursive forecasts breaks the asymptotics (Clark-McCracken territory,</span>
+<span class="sd">named and not implemented). And the Giacomini-White framework wants</span>
+<span class="sd">rolling-window estimation, whose finite memory is what makes its null</span>
+<span class="sd">well-posed.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Diebold, F. X., &amp; Mariano, R. S. (1995). Comparing predictive</span>
+<span class="sd">        accuracy. *Journal of Business &amp; Economic Statistics*, 13(3),</span>
+<span class="sd">        253-263.</span>
+<span class="sd">    Harvey, D., Leybourne, S., &amp; Newbold, P. (1997). Testing the equality</span>
+<span class="sd">        of prediction mean squared errors. *International Journal of</span>
+<span class="sd">        Forecasting*, 13(2), 281-291.</span>
+<span class="sd">    Giacomini, R., &amp; White, H. (2006). Tests of conditional predictive</span>
+<span class="sd">        ability. *Econometrica*, 74(6), 1545-1578.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sst</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_MIN_COMPARISON_ORIGINS</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_bartlett_long_run_variance</span><span class="p">,</span>
+    <span class="n">_clark_west</span><span class="p">,</span>
+    <span class="n">_conditional_instruments</span><span class="p">,</span>
+    <span class="n">_forecast_encompassing</span><span class="p">,</span>
+    <span class="n">_giacomini_white</span><span class="p">,</span>
+    <span class="n">_mincer_zarnowitz</span><span class="p">,</span>
+    <span class="n">_validate_aligned_series</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ForecastComparisonTest</span><span class="p">,</span> <span class="n">_SummaryMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionError</span><span class="p">,</span> <span class="n">NumericalError</span><span class="p">,</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"ClarkWestTest"</span><span class="p">,</span>
+    <span class="s2">"EncompassingTest"</span><span class="p">,</span>
+    <span class="s2">"ForecastComparison"</span><span class="p">,</span>
+    <span class="s2">"ForecastComparisonResult"</span><span class="p">,</span>
+    <span class="s2">"GiacominiWhiteTest"</span><span class="p">,</span>
+    <span class="s2">"MincerZarnowitzTest"</span><span class="p">,</span>
+    <span class="s2">"clark_west"</span><span class="p">,</span>
+    <span class="s2">"encompassing"</span><span class="p">,</span>
+    <span class="s2">"giacomini_white"</span><span class="p">,</span>
+    <span class="s2">"mincer_zarnowitz"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="ClarkWestTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.ClarkWestTest.html#cultivars.forecast.ClarkWestTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClarkWestTest</span><span class="p">(</span><span class="n">_ForecastComparisonTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of the Clark-West (2007) test that a nesting model forecasts better.</span>
+
+<span class="sd">    The one-sided alternative is that the larger model improves on the</span>
+<span class="sd">    smaller; under the null the smaller model is true and the larger one's</span>
+<span class="sd">    extra parameters only add estimation noise, which the statistic</span>
+<span class="sd">    removes before testing. A rejection says the added structure has</span>
+<span class="sd">    predictive content; a non-rejection says it has not shown any on</span>
+<span class="sd">    this window.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        statistic: The adjusted-MSPE t-type statistic.</span>
+<span class="sd">        pvalue: Its upper-tail standard normal p-value.</span>
+<span class="sd">        adjusted_differential: Mean of the adjusted loss differential,</span>
+<span class="sd">            ``e_r**2 - e_u**2 + (f_r - f_u)**2``; positive favors the</span>
+<span class="sd">            larger model.</span>
+<span class="sd">        mspe_restricted: Mean squared prediction error of the smaller model.</span>
+<span class="sd">        mspe_unrestricted: Mean squared prediction error of the larger model.</span>
+<span class="sd">        horizon: Forecast horizon behind the series.</span>
+<span class="sd">        nobs: Evaluation origins.</span>
+<span class="sd">    """</span>
+
+    <span class="n">adjusted_differential</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">mspe_restricted</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">mspe_unrestricted</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Render as a table."""</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">"larger model improves"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"no improvement shown"</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">((</span><span class="s2">"Clark-West adjusted MSPE"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Adjusted loss differential </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">adjusted_differential</span><span class="si">:</span><span class="s2">+.5f</span><span class="si">}</span><span class="s2"> (positive favors "</span>
+            <span class="s2">"the larger model); raw MSPE "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mspe_restricted</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> restricted versus </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mspe_unrestricted</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="s2">"unrestricted."</span><span class="p">,</span>
+            <span class="s2">"One-sided standard normal reference, Bartlett long-run variance through "</span>
+            <span class="sa">f</span><span class="s2">"horizon - 1 = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> lags. The adjustment removes the estimation "</span>
+            <span class="s2">"noise the larger model carries under the null, which is what makes Diebold-"</span>
+            <span class="s2">"Mariano invalid for nested forecasts."</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Clark-West Nested Forecast Comparison"</span><span class="p">,</span>
+            <span class="n">verdict</span><span class="o">=</span><span class="n">verdict</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="s2">"statistic"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Represent the test as a string."""</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"ClarkWestTest(statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, pvalue=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"horizon=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="si">}</span><span class="s2">, nobs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MincerZarnowitzTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.MincerZarnowitzTest.html#cultivars.forecast.MincerZarnowitzTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MincerZarnowitzTest</span><span class="p">(</span><span class="n">_ForecastComparisonTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of the Mincer-Zarnowitz efficiency regression ``y = a + b f``.</span>
+
+<span class="sd">    An unbiased, efficient point forecast has intercept zero and slope</span>
+<span class="sd">    one. A slope below one says the forecast overreacts -- shrinking it</span>
+<span class="sd">    toward its mean would help -- and above one that it underreacts; an</span>
+<span class="sd">    intercept away from zero is bias. The joint restriction is tested</span>
+<span class="sd">    with a HAC Wald statistic, since multi-step errors overlap.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        intercept: Estimated ``a``.</span>
+<span class="sd">        slope: Estimated ``b``.</span>
+<span class="sd">        statistic: Wald statistic for ``(a, b) = (0, 1)``, chi-squared scale.</span>
+<span class="sd">        pvalue: Upper-tail p-value of ``statistic / 2`` under ``F(2, T - 2)``.</span>
+<span class="sd">        r_squared: Fit of the regression, the forecast's explanatory</span>
+<span class="sd">            share of the outcome.</span>
+<span class="sd">        horizon: Forecast horizon behind the series.</span>
+<span class="sd">        nobs: Evaluation origins.</span>
+<span class="sd">    """</span>
+
+    <span class="n">intercept</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">slope</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">r_squared</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Render as a table."""</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">"efficiency rejected"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"efficiency not rejected"</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s2">"intercept (0 under H0)"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">intercept</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"slope (1 under H0)"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slope</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Wald, F(2, T - 2) reference"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">reading</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"a slope below one says the forecast overreacts and would gain from shrinkage "</span>
+            <span class="s2">"toward its mean; above one, that it underreacts."</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"R-squared </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">r_squared</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">. Under the null the forecast is unbiased and "</span>
+            <span class="s2">"efficient with respect to itself; "</span> <span class="o">+</span> <span class="n">reading</span><span class="p">,</span>
+            <span class="s2">"HAC covariance with Bartlett weights through "</span>
+            <span class="sa">f</span><span class="s2">"horizon - 1 = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> lags and T / (T - 2) scaling, W / 2 referred "</span>
+            <span class="s2">"to F(2, T - 2) (Mincer &amp; Zarnowitz, 1969)."</span>
+            <span class="o">+</span> <span class="p">(</span>
+                <span class="s2">" At multi-step horizons the truncated kernel understates the long-run "</span>
+                <span class="s2">"variance and the test over-rejects -- roughly 13</span><span class="si">% a</span><span class="s2">t nominal 5</span><span class="si">% f</span><span class="s2">or a "</span>
+                <span class="s2">"four-step horizon on 100 origins -- so read a marginal rejection with care."</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="s2">""</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Mincer-Zarnowitz Efficiency Regression"</span><span class="p">,</span>
+            <span class="n">verdict</span><span class="o">=</span><span class="n">verdict</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"quantity"</span><span class="p">,</span> <span class="s2">"estimate"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Represent the test as a string."""</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"MincerZarnowitzTest(intercept=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">intercept</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, slope=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slope</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, pvalue=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, nobs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EncompassingTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.EncompassingTest.html#cultivars.forecast.EncompassingTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EncompassingTest</span><span class="p">(</span><span class="n">_ForecastComparisonTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of the forecast encompassing test: does A already contain what B knows?</span>
+
+<span class="sd">    Forecast A encompasses B when the optimal linear combination of the</span>
+<span class="sd">    two puts zero weight on B. The one-sided alternative is that B carries</span>
+<span class="sd">    information A lacks; a rejection says combining would help, and the</span>
+<span class="sd">    reported weight is the least-squares share B would get.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        statistic: The HLN-corrected statistic on ``e_A (e_A - e_B)``.</span>
+<span class="sd">        pvalue: Its upper-tail ``t`` p-value.</span>
+<span class="sd">        weight: Least-squares combination weight on B; zero under the null.</span>
+<span class="sd">        horizon: Forecast horizon behind the series.</span>
+<span class="sd">        nobs: Evaluation origins.</span>
+<span class="sd">    """</span>
+
+    <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Render as a table."""</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">"B adds information"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"A encompasses B"</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">((</span><span class="s2">"HLN encompassing"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Least-squares combination weight on B: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="si">:</span><span class="s2">+.3f</span><span class="si">}</span><span class="s2"> (zero under the null "</span>
+            <span class="s2">"that A encompasses B; one would say B encompasses A)."</span><span class="p">,</span>
+            <span class="s2">"Diebold-Mariano machinery on e_A (e_A - e_B) with the Harvey-Leybourne-Newbold "</span>
+            <span class="sa">f</span><span class="s2">"correction, Bartlett long-run variance through horizon - 1 = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="s2">"lags, one-sided t reference (Harvey, Leybourne &amp; Newbold, 1998)."</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Forecast Encompassing"</span><span class="p">,</span>
+            <span class="n">verdict</span><span class="o">=</span><span class="n">verdict</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="s2">"statistic"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Represent the test as a string."""</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"EncompassingTest(statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, pvalue=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"weight=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, nobs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="GiacominiWhiteTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.GiacominiWhiteTest.html#cultivars.forecast.GiacominiWhiteTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GiacominiWhiteTest</span><span class="p">(</span><span class="n">_ForecastComparisonTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of the Giacomini-White (2006) test of conditional predictive ability.</span>
+
+<span class="sd">    The null is not "the two forecasters lose the same on average" but</span>
+<span class="sd">    "nothing known at the origin predicts which will lose more," so a</span>
+<span class="sd">    rejection is a statement about a usable rule: the regression of the</span>
+<span class="sd">    differential on the instruments, whose fitted sign at a fresh origin</span>
+<span class="sd">    says which forecaster to run next. The constant-only case is the</span>
+<span class="sd">    unconditional test; with the differential lagged by the horizon as</span>
+<span class="sd">    the default instrument, a rejection with an insignificant mean says</span>
+<span class="sd">    the gap is there but switches sides, which the average hides.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        statistic: The Wald statistic ``T zbar' Omega^{-1} zbar``.</span>
+<span class="sd">        pvalue: Its upper-tail chi-squared p-value on ``df`` degrees of</span>
+<span class="sd">            freedom.</span>
+<span class="sd">        df: Number of instruments, constant included.</span>
+<span class="sd">        coefficients: OLS coefficients of the differential on the</span>
+<span class="sd">            instruments, in the order ``constant, lagged differentials,</span>
+<span class="sd">            caller instruments``; the decision rule.</span>
+<span class="sd">        instruments: What the instruments are, in words.</span>
+<span class="sd">        share_a: Fraction of retained origins at which the fitted rule</span>
+<span class="sd">            favors the first forecaster (fitted differential negative).</span>
+<span class="sd">        mean_differential: Average of ``losses_a - losses_b`` over the</span>
+<span class="sd">            retained origins; negative favors the first forecaster.</span>
+<span class="sd">        horizon: Forecast horizon behind the series.</span>
+<span class="sd">        nobs: Origins retained after the instruments' lags.</span>
+<span class="sd">    """</span>
+
+    <span class="n">df</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">instruments</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">share_a</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">mean_differential</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Render as a table."""</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">"gap is predictable"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"no conditional predictability shown"</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">"Giacomini-White Wald"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">),</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">rule</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">c</span><span class="si">:</span><span class="s2">+.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Instruments: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instruments</span><span class="si">}</span><span class="s2">. Decision rule coefficients (</span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">); the "</span>
+            <span class="sa">f</span><span class="s2">"fitted differential favors forecaster A at </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">share_a</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% of "</span>
+            <span class="sa">f</span><span class="s2">"origins. Mean differential </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_differential</span><span class="si">:</span><span class="s2">+.5f</span><span class="si">}</span><span class="s2"> (negative favors A)."</span><span class="p">,</span>
+            <span class="s2">"Chi-squared reference; the moment covariance is the uncentered sample "</span>
+            <span class="s2">"covariance at one step and Bartlett HAC through horizon - 1 = "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> lags beyond, which over-rejects mildly at multi-step "</span>
+            <span class="s2">"horizons. The framework wants rolling-window estimation behind the losses, "</span>
+            <span class="s2">"whose finite memory keeps the null well-posed."</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Giacomini-White Conditional Predictive Ability"</span><span class="p">,</span>
+            <span class="n">verdict</span><span class="o">=</span><span class="n">verdict</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="s2">"statistic"</span><span class="p">,</span> <span class="s2">"df"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Represent the test as a string."""</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"GiacominiWhiteTest(statistic=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, pvalue=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"df=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="si">}</span><span class="s2">, horizon=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="si">}</span><span class="s2">, nobs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ForecastComparisonResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.ForecastComparisonResult.html#cultivars.forecast.ForecastComparisonResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ForecastComparisonResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The verdict on a loss differential, unconditional and conditional.</span>
+
+<span class="sd">    Losses are negatively oriented, so a *negative* mean differential</span>
+<span class="sd">    favors the first forecaster.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mean_differential: Average of ``losses_a - losses_b``.</span>
+<span class="sd">        dm_statistic: Diebold-Mariano statistic under the standard normal</span>
+<span class="sd">            null.</span>
+<span class="sd">        dm_pvalue: Its two-sided p-value.</span>
+<span class="sd">        hln_statistic: The Harvey-Leybourne-Newbold corrected statistic,</span>
+<span class="sd">            referred to a ``t`` distribution -- the number to trust in the</span>
+<span class="sd">            short evaluation windows macroeconomics actually has.</span>
+<span class="sd">        hln_pvalue: Its two-sided p-value.</span>
+<span class="sd">        gw_statistic: Giacomini-White conditional statistic with a</span>
+<span class="sd">            constant and the differential lagged by the horizon -- the</span>
+<span class="sd">            most recent one known at the origin -- as instruments,</span>
+<span class="sd">            chi-squared with two degrees of freedom under the null of no</span>
+<span class="sd">            conditional predictability; :func:`giacomini_white` opens</span>
+<span class="sd">            the instrument set.</span>
+<span class="sd">        gw_pvalue: Its upper-tail p-value.</span>
+<span class="sd">        horizon: The forecast horizon the losses were produced at, which</span>
+<span class="sd">            sets the variance's serial-correlation window.</span>
+<span class="sd">        nobs: Evaluation origins.</span>
+<span class="sd">    """</span>
+
+    <span class="n">mean_differential</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">dm_statistic</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">dm_pvalue</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">hln_statistic</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">hln_pvalue</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">gw_statistic</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">gw_pvalue</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">favored</span> <span class="o">=</span> <span class="s2">"A"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_differential</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="s2">"B"</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s2">"Diebold-Mariano"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">"Harvey-Leybourne-Newbold"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hln_statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hln_pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">"Giacomini-White (conditional)"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gw_statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gw_pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Mean loss differential </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_differential</span><span class="si">:</span><span class="s2">+.5f</span><span class="si">}</span><span class="s2">: the "</span>
+            <span class="sa">f</span><span class="s2">"sign favors forecaster </span><span class="si">{</span><span class="n">favored</span><span class="si">}</span><span class="s2"> (losses are negatively "</span>
+            <span class="s2">"oriented)."</span><span class="p">,</span>
+            <span class="s2">"The HLN row is the DM statistic with the small-sample "</span>
+            <span class="s2">"correction, referred to a t distribution; in short evaluation "</span>
+            <span class="s2">"windows it is the number to trust."</span><span class="p">,</span>
+            <span class="s2">"Giacomini-White asks whether the gap was *predictable* from a "</span>
+            <span class="s2">"constant and the differential lagged by the horizon; its "</span>
+            <span class="s2">"framework wants rolling-window estimation behind the losses."</span><span class="p">,</span>
+            <span class="s2">"These are tests about forecasts, not models: nested-model "</span>
+            <span class="s2">"comparisons need the Clark-McCracken corrections, which are "</span>
+            <span class="s2">"deliberately not implemented here."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Forecast Comparison"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Origins"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Horizon"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Mean differential"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_differential</span><span class="si">:</span><span class="s2">+.5f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="s2">"statistic"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ForecastComparison">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.ForecastComparison.html#cultivars.forecast.ForecastComparison">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ForecastComparison</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Test a loss differential between two forecasters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        losses_a: ``(T,)`` losses of the first forecaster, one per</span>
+<span class="sd">            evaluation origin, negatively oriented.</span>
+<span class="sd">        losses_b: ``(T,)`` losses of the second, aligned origin by origin</span>
+<span class="sd">            -- an alignment this object cannot verify and wholly depends</span>
+<span class="sd">            on.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the series' shapes disagree.</span>
+<span class="sd">        SpecificationError: If the window is too short, or the series are</span>
+<span class="sd">            numerically identical and there is no differential to test.</span>
+<span class="sd">        NumericalError: If the losses are not finite.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; shared = rng.standard_normal(120) ** 2</span>
+<span class="sd">        &gt;&gt;&gt; a = shared + 0.05 * rng.standard_normal(120)</span>
+<span class="sd">        &gt;&gt;&gt; b = shared + 0.4 + 0.05 * rng.standard_normal(120)</span>
+<span class="sd">        &gt;&gt;&gt; verdict = ForecastComparison(a, b).compute()</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.mean_differential &lt; 0.0)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.hln_pvalue &lt; 0.01)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_losses_a"</span><span class="p">,</span> <span class="s2">"_losses_b"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">losses_a</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">losses_b</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate and align the two loss series."""</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">losses_a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">second</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">losses_b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">first</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">second</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"the loss series must align origin by origin; got shapes "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">first</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">second</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">first</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_MIN_COMPARISON_ORIGINS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"a comparison over </span><span class="si">{</span><span class="n">first</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> origins has no power "</span>
+                <span class="sa">f</span><span class="s2">"and unreliable size; provide at least </span><span class="si">{</span><span class="n">_MIN_COMPARISON_ORIGINS</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">first</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">second</span><span class="p">))):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span><span class="s2">"losses must be finite."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_losses_a</span> <span class="o">=</span> <span class="n">first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_losses_b</span> <span class="o">=</span> <span class="n">second</span>
+
+<div class="viewcode-block" id="ForecastComparison.compute">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.ForecastComparison.html#cultivars.forecast.ForecastComparison.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ForecastComparisonResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Run the unconditional and conditional tests.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: The forecast horizon behind the losses; the</span>
+<span class="sd">                differential's variance sums autocovariances through</span>
+<span class="sd">                ``horizon - 1`` lags with Bartlett weights, since an</span>
+<span class="sd">                ``h``-step error is mechanically an MA(``h - 1``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`ForecastComparisonResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the horizon is not positive or exceeds</span>
+<span class="sd">                what the window can support.</span>
+<span class="sd">            NumericalError: If the conditional moment matrix degenerates.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">horizon</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"horizon must be at least 1; got </span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">differential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_losses_a</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_losses_b</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">differential</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">horizon</span> <span class="o">&gt;=</span> <span class="n">count</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"a horizon of </span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2"> needs more than </span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">horizon</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"evaluation origins; got </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">centered</span> <span class="o">=</span> <span class="n">differential</span> <span class="o">-</span> <span class="n">differential</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">centered</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mf">1e-14</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">differential</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"the two loss series are numerically identical; there is no differential to test."</span>
+            <span class="p">)</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="n">_bartlett_long_run_variance</span><span class="p">(</span><span class="n">centered</span><span class="p">,</span> <span class="n">horizon</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">differential</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">spread</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span> <span class="o">/</span> <span class="n">count</span><span class="p">))</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">/</span> <span class="n">spread</span>
+        <span class="n">dm_pvalue</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dm</span><span class="p">)))</span>
+        <span class="n">adjust</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">horizon</span> <span class="o">+</span> <span class="n">horizon</span> <span class="o">*</span> <span class="p">(</span><span class="n">horizon</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">count</span><span class="p">)</span> <span class="o">/</span> <span class="n">count</span><span class="p">))</span>
+        <span class="n">hln</span> <span class="o">=</span> <span class="n">dm</span> <span class="o">*</span> <span class="n">adjust</span>
+        <span class="n">hln_pvalue</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">hln</span><span class="p">),</span> <span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">target</span><span class="p">,</span> <span class="n">design</span> <span class="o">=</span> <span class="n">_conditional_instruments</span><span class="p">(</span><span class="n">differential</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">gw</span><span class="p">,</span> <span class="n">gw_pvalue</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_giacomini_white</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">design</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ForecastComparisonResult</span><span class="p">(</span>
+            <span class="n">mean_differential</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span>
+            <span class="n">dm_statistic</span><span class="o">=</span><span class="n">dm</span><span class="p">,</span>
+            <span class="n">dm_pvalue</span><span class="o">=</span><span class="n">dm_pvalue</span><span class="p">,</span>
+            <span class="n">hln_statistic</span><span class="o">=</span><span class="n">hln</span><span class="p">,</span>
+            <span class="n">hln_pvalue</span><span class="o">=</span><span class="n">hln_pvalue</span><span class="p">,</span>
+            <span class="n">gw_statistic</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span>
+            <span class="n">gw_pvalue</span><span class="o">=</span><span class="n">gw_pvalue</span><span class="p">,</span>
+            <span class="n">horizon</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">horizon</span><span class="p">),</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="clark_west">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.clark_west.html#cultivars.forecast.clark_west">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">clark_west</span><span class="p">(</span>
+    <span class="n">realized</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">restricted</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">unrestricted</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClarkWestTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Clark-West (2007) test that a nesting model forecasts better than the model it nests.</span>
+
+<span class="sd">    Under the null that the smaller model is true, the larger one's extra</span>
+<span class="sd">    parameters are estimated noise, so its mean squared prediction error</span>
+<span class="sd">    is *expected* to exceed the smaller one's and Diebold-Mariano is biased</span>
+<span class="sd">    against it. Clark and West subtract the noise term ``(f_r - f_u)**2``</span>
+<span class="sd">    from the loss differential and test what remains with a one-sided</span>
+<span class="sd">    normal reference, which is approximately correctly sized in the</span>
+<span class="sd">    recursive and rolling schemes a backtest runs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        realized: ``(T,)`` outcomes.</span>
+<span class="sd">        restricted: ``(T,)`` point forecasts of the nested model.</span>
+<span class="sd">        unrestricted: ``(T,)`` point forecasts of the nesting model,</span>
+<span class="sd">            aligned origin by origin -- ``BacktestResult.point[:, h - 1,</span>
+<span class="sd">            j]`` from two backtests on the same schedule.</span>
+<span class="sd">        horizon: The forecast horizon behind the series; sets the</span>
+<span class="sd">            long-run variance's Bartlett window.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`ClarkWestTest`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the series do not align.</span>
+<span class="sd">        SpecificationError: If there are too few origins or the horizon</span>
+<span class="sd">            is not positive or too long for the window.</span>
+<span class="sd">        NumericalError: If a series is not finite.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_normal(200)</span>
+<span class="sd">        &gt;&gt;&gt; y = 0.5 * x + rng.standard_normal(200)</span>
+<span class="sd">        &gt;&gt;&gt; verdict = clark_west(y, np.zeros(200), 0.5 * x)</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.pvalue &lt; 0.01)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">series</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_validate_aligned_series</span><span class="p">(</span>
+        <span class="n">realized</span><span class="p">,</span>
+        <span class="n">restricted</span><span class="p">,</span>
+        <span class="n">unrestricted</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span>
+        <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_COMPARISON_ORIGINS</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="s2">"realized, restricted, and unrestricted"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">adjusted</span> <span class="o">=</span> <span class="n">_clark_west</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">series</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">series</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ClarkWestTest</span><span class="p">(</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+        <span class="n">adjusted_differential</span><span class="o">=</span><span class="n">adjusted</span><span class="p">,</span>
+        <span class="n">mspe_restricted</span><span class="o">=</span><span class="nb">float</span><span class="p">(((</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">series</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span>
+        <span class="n">mspe_unrestricted</span><span class="o">=</span><span class="nb">float</span><span class="p">(((</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">series</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">horizon</span><span class="p">),</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="mincer_zarnowitz">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.mincer_zarnowitz.html#cultivars.forecast.mincer_zarnowitz">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mincer_zarnowitz</span><span class="p">(</span>
+    <span class="n">realized</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">forecast</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MincerZarnowitzTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Mincer-Zarnowitz efficiency regression of outcomes on point forecasts.</span>
+
+<span class="sd">    ``y_t = a + b f_t + u_t`` with the joint test of ``(a, b) = (0, 1)``:</span>
+<span class="sd">    the forecast is unbiased and cannot be improved by a linear</span>
+<span class="sd">    recalibration of itself. Multi-step errors overlap, so the Wald</span>
+<span class="sd">    covariance is HAC with Bartlett weights through ``horizon - 1`` lags;</span>
+<span class="sd">    at those horizons the test over-rejects in short windows (about 13%</span>
+<span class="sd">    at nominal 5% for four steps on 100 origins), and the record says so.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        realized: ``(T,)`` outcomes.</span>
+<span class="sd">        forecast: ``(T,)`` point forecasts, aligned origin by origin --</span>
+<span class="sd">            ``BacktestResult.point[:, h - 1, j]`` against</span>
+<span class="sd">            ``BacktestResult.realized[:, h - 1, j]``.</span>
+<span class="sd">        horizon: The forecast horizon behind the series.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`MincerZarnowitzTest`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the series do not align.</span>
+<span class="sd">        SpecificationError: If there are too few origins or the horizon</span>
+<span class="sd">            is unusable.</span>
+<span class="sd">        NumericalError: If a series is not finite or the forecasts are</span>
+<span class="sd">            constant.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; f = rng.standard_normal(200)</span>
+<span class="sd">        &gt;&gt;&gt; verdict = mincer_zarnowitz(f + 0.5 * rng.standard_normal(200), f)</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.pvalue &gt; 0.05)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; bool(mincer_zarnowitz(0.5 * f + 0.5 * rng.standard_normal(200), f).pvalue &lt; 0.01)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_validate_aligned_series</span><span class="p">(</span>
+        <span class="n">realized</span><span class="p">,</span>
+        <span class="n">forecast</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span>
+        <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_COMPARISON_ORIGINS</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="s2">"realized and forecast"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">intercept</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">r_squared</span> <span class="o">=</span> <span class="n">_mincer_zarnowitz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">MincerZarnowitzTest</span><span class="p">(</span>
+        <span class="n">intercept</span><span class="o">=</span><span class="n">intercept</span><span class="p">,</span>
+        <span class="n">slope</span><span class="o">=</span><span class="n">slope</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+        <span class="n">r_squared</span><span class="o">=</span><span class="n">r_squared</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">horizon</span><span class="p">),</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="encompassing">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.encompassing.html#cultivars.forecast.encompassing">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">encompassing</span><span class="p">(</span>
+    <span class="n">realized</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">forecast_a</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">forecast_b</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EncompassingTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Test whether forecast A encompasses forecast B (Harvey, Leybourne &amp; Newbold, 1998).</span>
+
+<span class="sd">    A encompasses B when the optimal combination of the two puts no</span>
+<span class="sd">    weight on B, so combining them would not help. The test asks whether</span>
+<span class="sd">    ``e_A (e_A - e_B)`` has a positive mean, one-sided; a rejection says B</span>
+<span class="sd">    carries information A lacks, and the reported weight is the share B</span>
+<span class="sd">    would get in a least-squares combination. Run it both ways to learn</span>
+<span class="sd">    whether either forecast is redundant.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        realized: ``(T,)`` outcomes.</span>
+<span class="sd">        forecast_a: ``(T,)`` point forecasts claimed to encompass.</span>
+<span class="sd">        forecast_b: ``(T,)`` point forecasts claimed to be encompassed,</span>
+<span class="sd">            aligned origin by origin.</span>
+<span class="sd">        horizon: The forecast horizon behind the series.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`EncompassingTest`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the series do not align.</span>
+<span class="sd">        SpecificationError: If there are too few origins, the horizon is</span>
+<span class="sd">            unusable, or the two forecasts are identical.</span>
+<span class="sd">        NumericalError: If a series is not finite.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; x, z = rng.standard_normal(200), rng.standard_normal(200)</span>
+<span class="sd">        &gt;&gt;&gt; y = x + z + 0.5 * rng.standard_normal(200)</span>
+<span class="sd">        &gt;&gt;&gt; bool(encompassing(y, x, x + z).pvalue &lt; 0.01)  # x lacks what z knows</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; bool(encompassing(y, x + z, x).pvalue &gt; 0.05)  # x + z already has it</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_validate_aligned_series</span><span class="p">(</span>
+        <span class="n">realized</span><span class="p">,</span>
+        <span class="n">forecast_a</span><span class="p">,</span>
+        <span class="n">forecast_b</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span>
+        <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_COMPARISON_ORIGINS</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="s2">"realized and both forecasts"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">_forecast_encompassing</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">a</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">b</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">EncompassingTest</span><span class="p">(</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">horizon</span><span class="p">),</span> <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="giacomini_white">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.giacomini_white.html#cultivars.forecast.giacomini_white">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">giacomini_white</span><span class="p">(</span>
+    <span class="n">losses_a</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">losses_b</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">instruments</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GiacominiWhiteTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Giacomini-White (2006) test that a loss gap was predictable at the origin.</span>
+
+<span class="sd">    The conditional null ``E[d_t | F_t] = 0`` is tested through the</span>
+<span class="sd">    instruments ``h_t``: a constant, ``lags`` lagged differentials, and</span>
+<span class="sd">    whatever the caller adds. Because a loss indexed by its origin is only</span>
+<span class="sd">    realized ``horizon`` steps later, the lagged differentials start at</span>
+<span class="sd">    ``d_{t - horizon}`` -- the most recent one actually known -- rather</span>
+<span class="sd">    than ``d_{t-1}``, and the sample drops its first ``horizon + lags -</span>
+<span class="sd">    1`` origins. ``lags=0`` with no instruments is the unconditional test,</span>
+<span class="sd">    a chi-squared cousin of Diebold-Mariano.</span>
+
+<span class="sd">    The test is built for rolling-window estimation, where parameter</span>
+<span class="sd">    estimates never converge and the forecasting *method* -- model,</span>
+<span class="sd">    window, estimator -- is what the null is about; under a recursive</span>
+<span class="sd">    scheme the null drifts as the window grows. Use</span>
+<span class="sd">    :class:`ForecastComparison` for the unconditional question with the</span>
+<span class="sd">    small-sample correction. At one step the size is close to nominal</span>
+<span class="sd">    from 100 origins on; at multi-step horizons the truncated Bartlett</span>
+<span class="sd">    kernel understates the moment covariance and the test over-rejects</span>
+<span class="sd">    mildly (about 7-9% at nominal 5% for a four-step horizon), which the</span>
+<span class="sd">    record's notes say.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        losses_a: ``(T,)`` losses of the first forecaster, one per</span>
+<span class="sd">            evaluation origin, negatively oriented.</span>
+<span class="sd">        losses_b: ``(T,)`` losses of the second, aligned origin by origin.</span>
+<span class="sd">        horizon: The forecast horizon behind the losses; sets both the</span>
+<span class="sd">            instrument lag and the HAC window.</span>
+<span class="sd">        lags: Lagged differentials among the instruments.</span>
+<span class="sd">        instruments: Optional ``(T,)`` or ``(T, m)`` further instruments,</span>
+<span class="sd">            each row known at its origin -- a regime indicator, a</span>
+<span class="sd">            volatility proxy, the sign of the last error. The caller</span>
+<span class="sd">            vouches for measurability; the function cannot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`GiacominiWhiteTest`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the series or instruments do not align.</span>
+<span class="sd">        SpecificationError: If there are too few origins, the horizon or</span>
+<span class="sd">            ``lags`` is invalid, or the series are numerically identical.</span>
+<span class="sd">        NumericalError: If a series is not finite or the instruments are</span>
+<span class="sd">            collinear.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; regime = np.repeat([1.0, -1.0], 100)</span>
+<span class="sd">        &gt;&gt;&gt; a = rng.standard_normal(200) ** 2 + 0.6 * regime</span>
+<span class="sd">        &gt;&gt;&gt; b = rng.standard_normal(200) ** 2 - 0.6 * regime</span>
+<span class="sd">        &gt;&gt;&gt; verdict = giacomini_white(a, b, instruments=regime)</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.pvalue &lt; 0.01)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">series</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_validate_aligned_series</span><span class="p">(</span>
+        <span class="n">losses_a</span><span class="p">,</span> <span class="n">losses_b</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_COMPARISON_ORIGINS</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s2">"losses"</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">lags</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lags must be non-negative; got </span><span class="si">{</span><span class="n">lags</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">differential</span> <span class="o">=</span> <span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">series</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">differential</span> <span class="o">-</span> <span class="n">differential</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mf">1e-14</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span>
+        <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">differential</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="mf">1.0</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="s2">"the two loss series are numerically identical; there is no differential to test."</span>
+        <span class="p">)</span>
+    <span class="n">extra</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"constant"</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"d[t-</span><span class="si">{</span><span class="n">horizon</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="si">}</span><span class="s2">]"</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">))]</span>
+    <span class="k">if</span> <span class="n">instruments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">instruments</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">extra</span> <span class="o">=</span> <span class="n">extra</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">extra</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">extra</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"instruments must be (T,) or (T, m) with T = </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> origins; got shape "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">extra</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">extra</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span><span class="s2">"instruments must be finite."</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="sa">f</span><span class="s2">"z</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">extra</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">drop</span> <span class="o">=</span> <span class="n">horizon</span> <span class="o">+</span> <span class="n">lags</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">lags</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">retained</span> <span class="o">=</span> <span class="n">count</span> <span class="o">-</span> <span class="n">drop</span>
+    <span class="k">if</span> <span class="n">retained</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">_MIN_COMPARISON_ORIGINS</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">retained</span><span class="si">}</span><span class="s2"> origins remain after the instruments' lags, too few for "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="si">}</span><span class="s2"> instruments at horizon </span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2">; provide more origins or fewer lags."</span>
+        <span class="p">)</span>
+    <span class="n">target</span><span class="p">,</span> <span class="n">design</span> <span class="o">=</span> <span class="n">_conditional_instruments</span><span class="p">(</span><span class="n">differential</span><span class="p">,</span> <span class="n">extra</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">,</span> <span class="n">coefficients</span> <span class="o">=</span> <span class="n">_giacomini_white</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">design</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
+    <span class="n">fitted</span> <span class="o">=</span> <span class="n">design</span> <span class="o">@</span> <span class="n">coefficients</span>
+    <span class="k">return</span> <span class="n">GiacominiWhiteTest</span><span class="p">(</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+        <span class="n">df</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">design</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">coefficients</span><span class="o">=</span><span class="n">coefficients</span><span class="p">,</span>
+        <span class="n">instruments</span><span class="o">=</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span>
+        <span class="n">share_a</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">fitted</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)),</span>
+        <span class="n">mean_differential</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">horizon</span><span class="p">),</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,858 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.forecast.conditional &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/forecast/conditional';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/forecast/conditional.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.forecast.conditional</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.forecast.conditional</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/forecast/conditional.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Conditional forecasts: the system's future given stated paths for part of it.</span>
+
+<span class="sd">A policy scenario is a conditional forecast: hold the policy rate on a</span>
+<span class="sd">stated path, or oil prices, or a fiscal variable, and ask what the rest</span>
+<span class="sd">of the system does. Waggoner and Zha (1999) make the question exact for</span>
+<span class="sd">any closed linear system. Write the future in moving-average form,</span>
+<span class="sd">``y_{T+h} = mu_h + sum_{j&lt;h} Psi_j P eps_{T+h-j}``; each conditioned cell</span>
+<span class="sd">is then one linear restriction on the stacked future shocks, and the</span>
+<span class="sd">forecast is the law of the system given those restrictions -- a Gaussian</span>
+<span class="sd">centered on the minimum-norm shock path that delivers the conditions,</span>
+<span class="sd">spread over the shock directions the conditions leave free. Under a</span>
+<span class="sd">sampled result every retained ``(B, Sigma)`` draw contributes its own</span>
+<span class="sd">conditional paths, so parameter uncertainty is kept.</span>
+
+<span class="sd">The conditions are *hard*: each conditioned cell is met exactly on every</span>
+<span class="sd">path. The shocks that deliver them are reported, together with a modesty</span>
+<span class="sd">reading (Leeper &amp; Zha, 2003): a scenario that needs shocks far larger</span>
+<span class="sd">than the model deems typical is one whose forecast the model itself does</span>
+<span class="sd">not believe, and the summary says so rather than printing the bands as</span>
+<span class="sd">though they meant the same thing.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Waggoner, D. F., &amp; Zha, T. (1999). Conditional forecasts in dynamic</span>
+<span class="sd">        multivariate models. *Review of Economics and Statistics*, 81(4),</span>
+<span class="sd">        639-651.</span>
+<span class="sd">    Leeper, E. M., &amp; Zha, T. (2003). Modest policy interventions.</span>
+<span class="sd">        *Journal of Monetary Economics*, 50(8), 1673-1700.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from cultivars.multivariate.reduced_form import VAR</span>
+<span class="sd">    &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros((200, 2))</span>
+<span class="sd">    &gt;&gt;&gt; for t in range(1, 200):</span>
+<span class="sd">    ...     y[t] = np.array([[0.5, 0.2], [0.1, 0.6]]) @ y[t - 1] + rng.standard_normal(2)</span>
+<span class="sd">    &gt;&gt;&gt; res = VAR(y, order=1, names=("gdp", "rate")).fit()</span>
+<span class="sd">    &gt;&gt;&gt; scenario = conditional_forecast(res, 4, {"rate": [1.0, 1.0, None, None]}, seed=0)</span>
+<span class="sd">    &gt;&gt;&gt; bool(np.allclose(scenario.paths[:, :2, 1], 1.0))</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; scenario.n_conditions, scenario.paths.shape</span>
+<span class="sd">    (2, (1000, 4, 2))</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">chi2</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_conditional_restrictions</span><span class="p">,</span>
+    <span class="n">_draw_conditional_shocks</span><span class="p">,</span>
+    <span class="n">_lower_cholesky</span><span class="p">,</span>
+    <span class="n">_moving_average_from_stack</span><span class="p">,</span>
+    <span class="n">_moving_average_paths</span><span class="p">,</span>
+    <span class="n">_source_label</span><span class="p">,</span>
+    <span class="n">_validate_conditions</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_simulate_vector_autoregression</span><span class="p">,</span> <span class="n">_SummaryMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionError</span><span class="p">,</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ConditionalForecastResult"</span><span class="p">,</span> <span class="s2">"conditional_forecast"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="ConditionalForecastResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.ConditionalForecastResult.html#cultivars.forecast.ConditionalForecastResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConditionalForecastResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A forecast of the whole system given stated future paths of some of it.</span>
+
+<span class="sd">    Waggoner and Zha (1999): the future is written in moving-average form,</span>
+<span class="sd">    the conditions become linear restrictions on the future shocks, and</span>
+<span class="sd">    the forecast is the system's law given those restrictions -- the</span>
+<span class="sd">    minimum-norm shock path that delivers the conditions at the center,</span>
+<span class="sd">    and the conditional Gaussian of the remaining shock directions around</span>
+<span class="sd">    it. Under a sampled result every retained parameter draw contributes</span>
+<span class="sd">    its own conditional paths, so the bands carry parameter uncertainty</span>
+<span class="sd">    as well.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        names: Series labels.</span>
+<span class="sd">        steps: Horizons ahead.</span>
+<span class="sd">        conditions: ``(steps, k)`` conditioned values, ``nan`` where free.</span>
+<span class="sd">        unconditional: ``(steps, k)`` mean path with no conditions imposed</span>
+<span class="sd">            (averaged over draws under a sampled result).</span>
+<span class="sd">        mean: ``(steps, k)`` conditional mean path.</span>
+<span class="sd">        paths: ``(S, steps, k)`` conditional predictive paths; conditioned</span>
+<span class="sd">            cells equal their conditions on every path.</span>
+<span class="sd">        implied_shocks: ``(steps, k)`` minimum-norm standardized shocks</span>
+<span class="sd">            that deliver the conditions, in the orthogonalized (impact</span>
+<span class="sd">            matrix) basis; averaged over draws under a sampled result.</span>
+<span class="sd">        modesty: ``||eps*||**2`` of the minimum-norm shocks relative to</span>
+<span class="sd">            the number of conditions -- one when the scenario needs shocks</span>
+<span class="sd">            of typical size, large when it needs shocks the model deems</span>
+<span class="sd">            improbable (Leeper &amp; Zha, 2003).</span>
+<span class="sd">        modesty_pvalue: Upper-tail chi-squared probability of</span>
+<span class="sd">            ``||eps*||**2`` on ``n_conditions`` degrees of freedom.</span>
+<span class="sd">        n_conditions: Cells conditioned.</span>
+<span class="sd">        source: The result forecast.</span>
+<span class="sd">        parameter_uncertainty: Whether the paths mix over parameter draws.</span>
+<span class="sd">    """</span>
+
+    <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">conditions</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">unconditional</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">implied_shocks</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">modesty</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">modesty_pvalue</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">n_conditions</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">parameter_uncertainty</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Series forecast."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_draws</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Conditional paths."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conditioned</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""``(steps, k)`` mask of conditioned cells."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">))</span>
+
+<div class="viewcode-block" id="ConditionalForecastResult.forecast_paths">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.ConditionalForecastResult.html#cultivars.forecast.ConditionalForecastResult.forecast_paths">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast_paths</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The conditional paths, in the shape every scorer and fan chart reads.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps: Must equal :attr:`steps` when given; the paths were</span>
+<span class="sd">                simulated once, at construction.</span>
+<span class="sd">            seed: Ignored; kept for the predictive-result signature.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If a different horizon is asked for.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">steps</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"the conditional forecast was simulated for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="si">}</span><span class="s2"> steps; asked for "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">. Build a new one for another horizon."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConditionalForecastResult.quantiles">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.ConditionalForecastResult.html#cultivars.forecast.ConditionalForecastResult.quantiles">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantiles</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">levels</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""``(len(levels), steps, k)`` pointwise quantiles of the conditional paths."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary: mean paths, conditioned cells marked."""</span>
+        <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditioned</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unconditional</span><span class="p">[</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">[</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">low</span><span class="p">[</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="p">[</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">]"</span><span class="p">,</span>
+                <span class="s2">"*"</span> <span class="k">if</span> <span class="n">mask</span><span class="p">[</span><span class="n">h</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"* conditioned cell (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">); the "</span>
+            <span class="s2">"conditional path equals the condition there on every draw."</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Modesty </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">modesty</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">modesty_pvalue</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">): the minimum-norm "</span>
+            <span class="s2">"shocks that deliver the scenario have squared norm "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">modesty</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> against </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="si">}</span><span class="s2"> expected under "</span>
+            <span class="s2">"the model. Well above one, the scenario is one the model finds improbable and "</span>
+            <span class="s2">"agents would notice (Leeper &amp; Zha, 2003)."</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">"Bands mix parameter draws and conditional shock draws."</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_uncertainty</span>
+                <span class="k">else</span> <span class="s2">"Bands carry conditional shock uncertainty at fixed parameters; the "</span>
+                <span class="s2">"point result offers no parameter draws to propagate."</span>
+            <span class="p">),</span>
+            <span class="s2">"Hard conditions only: each conditioned cell is met exactly. Interval (soft) "</span>
+            <span class="s2">"conditions are not implemented."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Conditional Forecast: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Steps"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Series"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Conditions"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_conditions</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Draws"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_draws</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Modesty"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">modesty</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"h"</span><span class="p">,</span> <span class="s2">"series"</span><span class="p">,</span> <span class="s2">"unconditional"</span><span class="p">,</span> <span class="s2">"conditional"</span><span class="p">,</span> <span class="s2">"16-84%"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="conditional_forecast">
+<a class="viewcode-back" href="../../../api/generated/cultivars.forecast.conditional_forecast.html#cultivars.forecast.conditional_forecast">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">conditional_forecast</span><span class="p">(</span>
+    <span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">conditions</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConditionalForecastResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Forecast a closed system given stated future values of some of its variables.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: A fitted closed system. A point result must expose</span>
+<span class="sd">            ``forecast(steps)``, ``ma_representation(horizon)``,</span>
+<span class="sd">            ``sigma_u`` and ``names`` (every VAR-family result does); the</span>
+<span class="sd">            conditional paths then carry shock uncertainty at the fitted</span>
+<span class="sd">            parameters. A result carrying ``beta_draws`` and</span>
+<span class="sd">            ``sigma_draws`` -- the Bayesian VAR family -- is propagated</span>
+<span class="sd">            draw by draw, and the paths carry parameter uncertainty too.</span>
+<span class="sd">        steps: Horizons ahead.</span>
+<span class="sd">        conditions: Variable name to its conditioned path, one entry per</span>
+<span class="sd">            horizon from the first, ``None`` (or ``nan``) where the</span>
+<span class="sd">            variable is free; a path shorter than ``steps`` leaves the</span>
+<span class="sd">            remaining horizons free.</span>
+<span class="sd">        n_draws: Conditional paths to simulate. Under a sampled result</span>
+<span class="sd">            they are spread evenly over the retained parameter draws.</span>
+<span class="sd">        seed: Seed or generator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`ConditionalForecastResult`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the horizon or draw count is not positive,</span>
+<span class="sd">            a variable is unknown, nothing is conditioned, or the result</span>
+<span class="sd">            cannot be propagated.</span>
+<span class="sd">        DimensionError: If a condition path is longer than the horizon.</span>
+<span class="sd">        NumericalError: If the conditions are linearly dependent or the</span>
+<span class="sd">            covariance degenerates.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"steps must be at least 1; got </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_draws</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n_draws must be at least 1; got </span><span class="si">{</span><span class="n">n_draws</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"names"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> carries no variable names; a conditional forecast needs a "</span>
+            <span class="s2">"closed multivariate system."</span>
+        <span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">_validate_conditions</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+    <span class="n">beta_draws</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"beta_draws"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">sigma_draws</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"sigma_draws"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">sampled</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">beta_draws</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma_draws</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">beta_draws</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma_draws</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">endog</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"endog"</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>  <span class="c1"># noqa: B009</span>
+        <span class="n">order</span><span class="p">,</span> <span class="n">trend</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"order"</span><span class="p">)),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"trend"</span><span class="p">))</span>  <span class="c1"># noqa: B009</span>
+        <span class="n">stack_of</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"_stack_of"</span><span class="p">)</span>  <span class="c1"># noqa: B009</span>
+        <span class="n">n_kept</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">beta_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">picks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_kept</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="n">unconditional</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="n">implied</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="n">norm_sq</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">draw</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">picks</span><span class="p">):</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">beta_draws</span><span class="p">[</span><span class="n">draw</span><span class="p">]</span>
+            <span class="n">stack</span> <span class="o">=</span> <span class="n">stack_of</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">_simulate_vector_autoregression</span><span class="p">(</span>
+                <span class="n">beta</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">)),</span>
+                <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+                <span class="n">presample</span><span class="o">=</span><span class="n">endog</span><span class="p">[</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">order</span> <span class="p">:],</span>
+                <span class="n">start</span><span class="o">=</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">psi</span> <span class="o">=</span> <span class="n">_moving_average_from_stack</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+            <span class="n">impact</span> <span class="o">=</span> <span class="n">_lower_cholesky</span><span class="p">(</span><span class="n">sigma_draws</span><span class="p">[</span><span class="n">draw</span><span class="p">],</span> <span class="s2">"the innovationcovariance"</span><span class="p">)</span>
+            <span class="n">restriction</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">_conditional_restrictions</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="n">impact</span><span class="p">,</span> <span class="n">grid</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span>
+            <span class="n">shocks</span><span class="p">,</span> <span class="n">star</span> <span class="o">=</span> <span class="n">_draw_conditional_shocks</span><span class="p">(</span><span class="n">restriction</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">n_draws</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+            <span class="n">paths</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">_moving_average_paths</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="n">impact</span><span class="p">,</span> <span class="n">shocks</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">mean</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">unconditional</span> <span class="o">+=</span> <span class="n">mean</span> <span class="o">/</span> <span class="n">n_draws</span>
+            <span class="n">implied</span> <span class="o">+=</span> <span class="n">star</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_draws</span>
+            <span class="n">norm_sq</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">star</span> <span class="o">@</span> <span class="n">star</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_draws</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">forecast</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"forecast"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">ma</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"ma_representation"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"sigma_u"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">callable</span><span class="p">(</span><span class="n">forecast</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">ma</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> cannot be propagated: a conditional forecast needs "</span>
+                <span class="s2">"forecast(steps), ma_representation(horizon) and sigma_u on a point result, or "</span>
+                <span class="s2">"beta_draws and sigma_draws on a sampled one."</span>
+            <span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">forecast</span><span class="p">(</span><span class="n">steps</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mean</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">mean</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"forecast(</span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">) returned shape </span><span class="si">{</span><span class="n">mean</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">; expected (</span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">)."</span>
+            <span class="p">)</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ma</span><span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">psi</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"ma_representation(</span><span class="si">{</span><span class="n">steps</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">) returned shape </span><span class="si">{</span><span class="n">psi</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">; expected "</span>
+                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">)."</span>
+            <span class="p">)</span>
+        <span class="n">impact</span> <span class="o">=</span> <span class="n">_lower_cholesky</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="s2">"the innovationcovariance"</span><span class="p">)</span>
+        <span class="n">restriction</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">_conditional_restrictions</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="n">impact</span><span class="p">,</span> <span class="n">grid</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span>
+        <span class="n">shocks</span><span class="p">,</span> <span class="n">star</span> <span class="o">=</span> <span class="n">_draw_conditional_shocks</span><span class="p">(</span><span class="n">restriction</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">_moving_average_paths</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="n">impact</span><span class="p">,</span> <span class="n">shocks</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">mean</span><span class="p">)</span>
+        <span class="n">unconditional</span> <span class="o">=</span> <span class="n">mean</span>
+        <span class="n">implied</span> <span class="o">=</span> <span class="n">star</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">norm_sq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">star</span> <span class="o">@</span> <span class="n">star</span><span class="p">)</span>
+
+    <span class="n">n_conditions</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">ConditionalForecastResult</span><span class="p">(</span>
+        <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+        <span class="n">steps</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">),</span>
+        <span class="n">conditions</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+        <span class="n">unconditional</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">unconditional</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">mean</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">paths</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">paths</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">implied_shocks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">implied</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">modesty</span><span class="o">=</span><span class="n">norm_sq</span> <span class="o">/</span> <span class="n">n_conditions</span><span class="p">,</span>
+        <span class="n">modesty_pvalue</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">chi2</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">norm_sq</span><span class="p">,</span> <span class="n">n_conditions</span><span class="p">)),</span>
+        <span class="n">n_conditions</span><span class="o">=</span><span class="n">n_conditions</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">_source_label</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
+        <span class="n">parameter_uncertainty</span><span class="o">=</span><span class="n">sampled</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

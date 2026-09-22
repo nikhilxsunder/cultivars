@@ -1,0 +1,1009 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="cultivars.typing" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/api/typing.html" />
+<meta property="og:site_name" content="cultivars" />
+<meta property="og:description" content="Typing utilities for the cultivars package. Categorical options are declared as PEP 695 type aliases over Literal so that the permitted strings are visible to type checkers and to autocomplete. Pass the string; the alias is for annotation." />
+<meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/_static/cultivars-logo.png" />
+<meta property="og:image:alt" content="cultivars" />
+<meta name="description" content="Typing utilities for the cultivars package. Categorical options are declared as PEP 695 type aliases over Literal so that the permitted strings are visible to type checkers and to autocomplete. Pass the string; the alias is for annotation." />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="cultivars Documentation" />
+<meta property="og:image:alt" content="cultivars Logo" />
+
+    <title>cultivars.typing &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/typing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/api/typing.html" />
+    <link rel="icon" href="../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="cultivars.exceptions.StabilityWarning" href="generated/cultivars.exceptions.StabilityWarning.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.univariate.html">cultivars.univariate</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.AR.html">AR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARFIMA.html">ARFIMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARGARCH.html">ARGARCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARIMA.html">ARIMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARIMAX.html">ARIMAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMA.html">ARMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMAEGARCH.html">ARMAEGARCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMAFIGARCH.html">ARMAFIGARCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMAGARCH.html">ARMAGARCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMAGJR.html">ARMAGJR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARNN.html">ARNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.EGARCH.html">EGARCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ESTAR.html">ESTAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.FIGARCH.html">FIGARCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.GARCH.html">GARCH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.GJR.html">GJR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.LSTAR.html">LSTAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.MSAR.html">MSAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.SARIMA.html">SARIMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.SARIMAX.html">SARIMAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.SETAR.html">SETAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.SV.html">SV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.TAR.html">TAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.TARNN.html">TARNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.UCSV.html">UCSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARFIMAResult.html">ARFIMAResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMAFIGARCHResult.html">ARMAFIGARCHResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMAGARCHResult.html">ARMAGARCHResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARMAResult.html">ARMAResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARNNResult.html">ARNNResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.ARResult.html">ARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.FIGARCHResult.html">FIGARCHResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.GARCHResult.html">GARCHResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.MSARResult.html">MSARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.SETARResult.html">SETARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.STARResult.html">STARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.SVResult.html">SVResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.TARNNResult.html">TARNNResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.UnobservedComponents.html">UnobservedComponents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.univariate.UnobservedComponentsResult.html">UnobservedComponentsResult</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.multivariate.html">cultivars.multivariate</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.BVAR.html">BVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.BVARSV.html">BVARSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.DFM.html">DFM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FAVAR.html">FAVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.GVAR.html">GVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MFVAR.html">MFVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MIDASVAR.html">MIDASVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.QVAR.html">QVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.STVAR.html">STVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TVAR.html">TVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TVPVAR.html">TVPVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TVPVARSV.html">TVPVARSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VAR.html">VAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VARMA.html">VARMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VARX.html">VARX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VECM.html">VECM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VECMX.html">VECMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.BVARResult.html">BVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.BVARSVResult.html">BVARSVResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.DFMResult.html">DFMResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.DynamicNelsonSiegel.html">DynamicNelsonSiegel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.DynamicNelsonSiegelResult.html">DynamicNelsonSiegelResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FAVARResult.html">FAVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FactorAugmentedSVAR.html">FactorAugmentedSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FactorAugmentedSVARResult.html">FactorAugmentedSVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FactorSV.html">FactorSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FactorSVResult.html">FactorSVResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FunctionalCoefficientVAR.html">FunctionalCoefficientVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FunctionalCoefficientVARResult.html">FunctionalCoefficientVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FunctionalVAR.html">FunctionalVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.FunctionalVARResult.html">FunctionalVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.GVARResult.html">GVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.GibbsBVAR.html">GibbsBVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.GibbsBVARResult.html">GibbsBVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.GraphicalVAR.html">GraphicalVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.GraphicalVARResult.html">GraphicalVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.HeteroskedasticSVAR.html">HeteroskedasticSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.HierarchicalBVAR.html">HierarchicalBVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.HierarchicalBVARResult.html">HierarchicalBVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.LongMemorySV.html">LongMemorySV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.LongMemorySVResult.html">LongMemorySVResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.LongRunSVAR.html">LongRunSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MFVARResult.html">MFVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MIDASVARResult.html">MIDASVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MarkovSwitchingDFM.html">MarkovSwitchingDFM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MarkovSwitchingDFMResult.html">MarkovSwitchingDFMResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MarkovSwitchingSVAR.html">MarkovSwitchingSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MarkovSwitchingSVARResult.html">MarkovSwitchingSVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MarkovSwitchingVAR.html">MarkovSwitchingVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MarkovSwitchingVARResult.html">MarkovSwitchingVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.MixedSVAR.html">MixedSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.NarrativeSignRestrictedSVAR.html">NarrativeSignRestrictedSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.NonGaussianSVAR.html">NonGaussianSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.PanelVAR.html">PanelVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.PanelVARResult.html">PanelVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.PerturbationDSGE.html">PerturbationDSGE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.PerturbationDSGEResult.html">PerturbationDSGEResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.ProxySVAR.html">ProxySVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.QVARResult.html">QVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.RecursiveSVAR.html">RecursiveSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.STVARResult.html">STVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SVARResult.html">SVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SetIdentifiedSVAR.html">SetIdentifiedSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SetIdentifiedSVARResult.html">SetIdentifiedSVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.ShortRunSVAR.html">ShortRunSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SignRestrictedSVAR.html">SignRestrictedSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SignRestrictedSVARResult.html">SignRestrictedSVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SparseVAR.html">SparseVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SparseVARResult.html">SparseVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.Spillover.html">Spillover</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.SpilloverResult.html">SpilloverResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.StochasticVolatilitySVAR.html">StochasticVolatilitySVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.StochasticVolatilitySVARResult.html">StochasticVolatilitySVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.StudentBVAR.html">StudentBVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.StudentBVARResult.html">StudentBVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TVARResult.html">TVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TVPSVARResult.html">TVPSVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TVPVARResult.html">TVPVARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TVPVARSVResult.html">TVPVARSVResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TimeVaryingNelsonSiegel.html">TimeVaryingNelsonSiegel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TimeVaryingNelsonSiegelResult.html">TimeVaryingNelsonSiegelResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.TimeVaryingSVAR.html">TimeVaryingSVAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VARMAResult.html">VARMAResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VARResult.html">VARResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VARXResult.html">VARXResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VECMResult.html">VECMResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.multivariate.VECMXResult.html">VECMXResult</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.state_space.html">cultivars.state_space</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.DurbinKoopmanSmootherResult.html">DurbinKoopmanSmootherResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.HamiltonFilterResult.html">HamiltonFilterResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.KalmanFilterResult.html">KalmanFilterResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.KimFilterResult.html">KimFilterResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.KimSmootherResult.html">KimSmootherResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.LinearGaussianSSM.html">LinearGaussianSSM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.MarkovSwitchingSSM.html">MarkovSwitchingSSM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.NonlinearSSM.html">NonlinearSSM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.ParticleFilterResult.html">ParticleFilterResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.ParticleSmootherResult.html">ParticleSmootherResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.RegimeSwitchingLinearSSM.html">RegimeSwitchingLinearSSM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.state_space.RtsSmootherResult.html">RtsSmootherResult</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.bayes.html">cultivars.bayes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.DirichletLaplacePrior.html">DirichletLaplacePrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.DummyInitialObservationPrior.html">DummyInitialObservationPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.HorseshoePrior.html">HorseshoePrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.IndependentNormalWishartPrior.html">IndependentNormalWishartPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.MarginalLikelihoodSelection.html">MarginalLikelihoodSelection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.MinnesotaPrior.html">MinnesotaPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.ModelCombinationSelection.html">ModelCombinationSelection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.NoPrior.html">NoPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.NormalGammaPrior.html">NormalGammaPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.NormalInverseWishartPrior.html">NormalInverseWishartPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.PredictiveCheckTest.html">PredictiveCheckTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.RandomWalkVolatilityPrior.html">RandomWalkVolatilityPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.SpikeAndSlabPrior.html">SpikeAndSlabPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.SumOfCoefficientsPrior.html">SumOfCoefficientsPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.VolatilityPrior.html">VolatilityPrior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.bayesian_model_average.html">cultivars.bayes.bayesian_model_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.bridge_sampling.html">cultivars.bayes.bridge_sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.compare.html">cultivars.bayes.compare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.convergence.html">cultivars.bayes.convergence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.ess_bulk.html">cultivars.bayes.ess_bulk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.ess_tail.html">cultivars.bayes.ess_tail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.geweke.html">cultivars.bayes.geweke</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.marginal_likelihood.html">cultivars.bayes.marginal_likelihood</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.mcse.html">cultivars.bayes.mcse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.modified_harmonic_mean.html">cultivars.bayes.modified_harmonic_mean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.posterior_predictive_check.html">cultivars.bayes.posterior_predictive_check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.prior_predictive_check.html">cultivars.bayes.prior_predictive_check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.replication_check.html">cultivars.bayes.replication_check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.rhat.html">cultivars.bayes.rhat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.bayes.stacking.html">cultivars.bayes.stacking</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.diagnostics.html">cultivars.diagnostics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.BDSTest.html">BDSTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.BreakTest.html">BreakTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.ChiSquaredTest.html">ChiSquaredTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.ConvergenceTest.html">ConvergenceTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.ForecastComparisonTest.html">ForecastComparisonTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.HypothesisTest.html">HypothesisTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.JohansenRankTest.html">JohansenRankTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.LikelihoodRatioTest.html">LikelihoodRatioTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.LinearityTest.html">LinearityTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.LongMemoryEstimate.html">LongMemoryEstimate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.MultipleBreakTest.html">MultipleBreakTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.SeasonalUnitRootTest.html">SeasonalUnitRootTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.StabilityTest.html">StabilityTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.TabulatedTest.html">TabulatedTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.UnitRootTest.html">UnitRootTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.WaldTest.html">WaldTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.adf.html">cultivars.diagnostics.adf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.bai_perron.html">cultivars.diagnostics.bai_perron</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.bds.html">cultivars.diagnostics.bds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.canova_hansen.html">cultivars.diagnostics.canova_hansen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.convergence.html">cultivars.diagnostics.convergence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.cusum.html">cultivars.diagnostics.cusum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.dfgls.html">cultivars.diagnostics.dfgls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.ess_bulk.html">cultivars.diagnostics.ess_bulk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.ess_tail.html">cultivars.diagnostics.ess_tail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.exact_local_whittle.html">cultivars.diagnostics.exact_local_whittle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.geweke.html">cultivars.diagnostics.geweke</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.gph.html">cultivars.diagnostics.gph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.hansen_threshold.html">cultivars.diagnostics.hansen_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.hegy.html">cultivars.diagnostics.hegy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.kpss.html">cultivars.diagnostics.kpss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.local_whittle.html">cultivars.diagnostics.local_whittle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.long_run_variance.html">cultivars.diagnostics.long_run_variance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.mcse.html">cultivars.diagnostics.mcse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.ng_perron.html">cultivars.diagnostics.ng_perron</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.phillips_perron.html">cultivars.diagnostics.phillips_perron</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.reset.html">cultivars.diagnostics.reset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.rhat.html">cultivars.diagnostics.rhat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.sup_wald.html">cultivars.diagnostics.sup_wald</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.terasvirta.html">cultivars.diagnostics.terasvirta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.tsay.html">cultivars.diagnostics.tsay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.diagnostics.zivot_andrews.html">cultivars.diagnostics.zivot_andrews</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.forecast.html">cultivars.forecast</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.Backtest.html">Backtest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.BacktestResult.html">BacktestResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.Calibration.html">Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.CalibrationResult.html">CalibrationResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.ClarkWestTest.html">ClarkWestTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.ConditionalForecastResult.html">ConditionalForecastResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.DensityScore.html">DensityScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.DensityScoreResult.html">DensityScoreResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.EncompassingTest.html">EncompassingTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.ForecastComparison.html">ForecastComparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.ForecastComparisonResult.html">ForecastComparisonResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.GiacominiWhiteTest.html">GiacominiWhiteTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.MincerZarnowitzTest.html">MincerZarnowitzTest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.clark_west.html">cultivars.forecast.clark_west</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.conditional_forecast.html">cultivars.forecast.conditional_forecast</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.encompassing.html">cultivars.forecast.encompassing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.fan_chart.html">cultivars.forecast.fan_chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.giacomini_white.html">cultivars.forecast.giacomini_white</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.mincer_zarnowitz.html">cultivars.forecast.mincer_zarnowitz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.model_confidence_set.html">cultivars.forecast.model_confidence_set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.forecast.pinball_loss.html">cultivars.forecast.pinball_loss</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.spectral.html">cultivars.spectral</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.MODWT.html">MODWT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.BandPassResult.html">BandPassResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.BaxterKingFilter.html">BaxterKingFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.BeveridgeNelsonDecomposition.html">BeveridgeNelsonDecomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.ButterworthFilter.html">ButterworthFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.ChristianoFitzgeraldFilter.html">ChristianoFitzgeraldFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.ConditionalSpectralCausality.html">ConditionalSpectralCausality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.ConditionalSpectralCausalityResult.html">ConditionalSpectralCausalityResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.DaniellSpectrum.html">DaniellSpectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.DecompositionFilterResult.html">DecompositionFilterResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.HamiltonFilter.html">HamiltonFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.HodrickPrescottFilter.html">HodrickPrescottFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.MODWTResult.html">MODWTResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.MultitaperSpectrum.html">MultitaperSpectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.SpectralCausality.html">SpectralCausality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.SpectralCausalityResult.html">SpectralCausalityResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.SpectralDensity.html">SpectralDensity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.SpectralDensityResult.html">SpectralDensityResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.SpectrumEstimate.html">SpectrumEstimate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.TurningPoints.html">TurningPoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.TurningPointsResult.html">TurningPointsResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.WaveletCoherence.html">WaveletCoherence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.WaveletCoherenceResult.html">WaveletCoherenceResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.WelchSpectrum.html">WelchSpectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.spectral.concordance.html">cultivars.spectral.concordance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="generated/cultivars.exceptions.html">cultivars.exceptions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.exceptions.CultivarsError.html">cultivars.exceptions.CultivarsError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.exceptions.DimensionError.html">cultivars.exceptions.DimensionError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.exceptions.NumericalError.html">cultivars.exceptions.NumericalError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.exceptions.SpecificationError.html">cultivars.exceptions.SpecificationError</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/cultivars.exceptions.StabilityWarning.html">cultivars.exceptions.StabilityWarning</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">cultivars.typing</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.typing</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-cultivars.typing">
+<span id="cultivars-typing"></span><h1>cultivars.typing<a class="headerlink" href="#module-cultivars.typing" title="Link to this heading">#</a></h1>
+<p>Typing utilities for the cultivars package.</p>
+<p>Categorical options are declared as PEP 695 <code class="docutils literal notranslate"><span class="pre">type</span></code> aliases over
+<code class="docutils literal notranslate"><span class="pre">Literal</span></code> so that the permitted strings are visible to type checkers and
+to autocomplete. Pass the string; the alias is for annotation.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Activation">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Activation</span></span><a class="headerlink" href="#cultivars.typing.Activation" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['tanh',</span> <span class="pre">'relu']</span></code>.</p>
+<p>Hidden-layer activation for a neural mean function.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.CointegrationTrend">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">CointegrationTrend</span></span><a class="headerlink" href="#cultivars.typing.CointegrationTrend" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['none',</span> <span class="pre">'restricted_constant',</span> <span class="pre">'constant',</span> <span class="pre">'restricted_trend',</span> <span class="pre">'trend']</span></code>.</p>
+<p>Where a deterministic term sits relative to the cointegrating space.</p>
+<p>Johansen’s five cases. A constant or trend can enter inside the cointegrating
+relations, outside them in the short-run equation, or not at all, and the three
+say different things about the long run: a constant restricted to the
+cointegrating space allows the relations a non-zero equilibrium level without
+giving the levels a drift, while an unrestricted one does both. The asymptotic
+distribution of the rank statistics depends on which of the five holds, so this
+is not a display option.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Frequency">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Frequency</span></span><a class="headerlink" href="#cultivars.typing.Frequency" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['high',</span> <span class="pre">'stock',</span> <span class="pre">'flow']</span></code>.</p>
+<p>How often a variable is seen, and what a low-frequency reading measures.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> is observed every sub-period. <code class="docutils literal notranslate"><span class="pre">&quot;stock&quot;</span></code> is a level read at the end
+of the low-frequency period – a survey balance, an end-of-quarter position –
+so the reading is the last sub-period’s value and nothing else. <code class="docutils literal notranslate"><span class="pre">&quot;flow&quot;</span></code> is
+accumulated across the period – output, spending, hours – so the reading is a
+weighted combination of every sub-period in it.</p>
+<p>The distinction is not presentational. A stock reading pins down one latent
+value; a flow reading pins down a weighted sum and leaves the individual
+sub-periods free to move against each other. Treating a flow as a stock throws
+away two thirds of a quarterly constraint and silently changes what the model
+is fitted to.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.FunctionalBasis">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">FunctionalBasis</span></span><a class="headerlink" href="#cultivars.typing.FunctionalBasis" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['fpca',</span> <span class="pre">'nelson-siegel',</span> <span class="pre">'bspline']</span></code>.</p>
+<p>Functional bases for representing curves: functional principal components, Nelson-Siegel, or
+B-splines.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.LongMemoryMethod">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">LongMemoryMethod</span></span><a class="headerlink" href="#cultivars.typing.LongMemoryMethod" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['gph',</span> <span class="pre">'local_whittle']</span></code>.</p>
+<p>Semiparametric estimator for the fractional differencing parameter.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Mean">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Mean</span></span><a class="headerlink" href="#cultivars.typing.Mean" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['constant',</span> <span class="pre">'zero']</span></code>.</p>
+<p>Conditional-mean specification for a volatility model.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Method">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Method</span></span><a class="headerlink" href="#cultivars.typing.Method" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['css',</span> <span class="pre">'exact']</span></code>.</p>
+<p>Estimator for a conditional-mean model: conditional sum of squares or exact ML.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.OptimizerMethod">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">OptimizerMethod</span></span><a class="headerlink" href="#cultivars.typing.OptimizerMethod" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['L-BFGS-B',</span> <span class="pre">'Nelder-Mead']</span></code>.</p>
+<p>Numerical minimizer an objective surface asks <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> for.</p>
+<p>Deliberately narrower than the full scipy list: an objective that needs a third
+algorithm adds it here, which keeps the set of minimizers the package actually
+exercises visible in one place.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.PanelEffects">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">PanelEffects</span></span><a class="headerlink" href="#cultivars.typing.PanelEffects" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['none',</span> <span class="pre">'unit']</span></code>.</p>
+<p>Which intercepts a panel vector autoregression lets vary across units.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;unit&quot;</span></code> estimates one intercept per unit as a dummy block, which is the
+least-squares dummy-variable estimator and carries the Nickell bias. <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>
+pools the deterministic terms, which is only defensible when the units are
+known to share a mean. Slopes are pooled under both – unit-varying dynamics
+are a different specification, not a value of this option.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Penalty">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Penalty</span></span><a class="headerlink" href="#cultivars.typing.Penalty" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['lasso',</span> <span class="pre">'adaptive',</span> <span class="pre">'scad',</span> <span class="pre">'mcp',</span> <span class="pre">'group']</span></code>.</p>
+<p>Sparse-VAR penalty families: elementwise, reweighted, nonconvex, and lag-group.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.ProbabilityType">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">ProbabilityType</span></span><a class="headerlink" href="#cultivars.typing.ProbabilityType" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['smoothed',</span> <span class="pre">'filtered',</span> <span class="pre">'predicted']</span></code>.</p>
+<p>The three posteriors a Hamilton filter and Kim smoother produce.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Regime">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Regime</span></span><a class="headerlink" href="#cultivars.typing.Regime" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['lower',</span> <span class="pre">'upper']</span></code>.</p>
+<p>Which regime of an observed-regime model an operation reads.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Transition">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Transition</span></span><a class="headerlink" href="#cultivars.typing.Transition" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['logistic',</span> <span class="pre">'exponential']</span></code>.</p>
+<p>Smooth-transition function: logistic (LSTAR) or exponential (ESTAR).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Trend">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Trend</span></span><a class="headerlink" href="#cultivars.typing.Trend" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['n',</span> <span class="pre">'c',</span> <span class="pre">'ct']</span></code>.</p>
+<p>Deterministic terms: none, constant, or constant plus linear trend.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cultivars.typing.Vol">
+<span class="sig-prename descclassname"><span class="pre">cultivars.typing.</span></span><span class="sig-name descname"><span class="pre">Vol</span></span><a class="headerlink" href="#cultivars.typing.Vol" title="Link to this definition">#</a></dt>
+<dd><p>Alias of <code class="docutils literal notranslate"><span class="pre">Literal['GARCH',</span> <span class="pre">'GJR',</span> <span class="pre">'EGARCH']</span></code>.</p>
+<p>Finite-order conditional-variance family.</p>
+<p>The fractionally integrated family is deliberately absent: its order is fixed
+at <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">d,</span> <span class="pre">1)</span></code> and it takes a truncation lag instead of <code class="docutils literal notranslate"><span class="pre">p</span></code>, <code class="docutils literal notranslate"><span class="pre">o</span></code>, <code class="docutils literal notranslate"><span class="pre">q</span></code>,
+so it is a different specification surface rather than another value of this
+option.</p>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="generated/cultivars.exceptions.StabilityWarning.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">cultivars.exceptions.StabilityWarning</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Activation"><code class="docutils literal notranslate"><span class="pre">Activation</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.CointegrationTrend"><code class="docutils literal notranslate"><span class="pre">CointegrationTrend</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Frequency"><code class="docutils literal notranslate"><span class="pre">Frequency</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.FunctionalBasis"><code class="docutils literal notranslate"><span class="pre">FunctionalBasis</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.LongMemoryMethod"><code class="docutils literal notranslate"><span class="pre">LongMemoryMethod</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Mean"><code class="docutils literal notranslate"><span class="pre">Mean</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Method"><code class="docutils literal notranslate"><span class="pre">Method</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.OptimizerMethod"><code class="docutils literal notranslate"><span class="pre">OptimizerMethod</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.PanelEffects"><code class="docutils literal notranslate"><span class="pre">PanelEffects</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Penalty"><code class="docutils literal notranslate"><span class="pre">Penalty</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.ProbabilityType"><code class="docutils literal notranslate"><span class="pre">ProbabilityType</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Regime"><code class="docutils literal notranslate"><span class="pre">Regime</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Transition"><code class="docutils literal notranslate"><span class="pre">Transition</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Trend"><code class="docutils literal notranslate"><span class="pre">Trend</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cultivars.typing.Vol"><code class="docutils literal notranslate"><span class="pre">Vol</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/nikhilxsunder/cultivars/edit/main/docs/source/api/typing.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

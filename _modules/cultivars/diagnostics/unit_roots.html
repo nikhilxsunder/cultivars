@@ -1,0 +1,1043 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.diagnostics.unit_roots &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/diagnostics/unit_roots';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/diagnostics/unit_roots.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.diagnostics.unit_roots</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.diagnostics.unit_roots</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/diagnostics/unit_roots.py</span>
+<span class="c1">#</span>
+<span class="c1"># [MIT header, Copyright (c) 2026 Nikhil Sunder]</span>
+
+<span class="sd">"""Unit-root and stationarity tests: the question every model in the package asks first.</span>
+
+<span class="sd">A level VAR, a cointegrating system, and a differenced ARMA are answers to</span>
+<span class="sd">one question -- does the series carry a stochastic trend -- and the tests</span>
+<span class="sd">here are how that question is put to the data. They come in two</span>
+<span class="sd">families. The Dickey-Fuller line puts the unit root under the null:</span>
+<span class="sd">:func:`adf` with its augmentation chosen on a common sample,</span>
+<span class="sd">:func:`phillips_perron` with a kernel correction instead of augmentation,</span>
+<span class="sd">:func:`dfgls` on a GLS-detrended series (Elliott, Rothenberg &amp; Stock,</span>
+<span class="sd">1996), and :func:`ng_perron`, whose ``M`` statistics keep size under a</span>
+<span class="sd">large negative moving-average root that inflates the others. :func:`kpss`</span>
+<span class="sd">puts stationarity under the null instead, and a series both families</span>
+<span class="sd">fail to reject is one the sample cannot classify -- which the record</span>
+<span class="sd">says rather than hides. :func:`zivot_andrews` allows one break at an</span>
+<span class="sd">unknown date, because a broken trend is the classic way a stationary</span>
+<span class="sd">series is mistaken for a unit root (Perron, 1989).</span>
+
+<span class="sd">Every ``trend`` argument takes ``"n"`` (nothing), ``"c"`` (constant) or</span>
+<span class="sd">``"ct"`` (constant and linear trend); KPSS, DF-GLS and Ng-Perron admit</span>
+<span class="sd">only the last two.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Dickey, D. A., &amp; Fuller, W. A. (1979). Distribution of the estimators</span>
+<span class="sd">        for autoregressive time series with a unit root. *Journal of the</span>
+<span class="sd">        American Statistical Association*, 74(366), 427-431.</span>
+<span class="sd">    Said, S. E., &amp; Dickey, D. A. (1984). Testing for unit roots in</span>
+<span class="sd">        autoregressive-moving average models of unknown order.</span>
+<span class="sd">        *Biometrika*, 71(3), 599-607.</span>
+<span class="sd">    Phillips, P. C. B., &amp; Perron, P. (1988). Testing for a unit root in</span>
+<span class="sd">        time series regression. *Biometrika*, 75(2), 335-346.</span>
+<span class="sd">    Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., &amp; Shin, Y. (1992).</span>
+<span class="sd">        Testing the null hypothesis of stationarity against the</span>
+<span class="sd">        alternative of a unit root. *Journal of Econometrics*, 54(1-3),</span>
+<span class="sd">        159-178.</span>
+<span class="sd">    Elliott, G., Rothenberg, T. J., &amp; Stock, J. H. (1996). Efficient tests</span>
+<span class="sd">        for an autoregressive unit root. *Econometrica*, 64(4), 813-836.</span>
+<span class="sd">    Ng, S., &amp; Perron, P. (2001). Lag length selection and the construction</span>
+<span class="sd">        of unit root tests with good size and power. *Econometrica*,</span>
+<span class="sd">        69(6), 1519-1554.</span>
+<span class="sd">    Perron, P., &amp; Qu, Z. (2007). A simple modification to improve the</span>
+<span class="sd">        finite sample properties of Ng and Perron's unit root tests.</span>
+<span class="sd">        *Economics Letters*, 94(1), 12-19.</span>
+<span class="sd">    Zivot, E., &amp; Andrews, D. W. K. (1992). Further evidence on the great</span>
+<span class="sd">        crash, the oil-price shock, and the unit-root hypothesis.</span>
+<span class="sd">        *Journal of Business &amp; Economic Statistics*, 10(3), 251-270.</span>
+<span class="sd">    MacKinnon, J. G. (1994). Approximate asymptotic distribution functions</span>
+<span class="sd">        for unit-root and cointegration tests. *Journal of Business &amp;</span>
+<span class="sd">        Economic Statistics*, 12(2), 167-176.</span>
+<span class="sd">    MacKinnon, J. G. (2010). Critical values for cointegration tests.</span>
+<span class="sd">        Queen's Economics Department Working Paper 1227.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">    &gt;&gt;&gt; walk = np.cumsum(rng.standard_normal(300))</span>
+<span class="sd">    &gt;&gt;&gt; adf(walk).reject(), kpss(walk).reject()</span>
+<span class="sd">    (False, True)</span>
+<span class="sd">    &gt;&gt;&gt; noise = rng.standard_normal(300)</span>
+<span class="sd">    &gt;&gt;&gt; adf(noise).reject(), kpss(noise).reject()</span>
+<span class="sd">    (True, False)</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_DFGLS_CRITICAL</span><span class="p">,</span>
+    <span class="n">_GLS_DETREND_C</span><span class="p">,</span>
+    <span class="n">_KPSS_CRITICAL</span><span class="p">,</span>
+    <span class="n">_NG_PERRON_CRITICAL</span><span class="p">,</span>
+    <span class="n">_ZIVOT_ANDREWS_CRITICAL</span><span class="p">,</span>
+    <span class="n">_critical_value_table</span><span class="p">,</span>
+    <span class="n">_dickey_fuller_regression</span><span class="p">,</span>
+    <span class="n">_gls_detrend</span><span class="p">,</span>
+    <span class="n">_kpss_pvalue</span><span class="p">,</span>
+    <span class="n">_kpss_statistic</span><span class="p">,</span>
+    <span class="n">_long_run_variance</span><span class="p">,</span>
+    <span class="n">_mackinnon_critical_values</span><span class="p">,</span>
+    <span class="n">_mackinnon_pvalue</span><span class="p">,</span>
+    <span class="n">_newey_west_bandwidth</span><span class="p">,</span>
+    <span class="n">_ng_perron_statistics</span><span class="p">,</span>
+    <span class="n">_phillips_perron</span><span class="p">,</span>
+    <span class="n">_resolve_dickey_fuller_lags</span><span class="p">,</span>
+    <span class="n">_schwert_max_lags</span><span class="p">,</span>
+    <span class="n">_zivot_andrews</span><span class="p">,</span>
+    <span class="n">validate_choice</span><span class="p">,</span>
+    <span class="n">validate_endog</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_TabulatedTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"UnitRootTest"</span><span class="p">,</span>
+    <span class="s2">"adf"</span><span class="p">,</span>
+    <span class="s2">"dfgls"</span><span class="p">,</span>
+    <span class="s2">"kpss"</span><span class="p">,</span>
+    <span class="s2">"long_run_variance"</span><span class="p">,</span>
+    <span class="s2">"ng_perron"</span><span class="p">,</span>
+    <span class="s2">"phillips_perron"</span><span class="p">,</span>
+    <span class="s2">"zivot_andrews"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="UnitRootTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.UnitRootTest.html#cultivars.diagnostics.UnitRootTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnitRootTest</span><span class="p">(</span><span class="n">_TabulatedTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of a unit-root or stationarity test.</span>
+
+<span class="sd">    The family is not one hypothesis but two. The Dickey-Fuller line --</span>
+<span class="sd">    ADF, Phillips-Perron, DF-GLS, Ng-Perron, Zivot-Andrews -- puts the</span>
+<span class="sd">    unit root under the null and rejects in the lower tail; KPSS puts</span>
+<span class="sd">    stationarity under the null and rejects in the upper tail. The record</span>
+<span class="sd">    carries which, so that ``reject`` reads correctly for both and a</span>
+<span class="sd">    table of several tests can be read side by side: a series the ADF</span>
+<span class="sd">    cannot reject a unit root for and the KPSS cannot reject stationarity</span>
+<span class="sd">    for is one the sample does not decide, and that is a finding.</span>
+
+<span class="sd">    P-values are exact where the literature supplies a response surface</span>
+<span class="sd">    (MacKinnon for the Dickey-Fuller law) or a table dense enough to</span>
+<span class="sd">    interpolate (KPSS); the tests known only through asymptotic critical</span>
+<span class="sd">    values at three levels report ``pvalue=None`` and ``reject`` reads</span>
+<span class="sd">    the table.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        trend: Deterministic specification the test was run under.</span>
+<span class="sd">        lags: Augmentation lags or kernel bandwidth, as the test uses.</span>
+<span class="sd">        method: How ``lags`` was chosen or the kernel used.</span>
+<span class="sd">        break_index: For a break-allowing test, the first observation of</span>
+<span class="sd">            the new regime; ``None`` otherwise.</span>
+<span class="sd">    """</span>
+
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">break_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">"Null"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">null</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Lags"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">"Method"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)),</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">break_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Break at"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">break_index</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"null=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">null</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"trend=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"lags=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="adf">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.adf.html#cultivars.diagnostics.adf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">adf</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"aic"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Augmented Dickey-Fuller test of a unit root.</span>
+
+<span class="sd">    The augmentation absorbs serial correlation in the differences. When</span>
+<span class="sd">    ``lags`` is not given it is chosen on the common sample that the</span>
+<span class="sd">    largest candidate leaves, so the criteria compare like with like;</span>
+<span class="sd">    the test itself is then run on the longest sample the chosen</span>
+<span class="sd">    augmentation allows.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        trend: ``"n"``, ``"c"`` or ``"ct"``.</span>
+<span class="sd">        lags: Augmentation lags, or ``None`` to select.</span>
+<span class="sd">        max_lags: Largest augmentation under selection; default</span>
+<span class="sd">            Schwert's ``12 (T / 100)^(1/4)``.</span>
+<span class="sd">        method: ``"aic"``, ``"bic"``, ``"t-stat"`` (general-to-specific at</span>
+<span class="sd">            10%) or ``"maic"`` (Ng-Perron modified AIC).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`UnitRootTest` with MacKinnon's response-surface</span>
+<span class="sd">        p-value and finite-sample critical values.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the trend, method, or counts are unusable</span>
+<span class="sd">            or the sample is too short.</span>
+<span class="sd">        DimensionError: If the series is not one-dimensional.</span>
+<span class="sd">        NumericalError: If the series is not finite or the design is</span>
+<span class="sd">            singular.</span>
+<span class="sd">    """</span>
+    <span class="n">validate_choice</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="s2">"trend"</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">chosen</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">_resolve_dickey_fuller_lags</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">max_lags</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">tau</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">n_eff</span> <span class="o">=</span> <span class="n">_dickey_fuller_regression</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">chosen</span><span class="p">,</span> <span class="n">trend</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">UnitRootTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"ADF"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">tau</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">_mackinnon_pvalue</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">trend</span><span class="p">),</span>
+        <span class="n">critical_values</span><span class="o">=</span><span class="n">_mackinnon_critical_values</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="n">n_eff</span><span class="p">),</span>
+        <span class="n">null</span><span class="o">=</span><span class="s2">"unit root"</span><span class="p">,</span>
+        <span class="n">lower_tail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+        <span class="n">lags</span><span class="o">=</span><span class="n">chosen</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">n_eff</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="phillips_perron">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.phillips_perron.html#cultivars.diagnostics.phillips_perron">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">phillips_perron</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"bartlett"</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Phillips-Perron ``Z_t`` test of a unit root.</span>
+
+<span class="sd">    The un-augmented Dickey-Fuller ``t`` is corrected with a kernel</span>
+<span class="sd">    estimate of the long-run variance of the residuals, so serial</span>
+<span class="sd">    correlation is handled nonparametrically rather than by adding lags.</span>
+<span class="sd">    The corrected statistic follows the same Dickey-Fuller law, and</span>
+<span class="sd">    MacKinnon's p-value applies.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        trend: ``"n"``, ``"c"`` or ``"ct"``.</span>
+<span class="sd">        kernel: ``"bartlett"`` or ``"quadratic-spectral"``.</span>
+<span class="sd">        bandwidth: Kernel bandwidth; ``None`` for Newey-West's rule</span>
+<span class="sd">            (Bartlett) or Andrews' plug-in (quadratic spectral).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`UnitRootTest`; ``lags`` reports the bandwidth used.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the trend or kernel is unusable.</span>
+<span class="sd">        DimensionError: If the series is not one-dimensional.</span>
+<span class="sd">        NumericalError: If the series is not finite or the design is</span>
+<span class="sd">            singular.</span>
+<span class="sd">    """</span>
+    <span class="n">validate_choice</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="s2">"trend"</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">z_t</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">n_eff</span> <span class="o">=</span> <span class="n">_phillips_perron</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">_newey_west_bandwidth</span><span class="p">(</span><span class="n">n_eff</span><span class="p">)</span> <span class="k">if</span> <span class="n">bandwidth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">bandwidth</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">UnitRootTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"Phillips-Perron"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">z_t</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">_mackinnon_pvalue</span><span class="p">(</span><span class="n">z_t</span><span class="p">,</span> <span class="n">trend</span><span class="p">),</span>
+        <span class="n">critical_values</span><span class="o">=</span><span class="n">_mackinnon_critical_values</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="n">n_eff</span><span class="p">),</span>
+        <span class="n">null</span><span class="o">=</span><span class="s2">"unit root"</span><span class="p">,</span>
+        <span class="n">lower_tail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+        <span class="n">lags</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">n_eff</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2"> kernel"</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="kpss">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.kpss.html#cultivars.diagnostics.kpss">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">kpss</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"bartlett"</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""KPSS test with stationarity under the null.</span>
+
+<span class="sd">    The LM statistic is the scaled sum of squared partial sums of the</span>
+<span class="sd">    residuals from a regression on the deterministic terms, divided by a</span>
+<span class="sd">    kernel estimate of their long-run variance. The p-value is</span>
+<span class="sd">    interpolated in the authors' table and clipped to ``[0.01, 0.10]``</span>
+<span class="sd">    outside it, so ``0.01`` reads as "at most 1%" and ``0.10`` as "at</span>
+<span class="sd">    least 10%".</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        trend: ``"c"`` (level stationarity) or ``"ct"`` (trend</span>
+<span class="sd">            stationarity).</span>
+<span class="sd">        kernel: ``"bartlett"`` or ``"quadratic-spectral"``.</span>
+<span class="sd">        bandwidth: Kernel bandwidth; ``None`` for the automatic rule.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`UnitRootTest` with ``null="stationarity"``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the trend or kernel is unusable.</span>
+<span class="sd">        DimensionError: If the series is not one-dimensional.</span>
+<span class="sd">        NumericalError: If the series is not finite.</span>
+<span class="sd">    """</span>
+    <span class="n">validate_choice</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="n">trend</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_kpss_statistic</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_KPSS_CRITICAL</span><span class="p">[</span><span class="n">trend</span><span class="p">])</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">_newey_west_bandwidth</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">bandwidth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">bandwidth</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">UnitRootTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"KPSS"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="n">_kpss_pvalue</span><span class="p">(</span><span class="n">statistic</span><span class="p">,</span> <span class="n">trend</span><span class="p">),</span>
+        <span class="n">critical_values</span><span class="o">=</span><span class="n">_critical_value_table</span><span class="p">((</span><span class="n">table</span><span class="p">[</span><span class="mf">0.01</span><span class="p">],</span> <span class="n">table</span><span class="p">[</span><span class="mf">0.05</span><span class="p">],</span> <span class="n">table</span><span class="p">[</span><span class="mf">0.10</span><span class="p">])),</span>
+        <span class="n">null</span><span class="o">=</span><span class="s2">"stationarity"</span><span class="p">,</span>
+        <span class="n">lower_tail</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+        <span class="n">lags</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">method</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2"> kernel"</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dfgls">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.dfgls.html#cultivars.diagnostics.dfgls">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dfgls</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"maic"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Elliott-Rothenberg-Stock DF-GLS test of a unit root.</span>
+
+<span class="sd">    The deterministic terms are removed by GLS under the local</span>
+<span class="sd">    alternative ``1 + c / T`` (``c = -7`` with a constant, ``-13.5`` with</span>
+<span class="sd">    a trend), and the Dickey-Fuller regression is run on the detrended</span>
+<span class="sd">    series without deterministic terms. The result is close to the</span>
+<span class="sd">    point-optimal test and far more powerful than ADF near the null.</span>
+<span class="sd">    The augmentation is chosen on the OLS-detrended series, as Perron</span>
+<span class="sd">    and Qu (2007) recommend: on GLS-detrended data the modified AIC</span>
+<span class="sd">    over-selects badly whenever the series is far from the null. Even</span>
+<span class="sd">    so, on a series close to white noise the modified AIC still</span>
+<span class="sd">    selects long augmentations and the statistic loses power;</span>
+<span class="sd">    ``method="aic"`` or a fixed ``lags`` is the remedy there. Critical</span>
+<span class="sd">    values are the authors' asymptotic ones; no response surface</span>
+<span class="sd">    exists, so ``pvalue`` is ``None``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        trend: ``"c"`` or ``"ct"``.</span>
+<span class="sd">        lags: Augmentation lags, or ``None`` to select.</span>
+<span class="sd">        max_lags: Largest augmentation under selection.</span>
+<span class="sd">        method: Selection rule; the modified AIC is the authors'</span>
+<span class="sd">            companion recommendation (Ng &amp; Perron, 2001).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`UnitRootTest`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the trend, method, or counts are unusable.</span>
+<span class="sd">        DimensionError: If the series is not one-dimensional.</span>
+<span class="sd">        NumericalError: If the series is not finite or the design is</span>
+<span class="sd">            singular.</span>
+<span class="sd">    """</span>
+    <span class="n">validate_choice</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="s2">"trend"</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">detrended</span> <span class="o">=</span> <span class="n">_gls_detrend</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">_GLS_DETREND_C</span><span class="p">[</span><span class="n">trend</span><span class="p">])</span>
+    <span class="n">chosen</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">_resolve_dickey_fuller_lags</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">max_lags</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">tau</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">n_eff</span> <span class="o">=</span> <span class="n">_dickey_fuller_regression</span><span class="p">(</span><span class="n">detrended</span><span class="p">,</span> <span class="n">chosen</span><span class="p">,</span> <span class="s2">"n"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">UnitRootTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"DF-GLS"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">tau</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">critical_values</span><span class="o">=</span><span class="n">_critical_value_table</span><span class="p">(</span><span class="n">_DFGLS_CRITICAL</span><span class="p">[</span><span class="n">trend</span><span class="p">]),</span>
+        <span class="n">null</span><span class="o">=</span><span class="s2">"unit root"</span><span class="p">,</span>
+        <span class="n">lower_tail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+        <span class="n">lags</span><span class="o">=</span><span class="n">chosen</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="n">n_eff</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ng_perron">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.ng_perron.html#cultivars.diagnostics.ng_perron">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ng_perron</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"maic"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Ng-Perron ``M`` tests of a unit root on a GLS-detrended series.</span>
+
+<span class="sd">    ``MZ_t`` is the primary statistic; ``MZ_a``, ``MSB`` and ``MP_T``</span>
+<span class="sd">    travel as companions. The autoregressive spectral density at</span>
+<span class="sd">    frequency zero replaces the kernel estimate the Phillips-Perron</span>
+<span class="sd">    tests use, and with the modified AIC choosing the augmentation the</span>
+<span class="sd">    tests keep their size under a large negative moving-average root,</span>
+<span class="sd">    where ADF and PP over-reject badly. The augmentation is chosen on</span>
+<span class="sd">    the OLS-detrended series (Perron &amp; Qu, 2007) and the statistics</span>
+<span class="sd">    computed on the GLS-detrended one. Critical values are asymptotic;</span>
+<span class="sd">    ``pvalue`` is ``None``.</span>
+
+<span class="sd">    The modified AIC is built for the neighbourhood of the null. Far</span>
+<span class="sd">    from it -- a series close to white noise -- its penalty is dominated</span>
+<span class="sd">    by the level coefficient and it selects long augmentations that cost</span>
+<span class="sd">    the ``M`` statistics most of their power; ``method="aic"`` or a</span>
+<span class="sd">    fixed ``lags`` is the remedy when the series is plainly stationary,</span>
+<span class="sd">    at the price of size under a negative moving-average root.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        trend: ``"c"`` or ``"ct"``.</span>
+<span class="sd">        lags: Augmentation for the spectral estimate, or ``None`` to</span>
+<span class="sd">            select.</span>
+<span class="sd">        max_lags: Largest augmentation under selection.</span>
+<span class="sd">        method: Selection rule; default the modified AIC.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The ``MZ_t`` :class:`UnitRootTest` with the other three as</span>
+<span class="sd">        ``companions``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the trend, method, or counts are unusable.</span>
+<span class="sd">        DimensionError: If the series is not one-dimensional.</span>
+<span class="sd">        NumericalError: If the series is not finite or the design is</span>
+<span class="sd">            singular.</span>
+<span class="sd">    """</span>
+    <span class="n">validate_choice</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="s2">"trend"</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">detrended</span> <span class="o">=</span> <span class="n">_gls_detrend</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">_GLS_DETREND_C</span><span class="p">[</span><span class="n">trend</span><span class="p">])</span>
+    <span class="n">chosen</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">_resolve_dickey_fuller_lags</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">max_lags</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">_ng_perron_statistics</span><span class="p">(</span><span class="n">detrended</span><span class="p">,</span> <span class="n">chosen</span><span class="p">,</span> <span class="n">trend</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">_NG_PERRON_CRITICAL</span><span class="p">[</span><span class="n">trend</span><span class="p">]</span>
+    <span class="n">n_eff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">chosen</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">companions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UnitRootTest</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">UnitRootTest</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">UnitRootTest</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">display</span><span class="p">,</span>
+            <span class="n">statistic</span><span class="o">=</span><span class="n">stats</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+            <span class="n">pvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">critical_values</span><span class="o">=</span><span class="n">_critical_value_table</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">]),</span>
+            <span class="n">null</span><span class="o">=</span><span class="s2">"unit root"</span><span class="p">,</span>
+            <span class="n">lower_tail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">lags</span><span class="o">=</span><span class="n">chosen</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">n_eff</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">companions</span><span class="o">=</span><span class="n">companions</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">companions</span> <span class="o">=</span> <span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="s2">"MZa"</span><span class="p">,</span> <span class="s2">"MZ_a"</span><span class="p">,</span> <span class="p">()),</span> <span class="n">record</span><span class="p">(</span><span class="s2">"MSB"</span><span class="p">,</span> <span class="s2">"MSB"</span><span class="p">,</span> <span class="p">()),</span> <span class="n">record</span><span class="p">(</span><span class="s2">"MPT"</span><span class="p">,</span> <span class="s2">"MP_T"</span><span class="p">,</span> <span class="p">()))</span>
+    <span class="k">return</span> <span class="n">record</span><span class="p">(</span><span class="s2">"MZt"</span><span class="p">,</span> <span class="s2">"Ng-Perron MZ_t"</span><span class="p">,</span> <span class="n">companions</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="zivot_andrews">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.zivot_andrews.html#cultivars.diagnostics.zivot_andrews">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">zivot_andrews</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">trimming</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Zivot-Andrews test of a unit root against a one-time break at an unknown date.</span>
+
+<span class="sd">    For every candidate date inside the trimmed window the Dickey-Fuller</span>
+<span class="sd">    regression is run with a constant, a trend, and the break dummies of</span>
+<span class="sd">    the chosen model; the statistic is the smallest ``t`` on the level</span>
+<span class="sd">    lag over the window, and the date that produces it is the estimated</span>
+<span class="sd">    break. The null is a unit root *without* a break, so a rejection</span>
+<span class="sd">    says "stationary around a broken trend", not "broken unit root".</span>
+<span class="sd">    Critical values are the authors' asymptotic ones; ``pvalue`` is</span>
+<span class="sd">    ``None``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        model: ``"c"`` for a break in the intercept, ``"t"`` in the trend</span>
+<span class="sd">            slope, ``"ct"`` in both.</span>
+<span class="sd">        lags: Fixed augmentation, or ``None`` to select once by the</span>
+<span class="sd">            t-statistic rule on the no-break regression.</span>
+<span class="sd">        max_lags: Largest augmentation under selection.</span>
+<span class="sd">        trimming: Fraction of the sample excluded at each end.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`UnitRootTest` with ``break_index`` set.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the model, trimming, or counts are unusable.</span>
+<span class="sd">        DimensionError: If the series is not one-dimensional.</span>
+<span class="sd">        NumericalError: If the series is not finite or every candidate</span>
+<span class="sd">            is singular.</span>
+<span class="sd">    """</span>
+    <span class="n">validate_choice</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="s2">"model"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">trimming</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"trimming must lie in (0, 0.5); got </span><span class="si">{</span><span class="n">trimming</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="n">ceiling</span> <span class="o">=</span> <span class="n">_schwert_max_lags</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">max_lags</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_lags</span><span class="p">)</span>
+    <span class="n">statistic</span><span class="p">,</span> <span class="n">break_index</span><span class="p">,</span> <span class="n">used</span> <span class="o">=</span> <span class="n">_zivot_andrews</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span> <span class="n">max_lags</span><span class="o">=</span><span class="n">ceiling</span><span class="p">,</span> <span class="n">trimming</span><span class="o">=</span><span class="n">trimming</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">UnitRootTest</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"Zivot-Andrews"</span><span class="p">,</span>
+        <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+        <span class="n">pvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">critical_values</span><span class="o">=</span><span class="n">_critical_value_table</span><span class="p">(</span><span class="n">_ZIVOT_ANDREWS_CRITICAL</span><span class="p">[</span><span class="n">model</span><span class="p">]),</span>
+        <span class="n">null</span><span class="o">=</span><span class="s2">"unit root"</span><span class="p">,</span>
+        <span class="n">lower_tail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">trend</span><span class="o">=</span><span class="s2">"ct"</span><span class="p">,</span>
+        <span class="n">lags</span><span class="o">=</span><span class="n">used</span><span class="p">,</span>
+        <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">used</span><span class="p">),</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">"fixed"</span> <span class="k">if</span> <span class="n">lags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"t-stat (max </span><span class="si">{</span><span class="n">ceiling</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+        <span class="n">break_index</span><span class="o">=</span><span class="n">break_index</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="long_run_variance">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.long_run_variance.html#cultivars.diagnostics.long_run_variance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">long_run_variance</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"bartlett"</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Kernel estimate of a series' long-run variance ``sum_j gamma_j`` about its mean.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        kernel: ``"bartlett"`` or ``"quadratic-spectral"``.</span>
+<span class="sd">        bandwidth: Kernel bandwidth; ``None`` for the automatic rule.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The estimate.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the kernel or bandwidth is unusable.</span>
+<span class="sd">        DimensionError: If the series is not one-dimensional.</span>
+<span class="sd">        NumericalError: If the series is not finite.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; e = rng.standard_normal(2000)</span>
+<span class="sd">        &gt;&gt;&gt; bool(0.8 &lt; long_run_variance(e) &lt; 1.2)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">validate_endog</span><span class="p">(</span><span class="n">endog</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_long_run_variance</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

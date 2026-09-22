@@ -1,0 +1,830 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.large_dim.sparse &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/large_dim/sparse';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/large_dim/sparse.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.large_dim.sparse</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.large_dim.sparse</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/large_dim/sparse.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""The sparse VAR: shrinkage by selection, and the network it draws.</span>
+
+<span class="sd">Where the Bayesian family shrinks every coefficient a little, the penalized</span>
+<span class="sd">family sets most of them to exactly zero -- and in a large system the zeros</span>
+<span class="sd">are the finding: which variables' histories actually enter which equations</span>
+<span class="sd">is a directed Granger network, read straight off the support. Five penalty</span>
+<span class="sd">families share one estimator. The lasso (Basu-Michailidis) is the baseline;</span>
+<span class="sd">the adaptive lasso reweights it by a ridge pilot; SCAD and MCP</span>
+<span class="sd">(Nicholson-Matteson-Bien territory) unbias the large coefficients the lasso</span>
+<span class="sd">drags toward zero, solved here by local linear approximation -- a short</span>
+<span class="sd">sequence of weighted lasso problems, the standard route to their oracle</span>
+<span class="sd">behavior; and the lag-group penalty zeroes entire lag matrices, which is lag</span>
+<span class="sd">selection rather than entry selection. Deterministic terms are never</span>
+<span class="sd">penalized, and everything is standardized internally so one penalty level</span>
+<span class="sd">means the same thing in every equation.</span>
+
+<span class="sd">The penalty level, when unstated, is chosen by rolling-origin one-step</span>
+<span class="sd">forecast cross-validation with refitting at every origin -- genuine</span>
+<span class="sd">out-of-sample errors, the scheme the sparse-VAR literature settled on. Two</span>
+<span class="sd">consequences are stated rather than hidden. Prediction-optimal levels keep</span>
+<span class="sd">more variables than the true support (the lasso especially; the nonconvex</span>
+<span class="sd">penalties are the remedy when the support itself is the object). And</span>
+<span class="sd">inference after selection is a genuinely unsolved problem at this</span>
+<span class="sd">generality, so no standard errors are reported -- the result refuses to</span>
+<span class="sd">decorate selected coefficients with intervals that ignore the selection.</span>
+
+<span class="sd">The result satisfies the closed-system contract, so a fitted sparse VAR</span>
+<span class="sd">feeds the structural layer and</span>
+<span class="sd">:class:`~cultivars.multivariate.large_dim.Spillover` directly -- estimating</span>
+<span class="sd">connectedness among a hundred banks with a lasso VAR is exactly the</span>
+<span class="sd">Demirer-Diebold-Liu-Yilmaz pipeline.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Basu, S., &amp; Michailidis, G. (2015). Regularized estimation in sparse</span>
+<span class="sd">        high-dimensional time series models. *Annals of Statistics*, 43(4),</span>
+<span class="sd">        1535-1567.</span>
+<span class="sd">    Nicholson, W. B., Matteson, D. S., &amp; Bien, J. (2017). VARX-L: Structured</span>
+<span class="sd">        regularization for large vector autoregressions with exogenous</span>
+<span class="sd">        variables. *International Journal of Forecasting*, 33(3), 627-651.</span>
+<span class="sd">    Zou, H., &amp; Li, R. (2008). One-step sparse estimates in nonconcave</span>
+<span class="sd">        penalized likelihood models. *Annals of Statistics*, 36(4),</span>
+<span class="sd">        1509-1533.</span>
+<span class="sd">    Demirer, M., Diebold, F. X., Liu, L., &amp; Yilmaz, K. (2018). Estimating</span>
+<span class="sd">        global bank network connectedness. *Journal of Applied</span>
+<span class="sd">        Econometrics*, 33(1), 1-15.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Penalty</span><span class="p">,</span> <span class="n">SummaryTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_SparseVectorAutoRegressionModel</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_VectorSparseFit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SparseVAR"</span><span class="p">,</span> <span class="s2">"SparseVARResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SparseVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SparseVARResult.html#cultivars.multivariate.SparseVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SparseVARResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted sparse VAR: the coefficients that survived, and the zeros.</span>
+
+<span class="sd">    Satisfies the closed-system contract, so identification models and</span>
+<span class="sd">    :class:`~cultivars.multivariate.large_dim.Spillover` consume it</span>
+<span class="sd">    directly.</span>
+
+<span class="sd">    Deliberately absent: ``llf``, information criteria, and standard</span>
+<span class="sd">    errors. A penalized objective has no likelihood, its complexity is the</span>
+<span class="sd">    nonzero count, and post-selection inference at this generality is an</span>
+<span class="sd">    open problem the result will not paper over with naïve intervals.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The observed panel.</span>
+<span class="sd">        names: Variable labels, in column order.</span>
+<span class="sd">        order: Autoregressive order.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">        coefficients: ``(p, k, k)`` lag stack at the selected penalty.</span>
+<span class="sd">        deterministic: Unpenalized deterministic coefficients.</span>
+<span class="sd">        sigma_u: Residual covariance, corrected by the average per-equation</span>
+<span class="sd">            nonzero count.</span>
+<span class="sd">        resid: Residuals over the effective sample.</span>
+<span class="sd">        fittedvalues: One-step means over the effective sample.</span>
+<span class="sd">        penalty: The penalty family estimated under.</span>
+<span class="sd">        lam: The penalty level estimated at.</span>
+<span class="sd">        lambda_path: The candidate path, descending; empty when the caller</span>
+<span class="sd">            stated ``lam``.</span>
+<span class="sd">        cv_errors: Rolling one-step squared forecast errors along the path;</span>
+<span class="sd">            empty when the caller stated ``lam``.</span>
+<span class="sd">        n_nonzero: Nonzero penalized coefficients at the solution.</span>
+<span class="sd">        nobs: Effective sample size.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">deterministic</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma_u</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">resid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fittedvalues</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">penalty</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">lam</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">lambda_path</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cv_errors</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">n_nonzero</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">fit</span><span class="p">:</span> <span class="n">_VectorSparseFit</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">_SparseVectorAutoRegressionModel</span><span class="p">[</span><span class="n">SparseVARResult</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SparseVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">coefficient_stack</span><span class="p">,</span>
+            <span class="n">deterministic</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">deterministic</span><span class="p">,</span>
+            <span class="n">sigma_u</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">penalty</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span>
+            <span class="n">lam</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">lam</span><span class="p">,</span>
+            <span class="n">lambda_path</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">lambda_path</span><span class="p">,</span>
+            <span class="n">cv_errors</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">cv_errors</span><span class="p">,</span>
+            <span class="n">n_nonzero</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_nonzero</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of endogenous variables."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sparsity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Share of penalized coefficients set exactly to zero."""</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nonzero</span> <span class="o">/</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+<div class="viewcode-block" id="SparseVARResult.ma_representation">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SparseVARResult.html#cultivars.multivariate.SparseVARResult.ma_representation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ma_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Moving-average matrices of the fitted system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``horizon`` is negative.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">horizon</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"horizon must be non-negative; got </span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="n">psi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">step</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="n">lag</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">psi</span><span class="p">[</span><span class="n">h</span> <span class="o">-</span> <span class="n">lag</span><span class="p">]</span>
+            <span class="n">psi</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span>
+        <span class="k">return</span> <span class="n">psi</span></div>
+
+
+<div class="viewcode-block" id="SparseVARResult.granger_adjacency">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SparseVARResult.html#cultivars.multivariate.SparseVARResult.granger_adjacency">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">granger_adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The directed Granger network the support draws.</span>
+
+<span class="sd">        Entry ``[i, j]`` is ``True`` when some lag of variable ``j`` enters</span>
+<span class="sd">        variable ``i``'s equation with magnitude above ``threshold`` --</span>
+<span class="sd">        ``j`` Granger-causes ``i`` in the selected model. A statement about</span>
+<span class="sd">        the selected support, not a hypothesis test.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            threshold: Magnitude below which an entry is read as absent.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(k, k)`` boolean matrix with a ``False`` diagonal.</span>
+<span class="sd">        """</span>
+        <span class="n">strength</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">adjacency</span> <span class="o">=</span> <span class="n">strength</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">adjacency</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">adjacency</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">degree_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">granger_adjacency</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[:,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="p">:]))</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">degree_out</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Penalty </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty</span><span class="si">}</span><span class="s2"> at lam=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lam</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span>
+            <span class="o">+</span> <span class="p">(</span>
+                <span class="s2">", chosen by rolling-origin one-step forecast "</span>
+                <span class="s2">"cross-validation with refitting at every origin."</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_path</span><span class="o">.</span><span class="n">size</span>
+                <span class="k">else</span> <span class="s2">", stated by the caller."</span>
+            <span class="p">),</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nonzero</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="o">**</span><span class="mi">2</span><span class="si">}</span><span class="s2"> penalized "</span>
+            <span class="sa">f</span><span class="s2">"coefficients survive (</span><span class="si">{</span><span class="mf">100.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% sparsity); "</span>
+            <span class="s2">"prediction-optimal penalties keep more than the true support, "</span>
+            <span class="s2">"and the nonconvex penalties (scad, mcp) are the remedy when "</span>
+            <span class="s2">"support recovery is the object."</span><span class="p">,</span>
+            <span class="s2">"No likelihood, information criteria, or standard errors are "</span>
+            <span class="s2">"reported: post-selection inference at this generality is an "</span>
+            <span class="s2">"open problem, and naïve intervals would ignore the "</span>
+            <span class="s2">"selection."</span><span class="p">,</span>
+            <span class="s2">"The result is a closed system: identification models and "</span>
+            <span class="s2">"Spillover consume it directly."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Sparse VAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">) Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty</span><span class="si">}</span><span class="s2">-VAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"lam"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lam</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Nonzero"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nonzero</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Sparsity"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mf">100.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"equation"</span><span class="p">,</span> <span class="s2">"nonzero regressors"</span><span class="p">,</span> <span class="s2">"out-degree"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SparseVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SparseVAR.html#cultivars.multivariate.SparseVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SparseVAR</span><span class="p">(</span><span class="n">_SparseVectorAutoRegressionModel</span><span class="p">[</span><span class="n">SparseVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Penalized VAR: lasso, adaptive lasso, SCAD, MCP, or lag-group.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The observed panel, shape ``(nobs, k)``; wide is the point.</span>
+<span class="sd">        order: Autoregressive order.</span>
+<span class="sd">        trend: Deterministic terms, never penalized.</span>
+<span class="sd">        names: One label per variable. Defaults to ``y1 ... yk``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((300, 6))</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 300):</span>
+<span class="sd">        ...     y[t] = 0.5 * y[t - 1] + rng.standard_normal(6)</span>
+<span class="sd">        &gt;&gt;&gt; res = SparseVAR(y, order=2).fit(penalty="lasso")</span>
+<span class="sd">        &gt;&gt;&gt; res.coefficients.shape</span>
+<span class="sd">        (2, 6, 6)</span>
+<span class="sd">        &gt;&gt;&gt; bool(res.sparsity &gt; 0.3)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+<div class="viewcode-block" id="SparseVAR.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.SparseVAR.html#cultivars.multivariate.SparseVAR.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">penalty</span><span class="p">:</span> <span class="n">Penalty</span> <span class="o">=</span> <span class="s2">"lasso"</span><span class="p">,</span>
+        <span class="n">lam</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_lambdas</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">lambda_min_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SparseVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate under one penalty family, selecting the level if unstated.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            penalty: ``"lasso"``, ``"adaptive"``, ``"scad"``, ``"mcp"``, or</span>
+<span class="sd">                ``"group"`` (the lag-group penalty, which selects whole</span>
+<span class="sd">                lags).</span>
+<span class="sd">            lam: Penalty level, or ``None`` for rolling-origin selection.</span>
+<span class="sd">            n_lambdas: Candidate levels on the geometric path.</span>
+<span class="sd">            lambda_min_ratio: Smallest candidate as a fraction of the level</span>
+<span class="sd">                that zeroes everything.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted :class:`SparseVARResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the penalty specification is malformed</span>
+<span class="sd">                or the sample cannot support the rolling validation.</span>
+<span class="sd">            NumericalError: If the solver loses curvature.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">SparseVARResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fit_sparse</span><span class="p">(</span>
+                <span class="n">penalty</span><span class="o">=</span><span class="n">penalty</span><span class="p">,</span>
+                <span class="n">lam</span><span class="o">=</span><span class="n">lam</span><span class="p">,</span>
+                <span class="n">n_lambdas</span><span class="o">=</span><span class="n">n_lambdas</span><span class="p">,</span>
+                <span class="n">lambda_min_ratio</span><span class="o">=</span><span class="n">lambda_min_ratio</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

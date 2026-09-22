@@ -1,0 +1,1298 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.structural.stochastic_volatility &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/structural/stochastic_volatility';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/structural/stochastic_volatility.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.structural.stochastic_volatility</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.structural.stochastic_volatility</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/structural/stochastic_volatility.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Identification through stochastic volatility: the regimes nobody has to declare.</span>
+
+<span class="sd">Rigobon's scheme buys identification from variance shifts, but it needs the</span>
+<span class="sd">user to say *when* the shifts happen. This scheme drops that requirement.</span>
+<span class="sd">Give each structural shock its own latent log-AR(1) variance and the</span>
+<span class="sd">reduced-form covariance ``Sigma_t = B diag(exp(h_t)) B'`` moves every</span>
+<span class="sd">period; as long as the variance paths are not proportional to one another,</span>
+<span class="sd">the sequence of covariances pins ``B`` down up to column order and sign</span>
+<span class="sd">(Lewis 2021; Bertsche and Braun 2022). No zero, no sign pattern, no</span>
+<span class="sd">instrument, and no regime dates -- the volatility processes are estimated</span>
+<span class="sd">along with the impact matrix.</span>
+
+<span class="sd">Estimation is Bayesian, by an exact Gibbs sampler on the reduced-form</span>
+<span class="sd">innovations of a fitted closed system: the rows of ``A = B**-1`` by</span>
+<span class="sd">Waggoner and Zha's (2003) construction given the paths, the paths by the</span>
+<span class="sd">Kim-Shephard-Chib mixture step given ``A``, and each path's persistence and</span>
+<span class="sd">innovation variance from their conditionals. What comes back is a posterior</span>
+<span class="sd">over impact matrices, not a point, and the object holds it: the quantile</span>
+<span class="sd">surfaces of impulse responses summarize a set of complete structural models,</span>
+<span class="sd">none of which traces any one surface.</span>
+
+<span class="sd">Three things are said rather than hidden. The shocks are statistical</span>
+<span class="sd">objects, labelled by which variable they load on most, not by economics;</span>
+<span class="sd">an economic name is a claim to be argued from outside the model. The</span>
+<span class="sd">posterior cannot certify its own identification -- with proportional</span>
+<span class="sd">variance paths the likelihood is flat over rotations and the volatility</span>
+<span class="sd">prior still returns a sharp answer -- so the identifying condition is</span>
+<span class="sd">tested on the data, pair by pair, and the verdict is printed with the</span>
+<span class="sd">result. And the scale: the likelihood cannot tell a path's level from its</span>
+<span class="sd">column's scale, so every draw is expressed with zero sample-mean log</span>
+<span class="sd">variance per shock and the level folded into ``B`` -- the impact of a</span>
+<span class="sd">shock at its in-sample average variance.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Lewis, D. J. (2021). Identifying shocks via time-varying volatility.</span>
+<span class="sd">        *Review of Economic Studies*, 88(6), 3086-3124.</span>
+<span class="sd">    Bertsche, D., &amp; Braun, R. (2022). Identification of structural vector</span>
+<span class="sd">        autoregressions by stochastic volatility. *Journal of Business &amp;</span>
+<span class="sd">        Economic Statistics*, 40(1), 328-341.</span>
+<span class="sd">    Waggoner, D. F., &amp; Zha, T. (2003). A Gibbs sampler for structural</span>
+<span class="sd">        vector autoregressions. *Journal of Economic Dynamics and Control*,</span>
+<span class="sd">        28(2), 349-366.</span>
+<span class="sd">    Kim, S., Shephard, N., &amp; Chib, S. (1998). Stochastic volatility:</span>
+<span class="sd">        Likelihood inference and comparison with ARCH models. *Review of</span>
+<span class="sd">        Economic Studies*, 65(3), 361-393.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_LABEL_NOTE</span><span class="p">,</span>
+    <span class="n">_SCALE_NOTE</span><span class="p">,</span>
+    <span class="n">ClosedSystemResult</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_fractional_spectrum</span><span class="p">,</span>
+    <span class="n">_validate_quantiles</span><span class="p">,</span>
+    <span class="n">_variance_ratio_test</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_ConvergenceMixin</span><span class="p">,</span>
+    <span class="n">_long_memory_quasi_state_space</span><span class="p">,</span>
+    <span class="n">_LongMemoryVolatilityFit</span><span class="p">,</span>
+    <span class="n">_LongMemoryVolatilityModel</span><span class="p">,</span>
+    <span class="n">_LongMemoryVolatilityParameters</span><span class="p">,</span>
+    <span class="n">_SeriesMixin</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_VolatilityIdentificationModel</span><span class="p">,</span>
+    <span class="n">_VolatilityStructuralFit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...bayes</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolatilityPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...state_space</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearGaussianSSM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.zero_restrictions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SVARResult</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"LongMemorySV"</span><span class="p">,</span>
+    <span class="s2">"LongMemorySVResult"</span><span class="p">,</span>
+    <span class="s2">"StochasticVolatilitySVAR"</span><span class="p">,</span>
+    <span class="s2">"StochasticVolatilitySVARResult"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StochasticVolatilitySVARResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_ConvergenceMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The posterior of a stochastic-volatility identification.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        source: The reduced-form result identified.</span>
+<span class="sd">        impact_draws: ``(S, k, k)`` posterior draws of the impact matrix,</span>
+<span class="sd">            already relabelled to one order and sign convention.</span>
+<span class="sd">        h_draws: ``(S, T, k)`` posterior draws of the structural log</span>
+<span class="sd">            variances, zero sample mean per shock.</span>
+<span class="sd">        phi_draws: ``(S, k)`` draws of each shock's log-variance</span>
+<span class="sd">            persistence.</span>
+<span class="sd">        sigma2_draws: ``(S, k)`` draws of each shock's log-variance</span>
+<span class="sd">            innovation variance.</span>
+<span class="sd">        shock_names: One label per shock column.</span>
+<span class="sd">        relabel_rate: Fraction of kept draws whose columns had to be</span>
+<span class="sd">            permuted to match the reference labelling.</span>
+<span class="sd">        restriction: The identifying assumption, stated.</span>
+<span class="sd">        n_draws: Total sampler iterations.</span>
+<span class="sd">        n_burn: Burn-in discarded.</span>
+<span class="sd">        thin: Post-burn thinning.</span>
+<span class="sd">    """</span>
+
+    <span class="n">source</span><span class="p">:</span> <span class="n">ClosedSystemResult</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">impact_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">h_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">phi_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma2_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">shock_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">relabel_rate</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">restriction</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="n">_VolatilityStructuralFit</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">StochasticVolatilitySVAR</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StochasticVolatilitySVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">impact_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">impact_draws</span><span class="p">,</span>
+            <span class="n">h_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">h_draws</span><span class="p">,</span>
+            <span class="n">phi_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">phi_draws</span><span class="p">,</span>
+            <span class="n">sigma2_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma2_draws</span><span class="p">,</span>
+            <span class="n">shock_names</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">shock_names</span><span class="p">,</span>
+            <span class="n">relabel_rate</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">relabel_rate</span><span class="p">,</span>
+            <span class="n">restriction</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">"Each structural shock carries its own latent log-AR(1) variance, "</span>
+                <span class="s2">"and the shocks' variance paths are assumed not proportional to one "</span>
+                <span class="s2">"another; that non-proportionality is the entire identification "</span>
+                <span class="s2">"(Lewis 2021; Bertsche and Braun 2022). The impact matrix is "</span>
+                <span class="s2">"constant over the sample."</span>
+            <span class="p">),</span>
+            <span class="n">n_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_draws</span><span class="p">,</span>
+            <span class="n">n_burn</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_burn</span><span class="p">,</span>
+            <span class="n">thin</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">thin</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Variable labels, from the reduced form."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">names</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of variables."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">k_endog</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_kept</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Posterior draws retained."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">impact_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">impact</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The pointwise posterior median impact matrix, ``(k, k)``.</span>
+
+<span class="sd">        A summary, not a draw: no single structural model has exactly</span>
+<span class="sd">        these entries. For a complete point-identified object at this</span>
+<span class="sd">        matrix use :meth:`to_point`.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">impact_draws</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult.to_point">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult.to_point">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_point</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The posterior-median impact as a point-identified structural result.</span>
+
+<span class="sd">        Gives the whole point surface -- impulse responses, historical</span>
+<span class="sd">        decompositions, structural shocks -- at one matrix. The result</span>
+<span class="sd">        says on its face that it is a posterior summary.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">SVARResult</span><span class="p">(</span>
+            <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">impact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">impact</span><span class="p">,</span>
+            <span class="n">shock_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shock_names</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="s2">"stochastic volatility (posterior median)"</span><span class="p">,</span>
+            <span class="n">restriction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">restriction</span><span class="p">,</span>
+            <span class="n">diagnostics</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_diagnostics</span><span class="p">()),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult.irf_draws">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult.irf_draws">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">irf_draws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cumulative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Structural impulse responses for every posterior draw.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+<span class="sd">            cumulative: Return running sums.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(S, horizon + 1, k, k)``.</span>
+<span class="sd">        """</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">ma_representation</span><span class="p">(</span><span class="n">horizon</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"hik,nkj-&gt;nhij"</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">impact_draws</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">cumulative</span> <span class="k">else</span> <span class="n">theta</span></div>
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult.irf">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult.irf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">irf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">quantiles</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">),</span>
+        <span class="n">cumulative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Pointwise posterior quantiles of the impulse responses.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+<span class="sd">            quantiles: Probability levels, each in ``(0, 1)``.</span>
+<span class="sd">            cumulative: Return running sums before taking quantiles.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(len(quantiles), horizon + 1, k, k)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If a quantile is outside the open unit</span>
+<span class="sd">                interval.</span>
+<span class="sd">        """</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">_validate_quantiles</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">irf_draws</span><span class="p">(</span><span class="n">horizon</span><span class="p">,</span> <span class="n">cumulative</span><span class="o">=</span><span class="n">cumulative</span><span class="p">),</span> <span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult.fevd">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult.fevd">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fevd</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Pointwise posterior quantiles of the variance decomposition.</span>
+
+<span class="sd">        Computed at each shock's in-sample average variance, the scale the</span>
+<span class="sd">        impact columns carry; under stochastic volatility the true</span>
+<span class="sd">        decomposition is time-varying, and this is its average-variance</span>
+<span class="sd">        reading.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+<span class="sd">            quantiles: Probability levels, each in ``(0, 1)``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(len(quantiles), horizon + 1, k, k)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If a quantile is outside the open unit</span>
+<span class="sd">                interval.</span>
+<span class="sd">        """</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">_validate_quantiles</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">irf_draws</span><span class="p">(</span><span class="n">horizon</span><span class="p">)</span>
+        <span class="n">explained</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">theta</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">shares</span> <span class="o">=</span> <span class="n">explained</span> <span class="o">/</span> <span class="n">explained</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">shares</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult.structural_shocks">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult.structural_shocks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">structural_shocks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior-median structural shocks ``B**-1 u_t``, ``(T, k)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">resid</span><span class="p">)</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">impact</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult.volatility_path">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult.volatility_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">volatility_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">shock</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior quantiles of one shock's standard deviation over the sample.</span>
+
+<span class="sd">        The path is ``exp(h_t / 2)`` scaled by the shock's impact column</span>
+<span class="sd">        norm, so it reads in the units of the reduced-form innovations</span>
+<span class="sd">        rather than as a normalized ratio.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            shock: A shock label or column index.</span>
+<span class="sd">            quantiles: Probability levels, each in ``(0, 1)``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(len(quantiles), T)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the shock is unknown or a quantile is</span>
+<span class="sd">                outside the open unit interval.</span>
+<span class="sd">        """</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">_validate_quantiles</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
+        <span class="n">column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column</span><span class="p">(</span><span class="n">shock</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">impact_draws</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">column</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_draws</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">column</span><span class="p">])</span> <span class="o">*</span> <span class="n">scale</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVARResult.identification_test">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVARResult.html#cultivars.multivariate.StochasticVolatilitySVARResult.identification_test">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identification_test</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Test the identifying condition pair by pair on the posterior-median shocks.</span>
+
+<span class="sd">        Identification here rests on the shocks' variance paths not being</span>
+<span class="sd">        proportional. That is not something the posterior can certify:</span>
+<span class="sd">        with proportional paths the likelihood is flat over rotations, yet</span>
+<span class="sd">        the volatility prior still hands back a sharp posterior at the</span>
+<span class="sd">        rotation whose shocks look most like clustered volatility. So the</span>
+<span class="sd">        condition is tested on the data instead. Under proportionality the</span>
+<span class="sd">        *ratio* of two shocks' variances is constant over time whatever</span>
+<span class="sd">        the common path does; the statistic is the precision-weighted</span>
+<span class="sd">        dispersion of block-wise log variance ratios, chi-squared with</span>
+<span class="sd">        ``n_blocks - 1`` degrees of freedom under the null. A large</span>
+<span class="sd">        p-value for any pair means the data cannot tell those two shocks'</span>
+<span class="sd">        rotation apart, and the summary says so.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_blocks: Contiguous sample blocks, at least 3.</span>
+<span class="sd">            window: Odd length of the moving average that proxies the</span>
+<span class="sd">                pair's common variance when weighting blocks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``(statistics, p_values)``, each ``(k, k)`` symmetric.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the settings are malformed for the</span>
+<span class="sd">                sample.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_variance_ratio_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_shocks</span><span class="p">(),</span> <span class="n">n_blocks</span><span class="o">=</span><span class="n">n_blocks</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shock</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Resolve a shock label or index to a column."""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shock</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">shock</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shock_names</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown shock </span><span class="si">{</span><span class="n">shock</span><span class="si">!r}</span><span class="s2">; have </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shock_names</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shock_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">shock</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shock</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"shock index </span><span class="si">{</span><span class="n">shock</span><span class="si">}</span><span class="s2"> is out of range for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">shock</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_diagnostics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Identification diagnostics shared by the summary and the point result."""</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">p_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identification_test</span><span class="p">()</span>
+        <span class="n">largest</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">p_values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">persistence</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"WEAK: some pair's variance ratio is not detectably time-varying"</span>
+            <span class="k">if</span> <span class="n">largest</span> <span class="o">&gt;</span> <span class="mf">0.1</span>
+            <span class="k">else</span> <span class="s2">"variance ratios move over time for every pair"</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">"Max ratio-test p-value"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">largest</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Relabelling rate"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">relabel_rate</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Persistence by shock"</span><span class="p">,</span> <span class="n">persistence</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"Identification"</span><span class="p">,</span> <span class="n">verdict</span><span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">med</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">impact</span>
+        <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">impact_draws</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2"> &lt;- </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shock_names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">med</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">lo</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">hi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">]"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Stochastic-Volatility SVAR (posterior)"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Scheme"</span><span class="p">,</span> <span class="s2">"stochastic volatility"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Draws kept"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Burn-in"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_burn</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Thin"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thin</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_diagnostics</span><span class="p">(),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"impact"</span><span class="p">,</span> <span class="s2">"median"</span><span class="p">,</span> <span class="s2">"68</span><span class="si">% i</span><span class="s2">nterval"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restriction</span><span class="p">,</span> <span class="n">_LABEL_NOTE</span><span class="p">,</span> <span class="n">_SCALE_NOTE</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="StochasticVolatilitySVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVAR.html#cultivars.multivariate.StochasticVolatilitySVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StochasticVolatilitySVAR</span><span class="p">(</span><span class="n">_VolatilityIdentificationModel</span><span class="p">[</span><span class="n">StochasticVolatilitySVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Identification through stochastic volatility, Lewis (2021) / Bertsche-Braun (2022).</span>
+
+<span class="sd">    Every structural shock carries a latent log-AR(1) variance; the impact</span>
+<span class="sd">    matrix is identified up to column order and sign because the shocks'</span>
+<span class="sd">    variance paths are not proportional. Nothing is declared -- no regime</span>
+<span class="sd">    dates, no restrictions -- and the price is that the shocks come back</span>
+<span class="sd">    labelled by statistics, not economics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: A fitted closed reduced-form result (a VAR, VECM, ...).</span>
+<span class="sd">        shock_names: One label per shock column, in the convention order</span>
+<span class="sd">            (shock ``j`` loads most on variable ``j``). Defaults to</span>
+<span class="sd">            ``shock_&lt;variable&gt;``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the result is not a closed system, or the</span>
+<span class="sd">            labels do not match the number of variables.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars.multivariate.reduced_form import VAR</span>
+<span class="sd">        &gt;&gt;&gt; n = 400</span>
+<span class="sd">        &gt;&gt;&gt; phi, sigma = np.array([0.97, 0.6]), np.array([0.2, 0.6])</span>
+<span class="sd">        &gt;&gt;&gt; h = np.zeros((n, 2))</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, n):</span>
+<span class="sd">        ...     h[t] = phi * h[t - 1] + sigma * rng.standard_normal(2)</span>
+<span class="sd">        &gt;&gt;&gt; shocks = np.exp(h / 2) * rng.standard_normal((n, 2))</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((n, 2))</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, n):</span>
+<span class="sd">        ...     y[t] = 0.4 * y[t - 1] + shocks[t] @ np.array([[1.0, 0.5], [0.3, 1.0]]).T</span>
+<span class="sd">        &gt;&gt;&gt; res = VAR(y, order=1).fit()</span>
+<span class="sd">        &gt;&gt;&gt; post = StochasticVolatilitySVAR(res).identify(n_draws=300, n_burn=100, seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; post.impact.shape</span>
+<span class="sd">        (2, 2)</span>
+<span class="sd">        &gt;&gt;&gt; post.to_point().is_complete</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_labels"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">:</span> <span class="n">ClosedSystemResult</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">shock_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the source system and the labels."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="k">if</span> <span class="n">shock_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">"shock_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shock_names</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">!=</span> <span class="n">k</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"shock_names must have one entry per variable (</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">); got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">labels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shock_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""One label per shock column."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span>
+
+<div class="viewcode-block" id="StochasticVolatilitySVAR.identify">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.StochasticVolatilitySVAR.html#cultivars.multivariate.StochasticVolatilitySVAR.identify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">identify</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">,</span>
+        <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">prior</span><span class="p">:</span> <span class="n">VolatilityPrior</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StochasticVolatilitySVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sample the posterior over impact matrices and volatility paths.</span>
+
+<span class="sd">        The prior on each shock's volatility law is the Kim-Shephard-Chib</span>
+<span class="sd">        one: Beta ``(a, b)`` on ``(phi + 1) / 2`` and inverse-gamma</span>
+<span class="sd">        ``(shape, rate)`` on the innovation variance. The impact matrix</span>
+<span class="sd">        carries a weak Gaussian prior on the rows of ``B**-1`` scaled from</span>
+<span class="sd">        the reduced-form covariance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_draws: Total sampler iterations.</span>
+<span class="sd">            n_burn: Burn-in discarded.</span>
+<span class="sd">            thin: Keep every ``thin``-th post-burn draw.</span>
+<span class="sd">            prior: The prior on each shock's volatility law, an instance of</span>
+<span class="sd">                :class:`VolatilityPrior` or ``None`` to use the default Kim-Shephard-Chib prior.</span>
+<span class="sd">            seed: Seed or generator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`StochasticVolatilitySVARResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the draw bookkeeping is inconsistent.</span>
+<span class="sd">            NumericalError: If the structural matrix degenerates.</span>
+<span class="sd">        """</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample</span><span class="p">(</span>
+            <span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span>
+            <span class="n">n_burn</span><span class="o">=</span><span class="n">n_burn</span><span class="p">,</span>
+            <span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span>
+            <span class="n">prior</span><span class="o">=</span><span class="n">VolatilityPrior</span><span class="p">()</span> <span class="k">if</span> <span class="n">prior</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prior</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">StochasticVolatilitySVARResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LongMemorySVResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongMemorySVResult.html#cultivars.multivariate.LongMemorySVResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LongMemorySVResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_SeriesMixin</span><span class="p">,</span> <span class="n">_ComparisonMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A Whittle-estimated long-memory stochastic-volatility model.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The observed series.</span>
+<span class="sd">        mean_spec: ``"constant"`` or ``"zero"``.</span>
+<span class="sd">        mean: The observation mean ``c``.</span>
+<span class="sd">        mu: Level of the log variance.</span>
+<span class="sd">        d: Fractional differencing order of the log variance.</span>
+<span class="sd">        sigma2: Innovation variance of the fractional noise.</span>
+<span class="sd">        phi: Short-memory AR(1) coefficient of the log variance; ``0.0``</span>
+<span class="sd">            when the law is pure fractional noise.</span>
+<span class="sd">        short_memory: Whether ``phi`` was estimated.</span>
+<span class="sd">        llf: The Whittle criterion at the optimum, read as a</span>
+<span class="sd">            log-likelihood: the frequency-domain quasi-likelihood of the</span>
+<span class="sd">            linearized model. Comparable only with other Whittle fits.</span>
+<span class="sd">        nobs: Observations.</span>
+<span class="sd">        n_params: Free parameters.</span>
+<span class="sd">        n_frequencies: Fourier ordinates the criterion summed over.</span>
+<span class="sd">        log_variance: Smoothed log-variance path, ``(n,)``, from the</span>
+<span class="sd">            spectral smoother.</span>
+<span class="sd">        log_variance_std: The smoother's stationary root mean squared</span>
+<span class="sd">            error, repeated ``(n,)`` times.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mean_spec</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">d</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">sigma2</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">short_memory</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">llf</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_params</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">n_frequencies</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">log_variance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">log_variance_std</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="n">_LongMemoryVolatilityFit</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">LongMemorySV</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LongMemorySVResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">mean_spec</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">mean_spec</span><span class="p">,</span>
+            <span class="n">mean</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+            <span class="n">mu</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="n">d</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">d</span><span class="p">,</span>
+            <span class="n">sigma2</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sigma2</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span>
+            <span class="n">short_memory</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">short_memory</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">n_params</span><span class="p">),</span>
+            <span class="n">n_frequencies</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_frequencies</span><span class="p">,</span>
+            <span class="n">log_variance</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">log_variance</span><span class="p">,</span>
+            <span class="n">log_variance_std</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">log_variance_std</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LongMemoryVolatilityParameters</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The parameter record, rebuilt for the emitter."""</span>
+        <span class="k">return</span> <span class="n">_LongMemoryVolatilityParameters</span><span class="p">(</span>
+            <span class="n">mu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="n">sigma2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether ``d`` sits at the stationarity boundary of the search.</span>
+
+<span class="sd">        The Whittle criterion is maximized over ``|d| &lt; 0.5``; an estimate</span>
+<span class="sd">        within ``0.01`` of that edge means the data prefer a nonstationary</span>
+<span class="sd">        log variance, and ``d`` should be read as a lower bound rather than</span>
+<span class="sd">        a point.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.49</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">volatility</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Smoothed volatility ``exp(h_t / 2)``, ``(n,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LongMemorySVResult.volatility_bands">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongMemorySVResult.html#cultivars.multivariate.LongMemorySVResult.volatility_bands">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">volatility_bands</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Smoother bands on the volatility at a Gaussian coverage level.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            level: Coverage probability in ``(0, 1)``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``(lower, upper)`` bands, each ``(n,)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``level`` is outside ``(0, 1)``.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"level must lie in (0, 1); got </span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">level</span><span class="p">))</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span> <span class="o">-</span> <span class="n">z</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance_std</span><span class="p">))</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span> <span class="o">+</span> <span class="n">z</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance_std</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">upper</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LongMemorySVResult.autocorrelation">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongMemorySVResult.html#cultivars.multivariate.LongMemorySVResult.autocorrelation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">autocorrelation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Implied autocorrelation of the log variance at lags ``0..lags``.</span>
+
+<span class="sd">        The ARFIMA(1, d, 0) autocorrelation, computed from the spectrum by</span>
+<span class="sd">        Fourier inversion on a fine grid; its hyperbolic tail is the</span>
+<span class="sd">        model's signature and the thing to hold against the sample</span>
+<span class="sd">        autocorrelation of ``log((y - c)**2)`` after the white-noise floor</span>
+<span class="sd">        is netted out.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lags: Largest lag, at least 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(lags + 1,)`` with ``1.0`` first.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``lags`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">lags</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lags must be at least 1; got </span><span class="si">{</span><span class="n">lags</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">14</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">grid</span>
+        <span class="n">spectrum</span> <span class="o">=</span> <span class="n">_fractional_spectrum</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="n">sigma2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">lag</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">spectrum</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lag</span> <span class="o">*</span> <span class="n">freqs</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">out</span> <span class="o">/</span> <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LongMemorySVResult.quasi_state_space">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongMemorySVResult.html#cultivars.multivariate.LongMemorySVResult.quasi_state_space">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quasi_state_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">truncation</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearGaussianSSM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The linearized model as a truncated AR(inf) linear-Gaussian state space.</span>
+
+<span class="sd">        The fractional operator has no finite state, so this is the</span>
+<span class="sd">        autoregressive representation cut at ``truncation`` lags on the</span>
+<span class="sd">        log-squared data: exact for the truncated law, an approximation of</span>
+<span class="sd">        the long-memory one, and the ``pi**2 / 2`` measurement floor is the</span>
+<span class="sd">        linearization's. What the Kalman filter returns on it is a</span>
+<span class="sd">        truncated quasi-likelihood, not the model's likelihood.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            truncation: Autoregressive lags retained, at least 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The linear-Gaussian state-space model.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_long_memory_quasi_state_space</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="n">truncation</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Aligned per-observation output."""</span>
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volatility_bands</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"observed"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="s2">"log_variance"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span><span class="p">,</span>
+            <span class="s2">"volatility"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">volatility</span><span class="p">,</span>
+            <span class="s2">"volatility_lower"</span><span class="p">:</span> <span class="n">lower</span><span class="p">,</span>
+            <span class="s2">"volatility_upper"</span><span class="p">:</span> <span class="n">upper</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Specification label used when this result appears in a ranking."""</span>
+        <span class="n">law</span> <span class="o">=</span> <span class="s2">"ARFIMA(1,d,0)"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_memory</span> <span class="k">else</span> <span class="s2">"ARFIMA(0,d,0)"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"LongMemorySV[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_spec</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">law</span><span class="si">}</span><span class="s2">]"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Structured summary rendered by every display path."""</span>
+        <span class="n">ic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">"mu"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"d"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"sigma2"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">short_memory</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"phi"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_spec</span> <span class="o">==</span> <span class="s2">"constant"</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="s2">"mean"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"The criterion is the Whittle quasi-likelihood of the Harvey-Ruiz-Shephard "</span>
+            <span class="s2">"linearization, summed over the positive Fourier frequencies; compare only "</span>
+            <span class="s2">"against other Whittle fits, and read the information criteria in that light."</span><span class="p">,</span>
+            <span class="s2">"Long memory means volatility shocks decay hyperbolically, at rate lag**(2d - 1) "</span>
+            <span class="s2">"in the autocorrelation; autocorrelation() has the implied shape. There is no "</span>
+            <span class="s2">"half-life."</span><span class="p">,</span>
+            <span class="s2">"The log-variance path is the spectral (Wiener-Kolmogorov) smoother under a "</span>
+            <span class="s2">"circular approximation, with one stationary error band; the truncated "</span>
+            <span class="s2">"quasi_state_space() offers a Kalman reading of the same law, labelled as a "</span>
+            <span class="s2">"truncation."</span><span class="p">,</span>
+            <span class="s2">"Small d against the pi**2 / 2 measurement floor is weakly identified in the "</span>
+            <span class="s2">"frequency domain: dispersion of d across samples is large below about 0.3 "</span>
+            <span class="s2">"unless the volatility signal is strong."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_boundary</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s2">"d is at the stationarity boundary of the search (|d| &lt; 0.5): the data "</span>
+                <span class="s2">"prefer a nonstationary log variance, and d is a lower bound, not a point. "</span>
+                <span class="s2">"UCSV is the random-walk (d = 1) alternative."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_comparison_label</span><span class="p">()</span><span class="si">}</span><span class="s2"> Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Method"</span><span class="p">,</span> <span class="s2">"whittle"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Frequencies"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frequencies</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"estimate"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="LongMemorySV">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongMemorySV.html#cultivars.multivariate.LongMemorySV">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LongMemorySV</span><span class="p">(</span><span class="n">_LongMemoryVolatilityModel</span><span class="p">[</span><span class="n">LongMemorySVResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Long-memory stochastic volatility, Breidt, Crato, and de Lima (1998).</span>
+
+<span class="sd">    ``y_t = c + exp(h_t / 2) eps_t`` with ``h_t = mu + v_t`` and</span>
+<span class="sd">    ``(1 - phi L)(1 - L)**d v_t = eta_t``: the log variance is fractionally</span>
+<span class="sd">    integrated, so its shocks decay hyperbolically -- the persistence that</span>
+<span class="sd">    squared and absolute returns show at long lags and that no finite-order</span>
+<span class="sd">    AR(1) log variance can produce. Estimation is Whittle in the frequency</span>
+<span class="sd">    domain, the natural home of a process with no finite state; the price</span>
+<span class="sd">    is a quasi-likelihood on the linearized model, and the summary says so.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The observed series (returns, typically).</span>
+<span class="sd">        mean: ``"constant"`` to remove the sample mean, ``"zero"`` to fix</span>
+<span class="sd">            the observation mean at zero.</span>
+<span class="sd">        short_memory: Whether the log variance carries an AR(1) factor as</span>
+<span class="sd">            well as the fractional one.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars._core import fractional_difference_weights</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; n, burn = 1500, 2000</span>
+<span class="sd">        &gt;&gt;&gt; eta = 0.5 * rng.standard_normal(n + burn)</span>
+<span class="sd">        &gt;&gt;&gt; v = np.convolve(eta, fractional_difference_weights(-0.4, n + burn))[burn : n + burn]</span>
+<span class="sd">        &gt;&gt;&gt; y = np.exp((-1.0 + v) / 2) * rng.standard_normal(n)</span>
+<span class="sd">        &gt;&gt;&gt; res = LongMemorySV(y, mean="zero").fit()</span>
+<span class="sd">        &gt;&gt;&gt; bool(0.2 &lt; res.d &lt;= 0.5)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="LongMemorySV.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.LongMemorySV.html#cultivars.multivariate.LongMemorySV.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LongMemorySVResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate by Whittle quasi-likelihood and smooth the log variance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted :class:`LongMemorySVResult`.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">LongMemorySVResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_whittle</span><span class="p">(),</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,740 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.bayes.evidence &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/bayes/evidence';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/bayes/evidence.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.bayes.evidence</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.bayes.evidence</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/bayes/evidence.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Marginal likelihoods, Bayes factors, and posterior model probabilities.</span>
+
+<span class="sd">The marginal likelihood ``m(y) = int f(y | theta) pi(theta) dtheta`` is the</span>
+<span class="sd">Bayesian answer to "which model", and its logarithm is the one number a</span>
+<span class="sd">posterior can report in place of a likelihood. Three routes to it live in</span>
+<span class="sd">the package, each on the results that admit it:</span>
+
+<span class="sd">* **Analytic**, for the conjugate :class:`~cultivars.multivariate.large_dim.BVAR`,</span>
+<span class="sd">  whose Normal-inverse-Wishart posterior integrates in closed form.</span>
+<span class="sd">* **Chib (1995)**, for the :class:`~cultivars.multivariate.large_dim.GibbsBVAR`</span>
+<span class="sd">  under a static prior, from the two-block Gibbs output with no extra runs.</span>
+<span class="sd">* **Modified harmonic mean** (Geweke, 1999), for the particle-chain</span>
+<span class="sd">  :class:`~cultivars.multivariate.structural.PerturbationDSGE` posterior,</span>
+<span class="sd">  where the likelihood itself is an estimate and the number inherits that</span>
+<span class="sd">  noise.</span>
+
+<span class="sd">:func:`marginal_likelihood` dispatches to whichever a result offers and</span>
+<span class="sd">refuses the rest by name. :func:`modified_harmonic_mean` and</span>
+<span class="sd">:func:`bridge_sampling` are the same estimators on draws that came from</span>
+<span class="sd">elsewhere -- another sampler, or a kernel of the user's own -- and</span>
+<span class="sd">:func:`compare` ranks any set of records fitted to the same sample.</span>
+
+<span class="sd">Not implemented, deliberately: the plain harmonic mean (infinite variance),</span>
+<span class="sd">and Chib's estimator for adaptive-prior or dummy-observation Gibbs BVARs</span>
+<span class="sd">(reduced runs, and the augmented-sample subtlety, respectively). Both are</span>
+<span class="sd">refused with the reason rather than approximated silently.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">    &gt;&gt;&gt; z = rng.standard_normal((4000, 2))</span>
+<span class="sd">    &gt;&gt;&gt; record = modified_harmonic_mean(z, -0.5 * (z**2).sum(axis=1), source="N(0, I)")</span>
+<span class="sd">    &gt;&gt;&gt; round(record.log_value, 1)  # log(2 pi)</span>
+<span class="sd">    1.8</span>
+<span class="sd">    &gt;&gt;&gt; record.method</span>
+<span class="sd">    'modified harmonic mean'</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">_MHM_TAU</span><span class="p">,</span> <span class="n">SummaryTable</span><span class="p">,</span> <span class="n">_bridge_sampling</span><span class="p">,</span> <span class="n">_modified_harmonic_mean</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_MarginalLikelihoodSelection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"bridge_sampling"</span><span class="p">,</span>
+    <span class="s2">"compare"</span><span class="p">,</span>
+    <span class="s2">"marginal_likelihood"</span><span class="p">,</span>
+    <span class="s2">"modified_harmonic_mean"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="marginal_likelihood">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.marginal_likelihood.html#cultivars.bayes.marginal_likelihood">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">marginal_likelihood</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The log marginal likelihood of a fitted result, by whichever route it admits.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: A result exposing ``marginal_likelihood()``: the conjugate</span>
+<span class="sd">            BVAR (analytic), the Gibbs BVAR (Chib), or the particle-chain</span>
+<span class="sd">            DSGE posterior (modified harmonic mean).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The record.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the result offers no marginal likelihood.</span>
+<span class="sd">            Sampled results that do not -- the stochastic-volatility family,</span>
+<span class="sd">            the Student-t and stochastic-volatility BVARs, the</span>
+<span class="sd">            time-varying-parameter models -- need reduced-run or</span>
+<span class="sd">            particle-based estimators that are not implemented; compare</span>
+<span class="sd">            those by out-of-sample predictive score.</span>
+<span class="sd">    """</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">"marginal_likelihood"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> offers no marginal likelihood. Supported: the conjugate "</span>
+            <span class="s2">"BVAR (analytic), the Gibbs BVAR under a static prior (Chib), and the "</span>
+            <span class="s2">"particle-chain DSGE posterior (modified harmonic mean). Other sampled results "</span>
+            <span class="s2">"need estimators not implemented here; compare them by predictive score."</span>
+        <span class="p">)</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="n">method</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.marginal_likelihood() returned </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">record</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="s2">"not a _MarginalLikelihoodSelection record."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">record</span></div>
+
+
+
+<div class="viewcode-block" id="modified_harmonic_mean">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.modified_harmonic_mean.html#cultivars.bayes.modified_harmonic_mean">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">modified_harmonic_mean</span><span class="p">(</span>
+    <span class="n">draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">log_kernel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_MHM_TAU</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"draws"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Geweke's (1999) modified harmonic mean on posterior draws.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        draws: ``(S,)`` or ``(S, d)`` posterior draws. Transform bounded</span>
+<span class="sd">            parameters to the real line first: a Gaussian envelope that</span>
+<span class="sd">            leaves the support biases the estimate, and the coverage note</span>
+<span class="sd">            says when that has happened.</span>
+<span class="sd">        log_kernel: ``(S,)`` unnormalized log posterior -- log likelihood</span>
+<span class="sd">            plus log prior, in the same parameterization as ``draws`` -- at</span>
+<span class="sd">            each draw.</span>
+<span class="sd">        tau: Probability mass of the Gaussian envelope retained.</span>
+<span class="sd">        source: Label for the record.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The record, with the Monte Carlo standard error.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(1)</span>
+<span class="sd">        &gt;&gt;&gt; z = rng.standard_normal((3000, 3))</span>
+<span class="sd">        &gt;&gt;&gt; record = modified_harmonic_mean(z, -0.5 * (z**2).sum(axis=1))</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(record.log_value - 1.5 * np.log(2 * np.pi)) &lt; 0.05)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">log_ml</span><span class="p">,</span> <span class="n">mcse</span><span class="p">,</span> <span class="n">coverage</span> <span class="o">=</span> <span class="n">_modified_harmonic_mean</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">log_kernel</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">)</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Modified harmonic mean (Geweke, 1999) with a truncated Gaussian envelope."</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">coverage</span> <span class="o">-</span> <span class="n">tau</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Only </span><span class="si">{</span><span class="n">coverage</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> of the draws fall inside the </span><span class="si">{</span><span class="n">tau</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2"> envelope: the "</span>
+            <span class="s2">"posterior is far from Gaussian, or a bounded parameter was not transformed."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">(</span>
+        <span class="n">log_value</span><span class="o">=</span><span class="n">log_ml</span><span class="p">,</span>
+        <span class="n">mcse</span><span class="o">=</span><span class="n">mcse</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">"modified harmonic mean"</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="bridge_sampling">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.bridge_sampling.html#cultivars.bayes.bridge_sampling">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bridge_sampling</span><span class="p">(</span>
+    <span class="n">draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">log_kernel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_proposal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"draws"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Meng-Wong bridge sampling with a Gaussian proposal fitted to the draws.</span>
+
+<span class="sd">    Lower variance than the harmonic mean on a roughly elliptical</span>
+<span class="sd">    posterior, at the price of evaluating the kernel at fresh proposal</span>
+<span class="sd">    points -- so the kernel must be a callable, and the parameterization</span>
+<span class="sd">    must give it finite values wherever a Gaussian around the draws can</span>
+<span class="sd">    land (transform bounded parameters to the real line).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        draws: ``(S,)`` or ``(S, d)`` posterior draws.</span>
+<span class="sd">        log_kernel: ``(S,)`` unnormalized log posterior at each draw.</span>
+<span class="sd">        kernel: The same function of one ``(d,)`` point.</span>
+<span class="sd">        seed: Seed or generator for the proposal draws.</span>
+<span class="sd">        n_proposal: Proposal draws; default the number of posterior draws</span>
+<span class="sd">            entering the bridge (half of ``draws``).</span>
+<span class="sd">        source: Label for the record.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The record, with the Frühwirth-Schnatter (2004) error approximation.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(2)</span>
+<span class="sd">        &gt;&gt;&gt; z = rng.standard_normal((3000, 2))</span>
+<span class="sd">        &gt;&gt;&gt; record = bridge_sampling(</span>
+<span class="sd">        ...     z, -0.5 * (z**2).sum(axis=1), lambda x: -0.5 * float(x @ x), seed=0</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(record.log_value - np.log(2 * np.pi)) &lt; 0.05)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">log_ml</span><span class="p">,</span> <span class="n">mcse</span><span class="p">,</span> <span class="n">n_iter</span> <span class="o">=</span> <span class="n">_bridge_sampling</span><span class="p">(</span>
+        <span class="n">draws</span><span class="p">,</span> <span class="n">log_kernel</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span> <span class="n">n_proposal</span><span class="o">=</span><span class="n">n_proposal</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">(</span>
+        <span class="n">log_value</span><span class="o">=</span><span class="n">log_ml</span><span class="p">,</span>
+        <span class="n">mcse</span><span class="o">=</span><span class="n">mcse</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">"bridge sampling"</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">notes</span><span class="o">=</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Bridge sampling (Meng &amp; Wong, 1996), Gaussian proposal fitted to half the "</span>
+            <span class="sa">f</span><span class="s2">"draws, converged in </span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> iterations."</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compare">
+<a class="viewcode-back" href="../../../api/generated/cultivars.bayes.compare.html#cultivars.bayes.compare">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compare</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">records</span><span class="p">:</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">,</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prior_probabilities</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Rank models by marginal likelihood with posterior model probabilities.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *records: Two or more records computed on the same sample.</span>
+<span class="sd">        names: Row labels; default each record's ``source``.</span>
+<span class="sd">        prior_probabilities: Prior model probabilities; default equal.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The comparison table, best model first.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If fewer than two records are given.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="s2">"compare needs at least two records."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="o">*</span><span class="n">records</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">prior_probabilities</span><span class="o">=</span><span class="n">prior_probabilities</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

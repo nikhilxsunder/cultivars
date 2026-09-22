@@ -1,0 +1,901 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.large_dim.gibbs &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/large_dim/gibbs';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/large_dim/gibbs.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.large_dim.gibbs</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.large_dim.gibbs</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/large_dim/gibbs.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""The Gibbs-sampled BVAR: every prior the conjugate model must refuse.</span>
+
+<span class="sd">The conjugate model buys its exact posterior by tying the coefficient prior</span>
+<span class="sd">to the innovation covariance through a Kronecker product, and two whole</span>
+<span class="sd">families of priors cannot pay that price. Litterman's original prior --</span>
+<span class="sd">cross-variable coefficients shrunk harder than own lags -- breaks the</span>
+<span class="sd">factorization by design. And the adaptive shrinkage hierarchies -- the</span>
+<span class="sd">horseshoe, spike-and-slab selection, Dirichlet-Laplace, Normal-Gamma --</span>
+<span class="sd">have no fixed variance to factor at all: each coefficient's variance is a</span>
+<span class="sd">latent state with its own full conditional. This model is where both</span>
+<span class="sd">families estimate. The prior is stated *independently* of the covariance</span>
+<span class="sd">(the independent Normal-Wishart pairing, Koop &amp; Korobilis 2010), and the</span>
+<span class="sd">posterior is reached by Gibbs sampling: one joint generalized-least-squares</span>
+<span class="sd">draw of all coefficients given the covariance -- exact and ordering-free --</span>
+<span class="sd">an inverse-Wishart draw of the covariance given the coefficients, and, for</span>
+<span class="sd">an adaptive prior, one sweep of its scale hierarchy's own exact</span>
+<span class="sd">conditionals.</span>
+
+<span class="sd">What is given up is stated rather than hidden. There is no marginal</span>
+<span class="sd">likelihood -- with the prior independent of the covariance the evidence has</span>
+<span class="sd">no closed form, and a simulated stand-in would not deserve the name -- so</span>
+<span class="sd">prior comparison by Bayes factor belongs to the conjugate path. Draws are a</span>
+<span class="sd">Markov chain, not independent, so burn-in and thinning are real choices</span>
+<span class="sd">here. And the joint coefficient draw factorizes nothing, so each sweep</span>
+<span class="sd">costs a Cholesky of a ``(k^2 p + k) x (k^2 p + k)``-ish precision: exact at</span>
+<span class="sd">any moderate dimension, and deliberately not pretending to Banbura-scale</span>
+<span class="sd">systems.</span>
+
+<span class="sd">For a selection prior the distinctive output is</span>
+<span class="sd">:meth:`GibbsBVARResult.inclusion_probabilities` -- the posterior probability</span>
+<span class="sd">that each lag coefficient is in the slab, which is the George-Sun-Ni</span>
+<span class="sd">restriction search read as a result rather than a procedure.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Koop, G., &amp; Korobilis, D. (2010). Bayesian multivariate time series</span>
+<span class="sd">        methods for empirical macroeconomics. *Foundations and Trends in</span>
+<span class="sd">        Econometrics*, 3(4), 267-358.</span>
+<span class="sd">    George, E. I., Sun, D., &amp; Ni, S. (2008). Bayesian stochastic search</span>
+<span class="sd">        for VAR model restrictions. *Journal of Econometrics*, 142(1),</span>
+<span class="sd">        553-580.</span>
+<span class="sd">    Carvalho, C. M., Polson, N. G., &amp; Scott, J. G. (2010). The horseshoe</span>
+<span class="sd">        estimator for sparse signals. *Biometrika*, 97(2), 465-480.</span>
+<span class="sd">    Griffin, J. E., &amp; Brown, P. J. (2010). Inference with normal-gamma</span>
+<span class="sd">        prior distributions in regression problems. *Bayesian Analysis*,</span>
+<span class="sd">        5(1), 171-188.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryTable</span><span class="p">,</span> <span class="n">Trend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_GibbsBayesianVectorAutoRegressionModel</span><span class="p">,</span>
+    <span class="n">_MarginalLikelihoodSelection</span><span class="p">,</span>
+    <span class="n">_Prior</span><span class="p">,</span>
+    <span class="n">_VectorGibbsFit</span><span class="p">,</span>
+    <span class="n">_VectorPosteriorDrawsResult</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...bayes</span><span class="w"> </span><span class="kn">import</span> <span class="n">IndependentNormalWishartPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"GibbsBVAR"</span><span class="p">,</span> <span class="s2">"GibbsBVARResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="GibbsBVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.GibbsBVARResult.html#cultivars.multivariate.GibbsBVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GibbsBVARResult</span><span class="p">(</span><span class="n">_VectorPosteriorDrawsResult</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted Gibbs BVAR: a sampled posterior, and the prior's own diagnostics.</span>
+
+<span class="sd">    The propagation surface -- credible intervals, impulse responses with</span>
+<span class="sd">    posterior bands, the posterior predictive -- is the family's shared</span>
+<span class="sd">    one. What this result adds is the adaptive prior's averaged latent</span>
+<span class="sd">    diagnostic: inclusion probabilities under a selection prior, local</span>
+<span class="sd">    shrinkage scales under a global-local one.</span>
+
+<span class="sd">    Deliberately absent, beyond the family-wide refusals: a marginal</span>
+<span class="sd">    likelihood. With the coefficient prior independent of the covariance</span>
+<span class="sd">    the evidence has no closed form, so Bayes-factor prior comparison</span>
+<span class="sd">    belongs to the conjugate model.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        prior_label: Short description of the prior estimated under.</span>
+<span class="sd">        shrinkage: ``(w, k)`` posterior mean per-coefficient diagnostic from</span>
+<span class="sd">            an adaptive prior, in design-row order; empty under a static</span>
+<span class="sd">            prior. Read it through :meth:`inclusion_probabilities` or</span>
+<span class="sd">            :meth:`shrinkage_scales`.</span>
+<span class="sd">        shrinkage_label: What ``shrinkage`` is; empty under a static prior.</span>
+<span class="sd">        n_dummy: Artificial rows the prior contributed.</span>
+<span class="sd">        n_draws: Total sampler iterations.</span>
+<span class="sd">        n_burn: Burn-in discarded.</span>
+<span class="sd">        thin: Post-burn thinning.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">prior_label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">deterministic</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">beta_mean</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma_u</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">beta_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">shrinkage</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">shrinkage_label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">resid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fittedvalues</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_dummy</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">_engine</span><span class="p">:</span> <span class="n">_GibbsBayesianVectorAutoRegressionModel</span><span class="p">[</span><span class="n">GibbsBVARResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">fit</span><span class="p">:</span> <span class="n">_VectorGibbsFit</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">_GibbsBayesianVectorAutoRegressionModel</span><span class="p">[</span><span class="n">GibbsBVARResult</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GibbsBVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">prior_label</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">prior</span><span class="o">.</span><span class="n">_label</span><span class="p">(),</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">coefficient_stack</span><span class="p">,</span>
+            <span class="n">deterministic</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">deterministic</span><span class="p">,</span>
+            <span class="n">beta_mean</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">beta_mean</span><span class="p">,</span>
+            <span class="n">sigma_u</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span>
+            <span class="n">beta_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">,</span>
+            <span class="n">sigma_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma_draws</span><span class="p">,</span>
+            <span class="n">shrinkage</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">shrinkage</span><span class="p">,</span>
+            <span class="n">shrinkage_label</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">shrinkage_label</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_dummy</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_dummy</span><span class="p">,</span>
+            <span class="n">n_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_draws</span><span class="p">,</span>
+            <span class="n">n_burn</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_burn</span><span class="p">,</span>
+            <span class="n">thin</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">thin</span><span class="p">,</span>
+            <span class="n">_engine</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="GibbsBVARResult.marginal_likelihood">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.GibbsBVARResult.html#cultivars.multivariate.GibbsBVARResult.marginal_likelihood">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">marginal_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Chib's (1995) log marginal likelihood of the sample.</span>
+
+<span class="sd">        The two-block identity: the likelihood and prior at the posterior</span>
+<span class="sd">        mean, less the posterior ordinate there, with the covariance</span>
+<span class="sd">        ordinate averaged over the retained coefficient draws and the</span>
+<span class="sd">        coefficient ordinate evaluated exactly.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The record; ``compare()`` on it ranks models fitted to the same</span>
+<span class="sd">            sample.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: Under an adaptive prior, whose extra Gibbs</span>
+<span class="sd">                block would need reduced runs, or a dummy-observation prior,</span>
+<span class="sd">                whose artificial rows the sampler treats as data.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">_marginal_likelihood</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sigma_draws</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Gibbs BVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prior_label</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_lag_diagnostic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The lag-block rows of ``shrinkage`` as a ``(p, k, k)`` stack."""</span>
+        <span class="n">offset</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage</span><span class="p">[</span><span class="n">offset</span> <span class="o">+</span> <span class="n">lag</span> <span class="o">*</span> <span class="n">k</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="n">lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
+                <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="GibbsBVARResult.inclusion_probabilities">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.GibbsBVARResult.html#cultivars.multivariate.GibbsBVARResult.inclusion_probabilities">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inclusion_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior inclusion probability of each lag coefficient.</span>
+
+<span class="sd">        Entry ``[lag, i, j]`` is the posterior probability that variable</span>
+<span class="sd">        ``j``'s coefficient at that lag in equation ``i`` sits in the slab</span>
+<span class="sd">        -- is included -- averaged over kept sweeps</span>
+<span class="sd">        (Rao-Blackwellized: the averaged quantity is the exact conditional</span>
+<span class="sd">        probability, not the binary indicator).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(p, k, k)`` stack aligned with :attr:`coefficients`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the prior was not a selection prior --</span>
+<span class="sd">                only a spike-and-slab posterior defines inclusion.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"inclusion"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage_label</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"inclusion probabilities exist only under a selection prior; "</span>
+                <span class="sa">f</span><span class="s2">"this model was fit under </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prior_label</span><span class="si">}</span><span class="s2">. Global-local "</span>
+                <span class="s2">"shrinkage reports shrinkage_scales() instead."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lag_diagnostic</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GibbsBVARResult.shrinkage_scales">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.GibbsBVARResult.html#cultivars.multivariate.GibbsBVARResult.shrinkage_scales">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shrinkage_scales</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior mean local-global scale of each standardized lag coefficient.</span>
+
+<span class="sd">        Entry ``[lag, i, j]`` is the averaged prior standard deviation the</span>
+<span class="sd">        hierarchy assigned to that coefficient on the standardized</span>
+<span class="sd">        (unit-free) scale: near zero means shrunk away, order one means</span>
+<span class="sd">        left free. Comparable within a fit, not across priors.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(p, k, k)`` stack aligned with :attr:`coefficients`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the prior was not a global-local</span>
+<span class="sd">                shrinkage prior.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"scale"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage_label</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"shrinkage scales exist only under a global-local prior; "</span>
+                <span class="sa">f</span><span class="s2">"this model was fit under </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prior_label</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lag_diagnostic</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">:</span>
+                <span class="n">low</span><span class="p">,</span> <span class="n">mid</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credible_interval</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.L1"</span><span class="p">)</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">low</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">]"</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">))</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"The posterior is sampled by Gibbs (joint GLS coefficient draw, "</span>
+            <span class="s2">"inverse-Wishart covariance), so draws are a Markov chain: "</span>
+            <span class="s2">"burn-in and thinning matter, and independent-draw intuition "</span>
+            <span class="s2">"does not apply."</span><span class="p">,</span>
+            <span class="s2">"marginal_likelihood() gives Chib's estimate from the Gibbs output "</span>
+            <span class="s2">"for static priors; adaptive and dummy-observation priors are refused."</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stability_note</span><span class="p">(),</span>
+            <span class="s2">"No llf, parameter count, or information criteria are reported: a posterior has none."</span><span class="p">,</span>
+            <span class="s2">"forecast() is the full posterior predictive -- parameter and "</span>
+            <span class="s2">"shock uncertainty jointly."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage_label</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"inclusion"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage_label</span><span class="p">:</span>
+                <span class="n">included</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lag_diagnostic</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">notes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Selection prior: </span><span class="si">{</span><span class="n">included</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> lag coefficients "</span>
+                    <span class="s2">"carry posterior inclusion probability above one half; "</span>
+                    <span class="s2">"inclusion_probabilities() has the full map."</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">notes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="s2">"Global-local prior: shrinkage_scales() maps how much "</span>
+                    <span class="s2">"freedom each standardized lag coefficient retained."</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Gibbs BVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">) Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"GibbsBVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Prior"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior_label</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Draws"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="si">}</span><span class="s2"> kept of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_draws</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Burn-in"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_burn</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Dummy rows"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dummy</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"equation"</span><span class="p">,</span> <span class="s2">"own L1 mean"</span><span class="p">,</span> <span class="s2">"68</span><span class="si">% i</span><span class="s2">nterval"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="GibbsBVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.GibbsBVAR.html#cultivars.multivariate.GibbsBVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GibbsBVAR</span><span class="p">(</span><span class="n">_GibbsBayesianVectorAutoRegressionModel</span><span class="p">[</span><span class="n">GibbsBVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Non-conjugate Bayesian VAR: independent Normal-Wishart, sampled by Gibbs.</span>
+
+<span class="sd">    One model, two families of priors the conjugate path refuses. Static</span>
+<span class="sd">    moment priors with any diagonal variance -- the default</span>
+<span class="sd">    :class:`~cultivars.bayes.priors.IndependentNormalWishartPrior`, which</span>
+<span class="sd">    is Litterman's full prior with the cross-equation weight kept, or a</span>
+<span class="sd">    :class:`~cultivars.bayes.priors.MinnesotaPrior` passed directly --</span>
+<span class="sd">    and the adaptive shrinkage hierarchies:</span>
+<span class="sd">    :class:`~cultivars.bayes.priors.HorseshoePrior`,</span>
+<span class="sd">    :class:`~cultivars.bayes.priors.SpikeAndSlabPrior`,</span>
+<span class="sd">    :class:`~cultivars.bayes.priors.DirichletLaplacePrior`,</span>
+<span class="sd">    :class:`~cultivars.bayes.priors.NormalGammaPrior`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The observed panel, shape ``(nobs, k)``. A proper prior</span>
+<span class="sd">            makes wide systems admissible, though each Gibbs sweep costs a</span>
+<span class="sd">            Cholesky of the joint coefficient precision, so very large</span>
+<span class="sd">            ``k`` belongs to the conjugate model.</span>
+<span class="sd">        order: Autoregressive order.</span>
+<span class="sd">        prior: Any finite-variance prior, static or adaptive. Defaults to</span>
+<span class="sd">            ``IndependentNormalWishartPrior()``. Adaptive priors do not</span>
+<span class="sd">            compose with ``+``.</span>
+<span class="sd">        trend: Deterministic terms.</span>
+<span class="sd">        names: One label per variable. Defaults to ``y1 ... yk``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars.bayes.priors import SpikeAndSlabPrior</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((200, 3))</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 200):</span>
+<span class="sd">        ...     y[t] = 0.6 * y[t - 1] + rng.standard_normal(3)</span>
+<span class="sd">        &gt;&gt;&gt; model = GibbsBVAR(y, order=1, prior=SpikeAndSlabPrior())</span>
+<span class="sd">        &gt;&gt;&gt; res = model.fit(n_draws=300, n_burn=100, seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; res.inclusion_probabilities().shape</span>
+<span class="sd">        (1, 3, 3)</span>
+<span class="sd">        &gt;&gt;&gt; bool(np.all(np.diag(res.inclusion_probabilities()[0]) &gt; 0.5))</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">prior</span><span class="p">:</span> <span class="n">_Prior</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trend</span><span class="p">:</span> <span class="n">Trend</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Default the prior to the independent Normal-Wishart, then validate."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">endog</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">prior</span><span class="o">=</span><span class="n">prior</span> <span class="k">if</span> <span class="n">prior</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">IndependentNormalWishartPrior</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="GibbsBVAR.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.GibbsBVAR.html#cultivars.multivariate.GibbsBVAR.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+        <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+        <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GibbsBVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Run the Gibbs sampler and keep the post-burn draws.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_draws: Total sampler iterations.</span>
+<span class="sd">            n_burn: Burn-in iterations discarded.</span>
+<span class="sd">            thin: Keep every ``thin``-th post-burn draw.</span>
+<span class="sd">            seed: Seed or generator, for reproducibility.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted :class:`GibbsBVARResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the prior is improper, mixes adaptive</span>
+<span class="sd">                components into a composition, or the draw bookkeeping is</span>
+<span class="sd">                inconsistent.</span>
+<span class="sd">            NumericalError: If a conditional draw collapses.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">GibbsBVARResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fit_gibbs</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">n_burn</span><span class="o">=</span><span class="n">n_burn</span><span class="p">,</span> <span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">),</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

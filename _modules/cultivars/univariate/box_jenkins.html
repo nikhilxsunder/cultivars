@@ -1,0 +1,959 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.univariate.box_jenkins &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/univariate/box_jenkins';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/univariate/box_jenkins.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.univariate.box_jenkins</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.univariate.box_jenkins</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/univariate/arma.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""ARMA / ARIMA / SARIMA / SARIMAX -- one engine behind four public fronts.</span>
+
+<span class="sd">All four are the same estimator. The conditional mean is a multiplicative</span>
+<span class="sd">seasonal ARMA in the Harvey state-space form, so the likelihood is exact and</span>
+<span class="sd">runs through the Kalman filter; integration is applied by differencing before</span>
+<span class="sd">estimation; deterministic terms and exogenous regressors enter the observation</span>
+<span class="sd">intercept, which makes ``ARIMAX`` and ``SARIMAX`` nothing more than ``ARIMA``</span>
+<span class="sd">and ``SARIMA`` with ``exog`` supplied.</span>
+
+<span class="sd">:class:`SARIMAX` is therefore the real specification and the other three are</span>
+<span class="sd">narrowing constructors over it, not separate models. That is deliberate: a user</span>
+<span class="sd">who reaches for ``ARMA`` should not be able to pass a differencing order, and a</span>
+<span class="sd">user who reaches for ``SARIMA`` should not have to spell out ``(0, 0, 0, 0)``.</span>
+
+<span class="sd">Stationarity and invertibility are enforced structurally by the</span>
+<span class="sd">partial-autocorrelation reparameterization, so the optimizer searches an</span>
+<span class="sd">unconstrained space and the reported diagnostics verify the transform rather</span>
+<span class="sd">than describing the data. Both are assessed on the *multiplied* polynomials</span>
+<span class="sd">``phi(L)Phi(L**s)`` and ``theta(L)Theta(L**s)``; checking the non-seasonal</span>
+<span class="sd">block alone would pass a specification with an explosive seasonal root.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Box, G., Jenkins, G., Reinsel, G. &amp; Ljung, G. (2015). *Time Series</span>
+<span class="sd">    Analysis: Forecasting and Control* (5th ed.).</span>
+<span class="sd">    Durbin, J. &amp; Koopman, S. J. (2012). *Time Series Analysis by State Space</span>
+<span class="sd">    Methods*, ch. 3 (the ARMA state-space form).</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_SIMULATION_BURN</span><span class="p">,</span>
+    <span class="n">InformationCriteria</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">deterministic_columns</span><span class="p">,</span>
+    <span class="n">expand_ar</span><span class="p">,</span>
+    <span class="n">expand_ma</span><span class="p">,</span>
+    <span class="n">n_deterministic</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_BoxJenkinsFit</span><span class="p">,</span>
+    <span class="n">_BoxJenkinsModel</span><span class="p">,</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_integrate</span><span class="p">,</span>
+    <span class="n">_InvertibilityMixin</span><span class="p">,</span>
+    <span class="n">_SeriesMixin</span><span class="p">,</span>
+    <span class="n">_simulate_arma</span><span class="p">,</span>
+    <span class="n">_StationarityMixin</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ARIMA"</span><span class="p">,</span> <span class="s2">"ARIMAX"</span><span class="p">,</span> <span class="s2">"ARMA"</span><span class="p">,</span> <span class="s2">"SARIMA"</span><span class="p">,</span> <span class="s2">"SARIMAX"</span><span class="p">,</span> <span class="s2">"ARMAResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="ARMAResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.ARMAResult.html#cultivars.univariate.ARMAResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ARMAResult</span><span class="p">(</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_SeriesMixin</span><span class="p">,</span> <span class="n">_ComparisonMixin</span><span class="p">,</span> <span class="n">_StationarityMixin</span><span class="p">,</span> <span class="n">_InvertibilityMixin</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted (seasonal) ARIMA, optionally with exogenous regressors.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The full observed series.</span>
+<span class="sd">        fittedvalues: One-step fitted values on the differenced modeling series.</span>
+<span class="sd">        resid: One-step residuals on the differenced modeling series.</span>
+<span class="sd">        llf: Maximized exact log-likelihood.</span>
+<span class="sd">        nobs: Observations after differencing.</span>
+<span class="sd">        n_params: Free parameter count, including the innovation variance.</span>
+<span class="sd">        order: Non-seasonal ``(p, d, q)``.</span>
+<span class="sd">        seasonal_order: Seasonal ``(P, D, Q, s)``.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">        k_exog: Number of exogenous regressors.</span>
+<span class="sd">        ar_params: Non-seasonal AR coefficients.</span>
+<span class="sd">        ma_params: Non-seasonal MA coefficients.</span>
+<span class="sd">        seasonal_ar_params: Seasonal AR coefficients.</span>
+<span class="sd">        seasonal_ma_params: Seasonal MA coefficients.</span>
+<span class="sd">        beta: Coefficients on the deterministic and exogenous block.</span>
+<span class="sd">        sigma2: Innovation variance.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">fittedvalues</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">resid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">llf</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_params</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">seasonal_order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">k_exog</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">ar_params</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">ma_params</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">seasonal_ar_params</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">seasonal_ma_params</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">beta</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">sigma2</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="n">_BoxJenkinsFit</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">_BoxJenkinsModel</span><span class="p">[</span><span class="n">ARMAResult</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ARMAResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="n">exog</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">exog</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_params</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">seasonal_order</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">seasonal_order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">k_exog</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">exog</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">exog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">ar_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span>
+            <span class="n">ma_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">ma_params</span><span class="p">,</span>
+            <span class="n">seasonal_ar_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">seasonal_ar_params</span><span class="p">,</span>
+            <span class="n">seasonal_ma_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">seasonal_ma_params</span><span class="p">,</span>
+            <span class="n">beta</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span>
+            <span class="n">sigma2</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seasonal_period</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The seasonal period ``s``; ``0`` when no seasonal block is present."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_order</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stationarity_ar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The multiplied polynomial ``phi(L) Phi(L**s)``.</span>
+
+<span class="sd">        Assessing the non-seasonal block alone would pass a specification whose</span>
+<span class="sd">        seasonal root is explosive.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">expand_ar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_ar_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_period</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_invertibility_ma</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The multiplied polynomial ``theta(L) Theta(L**s)``, sign-corrected."""</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">expand_ma</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_ma_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_period</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ARMAResult.simulate">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.ARMAResult.html#cultivars.univariate.ARMAResult.simulate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_SIMULATION_BURN</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""A fresh sample path at the fitted parameters.</span>
+
+<span class="sd">        The stationary ARMA part -- seasonal and non-seasonal polynomials</span>
+<span class="sd">        multiplied out -- is generated from a zero start over ``burn + n``</span>
+<span class="sd">        periods with the first ``burn`` discarded; the deterministic block</span>
+<span class="sd">        is added on the differenced scale with the time index running</span>
+<span class="sd">        ``1 .. n``, exactly as the estimator laid it out; and the result</span>
+<span class="sd">        is integrated ``d`` and ``D`` times from zero initial levels.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n: Observations kept, on the level scale.</span>
+<span class="sd">            seed: Seed or generator.</span>
+<span class="sd">            burn: Periods discarded from the start.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(n,)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the counts are not usable or the fit</span>
+<span class="sd">                carries exogenous regressors, whose future the result</span>
+<span class="sd">                cannot know.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"a fit with exogenous regressors cannot simulate its own sample: the "</span>
+                <span class="s2">"regressors' future is not part of the model."</span>
+            <span class="p">)</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">d</span><span class="p">,</span> <span class="n">cap_d</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_order</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_order</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">n_deterministic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">)</span>
+        <span class="n">differenced</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">d</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">cap_d</span>
+        <span class="k">if</span> <span class="n">differenced</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"n must exceed the integration orders (</span><span class="si">{</span><span class="n">d</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cap_d</span><span class="si">}</span><span class="s2">); got </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">intercept</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span> <span class="n">differenced</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[:</span><span class="n">det</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">det</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">differenced</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">_simulate_arma</span><span class="p">(</span>
+            <span class="n">differenced</span><span class="p">,</span>
+            <span class="n">ar</span><span class="o">=</span><span class="n">expand_ar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_ar_params</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
+            <span class="n">ma</span><span class="o">=</span><span class="n">expand_ma</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_ma_params</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
+            <span class="n">sigma</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span><span class="p">)),</span>
+            <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+            <span class="n">intercept</span><span class="o">=</span><span class="n">intercept</span><span class="p">,</span>
+            <span class="n">burn</span><span class="o">=</span><span class="n">burn</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">_integrate</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">cap_d</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">differenced</span><span class="p">),</span> <span class="n">levels</span><span class="p">])</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Estimated parameters keyed by display name, in table order."""</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">n_deterministic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">([</span><span class="s2">"const"</span><span class="p">,</span> <span class="s2">"trend"</span><span class="p">][:</span><span class="n">det</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"x</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_period</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ar.L</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_params</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ma.L</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seasonal_ar_params</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ar.S.L</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seasonal_ma_params</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ma.S.L</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="s2">"sigma2"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Compact specification label, widening only as the model does."""</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ARIMA</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seasonal_order</span><span class="p">[:</span><span class="mi">3</span><span class="p">]):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SARIMA</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">seasonal_order</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">+X</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span> <span class="k">else</span> <span class="n">base</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Specification label used when this result appears in a ranking."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specification</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Closing diagnostics, omitting any that the specification makes vacuous."""</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Stationary: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_stationary</span><span class="si">}</span><span class="s2">   max |AR root| = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stability</span><span class="o">.</span><span class="n">max_modulus</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ma_params</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">seasonal_ma_params</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Invertible: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_invertible</span><span class="si">}</span><span class="s2">   "</span>
+                <span class="sa">f</span><span class="s2">"max |MA root| = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">invertibility</span><span class="o">.</span><span class="n">max_modulus</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Standard errors are not yet available for this estimator."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Structured summary rendered by every display path."""</span>
+        <span class="n">ic</span><span class="p">:</span> <span class="n">InformationCriteria</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_specification</span><span class="p">()</span><span class="si">}</span><span class="s2"> Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specification</span><span class="p">()),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Exog regressors"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_exog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"HQIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">hqic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"coef"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_notes</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SARIMAX">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SARIMAX.html#cultivars.univariate.SARIMAX">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SARIMAX</span><span class="p">(</span><span class="n">_BoxJenkinsModel</span><span class="p">[</span><span class="n">ARMAResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Seasonal ARIMA with exogenous regressors -- the general specification.</span>
+
+<span class="sd">    Every other class in this module narrows this one. Here alone ``exog`` is</span>
+<span class="sd">    optional, because this is the form a user reaches for when they want the</span>
+<span class="sd">    full surface rather than a named special case; :class:`ARIMAX` is the</span>
+<span class="sd">    non-seasonal variant that makes regressors mandatory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The endogenous series.</span>
+<span class="sd">        order: Non-seasonal ``(p, d, q)``.</span>
+<span class="sd">        seasonal_order: Seasonal ``(P, D, Q, s)``.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">        exog: Optional exogenous regressors, differenced alongside ``endog``.</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+<div class="viewcode-block" id="SARIMAX.fit">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SARIMAX.html#cultivars.univariate.SARIMAX.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ARMAResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate by exact maximum likelihood.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted :class:`ARMAResult`.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">ARMAResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_family</span><span class="p">(),</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ARIMAX">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.ARIMAX.html#cultivars.univariate.ARIMAX">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ARIMAX</span><span class="p">(</span><span class="n">SARIMAX</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""ARIMA(p, d, q) with exogenous regressors, no seasonal block.</span>
+
+<span class="sd">    A regression with ARIMA errors: the regressors enter the observation</span>
+<span class="sd">    intercept and the ARIMA structure describes what they leave behind. When</span>
+<span class="sd">    ``d`` is non-zero the regressors are differenced alongside ``endog``, so</span>
+<span class="sd">    the coefficients are interpretable on the differenced scale rather than on</span>
+<span class="sd">    the level. A cointegrating relationship in levels therefore comes back</span>
+<span class="sd">    correctly -- ``y = 2 x1 - x2 + I(1) error`` recovers ``2.009`` and</span>
+<span class="sd">    ``-0.999`` at ``d = 1`` -- but a level relationship regressed against</span>
+<span class="sd">    differenced drivers will not, and that is a property of the specification</span>
+<span class="sd">    rather than of the estimator.</span>
+
+<span class="sd">    ``exog`` is required and an empty block is rejected. That is the whole</span>
+<span class="sd">    point of the name: an ``ARIMAX`` with no regressors is an :class:`ARIMA`,</span>
+<span class="sd">    and silently accepting one would let a call site claim a covariate model it</span>
+<span class="sd">    does not have.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The endogenous series.</span>
+<span class="sd">        order: ``(p, d, q)``.</span>
+<span class="sd">        exog: Exogenous regressors, shape ``(nobs,)`` or ``(nobs, k)``.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If ``exog`` is ``None`` or has zero columns.</span>
+<span class="sd">        DimensionError: If ``exog`` is not aligned with ``endog``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; x = rng.standard_normal((400, 1))</span>
+<span class="sd">        &gt;&gt;&gt; y = np.cumsum(2.0 * x[:, 0] + rng.standard_normal(400))</span>
+<span class="sd">        &gt;&gt;&gt; ARIMAX(y, order=(1, 1, 0), exog=x).fit().k_exog</span>
+<span class="sd">        1</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">exog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the specification and the data."""</span>
+        <span class="k">if</span> <span class="n">exog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"ARIMAX requires exogenous regressors; use ARIMA for a model without them."</span>
+            <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span> <span class="n">exog</span><span class="o">=</span><span class="n">exog</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exog</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">exog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"ARIMAX requires at least one exogenous regressor; "</span>
+                <span class="s2">"use ARIMA for a model without them."</span>
+            <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SARIMA">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SARIMA.html#cultivars.univariate.SARIMA">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SARIMA</span><span class="p">(</span><span class="n">SARIMAX</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Multiplicative seasonal ARIMA, without exogenous regressors.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The endogenous series.</span>
+<span class="sd">        order: Non-seasonal ``(p, d, q)``.</span>
+<span class="sd">        seasonal_order: Seasonal ``(P, D, Q, s)``.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">seasonal_order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the specification and the data."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="n">seasonal_order</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ARIMA">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.ARIMA.html#cultivars.univariate.ARIMA">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ARIMA</span><span class="p">(</span><span class="n">SARIMAX</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""ARIMA(p, d, q): non-seasonal differencing, no seasonal block, no regressors.</span>
+
+<span class="sd">    Reach for :class:`ARIMAX` when there are exogenous regressors. Splitting the</span>
+<span class="sd">    two is what makes either name informative: a reader of a call site knows</span>
+<span class="sd">    from ``ARIMA`` alone that the fit has no external drivers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The endogenous series.</span>
+<span class="sd">        order: ``(p, d, q)``.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the specification and the data."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ARMA">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.ARMA.html#cultivars.univariate.ARMA">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ARMA</span><span class="p">(</span><span class="n">SARIMAX</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Stationary ARMA(p, q): no differencing, no seasonal block, no regressors.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The endogenous series.</span>
+<span class="sd">        order: ``(p, q)``.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; e = rng.standard_normal(600)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros(600)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 600):</span>
+<span class="sd">        ...     y[t] = 0.7 * y[t - 1] + e[t] + 0.4 * e[t - 1]</span>
+<span class="sd">        &gt;&gt;&gt; res = ARMA(y, order=(1, 1)).fit()</span>
+<span class="sd">        &gt;&gt;&gt; res.is_stationary and res.is_invertible</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the specification and the data."""</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">order</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

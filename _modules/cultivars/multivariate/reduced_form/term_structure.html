@@ -1,0 +1,1161 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.reduced_form.term_structure &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/reduced_form/term_structure';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/reduced_form/term_structure.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.reduced_form.term_structure</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.reduced_form.term_structure</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/reduced_form/term_structure.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""The dynamic Nelson-Siegel model: the yield curve as three moving factors.</span>
+
+<span class="sd">Diebold and Li (2006) turned the Nelson-Siegel curve from a per-date fit</span>
+<span class="sd">into a time-series model: the curve at every date is a combination of a</span>
+<span class="sd">level, a slope, and a curvature factor with fixed exponential loadings,</span>
+<span class="sd">and the factors themselves evolve. Diebold, Rudebusch, and Aruoba (2006)</span>
+<span class="sd">wrote that as one state space -- factors follow autoregressions, curves</span>
+<span class="sd">observe them through the loadings with per-maturity measurement noise --</span>
+<span class="sd">and that is the form estimated here, by exact maximum likelihood through</span>
+<span class="sd">the Kalman filter in a single step rather than the two-step regression</span>
+<span class="sd">shortcut (which survives as the optimizer's warm start).</span>
+
+<span class="sd">The one-step form earns its keep three ways. The likelihood is exact and</span>
+<span class="sd">one number, so specifications compare honestly. The measurement errors</span>
+<span class="sd">are per-maturity, so illiquid points on the curve are down-weighted by</span>
+<span class="sd">their own fitted noise instead of contaminating the factors. And missing</span>
+<span class="sd">observations cost nothing: the substrate's filter handles element-wise</span>
+<span class="sd">missingness, so ragged panels -- maturities that enter and leave the</span>
+<span class="sd">sample -- estimate without imputation.</span>
+
+<span class="sd">Factor dynamics are diagonal autoregressions, Diebold-Li's own</span>
+<span class="sd">parsimonious choice; the factor innovations are correlated through a full</span>
+<span class="sd">covariance. The loading decay ``lambda`` is estimated by default and can</span>
+<span class="sd">be fixed for comparability with published two-step results.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Nelson, C. R., &amp; Siegel, A. F. (1987). Parsimonious modeling of yield</span>
+<span class="sd">        curves. *Journal of Business*, 60(4), 473-489.</span>
+<span class="sd">    Diebold, F. X., &amp; Li, C. (2006). Forecasting the term structure of</span>
+<span class="sd">        government bond yields. *Journal of Econometrics*, 130(2),</span>
+<span class="sd">        337-364.</span>
+<span class="sd">    Diebold, F. X., Rudebusch, G. D., &amp; Aruoba, S. B. (2006). The</span>
+<span class="sd">        macroeconomy and the yield curve: A dynamic latent factor</span>
+<span class="sd">        approach. *Journal of Econometrics*, 131(1-2), 309-338.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryTable</span><span class="p">,</span> <span class="n">_nelson_siegel_loadings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_decay_nelson_siegel_state_space</span><span class="p">,</span>
+    <span class="n">_DecayNelsonSiegelFit</span><span class="p">,</span>
+    <span class="n">_DecayNelsonSiegelModel</span><span class="p">,</span>
+    <span class="n">_DecayNelsonSiegelParameters</span><span class="p">,</span>
+    <span class="n">_maximize_likelihood</span><span class="p">,</span>
+    <span class="n">_NelsonSiegelFit</span><span class="p">,</span>
+    <span class="n">_NelsonSiegelObjective</span><span class="p">,</span>
+    <span class="n">_NelsonSiegelParameters</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionError</span><span class="p">,</span> <span class="n">NumericalError</span><span class="p">,</span> <span class="n">SpecificationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...state_space</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearGaussianSSM</span><span class="p">,</span> <span class="n">NonlinearSSM</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"DynamicNelsonSiegel"</span><span class="p">,</span>
+    <span class="s2">"DynamicNelsonSiegelResult"</span><span class="p">,</span>
+    <span class="s2">"TimeVaryingNelsonSiegel"</span><span class="p">,</span>
+    <span class="s2">"TimeVaryingNelsonSiegelResult"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="DynamicNelsonSiegelResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.DynamicNelsonSiegelResult.html#cultivars.multivariate.DynamicNelsonSiegelResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DynamicNelsonSiegelResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_ComparisonMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted dynamic Nelson-Siegel model: factors, decay, and noise.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        panel: The observed ``(nobs, p)`` yield panel (missing entries</span>
+<span class="sd">            ``numpy.nan``).</span>
+<span class="sd">        maturities: The ``(p,)`` maturities.</span>
+<span class="sd">        decay: The fitted loading decay ``lambda``.</span>
+<span class="sd">        decay_fixed: Whether the decay was held fixed rather than</span>
+<span class="sd">            estimated.</span>
+<span class="sd">        mu: ``(3,)`` factor means (level, slope, curvature).</span>
+<span class="sd">        ar: ``(3,)`` diagonal factor persistences.</span>
+<span class="sd">        state_innovation_cov: ``(3, 3)`` factor innovation covariance.</span>
+<span class="sd">        measurement_var: ``(p,)`` per-maturity measurement variances.</span>
+<span class="sd">        factors: ``(nobs, 3)`` smoothed factor paths.</span>
+<span class="sd">        factor_cov: ``(nobs, 3, 3)`` smoothed factor covariances.</span>
+<span class="sd">        llf: Exact Gaussian log-likelihood.</span>
+<span class="sd">        nobs: Curve dates.</span>
+<span class="sd">        n_params: Free parameters the likelihood was maximized over.</span>
+<span class="sd">    """</span>
+
+    <span class="n">panel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">maturities</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">decay</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">decay_fixed</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">ar</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">state_innovation_cov</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">measurement_var</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">factors</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">factor_cov</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">llf</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_params</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_maturities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Points on the curve."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maturities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The smoothed level factor (the long end), ``(nobs,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">slope</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The smoothed slope factor, ``(nobs,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">curvature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The smoothed curvature factor, ``(nobs,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loadings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The ``(p, 3)`` Nelson-Siegel loadings at the fitted decay."""</span>
+        <span class="k">return</span> <span class="n">_nelson_siegel_loadings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maturities</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_NelsonSiegelParameters</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The parameter record, rebuilt for the system builder."""</span>
+        <span class="k">return</span> <span class="n">_NelsonSiegelParameters</span><span class="p">(</span>
+            <span class="n">decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">,</span>
+            <span class="n">mu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="n">ar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ar</span><span class="p">,</span>
+            <span class="n">state_chol</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_innovation_cov</span><span class="p">),</span>
+            <span class="n">obs_var</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_var</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearGaussianSSM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The fitted system, re-applicable to data it was not estimated on.</span>
+
+<span class="sd">        The exact linear-Gaussian emitter: its ``loglikelihood`` on the</span>
+<span class="sd">        estimation panel reproduces ``llf``, and filtering a different</span>
+<span class="sd">        panel (or the same maturities over new dates) reads it with this</span>
+<span class="sd">        fit's factor dynamics and noise.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">LinearGaussianSSM</span><span class="o">.</span><span class="n">_from_nelson_siegel_system</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maturities</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DynamicNelsonSiegelResult.fitted_curves">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.DynamicNelsonSiegelResult.html#cultivars.multivariate.DynamicNelsonSiegelResult.fitted_curves">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fitted_curves</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Smoothed fitted yields, ``(nobs, p)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factors</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">loadings</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DynamicNelsonSiegelResult.curve">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.DynamicNelsonSiegelResult.html#cultivars.multivariate.DynamicNelsonSiegelResult.curve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">curve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">date_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">maturities</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The fitted curve at one date, on any maturity grid.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            date_index: Row of the panel (negative indexing allowed).</span>
+<span class="sd">            maturities: Strictly positive maturities to evaluate on;</span>
+<span class="sd">                defaults to the estimation grid.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Fitted yields at those maturities.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If a requested maturity is not strictly</span>
+<span class="sd">                positive.</span>
+<span class="sd">        """</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maturities</span>
+            <span class="k">if</span> <span class="n">maturities</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">maturities</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">grid</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="s2">"maturities must be strictly positive."</span><span class="p">)</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">_nelson_siegel_loadings</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">basis</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">date_index</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DynamicNelsonSiegelResult.forecast">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.DynamicNelsonSiegelResult.html#cultivars.multivariate.DynamicNelsonSiegelResult.forecast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Curve forecasts with honest standard errors.</span>
+
+<span class="sd">        Filters the estimation panel to the last factor state, then</span>
+<span class="sd">        propagates mean and covariance through the fitted dynamics.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps: Horizons ahead, at least 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``(mean, std)`` arrays of shape ``(steps, p)`` on the</span>
+<span class="sd">            estimation maturities; the standard errors include factor</span>
+<span class="sd">            uncertainty and measurement noise, but not parameter</span>
+<span class="sd">            uncertainty.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``steps`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"steps must be at least 1; got </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">forward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">forward</span><span class="o">.</span><span class="n">filtered_state</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">forward</span><span class="o">.</span><span class="n">filtered_state_cov</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">transition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ar</span><span class="p">)</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loadings</span>
+        <span class="n">out_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_maturities</span><span class="p">))</span>
+        <span class="n">out_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_maturities</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">+</span> <span class="n">transition</span> <span class="o">@</span> <span class="p">(</span><span class="n">mean</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+            <span class="n">cov</span> <span class="o">=</span> <span class="n">transition</span> <span class="o">@</span> <span class="n">cov</span> <span class="o">@</span> <span class="n">transition</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_innovation_cov</span>
+            <span class="n">out_mean</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">basis</span> <span class="o">@</span> <span class="n">mean</span>
+            <span class="n">spread</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"pi,ij,pj-&gt;p"</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">basis</span><span class="p">)</span>
+            <span class="n">out_std</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">spread</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_var</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">out_mean</span><span class="p">,</span> <span class="n">out_std</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Specification label used when this result appears in a ranking."""</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="s2">"fixed"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay_fixed</span> <span class="k">else</span> <span class="s2">"estimated"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"DNS(lambda </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">)"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Structured summary rendered by every display path."""</span>
+        <span class="n">ic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">"level"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_innovation_cov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">"slope"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ar</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_innovation_cov</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">"curvature"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ar</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_innovation_cov</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Loading decay lambda = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="s1">'held fixed'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">decay_fixed</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'estimated'</span><span class="si">}</span><span class="s2">); the "</span>
+            <span class="s2">"curvature loading peaks near maturity "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mf">1.79</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+            <span class="s2">"Estimated in one step by exact maximum likelihood through the "</span>
+            <span class="s2">"Kalman filter; the Diebold-Li two-step estimator is the warm "</span>
+            <span class="s2">"start, not the answer."</span><span class="p">,</span>
+            <span class="s2">"Measurement noise is per-maturity, so noisy points on the "</span>
+            <span class="s2">"curve are down-weighted rather than contaminating the "</span>
+            <span class="s2">"factors; missing entries are handled element-wise."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Dynamic Nelson-Siegel Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Dates"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Maturities"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_maturities</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Parameters"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_params</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"factor"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"persistence"</span><span class="p">,</span> <span class="s2">"innovation sd"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="DynamicNelsonSiegel">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.DynamicNelsonSiegel.html#cultivars.multivariate.DynamicNelsonSiegel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DynamicNelsonSiegel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One-step maximum-likelihood dynamic Nelson-Siegel estimation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        panel: The ``(nobs, p)`` yield panel, one row per date and one</span>
+<span class="sd">            column per maturity; ``numpy.nan`` entries are missing and</span>
+<span class="sd">            handled element-wise, so ragged panels estimate without</span>
+<span class="sd">            imputation.</span>
+<span class="sd">        maturities: The ``(p,)`` strictly positive maturities, in</span>
+<span class="sd">            whatever time unit the decay should be quoted in.</span>
+<span class="sd">        decay: A loading decay to hold fixed, or ``None`` (default) to</span>
+<span class="sd">            estimate it by maximum likelihood.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DimensionError: If the panel and maturities disagree, or the</span>
+<span class="sd">            panel is too short.</span>
+<span class="sd">        SpecificationError: If a maturity or a fixed decay is not</span>
+<span class="sd">            strictly positive.</span>
+<span class="sd">        NumericalError: If the panel has rows with no finite entries at</span>
+<span class="sd">            all.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars._core import _nelson_siegel_loadings</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; taus = np.array([0.25, 1.0, 2.0, 5.0, 10.0])</span>
+<span class="sd">        &gt;&gt;&gt; basis = _nelson_siegel_loadings(taus, 0.6)</span>
+<span class="sd">        &gt;&gt;&gt; f = np.zeros((120, 3))</span>
+<span class="sd">        &gt;&gt;&gt; mu = np.array([5.0, -1.5, 0.5])</span>
+<span class="sd">        &gt;&gt;&gt; f[0] = mu</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 120):</span>
+<span class="sd">        ...     f[t] = mu + 0.9 * (f[t - 1] - mu) + 0.2 * rng.standard_normal(3)</span>
+<span class="sd">        &gt;&gt;&gt; curves = f @ basis.T + 0.05 * rng.standard_normal((120, 5))</span>
+<span class="sd">        &gt;&gt;&gt; res = DynamicNelsonSiegel(curves, taus, decay=0.6).fit()</span>
+<span class="sd">        &gt;&gt;&gt; bool(np.corrcoef(res.level, f[:, 0])[0, 1] &gt; 0.95)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_fixed_decay"</span><span class="p">,</span> <span class="s2">"_maturities"</span><span class="p">,</span> <span class="s2">"_panel"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">panel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="n">maturities</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the panel, the maturity grid, and any fixed decay."""</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"panel must be (nobs, p); got shape </span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">maturities</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">block</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"maturities must have one entry per panel column "</span>
+                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">); got </span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="s2">"the three factors need at least 4 maturities to be "</span>
+                <span class="sa">f</span><span class="s2">"identified with measurement noise; got </span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">grid</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="s2">"maturities must be finite and strictly positive."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DimensionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"the factor dynamics need at least 30 dates; got </span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">block</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span><span class="s2">"panel entries must be finite or NaN."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">finite</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span>
+                <span class="s2">"every date must observe at least one maturity; drop all-missing rows."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">decay</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">decay</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"a fixed decay must be strictly positive; got </span><span class="si">{</span><span class="n">decay</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_panel</span> <span class="o">=</span> <span class="n">block</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maturities</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_decay</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">decay</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">decay</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DynamicNelsonSiegel.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.DynamicNelsonSiegel.html#cultivars.multivariate.DynamicNelsonSiegel.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicNelsonSiegelResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Maximize the exact likelihood from the two-step warm start."""</span>
+        <span class="n">objective</span> <span class="o">=</span> <span class="n">_NelsonSiegelObjective</span><span class="p">(</span>
+            <span class="n">panel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="p">,</span>
+            <span class="n">maturities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_maturities</span><span class="p">,</span>
+            <span class="n">fixed_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fixed_decay</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">params</span><span class="p">,</span> <span class="n">llf</span> <span class="o">=</span> <span class="n">_maximize_likelihood</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">LinearGaussianSSM</span><span class="o">.</span><span class="n">_from_nelson_siegel_system</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maturities</span><span class="p">)</span>
+        <span class="n">smoothed</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="p">)</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="n">_NelsonSiegelFit</span><span class="p">(</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="n">objective</span><span class="o">.</span><span class="n">starts</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">factors</span><span class="o">=</span><span class="n">smoothed</span><span class="o">.</span><span class="n">smoothed_state</span><span class="p">,</span>
+            <span class="n">factor_cov</span><span class="o">=</span><span class="n">smoothed</span><span class="o">.</span><span class="n">smoothed_state_cov</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">DynamicNelsonSiegelResult</span><span class="p">(</span>
+            <span class="n">panel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel</span><span class="p">,</span>
+            <span class="n">maturities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_maturities</span><span class="p">,</span>
+            <span class="n">decay</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">decay</span><span class="p">,</span>
+            <span class="n">decay_fixed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fixed_decay</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">mu</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="n">ar</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">ar</span><span class="p">,</span>
+            <span class="n">state_innovation_cov</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">state_chol</span> <span class="o">@</span> <span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">state_chol</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">measurement_var</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">obs_var</span><span class="p">,</span>
+            <span class="n">factors</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">factors</span><span class="p">,</span>
+            <span class="n">factor_cov</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">factor_cov</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">n_params</span><span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TimeVaryingNelsonSiegelResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.TimeVaryingNelsonSiegelResult.html#cultivars.multivariate.TimeVaryingNelsonSiegelResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeVaryingNelsonSiegelResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_ComparisonMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted Nelson-Siegel model with a time-varying loading decay.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        panel: The observed ``(nobs, p)`` yield panel.</span>
+<span class="sd">        maturities: The ``(p,)`` maturities.</span>
+<span class="sd">        mu: ``(3,)`` factor means (level, slope, curvature).</span>
+<span class="sd">        ar: ``(3,)`` diagonal factor persistences.</span>
+<span class="sd">        state_innovation_cov: ``(3, 3)`` factor innovation covariance.</span>
+<span class="sd">        measurement_var: ``(p,)`` per-maturity measurement variances.</span>
+<span class="sd">        log_decay_mean: Unconditional mean of the log decay.</span>
+<span class="sd">        decay_ar: Persistence of the log decay.</span>
+<span class="sd">        decay_sd: Innovation standard deviation of the log decay.</span>
+<span class="sd">        factors: ``(nobs, 3)`` smoothed factor paths.</span>
+<span class="sd">        factor_cov: ``(nobs, 3, 3)`` smoothed factor covariances.</span>
+<span class="sd">        log_decay: ``(nobs,)`` smoothed log-decay path.</span>
+<span class="sd">        log_decay_std: ``(nobs,)`` smoothed log-decay standard deviations.</span>
+<span class="sd">        llf: The *approximate* Gaussian log-likelihood of the chosen</span>
+<span class="sd">            filter. Not the exact likelihood: information criteria are</span>
+<span class="sd">            comparable against the constant-decay model only as a</span>
+<span class="sd">            heuristic, and the summary says so.</span>
+<span class="sd">        filter: ``"extended"`` or ``"unscented"``.</span>
+<span class="sd">        nobs: Curve dates.</span>
+<span class="sd">        n_params: Free parameters the likelihood was maximized over.</span>
+<span class="sd">    """</span>
+
+    <span class="n">panel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">maturities</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">ar</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">state_innovation_cov</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">measurement_var</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">log_decay_mean</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">decay_ar</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">decay_sd</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">factors</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">factor_cov</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">log_decay</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">log_decay_std</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">llf</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_params</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="n">_DecayNelsonSiegelFit</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">TimeVaryingNelsonSiegel</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeVaryingNelsonSiegelResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">params</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">panel</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">panel</span><span class="p">,</span>
+            <span class="n">maturities</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">maturities</span><span class="p">,</span>
+            <span class="n">mu</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="n">ar</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">ar</span><span class="p">,</span>
+            <span class="n">state_innovation_cov</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">state_chol</span> <span class="o">@</span> <span class="n">p</span><span class="o">.</span><span class="n">state_chol</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">measurement_var</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">obs_var</span><span class="p">,</span>
+            <span class="n">log_decay_mean</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">log_decay_mean</span><span class="p">,</span>
+            <span class="n">decay_ar</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">decay_ar</span><span class="p">,</span>
+            <span class="n">decay_sd</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">decay_sd</span><span class="p">,</span>
+            <span class="n">factors</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">factors</span><span class="p">,</span>
+            <span class="n">factor_cov</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">factor_cov</span><span class="p">,</span>
+            <span class="n">log_decay</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">log_decay</span><span class="p">,</span>
+            <span class="n">log_decay_std</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">log_decay_std</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="nb">filter</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">n_params</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_maturities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Points on the curve."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maturities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The smoothed decay path ``exp(log lambda_t)``, ``(nobs,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_decay</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decay_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The unconditional decay ``exp(log_decay_mean)``."""</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_decay_mean</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hump_maturity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Where the curvature loading peaks each date, ``1.79 / lambda_t``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mf">1.7916</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The smoothed level factor, ``(nobs,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">slope</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The smoothed slope factor, ``(nobs,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">curvature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The smoothed curvature factor, ``(nobs,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TimeVaryingNelsonSiegelResult.loadings">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.TimeVaryingNelsonSiegelResult.html#cultivars.multivariate.TimeVaryingNelsonSiegelResult.loadings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loadings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The ``(p, 3)`` Nelson-Siegel loadings at date ``t``'s smoothed decay."""</span>
+        <span class="k">return</span> <span class="n">_nelson_siegel_loadings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maturities</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Smoothed fitted curves, ``(nobs, p)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">loadings</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)]),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_DecayNelsonSiegelParameters</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The parameter record, rebuilt for the emitter."""</span>
+        <span class="k">return</span> <span class="n">_DecayNelsonSiegelParameters</span><span class="p">(</span>
+            <span class="n">mu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="n">ar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ar</span><span class="p">,</span>
+            <span class="n">state_chol</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_innovation_cov</span><span class="p">),</span>
+            <span class="n">obs_var</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_var</span><span class="p">,</span>
+            <span class="n">log_decay_mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_decay_mean</span><span class="p">,</span>
+            <span class="n">decay_ar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decay_ar</span><span class="p">,</span>
+            <span class="n">decay_sd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decay_sd</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NonlinearSSM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The fitted system on the nonlinear substrate.</span>
+
+<span class="sd">        Additive-Gaussian, so the extended, unscented, and particle</span>
+<span class="sd">        filters all read it; the unscented filter on the estimation panel</span>
+<span class="sd">        reproduces ``llf`` when the fit used it.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_decay_nelson_siegel_state_space</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maturities</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Specification label used when this result appears in a ranking."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"DNS-TV[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="si">}</span><span class="s2">]"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Structured summary rendered by every display path."""</span>
+        <span class="n">ic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="s2">"level"</span><span class="p">,</span> <span class="s2">"slope"</span><span class="p">,</span> <span class="s2">"curvature"</span><span class="p">)):</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ar</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_innovation_cov</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">"log decay"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_decay_mean</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay_ar</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay_sd</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Likelihood is the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="si">}</span><span class="s2"> filter's Gaussian approximation, not "</span>
+            <span class="s2">"the exact likelihood; treat information criteria against the "</span>
+            <span class="s2">"constant-decay model as heuristic."</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Unconditional decay </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay_mean</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (curvature hump at maturity "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mf">1.7916</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">decay_mean</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">); smoothed decay ranges "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">decay</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Dynamic Nelson-Siegel (time-varying decay) Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Filter"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Dates"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Maturities"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_maturities</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"factor"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"persistence"</span><span class="p">,</span> <span class="s2">"innovation sd"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TimeVaryingNelsonSiegel">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.TimeVaryingNelsonSiegel.html#cultivars.multivariate.TimeVaryingNelsonSiegel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeVaryingNelsonSiegel</span><span class="p">(</span><span class="n">_DecayNelsonSiegelModel</span><span class="p">[</span><span class="n">TimeVaryingNelsonSiegelResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""The dynamic Nelson-Siegel model with a time-varying loading decay.</span>
+
+<span class="sd">    The state is ``(level, slope, curvature, log lambda)``, each a diagonal</span>
+<span class="sd">    AR(1); the measurement is the Nelson-Siegel curve at the current</span>
+<span class="sd">    ``lambda_t``. Estimated by maximizing the unscented (default) or</span>
+<span class="sd">    extended filter's likelihood from the constant-decay exact fit.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        panel: The ``(nobs, p)`` yield panel. Rows must be wholly observed</span>
+<span class="sd">            or wholly missing; a partially observed row is refused with</span>
+<span class="sd">            a pointer to the constant-decay model.</span>
+<span class="sd">        maturities: The ``(p,)`` strictly positive maturities.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars._core import _nelson_siegel_loadings</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; taus = np.array([0.25, 1.0, 2.0, 5.0, 10.0])</span>
+<span class="sd">        &gt;&gt;&gt; f = np.zeros((120, 3))</span>
+<span class="sd">        &gt;&gt;&gt; mu = np.array([5.0, -1.5, 0.5])</span>
+<span class="sd">        &gt;&gt;&gt; f[0] = mu</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 120):</span>
+<span class="sd">        ...     f[t] = mu + 0.9 * (f[t - 1] - mu) + 0.2 * rng.standard_normal(3)</span>
+<span class="sd">        &gt;&gt;&gt; curves = f @ _nelson_siegel_loadings(taus, 0.6).T</span>
+<span class="sd">        &gt;&gt;&gt; curves = curves + 0.05 * rng.standard_normal((120, 5))</span>
+<span class="sd">        &gt;&gt;&gt; res = TimeVaryingNelsonSiegel(curves, taus).fit()</span>
+<span class="sd">        &gt;&gt;&gt; bool(np.corrcoef(res.level, f[:, 0])[0, 1] &gt; 0.95)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="TimeVaryingNelsonSiegel.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.TimeVaryingNelsonSiegel.html#cultivars.multivariate.TimeVaryingNelsonSiegel.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"unscented"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeVaryingNelsonSiegelResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Maximize the approximate likelihood.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filter: ``"unscented"`` (default; exact through the linear</span>
+<span class="sd">                transition, third-order accurate through the loadings) or</span>
+<span class="sd">                ``"extended"`` (central-difference Jacobians).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the filter is unknown.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">TimeVaryingNelsonSiegelResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_decay</span><span class="p">(</span><span class="n">filter_name</span><span class="o">=</span><span class="nb">filter</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

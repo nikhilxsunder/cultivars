@@ -1,0 +1,845 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.diagnostics.seasonality &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/diagnostics/seasonality';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/diagnostics/seasonality.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.diagnostics.seasonality</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.diagnostics.seasonality</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/diagnostics/seasonality.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Seasonal unit roots: is the seasonal pattern deterministic, or does it wander?</span>
+
+<span class="sd">Seasonal differencing ``1 - L^s`` removes ``s`` unit roots at once, one</span>
+<span class="sd">at every frequency ``2 pi k / s``, and a series rarely needs all of them:</span>
+<span class="sd">a stable seasonal pattern is handled by dummies, a unit root at the zero</span>
+<span class="sd">frequency by ``1 - L``, and only a pattern whose summers slowly turn</span>
+<span class="sd">into winters by the seasonal difference. HEGY (1990) tests each root</span>
+<span class="sd">separately in one regression, with the seasonal random walk as the null,</span>
+<span class="sd">so the augmented Dickey-Fuller reading carries over frequency by</span>
+<span class="sd">frequency: a ``t`` that cannot reject at the zero frequency and ``F``</span>
+<span class="sd">statistics that reject at every seasonal one say "difference once, use</span>
+<span class="sd">dummies". Canova and Hansen (1995) turn the null around, as KPSS does</span>
+<span class="sd">for the zero frequency: stationary seasonality against a unit root at</span>
+<span class="sd">the frequency tested, and a series that HEGY cannot reject a seasonal</span>
+<span class="sd">root for and Canova-Hansen cannot reject stationarity for is one the</span>
+<span class="sd">sample does not decide.</span>
+
+<span class="sd">Both tests are read against simulated laws rather than the published</span>
+<span class="sd">tables: HEGY's finite-sample null is drawn at the sample size and</span>
+<span class="sd">deterministic set in hand for any even period, and the Canova-Hansen</span>
+<span class="sd">limit is the generalized von Mises law, drawn as the integral of a</span>
+<span class="sd">squared Brownian bridge.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Hylleberg, S., Engle, R. F., Granger, C. W. J., &amp; Yoo, B. S. (1990).</span>
+<span class="sd">        Seasonal integration and cointegration. *Journal of</span>
+<span class="sd">        Econometrics*, 44(1-2), 215-238.</span>
+<span class="sd">    Beaulieu, J. J., &amp; Miron, J. A. (1993). Seasonal unit roots in</span>
+<span class="sd">        aggregate U.S. data. *Journal of Econometrics*, 55(1-2), 305-328.</span>
+<span class="sd">    Canova, F., &amp; Hansen, B. E. (1995). Are seasonal patterns constant</span>
+<span class="sd">        over time? A test for seasonal stability. *Journal of Business &amp;</span>
+<span class="sd">        Economic Statistics*, 13(3), 237-252.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">replace</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_HEGY_REPLICATIONS</span><span class="p">,</span>
+    <span class="n">_canova_hansen</span><span class="p">,</span>
+    <span class="n">_frequency_labels</span><span class="p">,</span>
+    <span class="n">_hegy_null_draws</span><span class="p">,</span>
+    <span class="n">_hegy_statistics</span><span class="p">,</span>
+    <span class="n">_newey_west_bandwidth</span><span class="p">,</span>
+    <span class="n">_schwert_max_lags</span><span class="p">,</span>
+    <span class="n">_select_hegy_lags</span><span class="p">,</span>
+    <span class="n">_simulated_critical_values</span><span class="p">,</span>
+    <span class="n">_validate_seasonal</span><span class="p">,</span>
+    <span class="n">_von_mises_draws</span><span class="p">,</span>
+    <span class="n">validate_choice</span><span class="p">,</span>
+    <span class="n">validate_order</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.unit_roots</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnitRootTest</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SeasonalUnitRootTest"</span><span class="p">,</span> <span class="s2">"canova_hansen"</span><span class="p">,</span> <span class="s2">"hegy"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SeasonalUnitRootTest">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.SeasonalUnitRootTest.html#cultivars.diagnostics.SeasonalUnitRootTest">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SeasonalUnitRootTest</span><span class="p">(</span><span class="n">UnitRootTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verdict of a seasonal unit-root or seasonal-stability test, one frequency per row.</span>
+
+<span class="sd">    A :class:`UnitRootTest` whose companions are the other frequencies</span>
+<span class="sd">    of the same regression, and whose rows may reject in different</span>
+<span class="sd">    tails: HEGY's ``t`` statistics at the real roots in the lower tail,</span>
+<span class="sd">    its ``F`` statistics in the upper; every Canova-Hansen row in the</span>
+<span class="sd">    upper. The record adds nothing to the fields, only the title and the</span>
+<span class="sd">    reading notes a mixed table needs.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        family: ``"HEGY"`` or ``"Canova-Hansen"``.</span>
+<span class="sd">        period: Seasonal period ``s``.</span>
+<span class="sd">    """</span>
+
+    <span class="n">family</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">period</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_title</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">"HEGY Seasonal Unit Root Test"</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">family</span> <span class="o">==</span> <span class="s2">"HEGY"</span>
+            <span class="k">else</span> <span class="s2">"Canova-Hansen Seasonal Stability Test"</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">((</span><span class="s2">"Period"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">)),</span> <span class="o">*</span><span class="n">UnitRootTest</span><span class="o">.</span><span class="n">_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">family</span> <span class="o">==</span> <span class="s2">"HEGY"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="s2">"t statistics reject in the lower tail, F statistics in the upper; every row "</span>
+                <span class="s2">"is read against its own simulated finite-sample law."</span><span class="p">,</span>
+                <span class="s2">"Read: keep at frequency 0 and reject at every seasonal frequency means "</span>
+                <span class="s2">"difference once and model the season with dummies; keep at a seasonal "</span>
+                <span class="s2">"frequency means that root needs its factor of the seasonal difference."</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">"Rejection lies in the upper tail; the joint row is the headline and the "</span>
+            <span class="s2">"per-frequency rows locate the instability."</span><span class="p">,</span>
+            <span class="s2">"The null is stationary seasonality, so this test and HEGY are read together "</span>
+            <span class="s2">"as KPSS and ADF are."</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="hegy">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.hegy.html#cultivars.diagnostics.hegy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hegy</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">period</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">seasonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"aic"</span><span class="p">,</span>
+    <span class="n">replications</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_HEGY_REPLICATIONS</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SeasonalUnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""HEGY test of a unit root at each seasonal frequency, and at the zero frequency.</span>
+
+<span class="sd">    ``(1 - L^s) y_t = d_t + pi_0 x_{0,t-1} + pi_{s/2} x_{s/2,t-1} + sum_k</span>
+<span class="sd">    (pi_k^a x^a_{k,t-1} + pi_k^b x^b_{k,t-1}) + lags + e_t``, where each</span>
+<span class="sd">    ``x`` is the series with every root of ``1 - L^s`` but one filtered</span>
+<span class="sd">    out. The zero and Nyquist roots are tested by ``t`` in the lower</span>
+<span class="sd">    tail, each harmonic pair by ``F``, and two joint ``F`` statistics --</span>
+<span class="sd">    every seasonal root, and every root -- close the family. Under the</span>
+<span class="sd">    null of a seasonal random walk none of these has a tabulated law</span>
+<span class="sd">    that fits every period and deterministic set, so ``replications``</span>
+<span class="sd">    seasonal random walks of the same length are run through the same</span>
+<span class="sd">    regression and the p-values and critical values read off them; at</span>
+<span class="sd">    ``s = 4``, ``T = 100`` with intercept and dummies the simulated 5%</span>
+<span class="sd">    points reproduce Hylleberg et al.'s Table 1 to within Monte Carlo</span>
+<span class="sd">    error. The augmentation absorbs serial correlation in the seasonal</span>
+<span class="sd">    difference and is chosen by ``method`` on a common sample when</span>
+<span class="sd">    ``lags`` is not given.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        period: Seasonal period ``s``, even.</span>
+<span class="sd">        trend: ``"n"``, ``"c"`` or ``"ct"``.</span>
+<span class="sd">        seasonal: Whether seasonal dummies enter the regression, which</span>
+<span class="sd">            is what makes the test robust to a deterministic seasonal</span>
+<span class="sd">            pattern under the alternative.</span>
+<span class="sd">        lags: Augmentation lags of the seasonal difference, or ``None``</span>
+<span class="sd">            to select by ``method``.</span>
+<span class="sd">        max_lags: Largest augmentation under selection; default</span>
+<span class="sd">            Schwert's ``12 (T / 100)^(1/4)``.</span>
+<span class="sd">        method: ``"aic"``, ``"bic"`` or ``"t-stat"`` for the selection.</span>
+<span class="sd">            BIC under-augments against moving-average errors -- with an</span>
+<span class="sd">            MA(1) coefficient of 0.5 it picks one or two lags where four</span>
+<span class="sd">            are needed and the tests over-reject at 10-15% -- so AIC is</span>
+<span class="sd">            the default, as for :func:`adf`.</span>
+<span class="sd">        replications: Seasonal random walks behind the p-values.</span>
+<span class="sd">        seed: Seed or generator for the simulation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The zero-frequency :class:`SeasonalUnitRootTest`, with the Nyquist ``t``,</span>
+<span class="sd">        each harmonic ``F``, the joint seasonal ``F`` and the joint ``F``</span>
+<span class="sd">        as ``companions``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the period, trend, lags, or replication</span>
+<span class="sd">            count is unusable or the series is too short.</span>
+<span class="sd">        NumericalError: If the regression is degenerate.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = rng.standard_normal(200)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(4, 200):</span>
+<span class="sd">        ...     y[t] = y[t - 4] + rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; verdict = hegy(y, period=4, replications=500, seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; bool(verdict.reject()), all(not c.reject() for c in verdict.companions)</span>
+<span class="sd">        (False, True)</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">_validate_seasonal</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+    <span class="n">trend</span> <span class="o">=</span> <span class="n">validate_choice</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="s2">"trend"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">replications</span> <span class="o">&lt;</span> <span class="mi">500</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"replications must be at least 500; got </span><span class="si">{</span><span class="n">replications</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ceiling</span> <span class="o">=</span> <span class="n">_schwert_max_lags</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">max_lags</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_lags</span><span class="p">)</span>
+        <span class="n">ceiling</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">ceiling</span><span class="p">,</span> <span class="s2">"max_lags"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">validate_choice</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="p">(</span><span class="s2">"aic"</span><span class="p">,</span> <span class="s2">"bic"</span><span class="p">,</span> <span class="s2">"t-stat"</span><span class="p">),</span> <span class="s2">"method"</span><span class="p">)</span>
+        <span class="n">chosen</span> <span class="o">=</span> <span class="n">_select_hegy_lags</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">ceiling</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">seasonal</span><span class="o">=</span><span class="n">seasonal</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> over 0..</span><span class="si">{</span><span class="n">ceiling</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chosen</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="s2">"lags"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">"fixed"</span>
+    <span class="n">statistics</span><span class="p">,</span> <span class="n">nobs</span> <span class="o">=</span> <span class="n">_hegy_statistics</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">chosen</span><span class="p">,</span> <span class="n">seasonal</span><span class="o">=</span><span class="n">seasonal</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">draws</span> <span class="o">=</span> <span class="n">_hegy_null_draws</span><span class="p">(</span>
+        <span class="n">period</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trend</span><span class="p">,</span> <span class="n">seasonal</span><span class="o">=</span><span class="n">seasonal</span><span class="p">,</span> <span class="n">replications</span><span class="o">=</span><span class="n">replications</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span>
+    <span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">trend</span><span class="si">}</span><span class="s2">+s"</span> <span class="k">if</span> <span class="n">seasonal</span> <span class="k">else</span> <span class="n">trend</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">_frequency_labels</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"HEGY t, frequency 0"</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"HEGY t, frequency </span><span class="si">{</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"HEGY F, frequency </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
+        <span class="s2">"HEGY F, all seasonal frequencies"</span><span class="p">,</span>
+        <span class="s2">"HEGY F, all frequencies"</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">nulls</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"unit root at frequency 0"</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"unit root at frequency </span><span class="si">{</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unit root at frequency </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
+        <span class="s2">"unit roots at every seasonal frequency"</span><span class="p">,</span>
+        <span class="s2">"unit roots at every frequency"</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">lower</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">null</span><span class="p">,</span> <span class="n">tail</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">nulls</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+        <span class="n">pvalue</span><span class="p">,</span> <span class="n">cv</span> <span class="o">=</span> <span class="n">_simulated_critical_values</span><span class="p">(</span><span class="n">draws</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">lower_tail</span><span class="o">=</span><span class="n">tail</span><span class="p">)</span>
+        <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">SeasonalUnitRootTest</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">statistic</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+                <span class="n">critical_values</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
+                <span class="n">null</span><span class="o">=</span><span class="n">null</span><span class="p">,</span>
+                <span class="n">lower_tail</span><span class="o">=</span><span class="n">tail</span><span class="p">,</span>
+                <span class="n">trend</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span>
+                <span class="n">lags</span><span class="o">=</span><span class="n">chosen</span><span class="p">,</span>
+                <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">family</span><span class="o">=</span><span class="s2">"HEGY"</span><span class="p">,</span>
+                <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="n">records</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">companions</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">records</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span></div>
+
+
+
+<div class="viewcode-block" id="canova_hansen">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.canova_hansen.html#cultivars.diagnostics.canova_hansen">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">canova_hansen</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">period</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span>
+    <span class="n">grid</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SeasonalUnitRootTest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Canova-Hansen test of stationary seasonality against a seasonal unit root.</span>
+
+<span class="sd">    Regress ``y_t`` on the trend terms, ``s - 1`` trigonometric seasonal</span>
+<span class="sd">    regressors and ``lags`` lags of ``y``; for the seasonal columns of</span>
+<span class="sd">    the frequency under test, the LM statistic is ``T^{-2} sum_t F_t'</span>
+<span class="sd">    Omega^{-1} F_t`` with ``F_t`` the partial sums of the scores and</span>
+<span class="sd">    ``Omega`` their Bartlett long-run covariance. Its limit is the</span>
+<span class="sd">    generalized von Mises law with ``q`` the number of columns tested,</span>
+<span class="sd">    one at the Nyquist frequency, two at each harmonic and ``s - 1``</span>
+<span class="sd">    jointly; the p-values come from ``n_draws`` simulated bridges, whose</span>
+<span class="sd">    5% point at ``q = 1`` is KPSS's 0.46. Rejection lies in the upper</span>
+<span class="sd">    tail. The joint test is the headline and the per-frequency tests</span>
+<span class="sd">    say where the instability sits.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        period: Seasonal period ``s``, even.</span>
+<span class="sd">        trend: ``"n"``, ``"c"`` or ``"ct"``.</span>
+<span class="sd">        lags: Lags of ``y`` among the regressors, which absorb short-run</span>
+<span class="sd">            dynamics that would otherwise inflate the statistic.</span>
+<span class="sd">        bandwidth: Bartlett lags of the long-run covariance; default</span>
+<span class="sd">            Newey-West's ``4 (T / 100)^(2/9)``.</span>
+<span class="sd">        n_draws: Simulated bridges behind each p-value.</span>
+<span class="sd">        grid: Points on which each bridge is simulated.</span>
+<span class="sd">        seed: Seed or generator for the simulation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The joint :class:`SeasonalUnitRootTest`, with the Nyquist and each</span>
+<span class="sd">        harmonic frequency as ``companions``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the period, trend, lags, bandwidth, or</span>
+<span class="sd">            simulation sizes are unusable or the series is too short.</span>
+<span class="sd">        NumericalError: If a long-run covariance is singular.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; t = np.arange(300)</span>
+<span class="sd">        &gt;&gt;&gt; stable = np.cos(np.pi * t / 2) + rng.standard_normal(300)</span>
+<span class="sd">        &gt;&gt;&gt; bool(canova_hansen(stable, period=4, seed=0).reject())</span>
+<span class="sd">        False</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">_validate_seasonal</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+    <span class="n">trend</span> <span class="o">=</span> <span class="n">validate_choice</span><span class="p">(</span><span class="n">trend</span><span class="p">,</span> <span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">),</span> <span class="s2">"trend"</span><span class="p">)</span>
+    <span class="n">lags</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="s2">"lags"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_draws</span> <span class="o">&lt;</span> <span class="mi">500</span> <span class="ow">or</span> <span class="n">grid</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"n_draws must be at least 500 and grid at least 100; got </span><span class="si">{</span><span class="n">n_draws</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">grid</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">_newey_west_bandwidth</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">bandwidth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">bandwidth</span><span class="p">))</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="s2">"bandwidth"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">statistics</span><span class="p">,</span> <span class="n">degrees</span><span class="p">,</span> <span class="n">nobs</span> <span class="o">=</span> <span class="n">_canova_hansen</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">trend</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">draws</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">q</span><span class="p">):</span> <span class="n">_von_mises_draws</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">q</span><span class="p">),</span> <span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">degrees</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">_frequency_labels</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Canova-Hansen, frequency </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">),</span> <span class="s2">"Canova-Hansen, joint"</span><span class="p">]</span>
+    <span class="n">nulls</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"stationary seasonality at frequency </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">),</span>
+        <span class="s2">"stationary seasonality at every frequency"</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">null</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">nulls</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+        <span class="n">pvalue</span><span class="p">,</span> <span class="n">cv</span> <span class="o">=</span> <span class="n">_simulated_critical_values</span><span class="p">(</span><span class="n">draws</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">degrees</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span> <span class="nb">float</span><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">SeasonalUnitRootTest</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">statistic</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">statistics</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                <span class="n">pvalue</span><span class="o">=</span><span class="n">pvalue</span><span class="p">,</span>
+                <span class="n">critical_values</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
+                <span class="n">null</span><span class="o">=</span><span class="n">null</span><span class="p">,</span>
+                <span class="n">lower_tail</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+                <span class="n">lags</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+                <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Bartlett kernel, </span><span class="si">{</span><span class="n">lags</span><span class="si">}</span><span class="s2"> lag(s) of y"</span><span class="p">,</span>
+                <span class="n">family</span><span class="o">=</span><span class="s2">"Canova-Hansen"</span><span class="p">,</span>
+                <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="n">records</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">companions</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">records</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

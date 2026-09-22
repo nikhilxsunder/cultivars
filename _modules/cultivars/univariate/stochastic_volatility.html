@@ -1,0 +1,1012 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.univariate.stochastic_volatility &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/univariate/stochastic_volatility';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/univariate/stochastic_volatility.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.univariate.stochastic_volatility</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.univariate.stochastic_volatility</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/univariate/stochastic_volatility.py</span>
+<span class="c1">#</span>
+<span class="c1"># (MIT header)</span>
+<span class="sd">"""Stochastic volatility: variance as a latent state, not a function of the past.</span>
+
+<span class="sd">A GARCH variance is a deterministic function of past observations; a</span>
+<span class="sd">stochastic-volatility variance is a latent process with its own</span>
+<span class="sd">innovation, observed only through the returns it scales. That makes the</span>
+<span class="sd">model a nonlinear state space -- the measurement is multiplicative in the</span>
+<span class="sd">state -- and puts its likelihood out of closed-form reach. Two honest</span>
+<span class="sd">routes exist and both are offered:</span>
+
+<span class="sd">- The Kim-Shephard-Chib (1998) route linearizes by squaring and taking</span>
+<span class="sd">  logs, then replaces the ``log chi-squared(1)`` error with a</span>
+<span class="sd">  seven-component Gaussian mixture; conditional on the mixture</span>
+<span class="sd">  indicators the model is linear-Gaussian and a Gibbs sampler is exact.</span>
+<span class="sd">  The mixture is a very good approximation, not the truth.</span>
+<span class="sd">- The particle route (Andrieu, Doucet, and Holenstein, 2010) makes no</span>
+<span class="sd">  approximation: a particle filter estimates the likelihood without bias</span>
+<span class="sd">  and a Metropolis-Hastings chain on that estimate targets the exact</span>
+<span class="sd">  posterior. It costs a particle filter per draw.</span>
+
+<span class="sd">The two samplers are given the same prior, so they should agree, and a</span>
+<span class="sd">disagreement is the diagnostic that the mixture is binding. Point</span>
+<span class="sd">estimation is offered for the same model: the Harvey-Ruiz-Shephard</span>
+<span class="sd">quasi-maximum likelihood on the linearized model (fast, consistent, the</span>
+<span class="sd">warm start for everything else) and simulated maximum likelihood on the</span>
+<span class="sd">particle estimate under common random numbers.</span>
+
+<span class="sd">The second model here is Stock and Watson's (2007) unobserved-components</span>
+<span class="sd">stochastic-volatility model: a random-walk trend observed through an</span>
+<span class="sd">irregular, each innovation with a random-walk log variance. It is the</span>
+<span class="sd">workhorse of trend-inflation measurement and the model that joins the</span>
+<span class="sd">package's structural decomposition to its volatility machinery; its</span>
+<span class="sd">estimator is the Gibbs sampler, with the trend drawn exactly by the</span>
+<span class="sd">simulation smoother under the current variance paths.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Taylor, S. J. (1986). *Modelling Financial Time Series*. Wiley.</span>
+<span class="sd">    Harvey, A. C., Ruiz, E., &amp; Shephard, N. (1994). Multivariate</span>
+<span class="sd">        stochastic variance models. *Review of Economic Studies*, 61(2),</span>
+<span class="sd">        247-264.</span>
+<span class="sd">    Kim, S., Shephard, N., &amp; Chib, S. (1998). Stochastic volatility:</span>
+<span class="sd">        Likelihood inference and comparison with ARCH models. *Review of</span>
+<span class="sd">        Economic Studies*, 65(3), 361-393.</span>
+<span class="sd">    Andrieu, C., Doucet, A., &amp; Holenstein, R. (2010). Particle Markov</span>
+<span class="sd">        chain Monte Carlo methods. *Journal of the Royal Statistical</span>
+<span class="sd">        Society B*, 72(3), 269-342.</span>
+<span class="sd">    Stock, J. H., &amp; Watson, M. W. (2007). Why has U.S. inflation become</span>
+<span class="sd">        harder to forecast? *Journal of Money, Credit and Banking*, 39(s1),</span>
+<span class="sd">        3-33.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_quasi_volatility_state_space</span><span class="p">,</span>
+    <span class="n">_SeriesMixin</span><span class="p">,</span>
+    <span class="n">_simulate_stochastic_volatility</span><span class="p">,</span>
+    <span class="n">_StochasticVolatilityFit</span><span class="p">,</span>
+    <span class="n">_StochasticVolatilityModel</span><span class="p">,</span>
+    <span class="n">_StochasticVolatilityParameters</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_SVPosterior</span><span class="p">,</span>
+    <span class="n">_TrendVolatilityModel</span><span class="p">,</span>
+    <span class="n">_UCSVPosterior</span><span class="p">,</span>
+    <span class="n">_volatility_state_space</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..bayes</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomWalkVolatilityPrior</span><span class="p">,</span> <span class="n">VolatilityPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..state_space</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearGaussianSSM</span><span class="p">,</span> <span class="n">NonlinearSSM</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"SV"</span><span class="p">,</span>
+    <span class="s2">"UCSV"</span><span class="p">,</span>
+    <span class="s2">"SVResult"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="SVResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SVResult.html#cultivars.univariate.SVResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SVResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_SeriesMixin</span><span class="p">,</span> <span class="n">_ComparisonMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A point-estimated stochastic-volatility model.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The observed series.</span>
+<span class="sd">        mean_spec: ``"constant"`` or ``"zero"``.</span>
+<span class="sd">        mean: The observation mean ``c``.</span>
+<span class="sd">        mu: Unconditional mean of the log variance.</span>
+<span class="sd">        phi: Persistence of the log variance.</span>
+<span class="sd">        sigma2: Innovation variance of the log variance.</span>
+<span class="sd">        llf: The criterion at the optimum. Under ``method="qml"`` this is</span>
+<span class="sd">            the exact Gaussian likelihood of the *linearized* model, a</span>
+<span class="sd">            quasi-likelihood for the true one; under ``method="particle"``</span>
+<span class="sd">            it is a particle estimate of the exact likelihood, carrying</span>
+<span class="sd">            Monte Carlo error. Information criteria are comparable only</span>
+<span class="sd">            within one method.</span>
+<span class="sd">        method: ``"qml"`` or ``"particle"``.</span>
+<span class="sd">        nobs: Observations.</span>
+<span class="sd">        n_params: Free parameters.</span>
+<span class="sd">        log_variance: Smoothed log-variance path, ``(n,)``.</span>
+<span class="sd">        log_variance_std: Smoothed log-variance standard deviations.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mean_spec</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">phi</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">sigma2</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nu</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">rho</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">llf</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_params</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">log_variance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">log_variance_std</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="n">_StochasticVolatilityFit</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">SV</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SVResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">mean_spec</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">mean_spec</span><span class="p">,</span>
+            <span class="n">mean</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+            <span class="n">mu</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span>
+            <span class="n">sigma2</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sigma2</span><span class="p">,</span>
+            <span class="n">nu</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">nu</span><span class="p">,</span>
+            <span class="n">rho</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">n_params</span><span class="p">),</span>
+            <span class="n">log_variance</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">log_variance</span><span class="p">,</span>
+            <span class="n">log_variance_std</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">log_variance_std</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_StochasticVolatilityParameters</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The parameter record, rebuilt for the emitters."""</span>
+        <span class="k">return</span> <span class="n">_StochasticVolatilityParameters</span><span class="p">(</span>
+            <span class="n">mu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span> <span class="n">sigma2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">volatility</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Smoothed volatility ``exp(h_t / 2)``, ``(n,)``."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SVResult.volatility_bands">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SVResult.html#cultivars.univariate.SVResult.volatility_bands">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">volatility_bands</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Pointwise ``1 - alpha`` bands on the volatility from the smoothed log variance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            alpha: Two-sided tail mass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``(lower, upper)`` arrays of length ``n``.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span> <span class="o">-</span> <span class="n">z</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance_std</span><span class="p">))</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span> <span class="o">+</span> <span class="n">z</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance_std</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">upper</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">half_life</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Periods for a log-variance shock to halve, ``log 0.5 / log phi``."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unconditional_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""``E[exp(h_t)]`` under the stationary log-normal law."""</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NonlinearSSM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The fitted model on the nonlinear substrate.</span>
+
+<span class="sd">        Carries the multiplicative measurement through the</span>
+<span class="sd">        ``observation_loglik`` hook, so only the particle filter reads it;</span>
+<span class="sd">        ``particle_filter`` on the estimation sample estimates the exact</span>
+<span class="sd">        likelihood, and on new data reads that data with this fit.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_volatility_state_space</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quasi_state_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearGaussianSSM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The Harvey-Ruiz-Shephard linearization on the linear substrate.</span>
+
+<span class="sd">        Filters ``log((y - c)**2)``, not ``y``; its ``loglikelihood`` on the</span>
+<span class="sd">        linearized estimation sample reproduces ``llf`` when the method</span>
+<span class="sd">        was ``"qml"``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_quasi_volatility_state_space</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SVResult.forecast_variance">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SVResult.html#cultivars.univariate.SVResult.forecast_variance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Expected variance ``E[exp(h_{T+k}) | y]`` for ``k = 1..steps``.</span>
+
+<span class="sd">        Propagates the last smoothed log-variance mean and variance</span>
+<span class="sd">        through the AR(1) and applies the log-normal correction.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps: Horizons ahead, at least 1.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``steps`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"steps must be at least 1; got </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_variance_std</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span> <span class="o">*</span> <span class="p">(</span><span class="n">mean</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">var</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">mean</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Aligned per-observation output."""</span>
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volatility_bands</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"observed"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="s2">"log_variance"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_variance</span><span class="p">,</span>
+            <span class="s2">"volatility"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">volatility</span><span class="p">,</span>
+            <span class="s2">"volatility_lower"</span><span class="p">:</span> <span class="n">lower</span><span class="p">,</span>
+            <span class="s2">"volatility_upper"</span><span class="p">:</span> <span class="n">upper</span><span class="p">,</span>
+            <span class="s2">"standardized"</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">volatility</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="SVResult.simulate">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SVResult.html#cultivars.univariate.SVResult.simulate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""A fresh sample path at the fitted parameters.</span>
+
+<span class="sd">        The log variance starts from its stationary law and the series is</span>
+<span class="sd">        read from it with the fitted tails and leverage, so no burn-in is</span>
+<span class="sd">        needed; ``burn`` is honoured for uniformity with the other results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n: Observations kept.</span>
+<span class="sd">            seed: Seed or generator.</span>
+<span class="sd">            burn: Periods discarded from the start.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(n,)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the counts are not usable or the</span>
+<span class="sd">                parameters leave the stationary region.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">burn</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n must be positive and burn non-negative; got </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">burn</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_simulate_stochastic_volatility</span><span class="p">(</span>
+            <span class="n">burn</span> <span class="o">+</span> <span class="n">n</span><span class="p">,</span>
+            <span class="n">mu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span>
+            <span class="n">sigma2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span><span class="p">,</span>
+            <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+            <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+            <span class="n">nu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="p">,</span>
+            <span class="n">rho</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">burn</span><span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Specification label used when this result appears in a ranking."""</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_spec</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"t"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"leverage"</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"SV[</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span><span class="si">}</span><span class="s2">]"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Structured summary rendered by every display path."""</span>
+        <span class="n">ic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">"mu"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"phi"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"sigma2"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma2</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"nu"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"rho"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_spec</span> <span class="o">==</span> <span class="s2">"constant"</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="s2">"mean"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="n">notes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"qml"</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s2">"Under the linearization the degrees of freedom enter only through "</span>
+                <span class="s2">"the mean and variance of log(lambda), so nu is weakly identified by "</span>
+                <span class="s2">"QML; the particle estimators and the samplers see the tail directly."</span>
+            <span class="p">)</span>
+        <span class="n">criterion</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"The likelihood is the quasi-likelihood of the Harvey-Ruiz-Shephard "</span>
+            <span class="s2">"linearization, exact for the linearized model and consistent for "</span>
+            <span class="s2">"this one; compare only against other QML fits."</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"qml"</span>
+            <span class="k">else</span> <span class="s2">"The likelihood is a particle estimate of the exact likelihood "</span>
+            <span class="s2">"under common random numbers and carries Monte Carlo error; the "</span>
+            <span class="s2">"posterior sampler is the research-grade estimator."</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_comparison_label</span><span class="p">()</span><span class="si">}</span><span class="s2"> Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Method"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Half-life"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">half_life</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"estimate"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="p">(</span><span class="n">criterion</span><span class="p">,</span> <span class="o">*</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SV">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SV.html#cultivars.univariate.SV">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SV</span><span class="p">(</span><span class="n">_StochasticVolatilityModel</span><span class="p">[</span><span class="n">SVResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""The log-AR(1) stochastic-volatility model.</span>
+
+<span class="sd">    ``y_t = c + exp(h_t / 2) eps_t``, ``h_{t+1} = mu + phi (h_t - mu) +</span>
+<span class="sd">    sigma eta_t``, with ``eps`` and ``eta`` independent standard normals.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The observed series (returns, typically).</span>
+<span class="sd">        mean: ``"constant"`` to estimate ``c``, ``"zero"`` to fix it.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; n = 400</span>
+<span class="sd">        &gt;&gt;&gt; h = np.empty(n)</span>
+<span class="sd">        &gt;&gt;&gt; h[0] = -1.0</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, n):</span>
+<span class="sd">        ...     h[t] = -1.0 + 0.95 * (h[t - 1] + 1.0) + 0.3 * rng.standard_normal()</span>
+<span class="sd">        &gt;&gt;&gt; y = np.exp(h / 2) * rng.standard_normal(n)</span>
+<span class="sd">        &gt;&gt;&gt; res = SV(y, mean="zero").fit()</span>
+<span class="sd">        &gt;&gt;&gt; bool(0.8 &lt; res.phi &lt; 1.0)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="SV.fit">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SV.html#cultivars.univariate.SV.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"qml"</span><span class="p">,</span> <span class="n">n_particles</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SVResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Point-estimate the model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: ``"qml"`` for Harvey-Ruiz-Shephard quasi-maximum</span>
+<span class="sd">                likelihood on the linearized model, ``"particle"`` for</span>
+<span class="sd">                simulated maximum likelihood on the particle filter's</span>
+<span class="sd">                estimate under common random numbers (Nelder-Mead from the</span>
+<span class="sd">                QML start).</span>
+<span class="sd">            n_particles: Particles per evaluation under ``"particle"``.</span>
+<span class="sd">            seed: The common seed under ``"particle"``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the method is unknown.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"qml"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SVResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_quasi</span><span class="p">(),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"particle"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SVResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fit_particle</span><span class="p">(</span><span class="n">n_particles</span><span class="o">=</span><span class="n">n_particles</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">filter_method</span><span class="o">=</span><span class="s2">"bootstrap"</span><span class="p">),</span>
+                <span class="bp">self</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"method must be 'qml' or 'particle'; got </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SV.sample">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.SV.html#cultivars.univariate.SV.sample">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"gibbs"</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span>
+        <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">n_particles</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+        <span class="n">prior</span><span class="p">:</span> <span class="n">VolatilityPrior</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_SVPosterior</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sample the posterior.</span>
+
+<span class="sd">        Both samplers use the same prior: Gaussian ``mu ~ N(m, v)``, Beta</span>
+<span class="sd">        ``(phi + 1) / 2 ~ Beta(a, b)`` (the Kim-Shephard-Chib default</span>
+<span class="sd">        ``(20, 1.5)`` puts the persistence near ``0.86`` a priori),</span>
+<span class="sd">        inverse-gamma ``sigma2 ~ IG(shape, rate)``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: ``"gibbs"`` for the Kim-Shephard-Chib mixture sampler,</span>
+<span class="sd">                ``"particle"`` for particle marginal Metropolis-Hastings.</span>
+<span class="sd">            n_draws: Total iterations.</span>
+<span class="sd">            n_burn: Burn-in discarded (the particle chain adapts its</span>
+<span class="sd">                proposal during burn-in).</span>
+<span class="sd">            thin: Keep every ``thin``-th post-burn draw.</span>
+<span class="sd">            n_particles: Particles per likelihood estimate under</span>
+<span class="sd">                ``"particle"``.</span>
+<span class="sd">            prior: VolatilityPrior instance containing the priors.</span>
+<span class="sd">            seed: Seed.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the method is unknown or the draw</span>
+<span class="sd">                bookkeeping is inconsistent.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">prior</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prior</span> <span class="o">=</span> <span class="n">VolatilityPrior</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"gibbs"</span><span class="p">:</span>
+            <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_gibbs</span><span class="p">(</span>
+                <span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">n_burn</span><span class="o">=</span><span class="n">n_burn</span><span class="p">,</span> <span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">_SVPosterior</span><span class="o">.</span><span class="n">_from_gibbs</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"particle"</span><span class="p">:</span>
+            <span class="n">chain</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_chain</span><span class="p">(</span>
+                <span class="n">n_particles</span><span class="o">=</span><span class="n">n_particles</span><span class="p">,</span>
+                <span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span>
+                <span class="n">n_burn</span><span class="o">=</span><span class="n">n_burn</span><span class="p">,</span>
+                <span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span>
+                <span class="n">filter_method</span><span class="o">=</span><span class="s2">"bootstrap"</span><span class="p">,</span>
+                <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+                <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">_SVPosterior</span><span class="o">.</span><span class="n">_from_chain</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">n_particles</span><span class="o">=</span><span class="n">n_particles</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"method must be 'gibbs' or 'particle'; got </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UCSV">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.UCSV.html#cultivars.univariate.UCSV">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UCSV</span><span class="p">(</span><span class="n">_TrendVolatilityModel</span><span class="p">[</span><span class="n">_UCSVPosterior</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Stock and Watson's unobserved-components stochastic-volatility model.</span>
+
+<span class="sd">    ``y_t = tau_t + exp(h_t / 2) eps_t``, ``tau_{t+1} = tau_t + exp(q_t / 2)</span>
+<span class="sd">    eta_t``, with ``h`` and ``q`` random walks of innovation standard</span>
+<span class="sd">    deviation ``gamma``. Its estimator is a Gibbs sampler, so ``fit``</span>
+<span class="sd">    returns a posterior.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The observed series (inflation, typically).</span>
+<span class="sd">        gamma: The vol-of-vol standard deviation held fixed for both log</span>
+<span class="sd">            variances (Stock and Watson use ``0.2``), or ``None`` to</span>
+<span class="sd">            estimate both under inverse-gamma priors.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; n = 200</span>
+<span class="sd">        &gt;&gt;&gt; trend = np.cumsum(0.2 * rng.standard_normal(n))</span>
+<span class="sd">        &gt;&gt;&gt; y = trend + 0.7 * rng.standard_normal(n)</span>
+<span class="sd">        &gt;&gt;&gt; post = UCSV(y).fit(n_draws=300, n_burn=100, seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; bool(np.corrcoef(post.trend, trend)[0, 1] &gt; 0.9)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="UCSV.fit">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.UCSV.html#cultivars.univariate.UCSV.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">,</span>
+        <span class="n">n_burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">thin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">prior</span><span class="p">:</span> <span class="n">RandomWalkVolatilityPrior</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_UCSVPosterior</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Run the Gibbs sampler and return the posterior.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_draws: Total iterations.</span>
+<span class="sd">            n_burn: Burn-in discarded.</span>
+<span class="sd">            thin: Keep every ``thin``-th post-burn draw.</span>
+<span class="sd">            prior: VolatilityPrior instance.</span>
+<span class="sd">            seed: Seed.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_UCSVPosterior</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sample_gibbs</span><span class="p">(</span>
+                <span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span>
+                <span class="n">n_burn</span><span class="o">=</span><span class="n">n_burn</span><span class="p">,</span>
+                <span class="n">thin</span><span class="o">=</span><span class="n">thin</span><span class="p">,</span>
+                <span class="n">prior</span><span class="o">=</span><span class="n">RandomWalkVolatilityPrior</span><span class="p">()</span> <span class="k">if</span> <span class="n">prior</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prior</span><span class="p">,</span>
+                <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

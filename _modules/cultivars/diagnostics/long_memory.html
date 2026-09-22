@@ -1,0 +1,836 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.diagnostics.long_memory &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/diagnostics/long_memory';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/diagnostics/long_memory.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.diagnostics.long_memory</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.diagnostics.long_memory</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/diagnostics/long_memory.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Semiparametric long memory: the differencing parameter without a short-run model.</span>
+
+<span class="sd">An ARFIMA fit commits to an ARMA short-run structure and estimates ``d``</span>
+<span class="sd">jointly with it; when the ARMA order is wrong, ``d`` absorbs the error.</span>
+<span class="sd">The three estimators here read ``d`` off the periodogram's behaviour at</span>
+<span class="sd">the ``m`` lowest Fourier frequencies alone, so they need no short-run</span>
+<span class="sd">model and their bandwidth is the only choice. Geweke-Porter-Hudak is</span>
+<span class="sd">the log-periodogram regression, the oldest and least efficient; local</span>
+<span class="sd">Whittle is the Gaussian semiparametric estimator, more efficient at the</span>
+<span class="sd">same bandwidth but only valid for ``d &lt; 3/4``; exact local Whittle</span>
+<span class="sd">fractionally differences the series inside the objective and is valid</span>
+<span class="sd">for any ``d``, which makes it the one to run when the answer might be</span>
+<span class="sd">"this is a unit root". The unit-root question is exactly where they</span>
+<span class="sd">earn their place: ``d = 1`` and ``d = 0.7`` reject the same ADF null and</span>
+<span class="sd">mean different things.</span>
+
+<span class="sd">Each record carries a standard error, so the natural questions --</span>
+<span class="sd">``d = 0``, no long memory; ``d = 1/2``, the stationarity boundary;</span>
+<span class="sd">``d = 1``, a unit root -- are one :meth:`LongMemoryEstimate.test` away,</span>
+<span class="sd">and the record's own ``statistic`` and ``pvalue`` address the first.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Geweke, J., &amp; Porter-Hudak, S. (1983). The estimation and</span>
+<span class="sd">        application of long memory time series models. *Journal of Time</span>
+<span class="sd">        Series Analysis*, 4(4), 221-238.</span>
+<span class="sd">    Robinson, P. M. (1995). Gaussian semiparametric estimation of long</span>
+<span class="sd">        range dependence. *Annals of Statistics*, 23(5), 1630-1661.</span>
+<span class="sd">    Shimotsu, K., &amp; Phillips, P. C. B. (2005). Exact local Whittle</span>
+<span class="sd">        estimation of fractional integration. *Annals of Statistics*,</span>
+<span class="sd">        33(4), 1890-1933.</span>
+<span class="sd">    Shimotsu, K. (2010). Exact local Whittle estimation of fractional</span>
+<span class="sd">        integration with unknown mean and time trend. *Econometric</span>
+<span class="sd">        Theory*, 26(2), 501-540.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">replace</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ELW_BOUNDS</span><span class="p">,</span>
+    <span class="n">_GPH_EXPONENT</span><span class="p">,</span>
+    <span class="n">_LW_BOUNDS</span><span class="p">,</span>
+    <span class="n">_METHOD_LABELS</span><span class="p">,</span>
+    <span class="n">_MIN_LONG_MEMORY_OBS</span><span class="p">,</span>
+    <span class="n">_WHITTLE_EXPONENT</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_exact_local_whittle</span><span class="p">,</span>
+    <span class="n">_gph</span><span class="p">,</span>
+    <span class="n">_validate_semiparametric</span><span class="p">,</span>
+    <span class="n">local_whittle_d</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_HypothesisTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"LongMemoryEstimate"</span><span class="p">,</span> <span class="s2">"exact_local_whittle"</span><span class="p">,</span> <span class="s2">"gph"</span><span class="p">,</span> <span class="s2">"local_whittle"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="LongMemoryEstimate">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.LongMemoryEstimate.html#cultivars.diagnostics.LongMemoryEstimate">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LongMemoryEstimate</span><span class="p">(</span><span class="n">_HypothesisTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A semiparametric estimate of the fractional differencing parameter, with a test.</span>
+
+<span class="sd">    The record is an estimate first -- ``d`` and ``se`` -- and a test</span>
+<span class="sd">    second: ``statistic`` is ``(d - null_d) / se`` and ``pvalue`` its</span>
+<span class="sd">    two-sided normal p-value, with ``null_d = 0`` (no long memory) as</span>
+<span class="sd">    built; :meth:`test` re-aims it at any other null, ``1/2`` for the</span>
+<span class="sd">    stationarity boundary or ``1`` for a unit root, without</span>
+<span class="sd">    re-estimating. Standard errors are asymptotic in the bandwidth, so</span>
+<span class="sd">    the record carries ``m`` and the reader should expect them to be</span>
+<span class="sd">    mildly optimistic: on 500 observations the nominal 95% interval</span>
+<span class="sd">    covers about 90-94% of the time, dipping to the low 80s for exact</span>
+<span class="sd">    local Whittle near ``d = 1/2``, where its mean correction switches</span>
+<span class="sd">    regime.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        d: The estimate.</span>
+<span class="sd">        se: Its asymptotic standard error.</span>
+<span class="sd">        statistic: ``(d - null_d) / se``.</span>
+<span class="sd">        pvalue: Two-sided standard normal p-value.</span>
+<span class="sd">        null_d: The value of ``d`` under test.</span>
+<span class="sd">        method: ``"gph"``, ``"local_whittle"`` or ``"exact_local_whittle"``.</span>
+<span class="sd">        bandwidth: Fourier frequencies used, ``m``.</span>
+<span class="sd">        nobs: Observations.</span>
+<span class="sd">    """</span>
+
+    <span class="n">d</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">se</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">pvalue</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">null_d</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+
+<div class="viewcode-block" id="LongMemoryEstimate.test">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.LongMemoryEstimate.html#cultivars.diagnostics.LongMemoryEstimate.test">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">null</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LongMemoryEstimate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The same estimate re-aimed at ``d = null``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            null: The value of ``d`` under the null.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A record with ``statistic`` and ``pvalue`` against ``null``.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">            &gt;&gt;&gt; est = exact_local_whittle(np.cumsum(rng.standard_normal(500)))</span>
+<span class="sd">            &gt;&gt;&gt; bool(est.test(1.0).pvalue &gt; 0.05), bool(est.reject())</span>
+<span class="sd">            (True, True)</span>
+<span class="sd">        """</span>
+        <span class="n">statistic</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">null</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">se</span>
+        <span class="k">return</span> <span class="n">replace</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+            <span class="n">pvalue</span><span class="o">=</span><span class="mf">2.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">statistic</span><span class="p">))),</span>
+            <span class="n">null_d</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">null</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LongMemoryEstimate.confidence_interval">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.LongMemoryEstimate.html#cultivars.diagnostics.LongMemoryEstimate.confidence_interval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">confidence_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Asymptotic ``1 - alpha`` interval for ``d``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``alpha`` is not inside ``(0, 1)``.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"alpha must lie strictly inside (0, 1); got </span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">half</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">se</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="n">half</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">+</span> <span class="n">half</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_stationary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether the point estimate lies in the stationary range ``d &lt; 1/2``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Render as a table with the three canonical nulls."""</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">null</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"d = 0"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="s2">"d = 1/2"</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="s2">"d = 1"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)):</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="n">null</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">se</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">confidence_interval</span><span class="p">()</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"95% interval for d: (</span><span class="si">{</span><span class="n">low</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">); the standard error is asymptotic "</span>
+            <span class="sa">f</span><span class="s2">"in the bandwidth m = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"local_whittle"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">&gt;</span> <span class="mf">0.7</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s2">"The local Whittle limit theory holds for d &lt; 3/4; at this estimate prefer "</span>
+                <span class="s2">"exact_local_whittle, which is valid for any d."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"gph"</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s2">"GPH is the least efficient of the three at a given bandwidth; its standard "</span>
+                <span class="s2">"error is pi / sqrt(24 m) against 1 / (2 sqrt(m)) for the Whittle estimators."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">_METHOD_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">)</span><span class="si">}</span><span class="s2"> Long Memory Estimate"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"d"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Std. error"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Bandwidth"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">"Stationary"</span><span class="p">,</span> <span class="s2">"yes"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_stationary</span> <span class="k">else</span> <span class="s2">"no"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"null"</span><span class="p">,</span> <span class="s2">"z"</span><span class="p">,</span> <span class="s2">"p-value"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""One-line estimate."""</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"LongMemoryEstimate(method=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">!r}</span><span class="s2">, d=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, se=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">se</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"bandwidth=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="si">}</span><span class="s2">, nobs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_record</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">se</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LongMemoryEstimate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the record with the ``d = 0`` test."""</span>
+        <span class="n">statistic</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="n">se</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">,</span>
+            <span class="n">se</span><span class="o">=</span><span class="n">se</span><span class="p">,</span>
+            <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span>
+            <span class="n">pvalue</span><span class="o">=</span><span class="mf">2.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">statistic</span><span class="p">))),</span>
+            <span class="n">null_d</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">bandwidth</span><span class="o">=</span><span class="n">m</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">nobs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="gph">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.gph.html#cultivars.diagnostics.gph">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gph</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">f_bandwidth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_GPH_EXPONENT</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LongMemoryEstimate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Geweke-Porter-Hudak log-periodogram estimate of ``d``.</span>
+
+<span class="sd">    Regress the log periodogram on ``-log(4 sin^2(lambda / 2))`` over the</span>
+<span class="sd">    first ``m`` Fourier frequencies; the slope is ``d``. The default</span>
+<span class="sd">    bandwidth ``m = floor(T^0.5)`` is the paper's; it trades bias from</span>
+<span class="sd">    the short-run spectrum against variance, and the standard error</span>
+<span class="sd">    ``pi / sqrt(24 m)`` is about 0.15 at ``T = 1000``, so the test has</span>
+<span class="sd">    little power against ``d`` near zero at that length. Valid for</span>
+<span class="sd">    ``d &lt; 1/2``; on a series that may be integrated, difference first</span>
+<span class="sd">    or use :func:`exact_local_whittle`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        f_bandwidth: Fourier frequencies used; ``None`` applies the rule.</span>
+<span class="sd">        exponent: Exponent of the rule ``m = floor(T ** exponent)``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`LongMemoryEstimate`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the series is too short or the bandwidth</span>
+<span class="sd">            is unusable.</span>
+<span class="sd">        NumericalError: If the periodogram has a zero ordinate.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; est = gph(rng.standard_normal(1000))</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(est.d) &lt; 3 * est.se), est.bandwidth</span>
+<span class="sd">        (True, 31)</span>
+<span class="sd">    """</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">_validate_semiparametric</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">f_bandwidth</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_LONG_MEMORY_OBS</span><span class="p">)</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">se</span> <span class="o">=</span> <span class="n">_gph</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">LongMemoryEstimate</span><span class="o">.</span><span class="n">_record</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"gph"</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="local_whittle">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.local_whittle.html#cultivars.diagnostics.local_whittle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">local_whittle</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">f_bandwidth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_WHITTLE_EXPONENT</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LongMemoryEstimate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Robinson's (1995) local Whittle estimate of ``d``.</span>
+
+<span class="sd">    Minimize the Gaussian semiparametric objective ``log(mean(lambda_j^{2d}</span>
+<span class="sd">    I_j)) - 2d mean(log lambda_j)`` over the first ``m`` frequencies. The</span>
+<span class="sd">    estimator is ``N(0, 1/4)`` in ``sqrt(m)`` units for ``-1/2 &lt; d</span>
+<span class="sd">    3/4``, more efficient than GPH at the same bandwidth; it stays</span>
+<span class="sd">    consistent up to ``d &lt; 1`` but loses its limit law beyond ``3/4``,</span>
+<span class="sd">    and the record says so when the estimate lands there. The search</span>
+<span class="sd">    runs over ``(-1/2, 1)``, so a unit-root series is reported at the</span>
+<span class="sd">    upper boundary with a pointer to :func:`exact_local_whittle`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        f_bandwidth: Fourier frequencies used; ``None`` applies the rule.</span>
+<span class="sd">        exponent: Exponent of the rule ``m = floor(T ** exponent)``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`LongMemoryEstimate`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the series is too short or the bandwidth</span>
+<span class="sd">            is unusable.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; est = local_whittle(rng.standard_normal(1000))</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(est.d) &lt; 3 * est.se), est.bandwidth</span>
+<span class="sd">        (True, 89)</span>
+<span class="sd">    """</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">_validate_semiparametric</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">f_bandwidth</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_LONG_MEMORY_OBS</span><span class="p">)</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">m_eff</span> <span class="o">=</span> <span class="n">local_whittle_d</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">_LW_BOUNDS</span><span class="p">)</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m_eff</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">LongMemoryEstimate</span><span class="o">.</span><span class="n">_record</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"local_whittle"</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">m_eff</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="exact_local_whittle">
+<a class="viewcode-back" href="../../../api/generated/cultivars.diagnostics.exact_local_whittle.html#cultivars.diagnostics.exact_local_whittle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">exact_local_whittle</span><span class="p">(</span>
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">f_bandwidth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_WHITTLE_EXPONENT</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LongMemoryEstimate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Shimotsu-Phillips exact local Whittle estimate of ``d``, valid for any ``d``.</span>
+
+<span class="sd">    The objective is evaluated on the periodogram of the fractionally</span>
+<span class="sd">    differenced, mean-corrected series ``(1 - L)^d (y - mu(d))``, which</span>
+<span class="sd">    removes the ``d &lt; 3/4`` restriction of :func:`local_whittle` and</span>
+<span class="sd">    keeps the ``N(0, 1/4)`` limit across the stationary and</span>
+<span class="sd">    nonstationary ranges alike. The mean correction is Shimotsu's</span>
+<span class="sd">    (2010) weighted estimate, the sample mean for ``d &lt;= 1/2`` and the</span>
+<span class="sd">    first observation for ``d &gt;= 3/4``, so a random walk is anchored at</span>
+<span class="sd">    its start. The search runs over ``(-1/2, 2)``. This is the estimator</span>
+<span class="sd">    for the question ADF cannot answer: whether a series that rejects</span>
+<span class="sd">    nothing is ``d = 1`` or merely ``d = 0.7``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        f_bandwidth: Fourier frequencies used; ``None`` applies the rule.</span>
+<span class="sd">        exponent: Exponent of the rule ``m = floor(T ** exponent)``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`LongMemoryEstimate`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the series is too short or the bandwidth</span>
+<span class="sd">            is unusable.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; walk = np.cumsum(rng.standard_normal(500))</span>
+<span class="sd">        &gt;&gt;&gt; est = exact_local_whittle(walk)</span>
+<span class="sd">        &gt;&gt;&gt; bool(abs(est.d - 1.0) &lt; 3 * est.se), bool(est.test(1.0).pvalue &gt; 0.05)</span>
+<span class="sd">        (True, True)</span>
+<span class="sd">    """</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">_validate_semiparametric</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">f_bandwidth</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">_MIN_LONG_MEMORY_OBS</span><span class="p">)</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">se</span> <span class="o">=</span> <span class="n">_exact_local_whittle</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">_ELW_BOUNDS</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">LongMemoryEstimate</span><span class="o">.</span><span class="n">_record</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">se</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"exact_local_whittle"</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">nobs</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

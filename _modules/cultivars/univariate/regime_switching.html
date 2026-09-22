@@ -1,0 +1,1198 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.univariate.regime_switching &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/univariate/regime_switching';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/univariate/regime_switching.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.univariate.regime_switching</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.univariate.regime_switching</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/univariate/markov_switching.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Markov-switching autoregression: the latent-regime counterpart to SETAR.</span>
+
+<span class="sd">A ``K``-regime autoregression whose intercept, autoregressive coefficients, and</span>
+<span class="sd">innovation variance may each switch with a latent first-order Markov chain</span>
+<span class="sd">``S_t in {0, ..., K-1}``::</span>
+
+<span class="sd">    y_t = c_{S_t} + phi_{1,S_t} y_{t-1} + ... + phi_{p,S_t} y_{t-p} + eps_t,</span>
+<span class="sd">    eps_t ~ N(0, sigma2_{S_t}),</span>
+
+<span class="sd">with row-stochastic transitions ``P[i, j] = Pr(S_t = j | S_{t-1} = i)``.</span>
+
+<span class="sd">Where :mod:`cultivars.univariate.threshold` computes the regime from something</span>
+<span class="sd">observable, here the regime is never observed at all: what comes back is a</span>
+<span class="sd">posterior over states at every date, and every reported quantity -- fitted</span>
+<span class="sd">values, residuals, even the regime a date "is in" -- is an expectation under</span>
+<span class="sd">that posterior rather than a fact about the data. The results are shaped to</span>
+<span class="sd">make that distinction hard to lose track of.</span>
+
+<span class="sd">Which blocks switch is chosen at construction, so one class spans the Krolzig</span>
+<span class="sd">(1997) taxonomy and :meth:`MSARResult.specification` reports which member you</span>
+<span class="sd">actually fitted: ``I`` for a switching intercept, ``A`` for switching</span>
+<span class="sd">autoregressive coefficients, ``H`` for a switching variance. Hamilton's</span>
+<span class="sd">recession-dating model is ``MSIH(2)-AR(4)``, or</span>
+<span class="sd">``MSAR(y, order=4, n_regimes=2)`` here.</span>
+
+<span class="sd">This is the *intercept*-switching parameterization. The regime enters</span>
+<span class="sd">contemporaneously through ``c_{S_t}``, so conditional on the observed lags each</span>
+<span class="sd">regime is linear and inference is a plain ``K``-state chain -- which is what</span>
+<span class="sd">lets estimation ride on a Hamilton filter with ``K`` states rather than the</span>
+<span class="sd">``K**(p+1)`` states that Hamilton's original *mean*-switching form requires.</span>
+<span class="sd">The two coincide at ``p = 0`` and differ in transient dynamics otherwise.</span>
+
+<span class="sd">Estimation is EM (Hamilton 1990): the E-step is a filter followed by a Kim</span>
+<span class="sd">smoother, and the M-step updates the transition matrix from expected transition</span>
+<span class="sd">counts and the coefficients by responsibility-weighted least squares. The</span>
+<span class="sd">likelihood is multimodal, so :meth:`MSAR.fit` screens several random starts and</span>
+<span class="sd">refines the best -- which is why ``fit`` takes a ``seed`` and why the result</span>
+<span class="sd">reports whether it converged.</span>
+
+<span class="sd">Two identification facts shape the public surface. First, the likelihood is</span>
+<span class="sd">invariant to permuting regime labels, so a sorting convention is imposed and</span>
+<span class="sd">:attr:`MSARResult.label_ordering` names it rather than leaving it implicit.</span>
+<span class="sd">Second, the number of regimes cannot be tested by a likelihood ratio: under the</span>
+<span class="sd">null of ``K`` regimes, the parameters of the ``K + 1``-th and the transition</span>
+<span class="sd">probabilities into it are unidentified, so the statistic has no chi-squared</span>
+<span class="sd">limit. :meth:`MSARResult.likelihood_ratio_test` therefore refuses that specific</span>
+<span class="sd">comparison while still permitting tests that hold ``K`` fixed.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Hamilton, J. D. (1989). A new approach to the economic analysis of</span>
+<span class="sd">    nonstationary time series and the business cycle. *Econometrica*, 57(2).</span>
+<span class="sd">    Hamilton, J. D. (1990). Analysis of time series subject to changes in</span>
+<span class="sd">    regime. *Journal of Econometrics*, 45(1-2).</span>
+<span class="sd">    Kim, C.-J. (1994). Dynamic linear models with Markov-switching. *Journal of</span>
+<span class="sd">    Econometrics*, 60(1-2).</span>
+<span class="sd">    Hansen, B. E. (1992). The likelihood ratio test under nonstandard</span>
+<span class="sd">    conditions: testing the Markov switching model of GNP. *Journal of Applied</span>
+<span class="sd">    Econometrics*, 7(S1).</span>
+<span class="sd">    Krolzig, H.-M. (1997). *Markov-Switching Vector Autoregressions*.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_SIMULATION_BURN</span><span class="p">,</span>
+    <span class="n">InformationCriteria</span><span class="p">,</span>
+    <span class="n">ProbabilityType</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">validate_choice</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_MarkovSwitchingFit</span><span class="p">,</span>
+    <span class="n">_MarkovSwitchingModel</span><span class="p">,</span>
+    <span class="n">_MarkovSwitchingStateSpace</span><span class="p">,</span>
+    <span class="n">_SeriesMixin</span><span class="p">,</span>
+    <span class="n">_simulate_markov_switching</span><span class="p">,</span>
+    <span class="n">_StabilityAssessment</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"MSAR"</span><span class="p">,</span> <span class="s2">"MSARResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="MSARResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSARResult.html#cultivars.univariate.MSARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSARResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_SeriesMixin</span><span class="p">,</span> <span class="n">_ComparisonMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted Markov-switching autoregression.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The full input series.</span>
+<span class="sd">        fittedvalues: Posterior-weighted one-step means, ``sum_j p_j m_j``.</span>
+<span class="sd">        resid: Residuals against those weighted means.</span>
+<span class="sd">        llf: Log-likelihood from the final Hamilton filter pass.</span>
+<span class="sd">        nobs: Effective sample, ``len(endog) - order``.</span>
+<span class="sd">        n_params: Free parameters: ``K(K-1)`` transition probabilities plus the</span>
+<span class="sd">            switching and non-switching coefficient blocks and the variances.</span>
+<span class="sd">        order: Autoregressive order within each regime.</span>
+<span class="sd">        n_regimes: Number of regimes ``K``.</span>
+<span class="sd">        switching_mean: Whether the intercept switches.</span>
+<span class="sd">        switching_ar: Whether the autoregressive coefficients switch.</span>
+<span class="sd">        switching_variance: Whether the innovation variance switches.</span>
+<span class="sd">        transition: Row-stochastic ``(K, K)`` matrix.</span>
+<span class="sd">        intercepts: Per-regime intercepts, shape ``(K,)``.</span>
+<span class="sd">        ar_params: Per-regime autoregressive coefficients, shape ``(K, p)``.</span>
+<span class="sd">        variances: Per-regime innovation variances, shape ``(K,)``.</span>
+<span class="sd">        filtered_prob: ``Pr(S_t = j | y_1..t)``, shape ``(nobs, K)``.</span>
+<span class="sd">        predicted_prob: ``Pr(S_t = j | y_1..t-1)``, shape ``(nobs, K)``.</span>
+<span class="sd">        smoothed_prob: ``Pr(S_t = j | y_1..T)``, shape ``(nobs, K)``.</span>
+<span class="sd">        ergodic_prob: Stationary distribution of ``transition``, shape ``(K,)``.</span>
+<span class="sd">        expected_durations: ``1 / (1 - P_jj)``, in periods, shape ``(K,)``.</span>
+<span class="sd">        n_iter: EM iterations used by the refining run.</span>
+<span class="sd">        converged: Whether the refining run met its tolerance.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">fittedvalues</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">resid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">llf</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_params</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_regimes</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">switching_mean</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">switching_ar</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">switching_variance</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">transition</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">intercepts</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">ar_params</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">variances</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">filtered_prob</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">predicted_prob</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">smoothed_prob</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">ergodic_prob</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">expected_durations</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">converged</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">fit</span><span class="p">:</span> <span class="n">_MarkovSwitchingFit</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">_MarkovSwitchingModel</span><span class="p">[</span><span class="n">MSARResult</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MSARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_params</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">n_regimes</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">,</span>
+            <span class="n">switching_mean</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">_sw_mean</span><span class="p">,</span>
+            <span class="n">switching_ar</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">_sw_ar</span><span class="p">,</span>
+            <span class="n">switching_variance</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">_sw_var</span><span class="p">,</span>
+            <span class="n">transition</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">transition</span><span class="p">,</span>
+            <span class="n">intercepts</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">intercepts</span><span class="p">,</span>
+            <span class="n">ar_params</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span>
+            <span class="n">variances</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">variances</span><span class="p">,</span>
+            <span class="n">filtered_prob</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">filtered_prob</span><span class="p">,</span>
+            <span class="n">predicted_prob</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">predicted_prob</span><span class="p">,</span>
+            <span class="n">smoothed_prob</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="p">,</span>
+            <span class="n">ergodic_prob</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">ergodic_prob</span><span class="p">,</span>
+            <span class="n">expected_durations</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">expected_durations</span><span class="p">,</span>
+            <span class="n">n_iter</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_iter</span><span class="p">,</span>
+            <span class="n">converged</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">converged</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># -- specification -----------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">specification</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Krolzig code for which blocks switch, e.g. ``"MSIH(2)-AR(4)"``.</span>
+
+<span class="sd">        ``I`` marks a switching intercept, ``A`` switching autoregressive</span>
+<span class="sd">        coefficients, ``H`` a switching variance -- so the code names the model</span>
+<span class="sd">        you actually fitted rather than the family it came from. The</span>
+<span class="sd">        constructor guarantees at least one letter is present.</span>
+<span class="sd">        """</span>
+        <span class="n">letters</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">letter</span>
+            <span class="k">for</span> <span class="n">letter</span><span class="p">,</span> <span class="n">switching</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">"I"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">switching_mean</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">switching_ar</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"H"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">switching_variance</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">switching</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"MS</span><span class="si">{</span><span class="n">letters</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="si">}</span><span class="s2">)-AR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">)"</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">label_ordering</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Which quantity regimes were sorted by, ascending.</span>
+
+<span class="sd">        A mixture likelihood is invariant to relabelling regimes, so the fit</span>
+<span class="sd">        imposes an ordering to make two runs of the same specification</span>
+<span class="sd">        comparable. The intercept is used when it switches; otherwise the</span>
+<span class="sd">        variance; otherwise the first autoregressive coefficient. Reported</span>
+<span class="sd">        because the meaning of "regime 0" depends on it: under a</span>
+<span class="sd">        variance-switching-only model, regime 0 is the *quiet* regime, not a</span>
+<span class="sd">        low-mean one.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">switching_mean</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"intercept"</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">switching_variance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"variance"</span>
+        <span class="k">return</span> <span class="s2">"first AR coefficient"</span>
+
+    <span class="c1"># -- regime inference --------------------------------------------------</span>
+
+<div class="viewcode-block" id="MSARResult.probabilities">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSARResult.html#cultivars.univariate.MSARResult.probabilities">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">ProbabilityType</span> <span class="o">=</span> <span class="s2">"smoothed"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return one of the three regime posteriors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kind: ``"smoothed"`` conditions on the whole sample and is what you</span>
+<span class="sd">                want for dating regimes after the fact; ``"filtered"``</span>
+<span class="sd">                conditions on data through ``t`` and is the real-time view;</span>
+<span class="sd">                ``"predicted"`` conditions through ``t - 1`` and is the</span>
+<span class="sd">                one-step-ahead forecast of the state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(nobs, K)`` whose rows sum to one.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``kind`` is not one of the three.</span>
+<span class="sd">        """</span>
+        <span class="n">validate_choice</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ProbabilityType</span><span class="p">,</span> <span class="s2">"kind"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"smoothed"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="p">,</span>
+            <span class="s2">"filtered"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_prob</span><span class="p">,</span>
+            <span class="s2">"predicted"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_prob</span><span class="p">,</span>
+        <span class="p">}[</span><span class="n">kind</span><span class="p">]</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">most_likely_regime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Pointwise most probable regime under the smoothed posterior.</span>
+
+<span class="sd">        This is the *marginal* MAP state at each date, taken independently, not</span>
+<span class="sd">        the Viterbi path. The distinction matters: the sequence returned here</span>
+<span class="sd">        can contain a one-period switch whose transition probability is</span>
+<span class="sd">        near-zero, so as a *path* it may have essentially no posterior mass even</span>
+<span class="sd">        though every element of it is individually most likely. Use it to date</span>
+<span class="sd">        regimes, not to reason about the sequence of switches.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An integer array of length ``nobs`` with values in ``0..K-1``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regime_shares</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Average smoothed probability of each regime over the sample.</span>
+
+<span class="sd">        The posterior counterpart to a frequency count, and the honest one:</span>
+<span class="sd">        counting :attr:`most_likely_regime` throws away every date the model was</span>
+<span class="sd">        genuinely uncertain about. Compare against :attr:`ergodic_prob` -- a</span>
+<span class="sd">        large gap says the sample is not representative of the fitted chain.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regime_uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Mean posterior entropy, normalized so ``0`` is sharp and ``1`` is flat.</span>
+
+<span class="sd">        Averages the Shannon entropy of each date's smoothed distribution and</span>
+<span class="sd">        divides by ``log K``. A value near zero means the regimes are cleanly</span>
+<span class="sd">        separated and the model is effectively dating a deterministic</span>
+<span class="sd">        partition; a value near one means the data barely distinguish the</span>
+<span class="sd">        regimes at all, which no coefficient table will tell you.</span>
+<span class="sd">        """</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="p">,</span> <span class="mf">1e-300</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">entropy</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">p</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">p</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">entropy</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Aligned per-observation output, widened by the regime posterior.</span>
+
+<span class="sd">        Uses the two-argument ``super`` deliberately. ``@dataclass(slots=True)``</span>
+<span class="sd">        builds a *new* class object and rebinds the name to it, so the</span>
+<span class="sd">        ``__class__`` cell that zero-argument ``super()`` closes over still</span>
+<span class="sd">        points at the original, pre-slots class -- which no subclass inherits</span>
+<span class="sd">        from.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The observed/fitted/residual triple, one smoothed-probability</span>
+<span class="sd">            column per regime, and the pointwise most likely regime. The</span>
+<span class="sd">            filtered and predicted posteriors are reachable through</span>
+<span class="sd">            :meth:`probabilities` rather than widening this by ``2K`` columns.</span>
+<span class="sd">        """</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MSARResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_series</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">):</span>
+            <span class="n">base</span><span class="p">[</span><span class="sa">f</span><span class="s2">"smoothed_prob_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">base</span><span class="p">[</span><span class="s2">"regime"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">most_likely_regime</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base</span>
+
+    <span class="c1"># -- per-regime dynamics -----------------------------------------------</span>
+
+<div class="viewcode-block" id="MSARResult.regime_stability">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSARResult.html#cultivars.univariate.MSARResult.regime_stability">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regime_stability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regime</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_StabilityAssessment</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Companion-eigenvalue verdict for one regime's autoregressive block.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            regime: Regime index in ``0..K-1``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`_StabilityAssessment` for that regime read as a linear</span>
+<span class="sd">            autoregression.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``regime`` is out of range.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">regime</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"regime must be in 0..</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">; got </span><span class="si">{</span><span class="n">regime</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_StabilityAssessment</span><span class="o">.</span><span class="n">assess_stability</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="p">[</span><span class="n">regime</span><span class="p">])</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_regimewise_stationary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether every regime is stationary read as a linear autoregression.</span>
+
+<span class="sd">        Sufficient for stationarity of the switching process but not necessary.</span>
+<span class="sd">        A Markov-switching model with one explosive regime is stationary</span>
+<span class="sd">        provided that regime is visited rarely enough and exited fast enough --</span>
+<span class="sd">        the condition involves the transition matrix and the explosive root</span>
+<span class="sd">        jointly, not the roots alone. A ``False`` here is a prompt to look at</span>
+<span class="sd">        that regime's expected duration, not a verdict that the process</span>
+<span class="sd">        explodes.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regime_stability</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">.</span><span class="n">is_stable</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unconditional_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Ergodic mean of the process, or ``None`` if it is not defined.</span>
+
+<span class="sd">        Computed as the ergodic-probability-weighted average of each regime's</span>
+<span class="sd">        own unconditional mean ``c_j / (1 - sum phi_j)``. Returns ``None`` when</span>
+<span class="sd">        any regime is non-stationary, since that regime has no unconditional</span>
+<span class="sd">        mean to average in, and when the autoregressive sum sits at one.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_regimewise_stationary</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">denominators</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">denominators</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ergodic_prob</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intercepts</span> <span class="o">/</span> <span class="n">denominators</span><span class="p">)))</span>
+
+    <span class="c1"># -- tables ------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Estimated parameters keyed by display name, in table order.</span>
+
+<span class="sd">        Regime-indexed names carry the regime in brackets, and transition</span>
+<span class="sd">        entries read ``p[i-&gt;j]``. All ``K**2`` transition entries appear even</span>
+<span class="sd">        though only ``K(K-1)`` are free, because a row displayed without its</span>
+<span class="sd">        final element is harder to read than one whose redundancy is stated in</span>
+<span class="sd">        the notes.</span>
+<span class="sd">        """</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"const[</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">]"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intercepts</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">):</span>
+                <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ar.L</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">]"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"sigma2[</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">]"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variances</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">):</span>
+                <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"p[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">]"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<div class="viewcode-block" id="MSARResult.regime_table">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSARResult.html#cultivars.univariate.MSARResult.regime_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regime_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""One row per regime: level, scale, and how long it lasts.</span>
+
+<span class="sd">        The complement to the coefficient table, which reads down parameters;</span>
+<span class="sd">        this reads across regimes, which is the comparison the model exists to</span>
+<span class="sd">        support. Autoregressive coefficients are left to</span>
+<span class="sd">        :attr:`params` -- there are ``p`` of them per regime and they do not fit</span>
+<span class="sd">        a fixed-width row.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A :class:`SummaryTable` with one row per regime.</span>
+<span class="sd">        """</span>
+        <span class="n">shares</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regime_shares</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">specification</span><span class="si">}</span><span class="s2"> regimes"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Ordering"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"ascending </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label_ordering</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"regime"</span><span class="p">,</span> <span class="s2">"const"</span><span class="p">,</span> <span class="s2">"sigma2"</span><span class="p">,</span> <span class="s2">"ergodic"</span><span class="p">,</span> <span class="s2">"duration"</span><span class="p">,</span> <span class="s2">"share"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">intercepts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variances</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ergodic_prob</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_durations</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">shares</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">"'ergodic' is the stationary probability implied by the transition "</span>
+                <span class="s2">"matrix; 'share' is the average smoothed probability actually "</span>
+                <span class="s2">"observed. 'duration' is 1 / (1 - P_jj), in periods."</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MSARResult.transition_table">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSARResult.html#cultivars.univariate.MSARResult.transition_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transition_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The estimated transition matrix, rows indexed by the origin regime.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A :class:`SummaryTable` whose entry ``(i, j)`` is</span>
+<span class="sd">            ``Pr(S_t = j | S_{t-1} = i)``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">specification</span><span class="si">}</span><span class="s2"> transition matrix"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">((</span><span class="s2">"Regimes"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="si">}</span><span class="s2">"</span><span class="p">),),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"from </span><span class="se">\\</span><span class="s2"> to"</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">))),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
+                <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">)))</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="p">(</span><span class="s2">"Rows sum to one, so K(K-1) of the K**2 entries are free."</span><span class="p">,),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MSARResult.simulate">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSARResult.html#cultivars.univariate.MSARResult.simulate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_SIMULATION_BURN</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""A fresh sample path at the fitted parameters.</span>
+
+<span class="sd">        The regime chain is started from its ergodic distribution and</span>
+<span class="sd">        stepped through the fitted transition matrix; within each regime</span>
+<span class="sd">        the series follows that regime's intercept, autoregression and</span>
+<span class="sd">        innovation variance. ``burn`` initial periods are discarded. Use</span>
+<span class="sd">        :meth:`simulate_regimes` to keep the regime path as well.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n: Observations kept.</span>
+<span class="sd">            seed: Seed or generator.</span>
+<span class="sd">            burn: Periods discarded from the start.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(n,)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the counts are not usable.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate_regimes</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">burn</span><span class="o">=</span><span class="n">burn</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="MSARResult.simulate_regimes">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSARResult.html#cultivars.univariate.MSARResult.simulate_regimes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate_regimes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">burn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_SIMULATION_BURN</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""A fresh sample path together with the regimes that generated it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n: Observations kept.</span>
+<span class="sd">            seed: Seed or generator.</span>
+<span class="sd">            burn: Periods discarded from the start.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``(y, regimes)`` of shapes ``(n,)`` and ``(n,)``, the regime</span>
+<span class="sd">            labels ``0 .. K - 1`` in the order of :attr:`intercepts`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the counts are not usable.</span>
+<span class="sd">        """</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">seed</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_simulate_markov_switching</span><span class="p">(</span>
+            <span class="n">n</span><span class="p">,</span>
+            <span class="n">transition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="p">,</span>
+            <span class="n">intercepts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">intercepts</span><span class="p">,</span>
+            <span class="n">ar_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span>
+            <span class="n">variances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">variances</span><span class="p">,</span>
+            <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+            <span class="n">burn</span><span class="o">=</span><span class="n">burn</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Specification label used when this result appears in a ranking."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">specification</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Structured summary rendered by every display path."""</span>
+        <span class="n">ic</span><span class="p">:</span> <span class="n">InformationCriteria</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="n">notes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"EM did NOT converge in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> iterations. Treat every "</span>
+                <span class="sa">f</span><span class="s2">"estimate below as provisional; raise max_iter, or refit with a "</span>
+                <span class="sa">f</span><span class="s2">"different seed, before reading anything into them."</span>
+            <span class="p">)</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Regimes ordered by ascending </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label_ordering</span><span class="si">}</span><span class="s2">; the likelihood "</span>
+            <span class="sa">f</span><span class="s2">"is invariant to relabelling, so that convention is what makes "</span>
+            <span class="sa">f</span><span class="s2">"'regime 0' mean anything."</span>
+        <span class="p">)</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Mean posterior entropy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">regime_uncertainty</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> of 1 "</span>
+            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="s1">'well'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">regime_uncertainty</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.25</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'poorly'</span><span class="si">}</span><span class="s2"> separated "</span>
+            <span class="sa">f</span><span class="s2">"regimes); expected durations "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_durations</span><span class="p">,</span><span class="w"> </span><span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> periods."</span>
+        <span class="p">)</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Regime-wise stationary: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_regimewise_stationary</span><span class="si">}</span><span class="s2">. This is "</span>
+            <span class="sa">f</span><span class="s2">"sufficient but not necessary: a rarely visited explosive regime "</span>
+            <span class="sa">f</span><span class="s2">"still leaves the switching process stationary."</span>
+        <span class="p">)</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s2">"Transition rows sum to one, so only K(K-1) of the reported p[i-&gt;j] "</span>
+            <span class="s2">"are free; the parameter count reflects that."</span>
+        <span class="p">)</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s2">"The number of regimes cannot be tested by a likelihood ratio; "</span>
+            <span class="s2">"see likelihood_ratio_test."</span>
+        <span class="p">)</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Standard errors are not yet available for this estimator."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">specification</span><span class="si">}</span><span class="s2"> Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">specification</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Regimes"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"EM iterations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Converged"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">converged</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"HQIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ic</span><span class="o">.</span><span class="n">hqic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Entropy"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">regime_uncertainty</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"coef"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_likelihood_ratio_obstacle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counterpart</span><span class="p">:</span> <span class="n">_ComparisonMixin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Block only the comparison that changes the number of regimes.</span>
+
+<span class="sd">        Unlike a threshold model, a Markov-switching model is perfectly</span>
+<span class="sd">        testable against a nested specification that holds ``K`` fixed --</span>
+<span class="sd">        dropping a switching block, say -- because every parameter remains</span>
+<span class="sd">        identified under that null. What is not testable is ``K`` itself: under</span>
+<span class="sd">        the null of fewer regimes, the extra regime's coefficients are free to</span>
+<span class="sd">        take any value and the transition probabilities into it sit on the</span>
+<span class="sd">        boundary at zero, so the statistic is neither chi-squared nor even</span>
+<span class="sd">        pivotal. A result that is not a Markov-switching fit at all counts as</span>
+<span class="sd">        the one-regime case, which is exactly the classic invalid test.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            counterpart: The other result in the proposed test.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A message when the regime counts differ, otherwise ``None``.</span>
+<span class="sd">        """</span>
+        <span class="n">other</span> <span class="o">=</span> <span class="n">counterpart</span><span class="o">.</span><span class="n">n_regimes</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">counterpart</span><span class="p">,</span> <span class="n">MSARResult</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">other</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"a chi-squared likelihood-ratio test cannot compare </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_regimes</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"regimes against </span><span class="si">{</span><span class="n">other</span><span class="si">}</span><span class="s2">: under the smaller model the extra regime's "</span>
+            <span class="sa">f</span><span class="s2">"parameters are unidentified and its transition probabilities lie on "</span>
+            <span class="sa">f</span><span class="s2">"the boundary, so the statistic has no chi-squared limit. Use the "</span>
+            <span class="sa">f</span><span class="s2">"Hansen (1992) bound or a parametric bootstrap instead. Tests that "</span>
+            <span class="sa">f</span><span class="s2">"hold the number of regimes fixed are still available."</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MarkovSwitchingStateSpace</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The fitted system, re-applicable to data it was not estimated on.</span>
+
+<span class="sd">        Filtering a new series through this reports what the estimated regimes</span>
+<span class="sd">        say about observations the fit never saw -- the natural out-of-sample</span>
+<span class="sd">        check for a regime model, and one the fitted arrays alone cannot give.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_MarkovSwitchingStateSpace</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">intercepts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variances</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MSAR">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSAR.html#cultivars.univariate.MSAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSAR</span><span class="p">(</span><span class="n">_MarkovSwitchingModel</span><span class="p">[</span><span class="n">MSARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Markov-switching autoregression with ``K`` latent regimes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The series.</span>
+<span class="sd">        order: Autoregressive order ``p`` within each regime.</span>
+<span class="sd">        n_regimes: Number of regimes ``K``, at least two.</span>
+<span class="sd">        switching_mean: Whether the intercept switches.</span>
+<span class="sd">        switching_variance: Whether the innovation variance switches.</span>
+<span class="sd">        switching_ar: Whether the autoregressive coefficients switch. Off by</span>
+<span class="sd">            default: switching the AR block multiplies the parameter count by</span>
+<span class="sd">            ``K`` and is rarely what identifies the regimes.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; p = np.array([[0.97, 0.03], [0.05, 0.95]])</span>
+<span class="sd">        &gt;&gt;&gt; mu = np.array([-1.0, 1.5])</span>
+<span class="sd">        &gt;&gt;&gt; s = np.zeros(1500, dtype=int)</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 1500):</span>
+<span class="sd">        ...     s[t] = np.searchsorted(np.cumsum(p[s[t - 1]]), rng.random())</span>
+<span class="sd">        &gt;&gt;&gt; y = mu[s] + 0.5 * rng.standard_normal(1500)</span>
+<span class="sd">        &gt;&gt;&gt; res = MSAR(y, order=1, n_regimes=2).fit(seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; bool(res.intercepts[0] &lt; res.intercepts[1])</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+<div class="viewcode-block" id="MSAR.fit">
+<a class="viewcode-back" href="../../../api/generated/cultivars.univariate.MSAR.html#cultivars.univariate.MSAR.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+        <span class="n">n_init</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">screen_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MSARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate by EM with multi-start screening.</span>
+
+<span class="sd">        Unlike the other families, this ``fit`` takes arguments, because the</span>
+<span class="sd">        likelihood is multimodal and the answer genuinely depends on where the</span>
+<span class="sd">        search starts. The default is to screen ``n_init`` starts for</span>
+<span class="sd">        ``screen_iter`` iterations each, then refine only the best; pass a</span>
+<span class="sd">        ``seed`` when you need the fit to be reproducible.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_iter: Iteration cap for the refining run.</span>
+<span class="sd">            tol: Convergence tolerance on the log-likelihood increment.</span>
+<span class="sd">            n_init: Random starts to screen.</span>
+<span class="sd">            screen_iter: Iterations used to score each screening start.</span>
+<span class="sd">            seed: Seed or generator for the random starts.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted :class:`MSARResult`, regimes ordered by the convention</span>
+<span class="sd">            :attr:`MSARResult.label_ordering` names.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NumericalError: If every start fails to produce a finite likelihood.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">MSARResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fit_family</span><span class="p">(</span>
+                <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+                <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+                <span class="n">n_init</span><span class="o">=</span><span class="n">n_init</span><span class="p">,</span>
+                <span class="n">screen_iter</span><span class="o">=</span><span class="n">screen_iter</span><span class="p">,</span>
+                <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

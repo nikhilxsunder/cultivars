@@ -1,0 +1,999 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.spectral.filters &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/spectral/filters';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/spectral/filters.html" />
+    <link rel="icon" href="../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.spectral.filters</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.spectral.filters</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/spectral/filters.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Trend-cycle filters: four answers to "what is the trend", each with its bill.</span>
+
+<span class="sd">A trend-cycle decomposition is a definition, not a discovery, and the</span>
+<span class="sd">four here define the trend differently. Hodrick-Prescott and Butterworth</span>
+<span class="sd">are low-pass filters: the trend is what survives a penalty on its</span>
+<span class="sd">``n``-th differences, and the penalty fixes the cutoff period at which</span>
+<span class="sd">the filter's gain is one half (39.7 quarters for HP's 1600). Hamilton's</span>
+<span class="sd">regression filter defines the trend as what could be predicted two years</span>
+<span class="sd">ahead from the level's own recent history, and the cycle as what could</span>
+<span class="sd">not; it exists because HP manufactures dynamics -- spurious cycles from</span>
+<span class="sd">a random walk, end-point values that change as data arrive, a penalty</span>
+<span class="sd">with no rationale at frequencies other than quarterly -- and the HP</span>
+<span class="sd">result prints that critique rather than assuming the user knows it.</span>
+<span class="sd">Beveridge-Nelson is a model-based definition: the trend of an ARIMA is</span>
+<span class="sd">the level the long-horizon forecast converges to, net of drift, so the</span>
+<span class="sd">cycle is the forecastable momentum, which is why a BN cycle is small,</span>
+<span class="sd">noisy, and often negatively correlated with growth when the others are</span>
+<span class="sd">smooth -- not a bug, a different question.</span>
+
+<span class="sd">The filters that touch data take a panel and filter each column; the</span>
+<span class="sd">Beveridge-Nelson decomposition takes a fitted ARIMA(p, 1, q). Every</span>
+<span class="sd">result reports which rows are lost or provisional, in the manner of</span>
+<span class="sd">:mod:`band_pass`.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Hodrick, R. J., &amp; Prescott, E. C. (1997). Postwar U.S. business</span>
+<span class="sd">        cycles: An empirical investigation. *Journal of Money, Credit and</span>
+<span class="sd">        Banking*, 29(1), 1-16.</span>
+<span class="sd">    Hamilton, J. D. (2018). Why you should never use the Hodrick-Prescott</span>
+<span class="sd">        filter. *Review of Economics and Statistics*, 100(5), 831-843.</span>
+<span class="sd">    Gomez, V. (2001). The use of Butterworth filters for trend and cycle</span>
+<span class="sd">        estimation in economic time series. *Journal of Business &amp;</span>
+<span class="sd">        Economic Statistics*, 19(3), 365-373.</span>
+<span class="sd">    Beveridge, S., &amp; Nelson, C. R. (1981). A new approach to</span>
+<span class="sd">        decomposition of economic time series into permanent and</span>
+<span class="sd">        transitory components. *Journal of Monetary Economics*, 7(2),</span>
+<span class="sd">        151-174.</span>
+<span class="sd">    Morley, J. C. (2002). A state-space approach to calculating the</span>
+<span class="sd">        Beveridge-Nelson decomposition. *Economics Letters*, 75(1),</span>
+<span class="sd">        123-127.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_METHOD_TITLES</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">_beveridge_nelson</span><span class="p">,</span>
+    <span class="n">_butterworth_penalty</span><span class="p">,</span>
+    <span class="n">_hamilton_regression</span><span class="p">,</span>
+    <span class="n">_penalized_trend</span><span class="p">,</span>
+    <span class="n">_penalty_cutoff_period</span><span class="p">,</span>
+    <span class="n">validate_endog_matrix</span><span class="p">,</span>
+    <span class="n">validate_order</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._internals</span><span class="w"> </span><span class="kn">import</span> <span class="n">_SummaryMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..univariate.box_jenkins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ARMAResult</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"BeveridgeNelsonDecomposition"</span><span class="p">,</span>
+    <span class="s2">"ButterworthFilter"</span><span class="p">,</span>
+    <span class="s2">"DecompositionFilterResult"</span><span class="p">,</span>
+    <span class="s2">"HamiltonFilter"</span><span class="p">,</span>
+    <span class="s2">"HodrickPrescottFilter"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="DecompositionFilterResult">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.DecompositionFilterResult.html#cultivars.spectral.DecompositionFilterResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DecompositionFilterResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A trend-cycle decomposition of a panel, with the bookkeeping the method needs.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        trend: ``(rows, k)`` trend component; the first row aligns with</span>
+<span class="sd">            observation ``offset`` of the input.</span>
+<span class="sd">        cycle: ``(rows, k)`` cycle, the input minus the trend over the</span>
+<span class="sd">            same rows.</span>
+<span class="sd">        method: ``"hodrick-prescott"``, ``"butterworth"``, ``"hamilton"``</span>
+<span class="sd">            or ``"beveridge-nelson"``.</span>
+<span class="sd">        offset: Input observations lost before the first row.</span>
+<span class="sd">        penalty: The smoothing weight of a penalized filter; ``None``</span>
+<span class="sd">            otherwise.</span>
+<span class="sd">        order: Differences penalized, or the ARMA ``(p, q)`` of a</span>
+<span class="sd">            Beveridge-Nelson decomposition; ``None`` for Hamilton.</span>
+<span class="sd">        cutoff: Period at which a penalized filter's gain is one half;</span>
+<span class="sd">            ``None`` otherwise.</span>
+<span class="sd">        horizon: Hamilton's forecast horizon; ``None`` otherwise.</span>
+<span class="sd">        lags: Hamilton's regressors; ``None`` otherwise.</span>
+<span class="sd">        provisional: ``(rows,)`` flags marking rows a two-sided filter</span>
+<span class="sd">            will revise as data arrive -- the ends of a penalized</span>
+<span class="sd">            filter, within ``cutoff`` observations of either edge; all</span>
+<span class="sd">            ``False`` for the one-sided Hamilton and Beveridge-Nelson.</span>
+<span class="sd">    """</span>
+
+    <span class="n">trend</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cycle</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">provisional</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of series filtered."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Cycle scale per series, absolute and against the input's growth, with the caveats."""</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle</span>
+        <span class="n">growth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"series </span><span class="si">{</span><span class="n">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle</span><span class="p">[:,</span><span class="w"> </span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle</span><span class="p">[:,</span><span class="w"> </span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">growth</span><span class="p">[</span><span class="n">index</span><span class="p">]),</span><span class="w"> </span><span class="mf">1e-300</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_series</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"Method"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Rows"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Offset"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Penalty"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Cutoff period"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Order"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Horizon"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizon</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Lags"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">_METHOD_TITLES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">]</span><span class="si">}</span><span class="s2"> Trend-Cycle Decomposition"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"cycle sd"</span><span class="p">,</span> <span class="s2">"cycle sd / growth sd"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">notes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_method_notes</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_method_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""What the method's definition of the trend implies for reading the cycle."""</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">provisional</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"hodrick-prescott"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Two-sided; the </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2"> rows flagged `provisional` lie within the cutoff "</span>
+                <span class="s2">"period of an edge and will be revised as data arrive."</span><span class="p">,</span>
+                <span class="s2">"Hamilton (2018): the HP filter produces cycles with no basis in the "</span>
+                <span class="s2">"data-generating process (a random walk acquires a smooth cycle), its "</span>
+                <span class="s2">"end-point values differ from its interior ones, and the penalty 1600 has "</span>
+                <span class="s2">"no rationale at other frequencies. Prefer HamiltonFilter for inference; "</span>
+                <span class="s2">"use HP where comparability with the literature is the point."</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"butterworth"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Two-sided Butterworth sine filter of Gomez (2001); the </span><span class="si">{</span><span class="n">edge</span><span class="si">}</span><span class="s2"> rows flagged "</span>
+                <span class="s2">"`provisional` lie within the cutoff period of an edge. Higher order "</span>
+                <span class="s2">"sharpens the cutoff and worsens the end-point problem; order 2 is HP."</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"hamilton"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="s2">"One-sided by construction: the cycle at t is what the level h steps "</span>
+                <span class="s2">"earlier could not predict, so no row is revised; the first h + p - 1 "</span>
+                <span class="s2">"observations carry no value."</span><span class="p">,</span>
+                <span class="s2">"The regression on levels is valid for I(1) and I(2) series alike, "</span>
+                <span class="s2">"and the cycle is stationary by construction."</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">"Beveridge-Nelson: the trend is the long-horizon forecast net of drift, so the "</span>
+            <span class="s2">"cycle is the forecastable momentum of the differences. It is typically small "</span>
+            <span class="s2">"and volatile, and its sign follows the ARMA dynamics rather than a smooth "</span>
+            <span class="s2">"hump; a large HP cycle and a small BN cycle on the same series are both "</span>
+            <span class="s2">"correct answers to different questions."</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_penalized_result</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">panel</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DecompositionFilterResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Run the penalized smoother and package it."""</span>
+        <span class="n">trend</span> <span class="o">=</span> <span class="n">_penalized_trend</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">penalty</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="n">_penalty_cutoff_period</span><span class="p">(</span><span class="n">penalty</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">cutoff</span><span class="p">)),</span> <span class="n">rows</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">provisional</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
+        <span class="n">provisional</span><span class="p">[:</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">provisional</span><span class="p">[</span><span class="n">rows</span> <span class="o">-</span> <span class="n">edge</span> <span class="p">:]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">cycle</span><span class="o">=</span><span class="n">panel</span> <span class="o">-</span> <span class="n">trend</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">penalty</span><span class="o">=</span><span class="n">penalty</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span>
+            <span class="n">provisional</span><span class="o">=</span><span class="n">provisional</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="HodrickPrescottFilter">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.HodrickPrescottFilter.html#cultivars.spectral.HodrickPrescottFilter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HodrickPrescottFilter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The Hodrick-Prescott filter, with Hamilton's critique on the result.</span>
+
+<span class="sd">    The trend minimizes ``sum (y - tau)^2 + penalty * sum (Delta^2 tau)^2``.</span>
+<span class="sd">    The conventional penalties are 1600 quarterly, 100 annual and 14400</span>
+<span class="sd">    monthly (Ravn-Uhlig's frequency-power rule gives 6.25 and 129600</span>
+<span class="sd">    instead); each fixes the cutoff period the result reports.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        penalty: The smoothing weight ``lambda``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the penalty is not positive.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.cumsum(rng.standard_normal(200))</span>
+<span class="sd">        &gt;&gt;&gt; res = HodrickPrescottFilter().filter(y)</span>
+<span class="sd">        &gt;&gt;&gt; res.trend.shape, round(res.cutoff, 1)</span>
+<span class="sd">        ((200, 1), 39.7)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_penalty"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1600.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the penalty."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">penalty</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"penalty must be positive; got </span><span class="si">{</span><span class="n">penalty</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_penalty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">penalty</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HodrickPrescottFilter.filter">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.HodrickPrescottFilter.html#cultivars.spectral.HodrickPrescottFilter.filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DecompositionFilterResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Filter a panel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: A ``(nobs, k)`` panel or one-dimensional series.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`DecompositionFilterResult`, every row kept.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DimensionError: If the panel is malformed.</span>
+<span class="sd">            SpecificationError: If it is shorter than four observations.</span>
+<span class="sd">        """</span>
+        <span class="n">panel</span> <span class="o">=</span> <span class="n">validate_endog_matrix</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="s2">"the Hodrick-Prescott filter needs at least 4 observations."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DecompositionFilterResult</span><span class="o">.</span><span class="n">_penalized_result</span><span class="p">(</span>
+            <span class="n">panel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"hodrick-prescott"</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ButterworthFilter">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.ButterworthFilter.html#cultivars.spectral.ButterworthFilter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ButterworthFilter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Gomez's (2001) Butterworth sine low-pass filter, stated by cutoff period and order.</span>
+
+<span class="sd">    The trend minimizes ``sum (y - tau)^2 + penalty * sum (Delta^order</span>
+<span class="sd">    tau)^2`` with the penalty set so that the gain is one half at</span>
+<span class="sd">    ``period``: ``penalty = (2 sin(pi / period))^(-2 order)``. Unlike HP</span>
+<span class="sd">    the user states the frequency, not the weight, and the order sets</span>
+<span class="sd">    how sharply the gain falls from one to zero around it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        period: Cutoff period in observations per cycle; 32 quarterly</span>
+<span class="sd">            for the Burns-Mitchell convention.</span>
+<span class="sd">        order: Differences penalized; 2 reproduces HP at the matching</span>
+<span class="sd">            cutoff, higher is sharper.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the period is below 2 or the order below 1.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.cumsum(rng.standard_normal(200))</span>
+<span class="sd">        &gt;&gt;&gt; res = ButterworthFilter(period=32, order=3).filter(y)</span>
+<span class="sd">        &gt;&gt;&gt; res.trend.shape, round(res.cutoff, 1)</span>
+<span class="sd">        ((200, 1), 32.0)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_order"</span><span class="p">,</span> <span class="s2">"_period"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">32.0</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the cutoff and the order."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">period</span> <span class="o">&gt;</span> <span class="mf">2.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"period must exceed 2 observations per cycle; got </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="s2">"order"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ButterworthFilter.filter">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.ButterworthFilter.html#cultivars.spectral.ButterworthFilter.filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DecompositionFilterResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Filter a panel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: A ``(nobs, k)`` panel or one-dimensional series.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`DecompositionFilterResult`, every row kept.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DimensionError: If the panel is malformed.</span>
+<span class="sd">            SpecificationError: If it is shorter than ``2 order + 2``.</span>
+<span class="sd">        """</span>
+        <span class="n">panel</span> <span class="o">=</span> <span class="n">validate_endog_matrix</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"a Butterworth filter of order </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="si">}</span><span class="s2"> needs at least "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2"> observations."</span>
+            <span class="p">)</span>
+        <span class="n">penalty</span> <span class="o">=</span> <span class="n">_butterworth_penalty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DecompositionFilterResult</span><span class="o">.</span><span class="n">_penalized_result</span><span class="p">(</span>
+            <span class="n">panel</span><span class="p">,</span> <span class="n">penalty</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">,</span> <span class="s2">"butterworth"</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HamiltonFilter">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.HamiltonFilter.html#cultivars.spectral.HamiltonFilter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HamiltonFilter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Hamilton's (2018) regression filter.</span>
+
+<span class="sd">    Regress ``y_{t+h}`` on a constant and ``y_t, ..., y_{t-p+1}``; the</span>
+<span class="sd">    residual is the cycle and the fitted value the trend. The defaults</span>
+<span class="sd">    are the paper's quarterly ``h = 8, p = 4``; monthly data want</span>
+<span class="sd">    ``h = 24, p = 12``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        horizon: Forecast horizon ``h``.</span>
+<span class="sd">        lags: Regressors ``p``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If either is below 1.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.cumsum(rng.standard_normal(200))</span>
+<span class="sd">        &gt;&gt;&gt; res = HamiltonFilter().filter(y)</span>
+<span class="sd">        &gt;&gt;&gt; res.trend.shape, res.offset</span>
+<span class="sd">        ((189, 1), 11)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_horizon"</span><span class="p">,</span> <span class="s2">"_lags"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="n">lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the horizon and lag count."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_horizon</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">horizon</span><span class="p">,</span> <span class="s2">"horizon"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lags</span> <span class="o">=</span> <span class="n">validate_order</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="s2">"lags"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HamiltonFilter.filter">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.HamiltonFilter.html#cultivars.spectral.HamiltonFilter.filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DecompositionFilterResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Filter a panel, one regression per column.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: A ``(nobs, k)`` panel or one-dimensional series.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`DecompositionFilterResult`, ``horizon + lags - 1`` rows shorter</span>
+<span class="sd">            than the input.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DimensionError: If the panel is malformed.</span>
+<span class="sd">            NumericalError: If it is too short for the regression.</span>
+<span class="sd">        """</span>
+        <span class="n">panel</span> <span class="o">=</span> <span class="n">validate_endog_matrix</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_horizon</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lags</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span>
+        <span class="n">trend</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">trend</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">trend</span><span class="p">[:,</span> <span class="n">column</span><span class="p">],</span> <span class="n">cycle</span><span class="p">[:,</span> <span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hamilton_regression</span><span class="p">(</span>
+                <span class="n">panel</span><span class="p">[:,</span> <span class="n">column</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_horizon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lags</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">DecompositionFilterResult</span><span class="p">(</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">cycle</span><span class="o">=</span><span class="n">cycle</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">"hamilton"</span><span class="p">,</span>
+            <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+            <span class="n">horizon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_horizon</span><span class="p">,</span>
+            <span class="n">lags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lags</span><span class="p">,</span>
+            <span class="n">provisional</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="BeveridgeNelsonDecomposition">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.BeveridgeNelsonDecomposition.html#cultivars.spectral.BeveridgeNelsonDecomposition">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BeveridgeNelsonDecomposition</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The Beveridge-Nelson decomposition of a fitted ARIMA(p, 1, q).</span>
+
+<span class="sd">    With ``Delta y_t = mu + psi(L) e_t`` the trend is ``tau_t = y_t +</span>
+<span class="sd">    sum_{k&gt;=1} (E_t Delta y_{t+k} - mu)``, the level the forecast settles</span>
+<span class="sd">    on once the drift is netted out, computed exactly in companion form</span>
+<span class="sd">    (Morley 2002). The cycle ``y_t - tau_t`` is minus the sum of</span>
+<span class="sd">    forecastable future changes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result: A fitted :class:`~cultivars.univariate.ARIMA` with</span>
+<span class="sd">            ``d = 1``, no seasonal part and no exogenous regressors.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the result is not an ARIMA(p, 1, q) of</span>
+<span class="sd">            that form.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from cultivars.univariate import ARIMA</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.cumsum(0.2 + rng.standard_normal(300))</span>
+<span class="sd">        &gt;&gt;&gt; res = BeveridgeNelsonDecomposition(ARIMA(y, order=(1, 1, 0)).fit()).compute()</span>
+<span class="sd">        &gt;&gt;&gt; res.trend.shape, res.offset</span>
+<span class="sd">        ((299, 1), 1)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_result"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">ARMAResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Check the fitted model is one the decomposition is defined for."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">ARMAResult</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"BeveridgeNelson needs a fitted ARIMA result; got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">_p</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">_q</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">order</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"the Beveridge-Nelson decomposition is defined for d = 1; got d = </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">seasonal_order</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">k_exog</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"the Beveridge-Nelson decomposition takes a non-seasonal ARIMA without "</span>
+                <span class="s2">"exogenous regressors."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">trend</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"the differenced series may carry a constant drift only; got trend "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">trend</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="BeveridgeNelsonDecomposition.compute">
+<a class="viewcode-back" href="../../../api/generated/cultivars.spectral.BeveridgeNelsonDecomposition.html#cultivars.spectral.BeveridgeNelsonDecomposition.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DecompositionFilterResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Decompose the levels.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`DecompositionFilterResult`, one row shorter than the series</span>
+<span class="sd">            (the first difference has no value at ``t = 0``).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NumericalError: If the differenced series has a unit root.</span>
+<span class="sd">        """</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">endog</span>
+        <span class="n">differences</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">drift</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">trend</span> <span class="o">==</span> <span class="s2">"c"</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">differences</span> <span class="o">-</span> <span class="n">drift</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">_d</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">momentum</span> <span class="o">=</span> <span class="n">_beveridge_nelson</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">ar_params</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">ma_params</span><span class="p">)</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">trend</span> <span class="o">=</span> <span class="p">(</span><span class="n">levels</span> <span class="o">+</span> <span class="n">momentum</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">DecompositionFilterResult</span><span class="p">(</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">cycle</span><span class="o">=</span><span class="n">levels</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">trend</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">"beveridge-nelson"</span><span class="p">,</span>
+            <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span>
+            <span class="n">provisional</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">levels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

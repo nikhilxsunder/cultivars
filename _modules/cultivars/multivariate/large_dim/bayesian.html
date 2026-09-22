@@ -1,0 +1,1059 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.large_dim.bayesian &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/large_dim/bayesian';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/large_dim/bayesian.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.large_dim.bayesian</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.large_dim.bayesian</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/multivariate/large_dim/bayesian.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""The conjugate Bayesian VAR: an exact posterior, and the number that ranks priors.</span>
+
+<span class="sd">A Bayesian VAR earns its place in the large-dimensional family because</span>
+<span class="sd">shrinkage is what makes a large system estimable at all: with the</span>
+<span class="sd">Normal-inverse-Wishart form of the Minnesota prior, a hundred-variable VAR is</span>
+<span class="sd">routine (Banbura, Giannone &amp; Reichlin 2010), and the prior's tightness -- not</span>
+<span class="sd">the sample size -- controls the effective dimensionality. This model is the</span>
+<span class="sd">conjugate core of that program. The posterior over coefficients *and*</span>
+<span class="sd">innovation covariance is exact, drawn rather than approximated, and every</span>
+<span class="sd">reported band is a posterior statement, not an asymptotic one.</span>
+
+<span class="sd">Two design commitments distinguish the surface. First, conjugacy is verified,</span>
+<span class="sd">not assumed: the prior's variances must factor equation-by-column, which is</span>
+<span class="sd">the Minnesota structure with the cross-equation weight pinned at one. A prior</span>
+<span class="sd">that keeps Litterman's extra cross-variable shrinkage is refused with</span>
+<span class="sd">directions to the per-equation point path -- the two are different estimators</span>
+<span class="sd">with different claims, not the same object with different numbers. Second,</span>
+<span class="sd">the scalar this result reports is the log *marginal likelihood* of the</span>
+<span class="sd">sample, computed in closed form with any dummy-observation content divided</span>
+<span class="sd">out (Giannone, Lenza &amp; Primiceri 2015). Differences of that number across</span>
+<span class="sd">priors are log Bayes factors, which is what hyperparameter choice should</span>
+<span class="sd">maximize -- the hierarchical layer built on top of this model does exactly</span>
+<span class="sd">that. There is deliberately no ``llf`` and no information criteria: a</span>
+<span class="sd">posterior has neither, and the marginal likelihood is the honest replacement.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Litterman, R. B. (1986). Forecasting with Bayesian vector</span>
+<span class="sd">        autoregressions: Five years of experience. *Journal of Business &amp;</span>
+<span class="sd">        Economic Statistics*, 4(1), 25-38.</span>
+<span class="sd">    Doan, T., Litterman, R., &amp; Sims, C. (1984). Forecasting and conditional</span>
+<span class="sd">        projection using realistic prior distributions. *Econometric</span>
+<span class="sd">        Reviews*, 3(1), 1-100.</span>
+<span class="sd">    Banbura, M., Giannone, D., &amp; Reichlin, L. (2010). Large Bayesian vector</span>
+<span class="sd">        auto regressions. *Journal of Applied Econometrics*, 25(1), 71-92.</span>
+<span class="sd">    Giannone, D., Lenza, M., &amp; Primiceri, G. E. (2015). Prior selection for</span>
+<span class="sd">        vector autoregressions. *Review of Economics and Statistics*, 97(2),</span>
+<span class="sd">        436-451.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryTable</span><span class="p">,</span> <span class="n">Trend</span><span class="p">,</span> <span class="n">companion_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_BayesianVectorAutoRegressionModel</span><span class="p">,</span>
+    <span class="n">_ConvergenceMixin</span><span class="p">,</span>
+    <span class="n">_MarginalLikelihoodSelection</span><span class="p">,</span>
+    <span class="n">_Prior</span><span class="p">,</span>
+    <span class="n">_ReplicationMixin</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_VectorConjugateFit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...bayes</span><span class="w"> </span><span class="kn">import</span> <span class="n">NormalInverseWishartPrior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"BVAR"</span><span class="p">,</span> <span class="s2">"BVARResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="BVARResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVARResult.html#cultivars.multivariate.BVARResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BVARResult</span><span class="p">(</span><span class="n">_SummaryMixin</span><span class="p">,</span> <span class="n">_ConvergenceMixin</span><span class="p">,</span> <span class="n">_ReplicationMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted conjugate Bayesian VAR: an exact posterior over ``(B, Sigma)``.</span>
+
+<span class="sd">    Point summaries are posterior means; the retained draws carry the full</span>
+<span class="sd">    posterior, and every method that propagates -- impulse responses, the</span>
+<span class="sd">    predictive -- propagates draw by draw, so its bands are the posterior of</span>
+<span class="sd">    the propagated object rather than the propagation of a point.</span>
+
+<span class="sd">    Deliberately absent: ``llf``, ``n_params``, information criteria. The</span>
+<span class="sd">    comparison number is :attr:`log_marginal_likelihood`, whose differences</span>
+<span class="sd">    across priors are log Bayes factors.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The observed panel.</span>
+<span class="sd">        names: Variable labels, in column order.</span>
+<span class="sd">        order: Autoregressive order.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">        prior_label: Short description of the prior estimated under.</span>
+<span class="sd">        coefficients: ``(p, k, k)`` lag stack at the posterior mean.</span>
+<span class="sd">        deterministic: ``(n_det, k)`` deterministic block at the posterior</span>
+<span class="sd">            mean.</span>
+<span class="sd">        beta_mean: ``(w, k)`` full posterior mean coefficient matrix.</span>
+<span class="sd">        sigma_u: ``(k, k)`` posterior mean innovation covariance.</span>
+<span class="sd">        beta_draws: ``(S, w, k)`` coefficient draws.</span>
+<span class="sd">        sigma_draws: ``(S, k, k)`` covariance draws.</span>
+<span class="sd">        log_marginal_likelihood: Log marginal likelihood of the sample, the</span>
+<span class="sd">            dummy-observation contribution divided out.</span>
+<span class="sd">        posterior_df: Inverse-Wishart posterior degrees of freedom.</span>
+<span class="sd">        resid: Residuals at the posterior mean.</span>
+<span class="sd">        fittedvalues: One-step means at the posterior mean.</span>
+<span class="sd">        nobs: Effective sample size, dummy rows excluded.</span>
+<span class="sd">        n_dummy: Artificial rows the prior contributed.</span>
+<span class="sd">    """</span>
+
+    <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">trend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">prior_label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">deterministic</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">beta_mean</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma_u</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">beta_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma_draws</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">log_marginal_likelihood</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">posterior_df</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">resid</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fittedvalues</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">nobs</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">n_dummy</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_fit</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">fit</span><span class="p">:</span> <span class="n">_VectorConjugateFit</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">_BayesianVectorAutoRegressionModel</span><span class="p">[</span><span class="n">BVARResult</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Assemble the public result from a raw fit and its specification."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">endog</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">prior_label</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">prior</span><span class="o">.</span><span class="n">_label</span><span class="p">(),</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">coefficient_stack</span><span class="p">,</span>
+            <span class="n">deterministic</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">deterministic</span><span class="p">,</span>
+            <span class="n">beta_mean</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">beta_mean</span><span class="p">,</span>
+            <span class="n">sigma_u</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span>
+            <span class="n">beta_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">,</span>
+            <span class="n">sigma_draws</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">sigma_draws</span><span class="p">,</span>
+            <span class="n">log_marginal_likelihood</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">log_marginal_likelihood</span><span class="p">,</span>
+            <span class="n">posterior_df</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">posterior_df</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_dummy</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">n_dummy</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">k_endog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of endogenous variables."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_kept</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Posterior draws retained."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_n_deterministic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Deterministic columns per equation."""</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"n"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ct"</span><span class="p">:</span> <span class="mi">2</span><span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_regressor_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Per-equation regressor labels, in design order."""</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"const"</span><span class="p">,</span> <span class="s2">"trend"</span><span class="p">)[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic</span><span class="p">]</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">.L</span><span class="si">{</span><span class="n">lag</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="n">det</span><span class="p">,</span> <span class="o">*</span><span class="n">lags</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BVARResult.credible_interval">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVARResult.html#cultivars.multivariate.BVARResult.credible_interval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">credible_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">regressor</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""One coefficient's posterior summary: 16th percentile, mean, 84th.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            equation: An endogenous variable.</span>
+<span class="sd">            regressor: A per-equation regressor label -- ``"const"``,</span>
+<span class="sd">                ``"trend"``, or ``"{name}.L{lag}"``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``(3,)`` array ``(low, mean, high)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the equation or regressor is unknown.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">equation</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"unknown variable </span><span class="si">{</span><span class="n">equation</span><span class="si">!r}</span><span class="s2">; expected one of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regressor_labels</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">regressor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown regressor </span><span class="si">{</span><span class="n">regressor</span><span class="si">!r}</span><span class="s2">; expected one of </span><span class="si">{</span><span class="n">labels</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">draws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">[:,</span> <span class="n">labels</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">regressor</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">equation</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="n">draws</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">))]</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stack_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Slice one ``(w, k)`` draw into its ``(p, k, k)`` lag stack."""</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">beta</span><span class="p">[</span><span class="n">offset</span> <span class="o">+</span> <span class="n">lag</span> <span class="o">*</span> <span class="n">k</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="n">lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_irf_draws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">orthogonalized</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Impulse responses of every retained draw, ``(S, horizon + 1, k, k)``."""</span>
+        <span class="k">if</span> <span class="n">horizon</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"horizon must be non-negative; got </span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n_kept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_kept</span><span class="p">,</span> <span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_kept</span><span class="p">):</span>
+            <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">psi</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">psi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">selector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">*</span> <span class="n">p</span><span class="p">))</span>
+                <span class="n">selector</span><span class="p">[:,</span> <span class="p">:</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span>
+                <span class="n">companion</span> <span class="o">=</span> <span class="n">companion_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stack_of</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">[</span><span class="n">s</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">psi</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="n">selector</span> <span class="o">@</span> <span class="n">power</span> <span class="o">@</span> <span class="n">selector</span><span class="o">.</span><span class="n">T</span>
+                    <span class="n">power</span> <span class="o">=</span> <span class="n">power</span> <span class="o">@</span> <span class="n">companion</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma_draws</span><span class="p">[</span><span class="n">s</span><span class="p">])</span> <span class="k">if</span> <span class="n">orthogonalized</span> <span class="k">else</span> <span class="n">psi</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<div class="viewcode-block" id="BVARResult.irf">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVARResult.html#cultivars.multivariate.BVARResult.irf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">irf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">orthogonalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">cumulative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior mean impulse responses.</span>
+
+<span class="sd">        The mean of each draw's response, not the response of the mean draw</span>
+<span class="sd">        -- the distinction matters because propagation is nonlinear in the</span>
+<span class="sd">        coefficients. Orthogonalization applies each draw's own Cholesky</span>
+<span class="sd">        factor, so the ordering of ``names`` is an identifying assumption,</span>
+<span class="sd">        as for any recursive scheme.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+<span class="sd">            orthogonalized: Rotate each draw by its own Cholesky factor.</span>
+<span class="sd">            cumulative: Return running sums.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]``</span>
+<span class="sd">            is the response of variable ``i`` at lead ``h`` to shock ``j``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``horizon`` is negative.</span>
+<span class="sd">        """</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irf_draws</span><span class="p">(</span><span class="n">horizon</span><span class="p">,</span> <span class="n">orthogonalized</span><span class="o">=</span><span class="n">orthogonalized</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">cumulative</span> <span class="k">else</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="BVARResult.irf_bands">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVARResult.html#cultivars.multivariate.BVARResult.irf_bands">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">irf_bands</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">orthogonalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">cumulative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Posterior bands of the impulse responses.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+<span class="sd">            orthogonalized: Rotate each draw by its own Cholesky factor.</span>
+<span class="sd">            cumulative: Band the running sums instead.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(horizon + 1, k, k, 3)`` whose last axis is</span>
+<span class="sd">            ``(16th percentile, mean, 84th percentile)`` across draws.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``horizon`` is negative.</span>
+<span class="sd">        """</span>
+        <span class="n">draws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irf_draws</span><span class="p">(</span><span class="n">horizon</span><span class="p">,</span> <span class="n">orthogonalized</span><span class="o">=</span><span class="n">orthogonalized</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cumulative</span><span class="p">:</span>
+            <span class="n">draws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="n">draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BVARResult.forecast_paths">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVARResult.html#cultivars.multivariate.BVARResult.forecast_paths">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast_paths</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The posterior predictive's raw simulated paths, one per kept draw.</span>
+
+<span class="sd">        Each retained draw simulates its own future -- its coefficients, its</span>
+<span class="sd">        covariance, its innovations -- and this method hands the paths over</span>
+<span class="sd">        unsummarized: the object a forecast evaluation scores, a fan chart</span>
+<span class="sd">        takes quantiles of, and a model average mixes. :meth:`forecast` is</span>
+<span class="sd">        these paths' three-number summary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps: Horizons ahead.</span>
+<span class="sd">            seed: Seed or generator for the predictive shocks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(n_kept, steps, k)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``steps`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"steps must be positive; got </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="p">):</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack_of</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+            <span class="n">chol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma_draws</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="n">p</span> <span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+                <span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"n"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"c"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="s2">"ct"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]}[</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">@</span> <span class="n">beta</span><span class="p">[:</span><span class="n">offset</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">+</span> <span class="n">stack</span><span class="p">[</span><span class="n">lag</span><span class="p">]</span> <span class="o">@</span> <span class="n">history</span><span class="p">[</span><span class="n">lag</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">+</span> <span class="n">chol</span> <span class="o">@</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">paths</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">if</span> <span class="n">p</span><span class="p">:</span>
+                    <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">history</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">paths</span></div>
+
+
+<div class="viewcode-block" id="BVARResult.forecast">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVARResult.html#cultivars.multivariate.BVARResult.forecast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The posterior predictive: parameter *and* shock uncertainty.</span>
+
+<span class="sd">        Each retained draw simulates its own future -- its coefficients, its</span>
+<span class="sd">        covariance, its innovations -- so the bands are bands of the</span>
+<span class="sd">        predictive distribution, which is the object a forecast evaluation</span>
+<span class="sd">        actually scores. This is where the Bayesian model pays for itself:</span>
+<span class="sd">        the point path's forecast intervals condition on the estimated</span>
+<span class="sd">        parameters, and for a large shrunk system that conditioning is the</span>
+<span class="sd">        larger half of the uncertainty.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps: Horizons ahead.</span>
+<span class="sd">            seed: Seed or generator for the predictive shocks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(steps, k, 3)`` whose last axis is</span>
+<span class="sd">            ``(16th percentile, mean, 84th percentile)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``steps`` is not positive.</span>
+<span class="sd">        """</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forecast_paths</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="n">paths</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stable_share</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Posterior probability that the system is stable.</span>
+
+<span class="sd">        The share of retained draws whose companion matrix has every root</span>
+<span class="sd">        strictly inside the unit circle. Under a random-walk-centred prior</span>
+<span class="sd">        this is routinely well below one, and that is information about the</span>
+<span class="sd">        posterior, not a defect: near-unit-root mass is what the prior</span>
+<span class="sd">        asserts.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.0</span>
+        <span class="n">stable</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="p">):</span>
+            <span class="n">eigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">companion_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stack_of</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">[</span><span class="n">s</span><span class="p">])))</span>
+            <span class="n">stable</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigs</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stable</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span>
+
+<div class="viewcode-block" id="BVARResult.marginal_likelihood">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVARResult.html#cultivars.multivariate.BVARResult.marginal_likelihood">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">marginal_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The closed-form log marginal likelihood as a comparable record.</span>
+
+<span class="sd">        The same number as :attr:`log_marginal_likelihood`, wrapped so it</span>
+<span class="sd">        can sit in one ``compare()`` table with simulated estimates from the</span>
+<span class="sd">        Gibbs and particle-chain families.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_MarginalLikelihoodSelection</span><span class="p">(</span>
+            <span class="n">log_value</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_marginal_likelihood</span><span class="p">),</span>
+            <span class="n">mcse</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">"analytic"</span><span class="p">,</span>
+            <span class="n">n_draws</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">"BVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prior_label</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">:</span>
+                <span class="n">low</span><span class="p">,</span> <span class="n">mid</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">credible_interval</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.L1"</span><span class="p">)</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mid</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">low</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">high</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">]"</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">))</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"The posterior is exact Normal-inverse-Wishart; draws are "</span>
+            <span class="s2">"independent, not a Markov chain, so no convergence diagnostics "</span>
+            <span class="s2">"apply."</span><span class="p">,</span>
+            <span class="s2">"log_marginal_likelihood is the sample's, with the "</span>
+            <span class="s2">"dummy-observation contribution divided out; differences across "</span>
+            <span class="s2">"priors are log Bayes factors, and hyperparameter choice should "</span>
+            <span class="s2">"maximize it (Giannone-Lenza-Primiceri)."</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Posterior probability of stability: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stable_share</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">. "</span>
+            <span class="s2">"Mass near the unit circle is the random-walk prior speaking, "</span>
+            <span class="s2">"not a defect."</span><span class="p">,</span>
+            <span class="s2">"No llf, parameter count, or information criteria are reported: "</span>
+            <span class="s2">"a posterior has none, and the marginal likelihood is the "</span>
+            <span class="s2">"honest replacement."</span><span class="p">,</span>
+            <span class="s2">"forecast() is the full posterior predictive -- parameter and "</span>
+            <span class="s2">"shock uncertainty jointly."</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"BVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">) Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"BVAR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Prior"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior_label</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Draws"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_kept</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Dummy rows"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dummy</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"log ML"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_marginal_likelihood</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s2">"equation"</span><span class="p">,</span> <span class="s2">"own L1 mean"</span><span class="p">,</span> <span class="s2">"68</span><span class="si">% i</span><span class="s2">nterval"</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BVAR">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVAR.html#cultivars.multivariate.BVAR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BVAR</span><span class="p">(</span><span class="n">_BayesianVectorAutoRegressionModel</span><span class="p">[</span><span class="n">BVARResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Conjugate Normal-inverse-Wishart Bayesian VAR, Banbura-Giannone-Reichlin.</span>
+
+<span class="sd">    The default prior is the conjugate Minnesota</span>
+<span class="sd">    (:class:`~cultivars.bayes.priors.NormalInverseWishartPrior` at its</span>
+<span class="sd">    defaults); compose the Giannone-Lenza-Primiceri dummies onto it with</span>
+<span class="sd">    ``+`` -- ``NormalInverseWishartPrior() + SumOfCoefficientsPrior() +</span>
+<span class="sd">    DummyInitialObservationPrior()`` -- and rank the candidates by</span>
+<span class="sd">    :attr:`BVARResult.log_marginal_likelihood`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The observed panel, shape ``(nobs, k)``. Shrinkage is what</span>
+<span class="sd">            makes ``k`` large admissible: with a proper prior the sample</span>
+<span class="sd">            length constraint is one observation, not one per regressor.</span>
+<span class="sd">        order: Autoregressive order.</span>
+<span class="sd">        prior: A conjugacy-compatible prior, possibly a composition.</span>
+<span class="sd">            Defaults to ``NormalInverseWishartPrior()``. A prior whose</span>
+<span class="sd">            variances break the Kronecker factorization -- Litterman's</span>
+<span class="sd">            ``cross_equation != 1`` -- is refused at fit with directions to</span>
+<span class="sd">            the per-equation point path.</span>
+<span class="sd">        trend: Deterministic terms.</span>
+<span class="sd">        names: One label per variable. Defaults to ``y1 ... yk``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((120, 2))</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 120):</span>
+<span class="sd">        ...     y[t] = 0.7 * y[t - 1] + rng.standard_normal(2)</span>
+<span class="sd">        &gt;&gt;&gt; res = BVAR(y, order=1).fit(n_draws=200, seed=0)</span>
+<span class="sd">        &gt;&gt;&gt; res.beta_draws.shape</span>
+<span class="sd">        (200, 3, 2)</span>
+<span class="sd">        &gt;&gt;&gt; res.irf_bands(4).shape</span>
+<span class="sd">        (5, 2, 2, 3)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">prior</span><span class="p">:</span> <span class="n">_Prior</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trend</span><span class="p">:</span> <span class="n">Trend</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Default the prior to the conjugate Minnesota, then validate."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">endog</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">prior</span><span class="o">=</span><span class="n">prior</span> <span class="k">if</span> <span class="n">prior</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">NormalInverseWishartPrior</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="BVAR.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.BVAR.html#cultivars.multivariate.BVAR.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BVARResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Update the posterior exactly and draw from it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_draws: Independent posterior draws of ``(B, Sigma)`` to</span>
+<span class="sd">                retain.</span>
+<span class="sd">            seed: Seed or generator, for reproducibility.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted :class:`BVARResult`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If the prior is improper or not</span>
+<span class="sd">                conjugacy-compatible.</span>
+<span class="sd">            NumericalError: If the posterior degenerates.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">BVARResult</span><span class="o">.</span><span class="n">_from_fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_conjugate</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

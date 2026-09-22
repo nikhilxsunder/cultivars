@@ -1,0 +1,1043 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cultivars.multivariate.reduced_form.moving_average &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=0629cb78" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../../_static/documentation_options.js?v=a480e030"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/cultivars/multivariate/reduced_form/moving_average';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/_modules/cultivars/multivariate/reduced_form/moving_average.html" />
+    <link rel="icon" href="../../../../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cultivars</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="ms-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">cultivars.multivariate.reduced_form.moving_average</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for cultivars.multivariate.reduced_form.moving_average</h1><div class="highlight"><pre>
+<span></span><span class="c1"># filepath: /src/cultivars/var/reduced_form/moving_average.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2026 Nikhil Sunder</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""The vector autoregressive moving average, estimated without a likelihood search.</span>
+
+<span class="sd">A VARMA(p, q) buys parsimony with a harder estimation problem: the moving-average</span>
+<span class="sd">innovations are unobserved, so least squares cannot be applied directly, and the</span>
+<span class="sd">Gaussian likelihood is a surface over ``k^2 (p + q)`` parameters that is neither</span>
+<span class="sd">cheap nor -- for an unrestricted model -- uniquely maximized. This module takes</span>
+<span class="sd">the Hannan-Rissanen route instead: recover the innovations from a long</span>
+<span class="sd">autoregression, then estimate the VARMA by regressions in which those estimated</span>
+<span class="sd">innovations stand in for the true ones. Three passes, every one of them a</span>
+<span class="sd">least-squares solve, no numerical optimizer anywhere.</span>
+
+<span class="sd">The identification caveat is structural rather than numerical and is repeated on</span>
+<span class="sd">the result: distinct ``(A, M)`` pairs can generate identical second moments, and</span>
+<span class="sd">the standard resolution -- echelon-form restrictions indexed by Kronecker</span>
+<span class="sd">indices -- is deliberately not imposed here. What survives the ambiguity is</span>
+<span class="sd">exactly what most users come for: for a stable, invertible representation the</span>
+<span class="sd">moving-average coefficients, and with them the forecasts, impulse responses,</span>
+<span class="sd">and variance decompositions, are invariant across observationally equivalent</span>
+<span class="sd">parameterizations.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    Hannan, E. J., &amp; Rissanen, J. (1982). Recursive estimation of mixed</span>
+<span class="sd">        autoregressive-moving average order. *Biometrika*, 69(1), 81-94.</span>
+<span class="sd">    Dufour, J.-M., &amp; Jouini, T. (2005). Asymptotic distribution of a simple</span>
+<span class="sd">        linear estimator for VARMA models in echelon form. In *Statistical</span>
+<span class="sd">        Modeling and Analysis for Complex Data Problems* (pp. 209-240).</span>
+<span class="sd">    Lutkepohl, H. (2005). *New Introduction to Multiple Time Series Analysis*,</span>
+<span class="sd">        chapters 11-12.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoReturn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_CHOLESKY_NOTE</span><span class="p">,</span>
+    <span class="n">_HR_CONDITIONAL_NOTE</span><span class="p">,</span>
+    <span class="n">_UNSTABLE_NOTE</span><span class="p">,</span>
+    <span class="n">_VARMA_IDENTIFICATION_NOTE</span><span class="p">,</span>
+    <span class="n">SummaryTable</span><span class="p">,</span>
+    <span class="n">Trend</span><span class="p">,</span>
+    <span class="n">deterministic_columns</span><span class="p">,</span>
+    <span class="n">lag_matrix</span><span class="p">,</span>
+    <span class="n">validate_order_tuple</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._internals</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_StabilityAssessment</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_VectorAutoRegressionModel</span><span class="p">,</span>
+    <span class="n">_VectorInferenceMixin</span><span class="p">,</span>
+    <span class="n">_VectorMoments</span><span class="p">,</span>
+    <span class="n">_VectorPropagationMixin</span><span class="p">,</span>
+    <span class="n">_VectorResult</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecificationError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"VARMA"</span><span class="p">,</span> <span class="s2">"VARMAResult"</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="VARMAResult">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.VARMAResult.html#cultivars.multivariate.VARMAResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VARMAResult</span><span class="p">(</span>
+    <span class="n">_VectorResult</span><span class="p">,</span>
+    <span class="n">_SummaryMixin</span><span class="p">,</span>
+    <span class="n">_ComparisonMixin</span><span class="p">,</span>
+    <span class="n">_VectorInferenceMixin</span><span class="p">,</span>
+    <span class="n">_VectorPropagationMixin</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A fitted vector autoregressive moving average.</span>
+
+<span class="sd">    The propagation surface is inherited with one override that changes</span>
+<span class="sd">    everything downstream: :meth:`ma_representation` runs the VARMA recursion</span>
+<span class="sd">    ``Psi_h = M_h + sum A_i Psi_{h-i}`` rather than powering the autoregressive</span>
+<span class="sd">    companion, and since the impulse responses, both variance decompositions,</span>
+<span class="sd">    and the historical decomposition all read the moving-average matrices</span>
+<span class="sd">    rather than the companion, correcting the one method corrects them all.</span>
+<span class="sd">    :meth:`forecast` is the other override, because a VARMA forecast carries</span>
+<span class="sd">    the last ``q`` innovations across the sample boundary.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        endog: The sample.</span>
+<span class="sd">        names: Variable labels, in Cholesky order.</span>
+<span class="sd">        order: Autoregressive order ``p``.</span>
+<span class="sd">        ma_order: Moving-average order ``q``.</span>
+<span class="sd">        long_order: Order of the stage-one autoregression that recovered the</span>
+<span class="sd">            innovations.</span>
+<span class="sd">        refined: Whether the third pass ran. ``False`` means the second-stage</span>
+<span class="sd">            moving-average block was not invertible, so re-deriving residuals</span>
+<span class="sd">            through it would have amplified rather than reduced the</span>
+<span class="sd">            approximation error, and the second-stage estimate was kept.</span>
+<span class="sd">        trend: Deterministic specification.</span>
+<span class="sd">        coefficients: ``(p, k, k)`` stack of ``A_1, ..., A_p``.</span>
+<span class="sd">        ma_coefficients: ``(q, k, k)`` stack of ``M_1, ..., M_q``.</span>
+<span class="sd">        deterministic: Deterministic coefficients, one row per term.</span>
+<span class="sd">        sigma_u: Residual covariance with the degrees-of-freedom correction.</span>
+<span class="sd">        sigma_ml: Residual covariance divided by the effective sample.</span>
+<span class="sd">        resid: One-step innovations over the effective sample.</span>
+<span class="sd">        fittedvalues: One-step conditional means over the effective sample.</span>
+<span class="sd">        design: The regressor matrix of the final pass.</span>
+<span class="sd">        llf: Gaussian log-likelihood of the final pass.</span>
+<span class="sd">        nobs: Effective sample size.</span>
+<span class="sd">        n_params: Free parameters, covariance included.</span>
+<span class="sd">    """</span>
+
+    <span class="n">coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">deterministic</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">ma_coefficients</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">long_order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">refined</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ma_order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Moving-average order ``q``."""</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_coefficients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_trailing_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The moving-average coefficients, in design order."""</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_coefficients</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_order</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_trailing_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Moving-average column names, innovation lag by innovation lag."""</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">"u[</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">].L</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_order</span><span class="p">)</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VARMAResult.ma_representation">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.VARMAResult.html#cultivars.multivariate.VARMAResult.ma_representation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ma_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Moving-average matrices ``Psi_0, ..., Psi_horizon`` of the VARMA.</span>
+
+<span class="sd">        Computed by the recursion ``Psi_h = M_h + sum_{i=1}^{min(h,p)} A_i</span>
+<span class="sd">        Psi_{h-i}`` with ``M_h = 0`` beyond ``q``, which is the representation</span>
+<span class="sd">        the impulse responses, variance decompositions, and historical</span>
+<span class="sd">        decomposition inherited from the propagation surface all consume --</span>
+<span class="sd">        overriding this one method is what makes every one of them correct for</span>
+<span class="sd">        a VARMA.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizon: Largest lead to return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(horizon + 1, k, k)``; ``Psi_0`` is the</span>
+<span class="sd">            identity.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``horizon`` is negative.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">horizon</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"horizon must be non-negative; got </span><span class="si">{</span><span class="n">horizon</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ma_order</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">psi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">acc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ma_coefficients</span><span class="p">[</span><span class="n">h</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="n">q</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">acc</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">psi</span><span class="p">[</span><span class="n">h</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">psi</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="n">acc</span>
+        <span class="k">return</span> <span class="n">psi</span></div>
+
+
+<div class="viewcode-block" id="VARMAResult.invertibility_check">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.VARMAResult.html#cultivars.multivariate.VARMAResult.invertibility_check">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">invertibility_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_StabilityAssessment</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Eigenvalue verdict for the moving-average companion matrix.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`_StabilityAssessment`; the moving-average polynomial is</span>
+<span class="sd">            invertible exactly when every root lies inside the unit circle.</span>
+<span class="sd">            Invertibility is what makes the innovations recoverable from the</span>
+<span class="sd">            observed history, so a non-invertible estimate means the residuals</span>
+<span class="sd">            -- and everything computed from them -- identify a different,</span>
+<span class="sd">            observationally equivalent representation.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">_StabilityAssessment</span><span class="o">.</span><span class="n">assess_stability</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_coefficients</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_invertible</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether every moving-average root lies inside the unit circle."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">invertibility_check</span><span class="p">()</span><span class="o">.</span><span class="n">is_stable</span>
+
+<div class="viewcode-block" id="VARMAResult.forecast">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.VARMAResult.html#cultivars.multivariate.VARMAResult.forecast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forecast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Deterministic multi-step forecasts from the end of the sample.</span>
+
+<span class="sd">        The moving-average block contributes only while a forecast date is</span>
+<span class="sd">        within ``q`` periods of the sample: the innovations after the sample</span>
+<span class="sd">        end are set to their zero mean, and the last ``q`` estimated</span>
+<span class="sd">        innovations decay out of the forecast one step at a time. Beyond</span>
+<span class="sd">        ``q`` steps the iteration is exactly the autoregressive one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps: Forecast horizon, at least one.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An array of shape ``(steps, k)``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: If ``steps`` is less than one.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"steps must be at least 1; got </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ma_order</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">endog</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">steps</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">det</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">history</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ma_coefficients</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">tail</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="n">h</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="n">point</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="o">*</span><span class="n">history</span><span class="p">[:</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_comparison_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Short specification label for a ranking table."""</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="s2">""</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span> <span class="o">==</span> <span class="s2">"c"</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">", trend=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"VARMA(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_order</span><span class="si">}{</span><span class="n">tail</span><span class="si">}</span><span class="s2">)"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SummaryTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build the structured summary."""</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">information_criteria</span>
+        <span class="n">stability</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_check</span><span class="p">()</span>
+        <span class="n">invertibility</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">invertibility_check</span><span class="p">()</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"Stable: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_stable</span><span class="si">}</span><span class="s2">   max |AR companion root| = </span><span class="si">{</span><span class="n">stability</span><span class="o">.</span><span class="n">max_modulus</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Invertible: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_invertible</span><span class="si">}</span><span class="s2">   max |MA companion root| = "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">invertibility</span><span class="o">.</span><span class="n">max_modulus</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">_HR_CONDITIONAL_NOTE</span><span class="p">,</span>
+            <span class="n">_VARMA_IDENTIFICATION_NOTE</span><span class="p">,</span>
+            <span class="n">_CHOLESKY_NOTE</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">refined</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="s2">"The refinement pass was skipped: the second-stage moving-average "</span>
+                <span class="s2">"block was not invertible, so residuals re-derived through it "</span>
+                <span class="s2">"would diverge. The second-stage estimate is reported."</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_stable</span><span class="p">:</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_UNSTABLE_NOTE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SummaryTable</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"VARMA(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_order</span><span class="si">}</span><span class="s2">) Results"</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">"Model"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"VARMA(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ma_order</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Log-likelihood"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">llf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Variables"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"AIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">criteria</span><span class="o">.</span><span class="n">aic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Long AR order"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">long_order</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"BIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">criteria</span><span class="o">.</span><span class="n">bic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Refined"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">refined</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"HQIC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">criteria</span><span class="o">.</span><span class="n">hqic</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Trend"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"Observations"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nobs</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficient_columns</span><span class="p">(),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficient_rows</span><span class="p">(),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="VARMA">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.VARMA.html#cultivars.multivariate.VARMA">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VARMA</span><span class="p">(</span><span class="n">_VectorAutoRegressionModel</span><span class="p">[</span><span class="n">VARMAResult</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Vector autoregressive moving average, estimated by Hannan-Rissanen.</span>
+
+<span class="sd">    Three passes, each a least-squares solve. The first fits a long</span>
+<span class="sd">    autoregression -- order growing with the square root of the sample -- whose</span>
+<span class="sd">    residuals estimate the unobservable innovations. The second regresses the</span>
+<span class="sd">    sample on its own lags and on lags of those estimated innovations, which is</span>
+<span class="sd">    the VARMA equation with a generated regressor standing in for the truth.</span>
+<span class="sd">    The third re-derives the innovations recursively from the second-stage</span>
+<span class="sd">    parameters, so they are consistent with the model rather than with the long</span>
+<span class="sd">    autoregression, and estimates once more. When the second-stage</span>
+<span class="sd">    moving-average block is not invertible the recursion would diverge instead</span>
+<span class="sd">    of converge, so the third pass is skipped and the result says so.</span>
+
+<span class="sd">    No numerical optimizer, no likelihood surface, no starting values: the</span>
+<span class="sd">    estimator is deterministic and fast, at the cost of the (small, and</span>
+<span class="sd">    documented) efficiency loss relative to exact maximum likelihood, and of</span>
+<span class="sd">    standard errors that condition on the estimated innovations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        endog: The ``(nobs, k)`` panel, time down the rows.</span>
+<span class="sd">        order: The pair ``(p, q)``. ``q`` must be at least one -- with no</span>
+<span class="sd">            moving-average block a plain</span>
+<span class="sd">            :class:`~cultivars.var.reduced_form.VAR` is the right model, and it</span>
+<span class="sd">            estimates in one pass instead of three.</span>
+<span class="sd">        trend: Deterministic terms.</span>
+<span class="sd">        names: Variable labels. Defaults to ``y1 ... yk``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        SpecificationError: If the order pair is malformed or ``q`` is zero.</span>
+<span class="sd">        DimensionError: If the sample cannot support the specification,</span>
+<span class="sd">            including the long autoregression the first stage needs.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">        &gt;&gt;&gt; u = rng.standard_normal((202, 2))</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((202, 2))</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(1, 202):</span>
+<span class="sd">        ...     y[t] = 0.5 * y[t - 1] + u[t] + 0.4 * u[t - 1]</span>
+<span class="sd">        &gt;&gt;&gt; res = VARMA(y[2:], order=(1, 1)).fit()</span>
+<span class="sd">        &gt;&gt;&gt; res.forecast(3).shape</span>
+<span class="sd">        (3, 2)</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_ma_order"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endog</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">trend</span><span class="p">:</span> <span class="n">Trend</span> <span class="o">=</span> <span class="s2">"c"</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Validate the sample and the specification."""</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">validate_order_tuple</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="p">(</span><span class="s2">"p"</span><span class="p">,</span> <span class="s2">"q"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">q</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+                <span class="s2">"q must be at least 1; a VARMA with no moving-average block is a "</span>
+                <span class="s2">"VAR, which estimates in one pass instead of three."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="n">trend</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ma_order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Moving-average order ``q``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_regressors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Regressors per equation, including the innovation lags."""</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">n_regressors</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_long_order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Order of the stage-one autoregression.</span>
+
+<span class="sd">        Grows like the square root of the sample, which dominates any fixed</span>
+<span class="sd">        ``(p, q)`` asymptotically and keeps the residuals consistent for the</span>
+<span class="sd">        innovations, capped at what the sample can identify so that the first</span>
+<span class="sd">        stage never fails on a design its own target cannot support.</span>
+<span class="sd">        """</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">wanted</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nobs</span><span class="p">))))</span>
+        <span class="n">cap</span> <span class="o">=</span> <span class="p">(</span><span class="n">nobs</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic_columns</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">wanted</span><span class="p">,</span> <span class="n">cap</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_burn_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Leading observations lost across all three passes."""</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_long_order</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_max_supported_lags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Largest autoregressive order the sample can identify."""</span>
+        <span class="n">free</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic_columns</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span>
+            <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">free</span> <span class="o">//</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VARMA.lag_order_selection">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.VARMA.html#cultivars.multivariate.VARMA.lag_order_selection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lag_order_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Unavailable: VARMA orders are not nested least-squares candidates.</span>
+
+<span class="sd">        The autoregressive scan the base class runs compares pure lag</span>
+<span class="sd">        structures on one design family; a VARMA's ``(p, q)`` trades the two</span>
+<span class="sd">        polynomials off against each other, and scoring that honestly means</span>
+<span class="sd">        fitting each candidate in full. Fit the specifications under</span>
+<span class="sd">        consideration and rank them with ``information_criteria`` -- the</span>
+<span class="sd">        comparison surface exists precisely for this.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SpecificationError: Always.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="n">SpecificationError</span><span class="p">(</span>
+            <span class="s2">"lag-order selection over a single autoregressive scan is not "</span>
+            <span class="s2">"meaningful for a VARMA: (p, q) candidates are not nested least-"</span>
+            <span class="s2">"squares designs. Fit the candidate specifications and compare "</span>
+            <span class="s2">"their information criteria."</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_innovation_block</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">innovations</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Stack ``u_{t-1}, ..., u_{t-q}`` for rows ``start`` onward."""</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="n">innovations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">innovations</span><span class="p">[</span><span class="n">start</span> <span class="o">-</span> <span class="n">j</span> <span class="p">:</span> <span class="n">nobs</span> <span class="o">-</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stage_regression</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">innovations</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">_VectorMoments</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Regress the sample on its lags and on lagged innovations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            innovations: Estimated innovations aligned with the sample; rows</span>
+<span class="sd">                before their first valid index must already be zero-filled.</span>
+<span class="sd">            start: First time index with a complete regressor history.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Gaussian moments of the regression and the design behind them.</span>
+<span class="sd">        """</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">effective</span> <span class="o">=</span> <span class="n">nobs</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trend</span><span class="p">,</span> <span class="n">effective</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">design</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">det</span><span class="p">,</span>
+                <span class="n">lag_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_innovation_block</span><span class="p">(</span><span class="n">innovations</span><span class="p">,</span> <span class="n">start</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gaussian_moments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">[</span><span class="n">start</span><span class="p">:],</span> <span class="n">design</span><span class="p">),</span> <span class="n">design</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unpack</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">moments</span><span class="p">:</span> <span class="n">_VectorMoments</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Split a stage's coefficients into deterministic, AR, and MA blocks."""</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_deterministic_columns</span>
+        <span class="n">deterministic</span> <span class="o">=</span> <span class="n">moments</span><span class="o">.</span><span class="n">coef</span><span class="p">[:</span><span class="n">head</span><span class="p">]</span>
+        <span class="n">ar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lag_blocks</span><span class="p">(</span><span class="n">moments</span><span class="o">.</span><span class="n">coef</span><span class="p">)</span>
+        <span class="n">ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">moments</span><span class="o">.</span><span class="n">coef</span><span class="p">[</span><span class="n">head</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="n">k</span> <span class="p">:</span> <span class="n">head</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">p</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">k</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">q</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">deterministic</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">ma</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_recursive_innovations</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deterministic</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">ar</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+        <span class="n">ma</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Innovations implied by a parameter draw, computed forward in time.</span>
+
+<span class="sd">        Pre-sample innovations are set to zero; under an invertible</span>
+<span class="sd">        moving-average block their influence decays geometrically, which is</span>
+<span class="sd">        exactly why the caller checks invertibility before trusting this.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            deterministic: Deterministic coefficients, one row per term.</span>
+<span class="sd">            ar: ``(p, k, k)`` autoregressive stack.</span>
+<span class="sd">            ma: ``(q, k, k)`` moving-average stack.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An ``(nobs, k)`` array, zero for the first ``p`` rows.</span>
+<span class="sd">        """</span>
+        <span class="n">nobs</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trend</span><span class="p">,</span> <span class="n">nobs</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">det</span> <span class="o">@</span> <span class="n">deterministic</span> <span class="k">if</span> <span class="n">deterministic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nobs</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nobs</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">,</span> <span class="n">nobs</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">base</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">):</span>
+                <span class="n">point</span> <span class="o">+=</span> <span class="n">ar</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">point</span> <span class="o">+=</span> <span class="n">ma</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">@</span> <span class="n">u</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">u</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span>
+        <span class="k">return</span> <span class="n">u</span>
+
+<div class="viewcode-block" id="VARMA.fit">
+<a class="viewcode-back" href="../../../../api/generated/cultivars.multivariate.VARMA.html#cultivars.multivariate.VARMA.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VARMAResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Estimate the system by the three Hannan-Rissanen passes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The fitted result. ``refined`` on the result records whether the</span>
+<span class="sd">            third pass ran; it is skipped only when the second-stage</span>
+<span class="sd">            moving-average block is not invertible.</span>
+<span class="sd">        """</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ma_order</span>
+        <span class="n">nobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_long_order</span><span class="p">()</span>
+
+        <span class="n">det1</span> <span class="o">=</span> <span class="n">deterministic_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trend</span><span class="p">,</span> <span class="n">nobs</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">design1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">det1</span><span class="p">,</span> <span class="n">lag_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">h</span><span class="p">)])</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">resid1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_least_squares</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">[</span><span class="n">h</span><span class="p">:],</span> <span class="n">design1</span><span class="p">)</span>
+        <span class="n">innovations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nobs</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">innovations</span><span class="p">[</span><span class="n">h</span><span class="p">:]</span> <span class="o">=</span> <span class="n">resid1</span>
+
+        <span class="n">moments</span><span class="p">,</span> <span class="n">design</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stage_regression</span><span class="p">(</span><span class="n">innovations</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="o">+</span> <span class="n">q</span><span class="p">)</span>
+        <span class="n">deterministic</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">ma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unpack</span><span class="p">(</span><span class="n">moments</span><span class="p">)</span>
+
+        <span class="n">refined</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_StabilityAssessment</span><span class="o">.</span><span class="n">assess_stability</span><span class="p">(</span><span class="n">ma</span><span class="p">)</span><span class="o">.</span><span class="n">is_stable</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">refined</span><span class="p">:</span>
+            <span class="n">recursive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recursive_innovations</span><span class="p">(</span><span class="n">deterministic</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">ma</span><span class="p">)</span>
+            <span class="n">moments</span><span class="p">,</span> <span class="n">design</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stage_regression</span><span class="p">(</span><span class="n">recursive</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="o">+</span> <span class="n">p</span><span class="p">)</span>
+            <span class="n">deterministic</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">ma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unpack</span><span class="p">(</span><span class="n">moments</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">VARMAResult</span><span class="p">(</span>
+            <span class="n">endog</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_endog</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
+            <span class="n">trend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trend</span><span class="p">,</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="n">ar</span><span class="p">,</span>
+            <span class="n">ma_coefficients</span><span class="o">=</span><span class="n">ma</span><span class="p">,</span>
+            <span class="n">deterministic</span><span class="o">=</span><span class="n">deterministic</span><span class="p">,</span>
+            <span class="n">long_order</span><span class="o">=</span><span class="n">h</span><span class="p">,</span>
+            <span class="n">refined</span><span class="o">=</span><span class="n">refined</span><span class="p">,</span>
+            <span class="n">sigma_u</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">,</span>
+            <span class="n">sigma_ml</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">sigma_ml</span><span class="p">,</span>
+            <span class="n">resid</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
+            <span class="n">fittedvalues</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span>
+            <span class="n">design</span><span class="o">=</span><span class="n">design</span><span class="p">,</span>
+            <span class="n">llf</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span>
+            <span class="n">nobs</span><span class="o">=</span><span class="n">moments</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span>
+            <span class="n">n_params</span><span class="o">=</span><span class="n">k</span> <span class="o">*</span> <span class="n">moments</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Nikhil Sunder.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
