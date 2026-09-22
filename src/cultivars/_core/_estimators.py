@@ -45,7 +45,6 @@ from ._defaults import (
     _PENALTY,
 )
 from ._mappings import (
-    _DISCREPANCIES,
     _GLS_DETREND_C,
     _KPSS_CRITICAL,
     _MACKINNON_CRITICAL_2010,
@@ -56,6 +55,7 @@ from ._mappings import (
     _MACKINNON_TAU_STAR,
 )
 from ._matrices import deterministic_columns, lag_matrix
+from ._spectra import _seasonal_frequencies
 from ._transforms import _rank_normalize, _split_chains, fractional_difference_weights
 from ._types import CointegrationTrend, _FTest
 from ._validators import _validate_posterior_draws, bandwidth
@@ -1118,6 +1118,34 @@ def _excess_kurtosis(panel: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 def _skewness(panel: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Skewness of each column of an ``(n, k)`` panel."""
     return np.asarray((_standardized(panel) ** 3).mean(axis=0))
+
+
+# ----------------misplaced but avoids import cycle----------------------------------------
+
+_DISCREPANCIES: dict[str, Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]]] = {
+    "mean": lambda panel: np.asarray(panel.mean(axis=0)),
+    "sd": lambda panel: np.asarray(panel.std(axis=0, ddof=1)),
+    "min": lambda panel: np.asarray(panel.min(axis=0)),
+    "max": lambda panel: np.asarray(panel.max(axis=0)),
+    "skewness": _skewness,
+    "kurtosis": _excess_kurtosis,
+    "acf1": _lag_one_autocorrelation,
+    "arch1": lambda panel: _lag_one_autocorrelation(_standardized(panel) ** 2),
+}
+"""Named per-variable discrepancy statistics, each ``(n, k) -> (k,)``.
+
+``kurtosis`` is excess kurtosis; ``arch1`` is the lag-one autocorrelation
+of the squared demeaned series, the volatility-clustering statistic.
+"""
+
+_DISCREPANCY_NAMES: tuple[str, ...] = tuple(_DISCREPANCIES)
+"""Every discrepancy statistic a check can compute, by name.
+
+``mean``, ``sd``, ``min``, ``max``, ``skewness``, ``kurtosis`` (excess),
+``acf1`` (lag-one autocorrelation), and ``arch1`` (lag-one autocorrelation
+of the squared demeaned series).
+"""
+# ----------------------------------------------------------------------------------------
 
 
 def _discrepancy_statistics(
@@ -2731,16 +2759,6 @@ def _exact_local_whittle(
 
     result = minimize_scalar(objective, bounds=bounds, method="bounded")
     return float(result.x), float(1.0 / (2.0 * np.sqrt(m)))
-
-
-def _seasonal_frequencies(period: int) -> tuple[float, ...]:
-    """Harmonic seasonal frequencies ``2 pi k / s`` for ``k = 1 .. s/2 - 1``.
-
-    Example:
-        >>> np.round(_seasonal_frequencies(4), 4)
-        array([1.5708])
-    """
-    return tuple(2.0 * np.pi * k / period for k in range(1, period // 2))
 
 
 def _hegy_regressors(y: npt.NDArray[np.float64], period: int) -> npt.NDArray[np.float64]:

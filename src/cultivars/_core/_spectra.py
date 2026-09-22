@@ -41,6 +41,16 @@ import numpy.typing as npt
 from ..exceptions import NumericalError, SpecificationError
 
 
+def _seasonal_frequencies(period: int) -> tuple[float, ...]:
+    """Harmonic seasonal frequencies ``2 pi k / s`` for ``k = 1 .. s/2 - 1``.
+
+    Example:
+        >>> np.round(_seasonal_frequencies(4), 4)
+        array([1.5708])
+    """
+    return tuple(2.0 * np.pi * k / period for k in range(1, period // 2))
+
+
 def frequency_grid(n_frequencies: int) -> npt.NDArray[np.float64]:
     """An inclusive uniform grid on ``[0, pi]``.
 

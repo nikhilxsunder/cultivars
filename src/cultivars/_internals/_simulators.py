@@ -5,9 +5,8 @@ from collections.abc import Callable
 import numpy as np
 import numpy.typing as npt
 
-from .._core import _SQRT_2_OVER_PI, deterministic_columns
+from .._core import _SQRT_2_OVER_PI, deterministic_columns, psd_sqrt
 from ..exceptions import DimensionError, SpecificationError
-from ._matrices import _psd_factor
 from ._solutions import _PerturbationSolution
 
 
@@ -105,7 +104,7 @@ def _simulate_perturbation(
     states, controls = _simulate_pruned(solution, shocks)
     latent = np.hstack([states[burn:], controls[burn:]])
     p = design.shape[0]
-    noise = rng.standard_normal((n, p)) @ _psd_factor(obs_cov).T
+    noise = rng.standard_normal((n, p)) @ psd_sqrt(obs_cov).T
     return np.asarray(latent @ design.T + intercept + noise, dtype=np.float64)
 
 

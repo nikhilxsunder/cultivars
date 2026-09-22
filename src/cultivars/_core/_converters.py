@@ -43,10 +43,10 @@ import numpy.typing as npt
 
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 from ._defaults import _CRITICAL_LEVELS, _MIN_CHAIN_DRAWS
-from ._estimators import _seasonal_frequencies
 from ._loaders import require_optional
 from ._mappings import _KASS_RAFTERY_SCALE
 from ._polynomials import _aggregation_weights
+from ._spectra import _seasonal_frequencies
 from ._types import Frequency
 
 if TYPE_CHECKING:  # pragma: no cover - typing only

@@ -109,6 +109,8 @@ from ._defaults import (
     _WHITTLE_EXPONENT,
 )
 from ._estimators import (
+    _DISCREPANCIES,  # TODO: Move to _mappings without import cycling
+    _DISCREPANCY_NAMES,  # TODO: Move to _mappings without import cycling
     _alternate_turns,
     _andrews_bandwidth,
     _autoregressive_design,
@@ -164,7 +166,6 @@ from ._estimators import (
     _rhat,
     _schwert_max_lags,
     _seasonal_deterministics,
-    _seasonal_frequencies,
     _seasonal_trig_columns,
     _segment_ssr,
     _select_dickey_fuller_lags,
@@ -189,8 +190,6 @@ from ._estimators import (
 from ._mappings import (
     _CUSUM_BOUNDARY,
     _DFGLS_CRITICAL,
-    _DISCREPANCIES,
-    _DISCREPANCY_NAMES,
     _GLS_DETREND_C,
     _KASS_RAFTERY_SCALE,
     _KPSS_CRITICAL,
@@ -311,6 +310,7 @@ from ._spectra import (
     _multitaper_density,
     _pairwise_measure,
     _penalty_cutoff_period,
+    _seasonal_frequencies,
     _welch_density,
     frequency_grid,
     spectral_matrix,
