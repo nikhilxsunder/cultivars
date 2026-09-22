@@ -10,7 +10,6 @@ from typing import TypeAliasType
 
 from sphinx.application import Sphinx
 from sphinx.pycode import ModuleAnalyzer
-from traitlets import Any
 
 # -- Path setup --------------------------------------------------------------
 _ROOT = Path(__file__).resolve().parents[2]
@@ -20,10 +19,12 @@ sys.path.insert(0, str(_ROOT / "src"))
 with open(_ROOT / "pyproject.toml", "rb") as _f:
     _META = tomllib.load(_f)["project"]
 
+from cultivars.__about__ import __version__  # noqa: E402
+
 project: str = "cultivars"
 copyright: str = "2026, Nikhil Sunder"
 author: str = "Nikhil Sunder"
-release: str = _META["version"]
+release: str = __version__
 version: str = ".".join(release.split(".")[:2])
 
 # -- General configuration ---------------------------------------------------
@@ -155,9 +156,9 @@ html_title: str = "cultivars"
 html_logo: str = "_static/cultivars-logo.png"
 html_favicon: str = "_static/cultivars-favicon.ico"
 html_static_path: list[str] = ["_static"]
-html_extra_path: list[str] = ["robots.txt"]
+# html_extra_path: list[str] = ["robots.txt"]
 html_css_files: list[str] = ["custom.css"]
-html_js_files: list[str] = ["json_ld.js"]
+# html_js_files: list[str] = ["json_ld.js"]
 html_show_sourcelink: bool = False
 
 html_theme_options: dict[str, object] = {
@@ -190,10 +191,10 @@ html_theme_options: dict[str, object] = {
         },
         {
             "name": "OpenSSF",
-            "url": "https://www.bestpractices.dev/projects/10158",
+            "url": "",
             "icon": "fas fa-trophy",
         },
-        {"name": "Zenodo", "url": "https://doi.org/10.5281/zenodo.17635942", "icon": "fas fa-book"},
+        {"name": "Zenodo", "url": "", "icon": "fas fa-book"},
     ],
     "use_edit_page_button": True,
     "show_toc_level": 2,
@@ -239,7 +240,12 @@ doctest_global_setup: str = "import numpy as np\nimport cultivars"
 
 # -- autodoc hooks -----------------------------------------------------------
 def _document_type_alias(
-    app: Sphinx, what: str, name: str, obj: Any, options: dict[str, Any], lines: list[str]
+    app: Sphinx,
+    what: str,
+    name: str,
+    obj: object,
+    options: dict[str, object],
+    lines: list[str],
 ) -> None:
     """Document PEP 695 ``type`` aliases re-exported through ``cultivars.typing``.
 
@@ -251,11 +257,14 @@ def _document_type_alias(
     if what != "data" or not isinstance(obj, TypeAliasType):
         return
     value = repr(obj.__value__).replace("typing.", "")
-    try:
-        attr_docs = ModuleAnalyzer.for_module(obj.__module__).find_attr_docs()
-        doc = list(attr_docs.get(("", obj.__name__), []))
-    except Exception:  # pragma: no cover - analyzer failure is non-fatal
-        doc = []
+    doc: list[str] = []
+    module = obj.__module__
+    if module is not None:
+        try:
+            attr_docs = ModuleAnalyzer.for_module(module).find_attr_docs()
+            doc = list(attr_docs.get(("", obj.__name__), []))
+        except Exception:  # pragma: no cover - analyzer failure is non-fatal
+            doc = []
     lines[:] = [f"Alias of ``{value}``.", "", *doc]
 
 

@@ -254,13 +254,13 @@ class MFVAR:
     unfinished feature. Simulating a three-variable monthly VAR with one
     variable observed only as a quarterly average and estimating by EM:
 
-    ==========  ==========  ============  ===========
-    ``T``       ``|A err|``  ``Sigma11``   ``|S err|``
-    ==========  ==========  ============  ===========
-    control      0.051       1.100          0.060
-    1500         0.129       2.629          1.469
-    6000         0.183       3.104          1.944
-    ==========  ==========  ============  ===========
+    =========  ===========  ===========  ===========
+    ``T``      ``|A err|``  ``Sigma11``  ``|S err|``
+    =========  ===========  ===========  ===========
+    control    0.051        1.100        0.060
+    1500       0.129        2.629        1.469
+    6000       0.183        3.104        1.944
+    =========  ===========  ===========  ===========
 
     against a truth of ``Sigma11 = 1.160``. The control row is the identical
     estimator with nothing aggregated, so the machinery is sound. The error in
