@@ -28,11 +28,11 @@ purposes.
 
 __title__ = "cultivars"
 __description__ = (
-    "A modern computing library in python for providing vector autoregressions and other"
-    " autoregressive economic models."
+    "Research-grade time series econometrics: ARIMA to state space, VAR to structural"
+    " identification, Bayesian and spectral methods."
 )
-__summary__ = "A modern computing library in python for providing vector autoregressions."
-__version__ = "1.0.0"
+__summary__ = "Research-grade time series econometrics."
+__version__ = "1.0.0a1"
 __copyright__ = "Copyright (c) 2026 Nikhil Sunder"
 __author__ = "Nikhil Sunder"
 __email__ = "nsunder724@gmail.com"

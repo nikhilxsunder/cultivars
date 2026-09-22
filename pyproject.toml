@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cultivars"
-version = "0.0.2"
-description = "A modern computing library in python for providing vector autoregressions and similar economic models."
+dynamic = ["version"]
+description = "Research-grade time series econometrics: ARIMA to state space, VAR to structural identification, Bayesian and spectral methods."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -13,7 +13,8 @@ authors = [
 ]
 requires-python = ">=3.12,<4.0"
 keywords = [
-    "vector autoregression", "VAR", "econometrics", "time series", "economic modeling", "financial modeling"
+    "econometrics", "time series", "vector autoregression", "VAR", "state space", "Kalman filter",
+    "Bayesian", "spectral analysis", "forecasting", "macroeconomics",
 ]
 classifiers = [
     'Programming Language :: Python',
@@ -23,13 +24,16 @@ classifiers = [
     'Programming Language :: Python :: 3.14',
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
     "Intended Audience :: Financial and Insurance Industry",
-    "Topic :: Office/Business :: Financial :: Investment"
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Typing :: Typed",
 ]
 dependencies = [
     "numpy",
-    "numba",
+#    "numba",
     "scipy",
     "fedfred",
 ]
@@ -107,8 +111,29 @@ managed = true
 
 # ── build ────────────────────────────────────────────────────────────────────
 
+[tool.hatch.version]
+path = "src/cultivars/__about__.py"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/cultivars"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".docs",
+    ".github",
+    ".vscode",
+    "assets",
+    "benchmarks",
+    "conda-forge",
+    "conda-recipe",
+    "docs",
+    "examples",
+    "node_modules",
+    "paper",
+    "*.md",
+    "!README.md",
+    "!CHANGELOG.md",
+]
 
 # ── tool configs ─────────────────────────────────────────────────────────────
 
