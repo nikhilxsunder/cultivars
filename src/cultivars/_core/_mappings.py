@@ -154,3 +154,9 @@ _ZIVOT_ANDREWS_CRITICAL: Final[dict[str, tuple[float, float, float]]] = {
 
 _CUSUM_BOUNDARY: Final[dict[str, float]] = {"1%": 1.143, "5%": 0.948, "10%": 0.850}
 """Brown, Durbin and Evans (1975) multipliers of the CUSUM boundary."""
+
+_TURNING_POINT_RULES: Final[dict[str, tuple[int, int, int]]] = {
+    "quarterly": (2, 2, 5),
+    "monthly": (5, 6, 15),
+}
+"""``(window, min_phase, min_cycle)`` of Harding-Pagan (quarterly) and Bry-Boschan (monthly)."""

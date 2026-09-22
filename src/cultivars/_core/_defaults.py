@@ -312,3 +312,35 @@ _SPECTRAL_METHOD_TITLES: Final[dict[str, str]] = {
     "welch": "Welch",
 }
 """Titles for the spectral estimation methods."""
+
+_MORLET_OMEGA0: Final[float] = 6.0
+"""Morlet centre frequency; at 6 the wavelet is admissible and scale ~ Fourier period."""
+
+_SCALES_PER_OCTAVE: Final[int] = 8
+"""Voices per octave on the wavelet scale grid."""
+
+_COHERENCE_SURROGATES: Final[int] = 300
+"""AR(1) surrogate pairs behind a wavelet-coherence significance level."""
+
+_SQRT2 = float(np.sqrt(2.0))
+
+_SCALING_FILTERS: dict[str, tuple[float, ...]] = {
+    "haar": (1.0 / _SQRT2, 1.0 / _SQRT2),
+    "d4": (
+        0.4829629131445341,
+        0.8365163037378079,
+        0.2241438680420134,
+        -0.1294095225512604,
+    ),
+    "la8": (
+        -0.07576571478934,
+        -0.02963552764600,
+        0.49761866763246,
+        0.80373875180538,
+        0.29785779560554,
+        -0.09921954357694,
+        -0.01260396726226,
+        0.03222310060407,
+    ),
+}
+"""Orthonormal DWT scaling filters ``g``, unit energy, from Percival and Walden (2000)."""

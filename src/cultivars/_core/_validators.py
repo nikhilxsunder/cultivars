@@ -1424,3 +1424,32 @@ def _validate_seasonal(endog: npt.ArrayLike, period: int) -> npt.NDArray[np.floa
             f"{_MIN_SEASONAL_CYCLES * period} observations; got {y.shape[0]}."
         )
     return y
+
+
+def _validate_chronology(value: npt.ArrayLike) -> npt.NDArray[np.bool_]:
+    """Coerce a binary chronology: booleans as given, probabilities thresholded at one half.
+
+    Args:
+        value: ``(T,)`` boolean flags or a probability series such as a
+            Markov-switching model's smoothed regime probability.
+
+    Returns:
+        ``(T,)`` boolean flags.
+
+    Raises:
+        DimensionError: If the input is not one-dimensional.
+        NumericalError: If a probability series is non-finite.
+
+    Example:
+        >>> _validate_chronology([0.9, 0.4, 0.5]).tolist()
+        [True, False, False]
+    """
+    array = np.asarray(value)
+    if array.ndim != 1:
+        raise DimensionError(f"a chronology must be one-dimensional; got shape {array.shape}.")
+    if array.dtype == np.bool_:
+        return np.asarray(array, dtype=np.bool_)
+    probabilities = array.astype(np.float64)
+    if not np.all(np.isfinite(probabilities)):
+        raise NumericalError("a probability chronology must be finite.")
+    return np.asarray(probabilities > 0.5, dtype=np.bool_)

@@ -1,4 +1,4 @@
-"""Frequency-domain views of fitted systems and data, band-pass and trend-cycle filters."""
+"""Frequency-domain views of fitted systems and data, filters, cycle dating, and wavelets."""
 
 from .band_pass import BandPassResult, BaxterKingFilter, ChristianoFitzgeraldFilter
 from .causality import (
@@ -7,6 +7,7 @@ from .causality import (
     SpectralCausality,
     SpectralCausalityResult,
 )
+from .cycles import TurningPoints, TurningPointsResult, concordance
 from .density import SpectralDensity, SpectralDensityResult
 from .filters import (
     BeveridgeNelsonDecomposition,
@@ -16,8 +17,10 @@ from .filters import (
     HodrickPrescottFilter,
 )
 from .periodogram import DaniellSpectrum, MultitaperSpectrum, SpectrumEstimate, WelchSpectrum
+from .wavelets import MODWT, MODWTResult, WaveletCoherence, WaveletCoherenceResult
 
 __all__ = [
+    "MODWT",
     "BandPassResult",
     "BaxterKingFilter",
     "BeveridgeNelsonDecomposition",
@@ -29,11 +32,17 @@ __all__ = [
     "DecompositionFilterResult",
     "HamiltonFilter",
     "HodrickPrescottFilter",
+    "MODWTResult",
     "MultitaperSpectrum",
     "SpectralCausality",
     "SpectralCausalityResult",
     "SpectralDensity",
     "SpectralDensityResult",
     "SpectrumEstimate",
+    "TurningPoints",
+    "TurningPointsResult",
+    "WaveletCoherence",
+    "WaveletCoherenceResult",
     "WelchSpectrum",
+    "concordance",
 ]

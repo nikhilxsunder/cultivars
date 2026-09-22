@@ -3242,3 +3242,105 @@ def _beveridge_nelson(
     for j in range(q):
         state[j:, width + j] = resid[: n - j]
     return state @ weights
+
+
+def _candidate_turns(
+    y: npt.NDArray[np.float64], window: int
+) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]]:
+    """Local maxima and minima over a two-sided window of ``window`` observations.
+
+    ``t`` is a candidate peak when ``y_t`` exceeds every ``y_{t +- k}``
+    for ``k = 1 .. window``, and a candidate trough symmetrically; the
+    first and last ``window`` observations cannot qualify.
+
+    Args:
+        y: ``(T,)`` series.
+        window: Half-width ``K``; Harding-Pagan use 2 quarterly, Bry-
+            Boschan 5 monthly.
+
+    Returns:
+        ``(peaks, troughs)`` as sorted index arrays.
+
+    Example:
+        >>> y = np.array([0.0, 1.0, 3.0, 1.0, 0.0, 2.0, 4.0, 2.0, 1.0])
+        >>> peaks, troughs = _candidate_turns(y, 2)
+        >>> peaks.tolist(), troughs.tolist()
+        ([2, 6], [4])
+    """
+    n = y.shape[0]
+    peaks, troughs = [], []
+    for t in range(window, n - window):
+        neighbours = np.concatenate([y[t - window : t], y[t + 1 : t + window + 1]])
+        if np.all(y[t] > neighbours):
+            peaks.append(t)
+        elif np.all(y[t] < neighbours):
+            troughs.append(t)
+    return np.asarray(peaks, dtype=np.int64), np.asarray(troughs, dtype=np.int64)
+
+
+def _alternate_turns(
+    y: npt.NDArray[np.float64], peaks: npt.NDArray[np.int64], troughs: npt.NDArray[np.int64]
+) -> list[tuple[int, bool]]:
+    """Merge candidate peaks and troughs into a strictly alternating sequence.
+
+    Of two or more consecutive peaks the highest survives, of consecutive
+    troughs the lowest, so the sequence reads peak, trough, peak, ...
+
+    Returns:
+        ``[(index, is_peak), ...]`` in time order.
+
+    Example:
+        >>> y = np.array([0.0, 3.0, 2.0, 4.0, 0.0, 1.0])
+        >>> _alternate_turns(y, np.array([1, 3]), np.array([4]))
+        [(3, True), (4, False)]
+    """
+    turns = sorted([(int(i), True) for i in peaks] + [(int(i), False) for i in troughs])
+    merged: list[tuple[int, bool]] = []
+    for index, is_peak in turns:
+        if merged and merged[-1][1] == is_peak:
+            previous = merged[-1][0]
+            better = y[index] > y[previous] if is_peak else y[index] < y[previous]
+            if better:
+                merged[-1] = (index, is_peak)
+        else:
+            merged.append((index, is_peak))
+    return merged
+
+
+def _enforce_durations(
+    y: npt.NDArray[np.float64], turns: list[tuple[int, bool]], min_phase: int, min_cycle: int
+) -> list[tuple[int, bool]]:
+    """Drop turns until every phase lasts ``min_phase`` and every cycle ``min_cycle`` observations.
+
+    Turns are removed in pairs, which keeps the sequence alternating: a
+    phase shorter than the minimum loses both its ends, and a cycle
+    shorter than the minimum loses the ends of its smaller-amplitude
+    phase. Passes repeat until nothing changes, as in Harding-Pagan's
+    BBQ.
+
+    Example:
+        >>> y = np.array([0.0, 3.0, 2.9, 3.1, 0.0, 1.0, 5.0, 1.0])
+        >>> turns = [(1, True), (2, False), (3, True), (4, False), (6, True)]
+        >>> _enforce_durations(y, turns, 2, 4)
+        [(3, True), (4, False), (6, True)]
+    """
+    current = list(turns)
+    while len(current) >= 2:
+        short = next(
+            (i for i in range(len(current) - 1) if current[i + 1][0] - current[i][0] < min_phase),
+            None,
+        )
+        if short is not None:
+            del current[short : short + 2]
+            continue
+        brief = next(
+            (i for i in range(len(current) - 2) if current[i + 2][0] - current[i][0] < min_cycle),
+            None,
+        )
+        if brief is None:
+            break
+        first = abs(y[current[brief + 1][0]] - y[current[brief][0]])
+        second = abs(y[current[brief + 2][0]] - y[current[brief + 1][0]])
+        start = brief if first <= second else brief + 1
+        del current[start : start + 2]
+    return current

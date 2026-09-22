@@ -33,6 +33,8 @@ axis zero everywhere.
 
 from __future__ import annotations
 
+from itertools import pairwise
+
 import numpy as np
 import numpy.typing as npt
 
@@ -223,3 +225,43 @@ def _pinball_loss(
         )
     gap = realized - quantile
     return np.asarray(np.where(gap >= 0.0, tau * gap, (tau - 1.0) * gap), dtype=np.float64)
+
+
+def _concordance(first: npt.NDArray[np.bool_], second: npt.NDArray[np.bool_]) -> float:
+    """Harding-Pagan concordance: the share of dates on which two binary chronologies agree.
+
+    Example:
+        >>> a = np.array([True, True, False, False])
+        >>> _concordance(a, np.array([True, False, False, False]))
+        0.75
+    """
+    return float(np.mean(first == second))
+
+
+def _phase_statistics(
+    y: npt.NDArray[np.float64], turns: list[tuple[int, bool]]
+) -> tuple[tuple[int, int, bool, int, float, float], ...]:
+    """Duration, amplitude and Harding-Pagan excess of every completed phase.
+
+    Each row is ``(start, end, is_contraction, duration, amplitude,
+    excess)``: the phase runs from one turn to the next, its amplitude is
+    the change in ``y`` over it, and its excess is the area between the
+    path and the straight line joining its ends, relative to the triangle
+    that line closes, positive when the path bows above the line.
+
+    Example:
+        >>> y = np.array([0.0, 2.0, 3.0, 1.0, 0.0])
+        >>> rows = _phase_statistics(y, [(0, False), (2, True), (4, False)])
+        >>> [(r[3], r[4], round(r[5], 3)) for r in rows]
+        [(2, 3.0, 0.167), (2, -3.0, -0.167)]
+    """
+    rows = []
+    for (start, is_peak), (end, _) in pairwise(turns):
+        duration = end - start
+        amplitude = float(y[end] - y[start])
+        line = y[start] + amplitude * np.arange(duration + 1) / duration
+        area = float(np.trapezoid(y[start : end + 1] - line))
+        triangle = 0.5 * duration * abs(amplitude)
+        excess = area / triangle if triangle > 0.0 else 0.0
+        rows.append((int(start), int(end), bool(is_peak), int(duration), amplitude, float(excess)))
+    return tuple(rows)
