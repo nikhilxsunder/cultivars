@@ -2,3 +2,58 @@
 table.autosummary td:first-child {
   white-space: nowrap;
 }
+
+/* ---- Full-width layout, after docs.pytorch.org ------------------------ */
+
+/* The theme caps header and body at 88rem and centres them. */
+.bd-page-width {
+  max-width: 100%;
+}
+
+/* PyTorch re-caps at 1800px on very wide displays so line lengths stay sane. */
+@media (min-width: 1800px) {
+  .bd-page-width {
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* The theme caps the article at 60em. Keep this rule separate from the one
+   above: merging the selectors lowers specificity and the override fails. */
+.bd-main .bd-content .bd-article-container {
+  max-width: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.bd-main .bd-content .bd-article-container .bd-article {
+  padding-left: 0;
+  padding-right: 1rem;
+  padding-top: 1rem;
+}
+
+/* Sidebars: 15% each instead of 25%, with floors, pushed to the screen edges.
+   Scoped to the breakpoints at which the theme renders them in-flow, so the
+   off-canvas mobile drawers keep the theme's own 75% width. */
+@media (min-width: 960px) {
+  .bd-sidebar-primary {
+    width: 15%;
+    min-width: 200px;
+    padding: 1rem 1.5rem 1rem 3rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .bd-sidebar-secondary {
+    width: 15%;
+    min-width: 180px;
+    padding: 1rem 3rem 1rem 1rem;
+  }
+}
+
+/* Header gutters match the article so the brand lines up with the sidebar. */
+.bd-header .bd-header__inner {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}

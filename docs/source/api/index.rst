@@ -19,8 +19,4 @@ implementation detail and may change between releases without notice.
    cultivars.forecast
    cultivars.spectral
    cultivars.exceptions
-
-.. toctree::
-   :maxdepth: 1
-
-   typing
+   cultivars.typing

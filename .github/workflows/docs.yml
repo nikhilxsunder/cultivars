@@ -2,68 +2,130 @@ name: Build and Deploy Docs
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
+    tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Which build to (re)deploy: dev, stable, or a release like 1.0.0a1"
+        required: true
+        default: dev
 
 permissions:
   contents: write
 
+# One deploy at a time: every job pushes to the gh-pages branch.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+env:
+  DOCS_BASE_URL: https://nikhilxsunder.github.io/cultivars/
+
 jobs:
-  build-and-deploy:
+  # Decide what this run builds. main -> stable, dev -> dev, a tag -> its own
+  # numbered directory, a manual run -> what it was asked for. stable is built
+  # from main rather than from the tag so documentation fixes merged after a
+  # release reach the site without waiting for the next one.
+  plan:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          python-version: "3.14"
-
-      - name: Install dependencies
-        run: uv sync --group docs
-
-      - name: Build docs
-        run: uv run --no-sync make -C docs html
-
-      - name: Add IndexNow key file to site root
+      - id: plan
         shell: bash
-        env:
-          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: |
           set -euo pipefail
-          out_dir="./docs/build/html"
-          echo "${INDEXNOW_KEY}" > "${out_dir}/${INDEXNOW_KEY}.txt"
+          case "${GITHUB_EVENT_NAME}" in
+            workflow_dispatch)
+              v="${{ github.event.inputs.version }}"
+              if [ "$v" = "dev" ]; then ref=dev; elif [ "$v" = "stable" ]; then ref=main; else ref="v${v}"; fi
+              builds="[{\"version\":\"$v\",\"ref\":\"$ref\"}]" ;;
+            *)
+              if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+                tag="${GITHUB_REF#refs/tags/}"; ver="${tag#v}"
+                builds="[{\"version\":\"$ver\",\"ref\":\"$tag\"}]"
+              elif [ "${GITHUB_REF_NAME}" = "main" ]; then
+                builds='[{"version":"stable","ref":"main"}]'
+              else
+                builds='[{"version":"dev","ref":"dev"}]'
+              fi ;;
+          esac
+          echo "matrix=$builds" >> "$GITHUB_OUTPUT"
+          echo "plan: $builds"
 
-      - name: Deploy to GitHub Pages
+  build:
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        include: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.ref }}
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.14"
+      - name: Install dependencies
+        run: uv sync --group docs
+      - name: Build docs
+        env:
+          DOCS_VERSION: ${{ matrix.version }}
+          DOCS_GIT_REF: ${{ matrix.ref }}
+        run: |
+          rm -rf docs/source/*/generated
+          uv run --no-sync make -C docs html
+      - name: Deploy ${{ matrix.version }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
+          destination_dir: ${{ matrix.version }}
 
-      - name: Notify IndexNow (Bing) of updated docs
+  # Root of the site: redirect, robots.txt, the switcher list, the IndexNow
+  # key. keep_files is what protects the version directories from this push.
+  root:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.14"
+      - name: Install dependencies
+        run: uv sync --group docs
+      - name: Assemble root
         shell: bash
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: |
           set -euo pipefail
-
-          base="https://nikhilxsunder.github.io/cultivars"
-          endpoint="https://www.bing.com/indexnow"
-          host="nikhilxsunder.github.io"
-          key_location="${base}/${INDEXNOW_KEY}.txt"
-
-          payload=$(printf '{
-            "host": "%s",
-            "key": "%s",
-            "keyLocation": "%s",
-            "urlList": [
-              "%s/",
-              "%s/sitemap.xml"
-            ]
-          }' "$host" "$INDEXNOW_KEY" "$key_location" "$base" "$base")
-
-          echo "$payload" | curl -sS -X POST "$endpoint" \
-            -H "Content-Type: application/json; charset=utf-8" \
-            --data-binary @-
-
+          mkdir -p site-root
+          cp docs/root/index.html docs/root/robots.txt site-root/
+          uv run --no-sync python docs/switcher.py write \
+            --base-url "${DOCS_BASE_URL}" --output site-root/switcher.json
+          echo "${INDEXNOW_KEY}" > "site-root/${INDEXNOW_KEY}.txt"
+      - name: Deploy root
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site-root
+          keep_files: true
+      - name: Notify IndexNow (Bing)
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: |
+          set -euo pipefail
+          base="${DOCS_BASE_URL%/}"
+          payload=$(printf '{"host":"nikhilxsunder.github.io","key":"%s","keyLocation":"%s/%s.txt","urlList":["%s/stable/","%s/stable/sitemap.xml"]}' \
+            "$INDEXNOW_KEY" "$base" "$INDEXNOW_KEY" "$base" "$base")
+          echo "$payload" | curl -sS -X POST "https://www.bing.com/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" --data-binary @-
           echo "IndexNow notification sent."

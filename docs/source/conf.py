@@ -3,6 +3,7 @@
 #
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
 import sys
 import tomllib
 from pathlib import Path
@@ -149,15 +150,27 @@ extlinks: dict[str, tuple[str, str]] = {
     "scipy-doc": ("https://docs.scipy.org/doc/scipy/reference/%s", "SciPy Docs: %s"),
 }
 
+# -- switcher ---------------------------------------------------------------
+
+_DOCS_VERSION: str = os.environ.get("DOCS_VERSION", "dev")  # dev | stable | <release>
+_DOCS_GIT_REF: str = os.environ.get("DOCS_GIT_REF", "dev")  # branch or tag, for Edit on GitHub
+
+# Every build declares stable as canonical: dev and archives consolidate to it.
+html_baseurl: str = "https://nikhilxsunder.github.io/cultivars/stable/"
+
+# Only stable publishes a sitemap; nothing else is meant to be indexed.
+if _DOCS_VERSION != "stable":
+    extensions.remove("sphinx_sitemap")
+
 # -- HTML output -------------------------------------------------------------
-html_baseurl: str = "https://nikhilxsunder.github.io/cultivars/"
 html_theme: str = "pydata_sphinx_theme"
 html_title: str = "cultivars"
 html_logo: str = "_static/cultivars-logo.png"
 html_favicon: str = "_static/cultivars-favicon.ico"
 html_static_path: list[str] = ["_static"]
 # html_extra_path: list[str] = ["robots.txt"]
-html_css_files: list[str] = ["custom.css"]
+html_css_files: list[str] = ["custom.css", "consent.css"]
+html_js_files: list[tuple[str, dict[str, str]]] = [("consent.js", {"defer": "defer"})]
 # html_js_files: list[str] = ["json_ld.js"]
 html_show_sourcelink: bool = False
 
@@ -169,10 +182,16 @@ html_theme_options: dict[str, object] = {
         "text": "cultivars",
     },
     "header_links_before_dropdown": 3,
-    "navbar_start": ["navbar-logo"],
+    "navbar_start": ["navbar-logo", "version-switcher"],
+    "switcher": {
+        "json_url": "https://nikhilxsunder.github.io/cultivars/switcher.json",
+        "version_match": _DOCS_VERSION,
+    },
+    "check_switcher": False,
+    "show_version_warning_banner": False,
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
-    "navbar_align": "right",
+    "navbar_align": "left",
     "icon_links": [
         {
             "name": "GitHub",

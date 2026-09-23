@@ -4,54 +4,58 @@
    :no-members:
 
 {% block classes -%}
-{% if classes %}
+{% if all_classes %}
 Classes
 -------
 
 .. autosummary::
    :toctree:
    :nosignatures:
-{% for item in classes %}
+   :template: engine/class.rst
+{% for item in all_classes %}
    {{ item }}
 {%- endfor %}
 {% endif %}
 {%- endblock %}
 
 {% block functions -%}
-{% if functions %}
+{% if all_functions %}
 Functions
 ---------
 
 .. autosummary::
    :toctree:
-{% for item in functions %}
+   :template: engine/function.rst
+{% for item in all_functions %}
    {{ item }}
 {%- endfor %}
 {% endif %}
 {%- endblock %}
 
 {% block attributes -%}
-{% if attributes %}
+{% if all_attributes %}
 Type aliases and constants
 --------------------------
 
 .. autosummary::
    :toctree:
-{% for item in attributes %}
+   :template: engine/data.rst
+{% for item in all_attributes %}
    {{ item }}
 {%- endfor %}
 {% endif %}
 {%- endblock %}
 
 {% block exceptions -%}
-{% if exceptions %}
+{% if all_exceptions %}
 Exceptions
 ----------
 
 .. autosummary::
    :toctree:
    :nosignatures:
-{% for item in exceptions %}
+   :template: engine/exception.rst
+{% for item in all_exceptions %}
    {{ item }}
 {%- endfor %}
 {% endif %}

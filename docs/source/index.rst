@@ -115,3 +115,4 @@ A few things the example is deliberately showing:
    :hidden:
 
    api/index
+   engine/index
