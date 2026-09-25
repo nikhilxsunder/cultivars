@@ -105,7 +105,7 @@ from .._internals import (
     _NeuralThresholdModel,
 )
 from ..exceptions import DimensionError, SpecificationError
-from ..state_space import NonlinearSSM
+from ..state_space.nonlinear import NonlinearSSM
 
 __all__ = ["ARNN", "TARNN", "ARNNResult", "TARNNResult"]
 

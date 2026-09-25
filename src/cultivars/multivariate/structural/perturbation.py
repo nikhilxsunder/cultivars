@@ -74,7 +74,8 @@ from ..._internals import (
     _SummaryMixin,
 )
 from ...exceptions import SpecificationError
-from ...state_space import LinearGaussianSSM, NonlinearSSM
+from ...state_space.linear_gaussian import LinearGaussianSSM
+from ...state_space.nonlinear import NonlinearSSM
 
 __all__ = [
     "PerturbationDSGE",

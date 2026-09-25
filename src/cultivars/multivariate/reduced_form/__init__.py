@@ -1,42 +1,23 @@
 """Cultivars multivariate reduced form VAR module."""
 
-from .closed_global import GVAR, GVARResult
-from .error_correction import VECM, VECMX, VECMResult, VECMXResult
-from .functional import FunctionalVAR, FunctionalVARResult
-from .mixed_frequency import MFVAR, MIDASVAR, MFVARResult, MIDASVARResult
-from .moving_average import VARMA, VARMAResult
-from .panel import PanelVAR, PanelVARResult
-from .term_structure import (
-    DynamicNelsonSiegel,
-    DynamicNelsonSiegelResult,
-    TimeVaryingNelsonSiegel,
-    TimeVaryingNelsonSiegelResult,
+from . import (
+    closed_global,
+    error_correction,
+    functional,
+    mixed_frequency,
+    moving_average,
+    panel,
+    term_structure,
+    vector_autoregression,
 )
-from .vector_autoregression import VAR, VARX, VARResult, VARXResult
 
 __all__ = [
-    "GVAR",
-    "MFVAR",
-    "MIDASVAR",
-    "VAR",
-    "VARMA",
-    "VARX",
-    "VECM",
-    "VECMX",
-    "DynamicNelsonSiegel",
-    "DynamicNelsonSiegelResult",
-    "FunctionalVAR",
-    "FunctionalVARResult",
-    "GVARResult",
-    "MFVARResult",
-    "MIDASVARResult",
-    "PanelVAR",
-    "PanelVARResult",
-    "TimeVaryingNelsonSiegel",
-    "TimeVaryingNelsonSiegelResult",
-    "VARMAResult",
-    "VARResult",
-    "VARXResult",
-    "VECMResult",
-    "VECMXResult",
+    "closed_global",
+    "error_correction",
+    "functional",
+    "mixed_frequency",
+    "moving_average",
+    "panel",
+    "term_structure",
+    "vector_autoregression",
 ]

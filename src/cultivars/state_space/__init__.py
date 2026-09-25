@@ -47,36 +47,10 @@ package.
 
 from __future__ import annotations
 
-from .linear_gaussian import (
-    DurbinKoopmanSmootherResult,
-    KalmanFilterResult,
-    LinearGaussianSSM,
-)
-from .nonlinear import (
-    NonlinearSSM,
-    ParticleFilterResult,
-    ParticleSmootherResult,
-    RtsSmootherResult,
-)
-from .regime_switching import (
-    HamiltonFilterResult,
-    KimFilterResult,
-    KimSmootherResult,
-    MarkovSwitchingSSM,
-    RegimeSwitchingLinearSSM,
-)
+from . import linear_gaussian, nonlinear, regime_switching
 
 __all__ = [
-    "DurbinKoopmanSmootherResult",
-    "HamiltonFilterResult",
-    "KalmanFilterResult",
-    "KimFilterResult",
-    "KimSmootherResult",
-    "LinearGaussianSSM",
-    "MarkovSwitchingSSM",
-    "NonlinearSSM",
-    "ParticleFilterResult",
-    "ParticleSmootherResult",
-    "RegimeSwitchingLinearSSM",
-    "RtsSmootherResult",
+    "linear_gaussian",
+    "nonlinear",
+    "regime_switching",
 ]

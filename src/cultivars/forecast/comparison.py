@@ -84,7 +84,8 @@ from .._core import (
     _mincer_zarnowitz,
     _validate_aligned_series,
 )
-from .._internals import _ForecastComparisonTest, _SummaryMixin
+from .._internals import _ForecastComparisonTest as ForecastComparisonTest
+from .._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = [
@@ -102,7 +103,7 @@ __all__ = [
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class ClarkWestTest(_ForecastComparisonTest):
+class ClarkWestTest(ForecastComparisonTest):
     """Verdict of the Clark-West (2007) test that a nesting model forecasts better.
 
     The one-sided alternative is that the larger model improves on the
@@ -159,7 +160,7 @@ class ClarkWestTest(_ForecastComparisonTest):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class MincerZarnowitzTest(_ForecastComparisonTest):
+class MincerZarnowitzTest(ForecastComparisonTest):
     """Verdict of the Mincer-Zarnowitz efficiency regression ``y = a + b f``.
 
     An unbiased, efficient point forecast has intercept zero and slope
@@ -226,7 +227,7 @@ class MincerZarnowitzTest(_ForecastComparisonTest):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class EncompassingTest(_ForecastComparisonTest):
+class EncompassingTest(ForecastComparisonTest):
     """Verdict of the forecast encompassing test: does A already contain what B knows?
 
     Forecast A encompasses B when the optimal linear combination of the
@@ -272,7 +273,7 @@ class EncompassingTest(_ForecastComparisonTest):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
-class GiacominiWhiteTest(_ForecastComparisonTest):
+class GiacominiWhiteTest(ForecastComparisonTest):
     """Verdict of the Giacomini-White (2006) test of conditional predictive ability.
 
     The null is not "the two forecasters lose the same on average" but

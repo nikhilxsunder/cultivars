@@ -32,20 +32,6 @@ Functions
 {% endif %}
 {%- endblock %}
 
-{% block attributes -%}
-{% if all_attributes %}
-Type aliases and constants
---------------------------
-
-.. autosummary::
-   :toctree:
-   :template: engine/data.rst
-{% for item in all_attributes %}
-   {{ item }}
-{%- endfor %}
-{% endif %}
-{%- endblock %}
-
 {% block exceptions -%}
 {% if all_exceptions %}
 Exceptions
@@ -56,6 +42,25 @@ Exceptions
    :nosignatures:
    :template: engine/exception.rst
 {% for item in all_exceptions %}
+   {{ item }}
+{%- endfor %}
+{% endif %}
+{%- endblock %}
+
+{% block data -%}
+{% set documented = (all_modules if all_modules is defined else []) + all_classes + all_functions + all_exceptions %}
+{% set data = [] %}
+{% for item in members if item not in documented and not item.startswith("__") %}
+{% set _ = data.append(item) %}
+{% endfor %}
+{% if data %}
+Constants and defaults
+----------------------
+
+.. autosummary::
+   :toctree:
+   :template: engine/data.rst
+{% for item in data %}
    {{ item }}
 {%- endfor %}
 {% endif %}

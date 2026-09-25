@@ -91,7 +91,7 @@ from ..._internals import (
     _VectorMarkovSwitchingFit,
 )
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ..structural import RecursiveSVAR
+from ..structural.zero_restrictions import RecursiveSVAR
 
 __all__ = [
     "MarkovSwitchingDFM",

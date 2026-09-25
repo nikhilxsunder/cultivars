@@ -83,7 +83,7 @@ from ..._internals import (
     _VectorGibbsFit,
     _VectorPosteriorDrawsResult,
 )
-from ...bayes import IndependentNormalWishartPrior
+from ...bayes.priors import IndependentNormalWishartPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["GibbsBVAR", "GibbsBVARResult"]

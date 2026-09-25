@@ -76,21 +76,30 @@ def release_tags() -> list[Version]:
 
 
 def entries(base_url: str, versions: list[Version]) -> list[dict[str, object]]:
-    """Build the switcher entries in display order."""
+    """Build the switcher entries in display order.
+
+    Before the first release there is no ``stable``; ``dev`` is then the
+    preferred entry so the list stays valid and the theme has a canonical
+    version to point at.
+    """
     base = base_url.rstrip("/") + "/"
-    rows: list[dict[str, object]] = [{"name": "dev", "version": "dev", "url": base + "dev/"}]
-    if versions:
-        top = versions[0]
-        rows.append(
-            {
-                "name": f"{top} (stable)",
-                "version": "stable",
-                "url": base + "stable/",
-                "preferred": True,
-            }
-        )
-        for old in versions[1:]:
-            rows.append({"name": str(old), "version": str(old), "url": f"{base}{old}/"})
+    dev: dict[str, object] = {"name": "dev", "version": "dev", "url": base + "dev/"}
+    if not versions:
+        dev["preferred"] = True
+        return [dev]
+    top = versions[0]
+    rows: list[dict[str, object]] = [
+        dev,
+        {
+            "name": f"{top} (stable)",
+            "version": "stable",
+            "url": base + "stable/",
+            "preferred": True,
+        },
+    ]
+    rows.extend(
+        {"name": str(old), "version": str(old), "url": f"{base}{old}/"} for old in versions[1:]
+    )
     return rows
 
 

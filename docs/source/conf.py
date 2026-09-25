@@ -3,10 +3,15 @@
 #
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+from __future__ import annotations
+
+import importlib
+import inspect
 import os
 import sys
 import tomllib
 from pathlib import Path
+from types import FunctionType, MethodType, ModuleType
 from typing import TypeAliasType
 
 from sphinx.application import Sphinx
@@ -34,7 +39,7 @@ extensions: list[str] = [
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.viewcode",
+    "sphinx.ext.linkcode",
     "sphinx.ext.mathjax",
     "sphinx.ext.extlinks",
     "sphinx.ext.doctest",
@@ -43,6 +48,10 @@ extensions: list[str] = [
     "sphinx_sitemap",
     "sphinxext.opengraph",
     "myst_parser",
+    "sphinx_codeautolink",
+    "sphinx_copybutton",
+    "sphinx_remove_toctrees",
+    "sphinx_last_updated_by_git",
 ]
 
 templates_path: list[str] = ["_templates"]
@@ -179,7 +188,6 @@ html_theme_options: dict[str, object] = {
     "logo": {
         "image_light": "_static/cultivars-logo.png",
         "image_dark": "_static/cultivars-logo.png",
-        "text": "cultivars",
     },
     "header_links_before_dropdown": 3,
     "navbar_start": ["navbar-logo", "version-switcher"],
@@ -229,8 +237,8 @@ html_theme_options: dict[str, object] = {
 html_context: dict[str, str] = {
     "github_user": "nikhilxsunder",
     "github_repo": "cultivars",
-    "github_version": "main",
     "doc_path": "docs/source",
+    "github_version": _DOCS_GIT_REF,
 }
 
 html_meta: dict[str, str] = {
@@ -256,6 +264,42 @@ ogp_custom_meta_tags: list[str] = [
 
 # -- doctest -----------------------------------------------------------------
 doctest_global_setup: str = "import numpy as np\nimport cultivars"
+
+
+# -- linkcode ----------------------------------------------------------------
+def linkcode_resolve(domain: str, info: dict[str, str]) -> str | None:
+    """Link each documented object to its source lines on GitHub."""
+    if domain != "py" or not info["module"]:
+        return None
+    obj: object = importlib.import_module(info["module"])
+    for part in info["fullname"].split("."):
+        obj = getattr(obj, part, None)
+        if obj is None:
+            return None
+    if isinstance(obj, property):
+        obj = obj.fget
+    if isinstance(obj, (FunctionType, MethodType)):
+        target: ModuleType | type[object] | FunctionType | MethodType = inspect.unwrap(obj)
+    elif isinstance(obj, (ModuleType, type)):
+        target = obj
+    else:
+        return None
+    try:
+        source_file = inspect.getsourcefile(target)
+        lines, first = inspect.getsourcelines(target)
+    except (OSError, TypeError):
+        return None
+    if source_file is None:
+        return None
+    try:
+        relative = Path(source_file).resolve().relative_to(_ROOT)
+    except ValueError:
+        return None
+    last = first + len(lines) - 1
+    return (
+        f"https://github.com/nikhilxsunder/cultivars/blob/{_DOCS_GIT_REF}"
+        f"/{relative.as_posix()}#L{first}-L{last}"
+    )
 
 
 # -- autodoc hooks -----------------------------------------------------------

@@ -71,7 +71,7 @@ from ..._internals import (
     _FactorVolatilityModel,
     _SummaryMixin,
 )
-from ...bayes import VolatilityPrior
+from ...bayes.priors import VolatilityPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["FactorSV", "FactorSVResult"]

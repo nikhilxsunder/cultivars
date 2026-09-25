@@ -1,5 +1,5 @@
-{{ fullname | escape | underline }}
+{{ objname | escape | underline }}
 
 .. currentmodule:: {{ module }}
 
-.. auto{{ objtype }}:: {{ objname }}
+.. autodata:: {{ objname }}

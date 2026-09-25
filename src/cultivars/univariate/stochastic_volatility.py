@@ -73,9 +73,10 @@ from .._internals import (
     _UCSVPosterior,
     _volatility_state_space,
 )
-from ..bayes import RandomWalkVolatilityPrior, VolatilityPrior
+from ..bayes.priors import RandomWalkVolatilityPrior, VolatilityPrior
 from ..exceptions import SpecificationError
-from ..state_space import LinearGaussianSSM, NonlinearSSM
+from ..state_space.linear_gaussian import LinearGaussianSSM
+from ..state_space.nonlinear import NonlinearSSM
 
 __all__ = [
     "SV",

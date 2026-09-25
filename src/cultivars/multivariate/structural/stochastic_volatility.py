@@ -96,9 +96,9 @@ from ..._internals import (
     _VolatilityIdentificationModel,
     _VolatilityStructuralFit,
 )
-from ...bayes import VolatilityPrior
+from ...bayes.priors import VolatilityPrior
 from ...exceptions import SpecificationError
-from ...state_space import LinearGaussianSSM
+from ...state_space.linear_gaussian import LinearGaussianSSM
 from .zero_restrictions import SVARResult
 
 __all__ = [

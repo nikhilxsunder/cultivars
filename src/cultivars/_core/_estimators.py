@@ -58,7 +58,7 @@ from ._matrices import deterministic_columns, lag_matrix
 from ._spectra import _seasonal_frequencies
 from ._transforms import _rank_normalize, _split_chains, fractional_difference_weights
 from ._types import CointegrationTrend, _FTest
-from ._validators import _validate_posterior_draws, bandwidth
+from ._validators import _validate_posterior_draws, bandwidth, validate_choice
 
 
 def ols(
@@ -318,10 +318,7 @@ def simulate_cointegration_null(
         raise SpecificationError(f"n must be at least 1; got {n}.")
     if n_exog < 0:
         raise SpecificationError(f"n_exog must be non-negative; got {n_exog}.")
-    if case not in CointegrationTrend.__value__:
-        raise SpecificationError(
-            f"case must be one of {CointegrationTrend.__value__}; got {case!r}."
-        )
+    validate_choice(case, CointegrationTrend, "case")
     if simulations < 1 or steps < 1:
         raise SpecificationError("simulations and steps must both be positive.")
     rng = np.random.default_rng(seed)

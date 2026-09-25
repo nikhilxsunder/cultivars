@@ -1,38 +1,29 @@
 """Large-dimensional multivariate models."""
 
-from .bayesian import BVAR, BVARResult
-from .dynamic_factor import DFM, DFMResult
-from .factor_augmented import FAVAR, FAVARResult
-from .factor_volatility import FactorSV, FactorSVResult
-from .gibbs import GibbsBVAR, GibbsBVARResult
-from .graphical import GraphicalVAR, GraphicalVARResult
-from .hierarchical import HierarchicalBVAR, HierarchicalBVARResult
-from .sparse import SparseVAR, SparseVARResult
-from .spillover import Spillover, SpilloverResult
-from .student import StudentBVAR, StudentBVARResult
-from .volatility import BVARSV, BVARSVResult
+from . import (
+    bayesian,
+    dynamic_factor,
+    factor_augmented,
+    factor_volatility,
+    gibbs,
+    graphical,
+    hierarchical,
+    sparse,
+    spillover,
+    student,
+    volatility,
+)
 
 __all__ = [
-    "BVAR",
-    "BVARSV",
-    "DFM",
-    "FAVAR",
-    "BVARResult",
-    "BVARSVResult",
-    "DFMResult",
-    "FAVARResult",
-    "FactorSV",
-    "FactorSVResult",
-    "GibbsBVAR",
-    "GibbsBVARResult",
-    "GraphicalVAR",
-    "GraphicalVARResult",
-    "HierarchicalBVAR",
-    "HierarchicalBVARResult",
-    "SparseVAR",
-    "SparseVARResult",
-    "Spillover",
-    "SpilloverResult",
-    "StudentBVAR",
-    "StudentBVARResult",
+    "bayesian",
+    "dynamic_factor",
+    "factor_augmented",
+    "factor_volatility",
+    "gibbs",
+    "graphical",
+    "hierarchical",
+    "sparse",
+    "spillover",
+    "student",
+    "volatility",
 ]

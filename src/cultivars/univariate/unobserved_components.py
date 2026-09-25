@@ -74,7 +74,7 @@ from .._internals import (
     _UnobservedComponentsModel,
 )
 from ..exceptions import SpecificationError
-from ..state_space import LinearGaussianSSM
+from ..state_space.linear_gaussian import LinearGaussianSSM
 
 __all__ = ["UnobservedComponents", "UnobservedComponentsResult"]
 

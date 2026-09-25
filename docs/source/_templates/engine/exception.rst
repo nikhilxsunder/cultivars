@@ -2,4 +2,5 @@
 
 .. currentmodule:: {{ module }}
 
-.. autodata:: {{ objname }}
+.. autoexception:: {{ objname }}
+   :show-inheritance:

@@ -2,11 +2,12 @@ Engine reference
 ================
 
 The layers behind the public API, for contributors. ``_core`` holds the
-pure numerics and validators, ``_internals`` the model bases, fits,
-mixins, priors, and solvers the public classes delegate to. The public
-subpackages appear a second time below, walked by defining module rather
-than by re-export, with each class's own private members alongside its
-public ones. Everything on these pages may change between releases
+pure numerics, validators, converters, and defaults; ``_internals`` the
+model bases, fits, mixins, priors, records, and solvers the public classes
+delegate to. The public modules appear a second time below with each
+class's own private members, the ones it defines itself rather than
+inherits; inherited private members are on the page of the base that
+defines them. Everything on these pages may change between releases
 without notice.
 
 Private layers
@@ -14,15 +15,14 @@ Private layers
 
 .. autosummary::
    :toctree: generated
-   :recursive:
    :nosignatures:
    :template: engine/module.rst
 
-   cultivars.engine._core
-   cultivars.engine._internals
+   cultivars._core
+   cultivars._internals
 
-Public surface, by defining module
-----------------------------------
+Public surface, private members
+-------------------------------
 
 .. autosummary::
    :toctree: generated

@@ -34,7 +34,7 @@ from .._internals import (
     _SmoothTransitionFit,
     _SmoothTransitionModel,
 )
-from ..state_space import NonlinearSSM
+from ..state_space.nonlinear import NonlinearSSM
 
 __all__ = ["ESTAR", "LSTAR", "STARResult"]
 

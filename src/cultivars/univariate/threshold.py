@@ -92,7 +92,7 @@ from .._internals import (
     _ThresholdModel,
 )
 from ..exceptions import SpecificationError
-from ..state_space import NonlinearSSM
+from ..state_space.nonlinear import NonlinearSSM
 
 __all__ = ["SETAR", "TAR", "SETARResult"]
 

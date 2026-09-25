@@ -7,7 +7,7 @@
 
 {% block attributes -%}
 {% set own_attributes = [] %}
-{% for item in all_attributes if not item.startswith("__") %}
+{% for item in all_attributes if not item.startswith("__") and item != "_abc_impl" %}
 {% set _ = own_attributes.append(item) %}
 {% endfor %}
 {% if own_attributes %}

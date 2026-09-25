@@ -1453,3 +1453,18 @@ def _validate_chronology(value: npt.ArrayLike) -> npt.NDArray[np.bool_]:
     if not np.all(np.isfinite(probabilities)):
         raise NumericalError("a probability chronology must be finite.")
     return np.asarray(probabilities > 0.5, dtype=np.bool_)
+
+
+def _validate_specification(y: npt.NDArray[np.float64], order: int, delay: int) -> None:
+    """Refuse an order or delay the series cannot carry.
+
+    Raises:
+        SpecificationError: If the sample is shorter than the auxiliary
+            regression needs.
+    """
+    needed = max(order, delay) + 4 * order + 10
+    if y.shape[0] < needed:
+        raise SpecificationError(
+            f"a nonlinearity test of order {order} and delay {delay} needs at least {needed} "
+            f"observations; got {y.shape[0]}."
+        )

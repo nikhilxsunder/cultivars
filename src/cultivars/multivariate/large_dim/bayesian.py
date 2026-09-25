@@ -107,7 +107,7 @@ from ..._internals import (
     _SummaryMixin,
     _VectorConjugateFit,
 )
-from ...bayes import NormalInverseWishartPrior
+from ...bayes.priors import NormalInverseWishartPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["BVAR", "BVARResult"]

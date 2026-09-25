@@ -1,19 +1,7 @@
 """Latent-regime models."""
 
-from .markov_switching import (
-    MarkovSwitchingDFM,
-    MarkovSwitchingDFMResult,
-    MarkovSwitchingSVAR,
-    MarkovSwitchingSVARResult,
-    MarkovSwitchingVAR,
-    MarkovSwitchingVARResult,
-)
+from . import markov_switching
 
 __all__ = [
-    "MarkovSwitchingDFM",
-    "MarkovSwitchingDFMResult",
-    "MarkovSwitchingSVAR",
-    "MarkovSwitchingSVARResult",
-    "MarkovSwitchingVAR",
-    "MarkovSwitchingVARResult",
+    "markov_switching",
 ]

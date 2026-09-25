@@ -71,8 +71,7 @@ import numpy.typing as npt
 from ..._core import SummaryTable, principal_components, validate_endog_matrix
 from ..._internals import _SummaryMixin
 from ...exceptions import DimensionError, SpecificationError
-from ..reduced_form import VAR
-from ..reduced_form.vector_autoregression import VARResult
+from ..reduced_form.vector_autoregression import VAR, VARResult
 
 __all__ = ["DFM", "DFMResult"]
 

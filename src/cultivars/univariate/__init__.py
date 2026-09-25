@@ -21,70 +21,28 @@
 # SOFTWARE.
 """Cultivars univariate time series module."""
 
-from .autoregression import AR, ARResult
-from .box_jenkins import ARIMA, ARIMAX, ARMA, SARIMA, SARIMAX, ARMAResult
-from .conditional_variance import (
-    ARGARCH,
-    ARMAEGARCH,
-    ARMAFIGARCH,
-    ARMAGARCH,
-    ARMAGJR,
-    EGARCH,
-    FIGARCH,
-    GARCH,
-    GJR,
-    ARMAFIGARCHResult,
-    ARMAGARCHResult,
-    FIGARCHResult,
-    GARCHResult,
+from . import (
+    autoregression,
+    box_jenkins,
+    conditional_variance,
+    fractional_integration,
+    mean_function,
+    regime_switching,
+    smooth_transition,
+    stochastic_volatility,
+    threshold,
+    unobserved_components,
 )
-from .fractional_integration import ARFIMA, ARFIMAResult
-from .mean_function import ARNN, TARNN, ARNNResult, TARNNResult
-from .regime_switching import MSAR, MSARResult
-from .smooth_transition import ESTAR, LSTAR, STARResult
-from .stochastic_volatility import SV, UCSV, SVResult
-from .threshold import SETAR, TAR, SETARResult
-from .unobserved_components import UnobservedComponents, UnobservedComponentsResult
 
 __all__ = [
-    "AR",
-    "ARFIMA",
-    "ARGARCH",
-    "ARIMA",
-    "ARIMAX",
-    "ARMA",
-    "ARMAEGARCH",
-    "ARMAFIGARCH",
-    "ARMAGARCH",
-    "ARMAGJR",
-    "ARNN",
-    "EGARCH",
-    "ESTAR",
-    "FIGARCH",
-    "GARCH",
-    "GJR",
-    "LSTAR",
-    "MSAR",
-    "SARIMA",
-    "SARIMAX",
-    "SETAR",
-    "SV",
-    "TAR",
-    "TARNN",
-    "UCSV",
-    "ARFIMAResult",
-    "ARMAFIGARCHResult",
-    "ARMAGARCHResult",
-    "ARMAResult",
-    "ARNNResult",
-    "ARResult",
-    "FIGARCHResult",
-    "GARCHResult",
-    "MSARResult",
-    "SETARResult",
-    "STARResult",
-    "SVResult",
-    "TARNNResult",
-    "UnobservedComponents",
-    "UnobservedComponentsResult",
+    "autoregression",
+    "box_jenkins",
+    "conditional_variance",
+    "fractional_integration",
+    "mean_function",
+    "regime_switching",
+    "smooth_transition",
+    "stochastic_volatility",
+    "threshold",
+    "unobserved_components",
 ]
