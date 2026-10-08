@@ -1,0 +1,337 @@
+# filepath: /src/cultivars/_core/_converters.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Converters between the numpy core and the optional dataframe ecosystems.
+
+Every computational path in this package is numpy and scipy only. Dataframes
+are an *output* convenience, so the libraries that provide them are optional
+extras rather than runtime dependencies, and nothing here is imported until a
+user actually asks for a frame.
+
+That import is deferred rather than guarded at module scope for two reasons: it
+keeps ``import cultivars`` free of a pandas import even when pandas happens to
+be installed, and it lets the error message name the extra to install rather
+than surfacing a bare :exc:`ModuleNotFoundError` from three frames down.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any
+
+import numpy as np
+import numpy.typing as npt
+
+from ..exceptions import DimensionError, NumericalError, SpecificationError
+from ._defaults import _CRITICAL_LEVELS, _MIN_CHAIN_DRAWS
+from ._loaders import require_optional
+from ._mappings import _KASS_RAFTERY_SCALE
+from ._polynomials import _aggregation_weights
+from ._spectra import _seasonal_frequencies
+from ._types import Frequency
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from collections.abc import Mapping, Sequence
+
+    import pandas as pd
+    import polars as pl
+
+
+def _variable_names(source: object, k: int) -> tuple[str, ...]:
+    """The result's or model's variable labels, or ``y1 ... yk``."""
+    names = getattr(source, "names", None)
+    if isinstance(names, tuple | list) and len(names) == k:
+        return tuple(str(name) for name in names)
+    return tuple(f"y{i + 1}" for i in range(k)) if k > 1 else ("y",)
+
+
+def _source_label(source: object) -> str:
+    """A title for the check."""
+    label = getattr(source, "_convergence_label", None)
+    if callable(label):
+        return str(label())
+    return type(source).__name__
+
+
+def _critical_value_table(values: tuple[float, float, float]) -> dict[str, float]:
+    """Key three critical values by ``_CRITICAL_LEVELS``.
+
+    Args:
+        values: Critical values at the 1%, 5% and 10% levels, in that order.
+
+    Returns:
+        ``{"1%": ..., "5%": ..., "10%": ...}``.
+
+    Example:
+        >>> _critical_value_table((-3.43, -2.86, -2.57))
+        {'1%': -3.43, '5%': -2.86, '10%': -2.57}
+    """
+    return dict(zip(_CRITICAL_LEVELS, (float(v) for v in values), strict=True))
+
+
+def _mean_label(mean_order: tuple[int, int], *, has_const: bool) -> str:
+    """Name the conditional mean the way a reader expects to see it.
+
+    Args:
+        mean_order: The pair ``(ar_lags, ma_lags)``.
+        has_const: Whether an intercept was estimated.
+
+    Returns:
+        ``"ARMA(p, q)"``, ``"AR(p)"``, ``"MA(q)"``, ``"const"``, or ``"zero"``,
+        so a pure autoregression is not labelled as an ARMA with an empty block.
+    """
+    ar, ma = mean_order
+    if ar and ma:
+        return f"ARMA({ar}, {ma})"
+    if ar:
+        return f"AR({ar})"
+    if ma:
+        return f"MA({ma})"
+    return "const" if has_const else "zero"
+
+
+def to_pandas_frame(
+    columns: Mapping[str, npt.NDArray[Any]],
+    *,
+    index: npt.ArrayLike | None = None,
+    index_name: str | None = None,
+) -> pd.DataFrame:
+    """Build a :class:`pandas.DataFrame` from equal-length columns.
+
+    Args:
+        columns: Column name to one-dimensional array. All arrays must share a
+            length.
+        index: Optional row index; defaults to a zero-based integer range.
+        index_name: Optional name for the index.
+
+    Returns:
+        The assembled ``DataFrame``.
+
+    Raises:
+        ImportError: If pandas is not installed.
+        ValueError: If the columns are not all the same length.
+    """
+    pd = require_optional("pandas")
+    _check_equal_length(columns)
+    frame = pd.DataFrame(dict(columns), index=None if index is None else np.asarray(index))
+    if index_name is not None:
+        frame.index.name = index_name
+    return frame
+
+
+def to_polars_frame(columns: Mapping[str, npt.NDArray[Any]]) -> pl.DataFrame:
+    """Build a :class:`polars.DataFrame` from equal-length columns.
+
+    Polars has no row index, so any positional information must be passed as an
+    explicit column by the caller rather than smuggled in as an index.
+
+    Args:
+        columns: Column name to one-dimensional array.
+
+    Returns:
+        The assembled ``DataFrame``.
+
+    Raises:
+        ImportError: If polars is not installed.
+        ValueError: If the columns are not all the same length.
+    """
+    pl = require_optional("polars")
+    _check_equal_length(columns)
+    return pl.DataFrame({name: np.asarray(values) for name, values in columns.items()})
+
+
+def _check_equal_length(columns: Mapping[str, npt.NDArray[Any]]) -> None:
+    """Reject ragged column sets before handing them to a frame constructor.
+
+    Args:
+        columns: Column name to array.
+
+    Raises:
+        ValueError: If two columns differ in length.
+    """
+    lengths = {name: int(np.asarray(values).shape[0]) for name, values in columns.items()}
+    if len(set(lengths.values())) > 1:
+        raise ValueError(f"columns must share a length; got {lengths}.")
+
+
+def _mixed_frequency_system(
+    coefficients: npt.NDArray[np.float64],
+    sigma_u: npt.NDArray[np.float64],
+    *,
+    kinds: Sequence[Frequency],
+    period: int,
+    weights: Sequence[npt.ArrayLike | None] | None = None,
+    intercept: npt.NDArray[np.float64] | None = None,
+) -> tuple[
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+    npt.NDArray[np.float64],
+]:
+    """Put a latent high-frequency autoregression into observable form.
+
+    The state stacks ``depth = max(order, period)`` lags of the latent vector,
+    deep enough that a low-frequency reading spanning ``period`` sub-periods is
+    a linear function of the *contemporaneous* state. That is what keeps the
+    observation matrix constant across time.
+
+    Args:
+        coefficients: ``(order, k, k)`` latent autoregressive coefficients.
+        sigma_u: ``(k, k)`` innovation covariance of the latent process.
+        kinds: One :data:`Frequency` per latent variable.
+        period: High-frequency sub-periods per low-frequency period.
+        weights: Optional explicit sub-period weights, one entry per variable.
+        intercept: Optional ``(k,)`` latent intercept.
+
+    Returns:
+        The tuple ``(design, obs_cov, transition, selection, state_cov,
+        state_intercept)`` in the argument order of
+        :class:`_LinearGaussianStateSpaceModel`.
+    """
+    order, size = coefficients.shape[0], coefficients.shape[1]
+    depth = max(order, period)
+    width = size * depth
+
+    transition = np.zeros((width, width), dtype=np.float64)
+    for lag in range(order):
+        transition[:size, lag * size : (lag + 1) * size] = coefficients[lag]
+    if depth > 1:
+        transition[size:, : size * (depth - 1)] = np.eye(size * (depth - 1))
+
+    selection = np.zeros((width, size), dtype=np.float64)
+    selection[:size] = np.eye(size)
+
+    design = np.zeros((size, width), dtype=np.float64)
+    for i, kind in enumerate(kinds):
+        w = _aggregation_weights(kind, period, weights=None if weights is None else weights[i])
+        if kind == "high":
+            design[i, i] = 1.0
+        else:
+            for j in range(period):
+                design[i, j * size + i] = w[j]
+
+    state_intercept = np.zeros(width, dtype=np.float64)
+    if intercept is not None:
+        state_intercept[:size] = intercept
+
+    obs_cov = np.zeros((size, size), dtype=np.float64)
+    return design, obs_cov, transition, selection, sigma_u, state_intercept
+
+
+def _evidence_label(two_log_bf: float) -> str:
+    """Kass and Raftery's verbal reading of ``2 log BF`` in favour of a model.
+
+    Example:
+        >>> _evidence_label(7.0)
+        'strong'
+        >>> _evidence_label(-1.0)
+        'not worth more than a bare mention'
+    """
+    magnitude = abs(two_log_bf)
+    for bound, label in _KASS_RAFTERY_SCALE:
+        if magnitude < bound:
+            return label
+    return _KASS_RAFTERY_SCALE[-1][1]
+
+
+def _as_chains(draws: npt.ArrayLike) -> npt.NDArray[np.float64]:
+    """Coerce one quantity's draws to a validated ``(C, N)`` float array.
+
+    Args:
+        draws: ``(N,)`` for one chain or ``(C, N)`` for several.
+
+    Returns:
+        The ``(C, N)`` array.
+
+    Raises:
+        DimensionError: If ``draws`` is not one- or two-dimensional.
+        SpecificationError: If a chain is shorter than the minimum.
+        NumericalError: If any draw is not finite.
+
+    Example:
+        >>> _as_chains(np.arange(10.0)).shape
+        (1, 10)
+    """
+    chains = np.asarray(draws, dtype=np.float64)
+    if chains.ndim == 1:
+        chains = chains[None, :]
+    elif chains.ndim != 2:
+        raise DimensionError(
+            f"draws must be (N,) for one chain or (C, N) for several; got shape {chains.shape}."
+        )
+    if chains.shape[1] < _MIN_CHAIN_DRAWS:
+        raise SpecificationError(
+            f"Each chain needs at least {_MIN_CHAIN_DRAWS} kept draws for a convergence "
+            f"diagnostic; got {chains.shape[1]}."
+        )
+    if not np.all(np.isfinite(chains)):
+        raise NumericalError("Chain draws contain non-finite values.")
+    return chains
+
+
+def _stack(chains: tuple[npt.ArrayLike, ...]) -> tuple[npt.NDArray[np.float64], bool]:
+    """Stack ``(S,)`` or ``(S, d)`` chains into ``(C, S, d)``.
+
+    Returns:
+        The stack and whether every chain was one-dimensional, so the caller
+        can return a scalar rather than a length-one array.
+
+    Raises:
+        SpecificationError: If no chain is given.
+        DimensionError: If a chain is not one- or two-dimensional, or the
+            chains differ in shape.
+    """
+    if not chains:
+        raise SpecificationError("At least one chain is required.")
+    arrays = [np.asarray(chain, dtype=np.float64) for chain in chains]
+    scalar = all(array.ndim == 1 for array in arrays)
+    columns: list[npt.NDArray[np.float64]] = []
+    for array in arrays:
+        if array.ndim == 1:
+            columns.append(array[:, None])
+        elif array.ndim == 2:
+            columns.append(array)
+        else:
+            raise DimensionError(f"A chain must be (S,) or (S, d); got shape {array.shape}.")
+    shapes = {column.shape for column in columns}
+    if len(shapes) != 1:
+        raise DimensionError(f"Chains differ in shape: {sorted(shapes)}.")
+    return np.stack(columns), scalar
+
+
+def _per_column(
+    chains: tuple[npt.ArrayLike, ...], statistic: Callable[[npt.NDArray[np.float64]], float]
+) -> float | npt.NDArray[np.float64]:
+    """Apply a ``(C, N) -> float`` statistic to every quantity in the stack."""
+    stack, scalar = _stack(chains)
+    values = np.array([statistic(stack[:, :, j]) for j in range(stack.shape[2])])
+    return float(values[0]) if scalar else values
+
+
+def _frequency_labels(period: int) -> tuple[str, ...]:
+    """Names of the seasonal frequencies in the order the estimators use, Nyquist first."""
+    labels = ["pi (Nyquist)"]
+    for k, theta in enumerate(_seasonal_frequencies(period), start=1):
+        labels.append(f"2 pi {k} / {period} ({theta:.3f})")
+    return tuple(labels)

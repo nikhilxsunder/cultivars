@@ -1,0 +1,200 @@
+# filepath: /src/cultivars/_core/_protocols.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Structural contracts satisfied by fitted results and model specifications.
+
+These are the duck-typed interfaces the toolkit subpackages (diagnostics,
+forecast, spectral) program against. They are deliberately *structural*
+rather than nominal: a user-defined result that happens to expose ``llf``,
+``nobs`` and the criteria surface is accepted by every diagnostic without
+subclassing anything from this package.
+
+The nominal counterparts -- the base classes that concrete results actually
+inherit -- live in :mod:`cultivars._internals._models` and implement these
+protocols.
+"""
+
+from __future__ import annotations
+
+from typing import Protocol, runtime_checkable
+
+import numpy as np
+import numpy.typing as npt
+
+from ._containers import InformationCriteria
+
+
+@runtime_checkable
+class FittedResult(Protocol):
+    """The universal contract of any fitted model result."""
+
+    llf: float
+    nobs: int
+
+    @property
+    def information_criteria(self) -> InformationCriteria: ...
+    @property
+    def aic(self) -> float: ...
+    @property
+    def bic(self) -> float: ...
+    @property
+    def hqic(self) -> float: ...
+
+
+@runtime_checkable
+class VolatilityResult(FittedResult, Protocol):
+    """A fitted model carrying a time-varying conditional-variance path."""
+
+    conditional_variance: npt.NDArray[np.float64]
+
+    @property
+    def conditional_volatility(self) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class ClosedSystemResult(Protocol):
+    """What an identification strategy reads from a fitted reduced-form result.
+
+    Deliberately the *propagation* subset rather than the full result surface:
+    identification turns reduced-form innovations into structural shocks, and
+    everything that requires is the innovation covariance, the residuals, the
+    autoregressive representation, and the labels. Any closed result in the
+    package satisfies this -- a VAR, a VARMA, a panel, an error-correction
+    model through its levels form, a mixed-frequency filter -- and so does any
+    user-defined result that exposes the same members.
+    """
+
+    @property
+    def names(self) -> tuple[str, ...]: ...
+    @property
+    def nobs(self) -> float: ...
+    @property
+    def sigma_u(self) -> npt.NDArray[np.float64]: ...
+    @property
+    def resid(self) -> npt.NDArray[np.float64]: ...
+    @property
+    def coefficients(self) -> npt.NDArray[np.float64]: ...
+    @property
+    def k_endog(self) -> int: ...
+    def ma_representation(self, horizon: int = ...) -> npt.NDArray[np.float64]: ...
+
+
+class Identification[R](Protocol):
+    """An identification scheme: reduced-form innovations in, a structural view out.
+
+    The strategy-object contract behind ``result.identify(strategy)``. A scheme
+    is a declaration -- which restrictions turn correlated innovations into
+    economic shocks -- and this protocol is what lets that declaration be
+    passed to any closed reduced-form result rather than being welded to one
+    model family. Point-identified schemes return a single structural result;
+    set-identified schemes return the accepted set.
+    """
+
+    def identify(self, result: ClosedSystemResult) -> R: ...
+
+
+@runtime_checkable
+class StructuralResult(Protocol):
+    """What a consumer of an identification needs from its result.
+
+    The contract a point-identified structural result satisfies: it remembers
+    the closed system it was identified from, and it produces structural
+    impulse responses. Anything mapping identified shocks onward -- a
+    factor-augmented model translating them onto its panel -- programs
+    against this rather than against a concrete result class.
+    """
+
+    @property
+    def source(self) -> ClosedSystemResult: ...
+
+    def irf(self, horizon: int = ..., *, cumulative: bool = ...) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class PredictiveResult(Protocol):
+    """What a model combination reads from a fitted Bayesian result.
+
+    A result that can hand over its posterior predictive as raw simulated
+    paths, one per retained draw, is a result whose forecasts can be scored,
+    fanned, and mixed with another model's. Every sampled result in the
+    package with a closed system satisfies it; so does any user-defined
+    result exposing the same member.
+    """
+
+    def forecast_paths(
+        self, steps: int = ..., *, seed: int | np.random.Generator | None = ...
+    ) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class ReplicatingResult(Protocol):
+    """What a posterior predictive check reads from a fitted Bayesian result.
+
+    A result that can replicate its own sample -- simulate, from each of a
+    set of retained draws, a data set of the same shape as the one it was
+    fitted to -- is a result whose fit can be checked against the features
+    of the data it claims to explain. ``observed`` is the panel the
+    replications are shaped like, which for a conditional model is the
+    effective sample after the presample it conditions on.
+    """
+
+    @property
+    def observed(self) -> npt.NDArray[np.float64]: ...
+
+    def posterior_replications(
+        self, n_replications: int = ..., *, seed: int | np.random.Generator | None = ...
+    ) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class ReplicatingModel(Protocol):
+    """What a prior predictive check reads from an unfitted Bayesian model.
+
+    A model that can draw parameters from its prior and simulate a data set
+    from each is a model whose prior can be inspected on the scale of the
+    data before any sample touches it. ``observed`` is the panel the
+    replications are shaped like.
+    """
+
+    @property
+    def observed(self) -> npt.NDArray[np.float64]: ...
+
+    def prior_replications(
+        self, n_replications: int = ..., *, seed: int | np.random.Generator | None = ...
+    ) -> npt.NDArray[np.float64]: ...
+
+
+@runtime_checkable
+class SimulatingResult(Protocol):
+    """What a Monte Carlo study reads from a fitted result: a fresh sample at its parameters.
+
+    A result whose law of motion is closed can draw a new sample path of
+    any length from the model it estimated -- the parameters as fitted,
+    the innovations fresh -- which is the primitive behind every recovery
+    test, every size study, and every predictive simulation the package
+    runs. ``simulate`` returns ``(n,)`` for a univariate result and
+    ``(n, k)`` for a multivariate one.
+    """
+
+    def simulate(
+        self, n: int = ..., *, seed: int | np.random.Generator | None = ..., burn: int = ...
+    ) -> npt.NDArray[np.float64]: ...

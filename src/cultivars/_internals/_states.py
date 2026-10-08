@@ -1,0 +1,59 @@
+# filepath: /src/cultivars/_internals/_states.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+import numpy as np
+import numpy.typing as npt
+
+
+@dataclass(frozen=True, slots=True)
+class _ExpectationMaximizationState:
+    """Internal state carried between EM restarts."""
+
+    transition: npt.NDArray[np.float64]
+    intercepts: npt.NDArray[np.float64]
+    ar_params: npt.NDArray[np.float64]
+    sigma2: npt.NDArray[np.float64]
+    filtered_prob: npt.NDArray[np.float64]
+    predicted_prob: npt.NDArray[np.float64]
+    smoothed_prob: npt.NDArray[np.float64]
+    llf: float
+    n_iter: int
+    converged: bool
+
+
+@dataclass(frozen=True, kw_only=True)
+class _VectorExpectationMaximizationState:
+    """Internal state carried between EM restarts of a switching VAR."""
+
+    transition: npt.NDArray[np.float64]
+    coefficients: npt.NDArray[np.float64]
+    sigmas: npt.NDArray[np.float64]
+    filtered_prob: npt.NDArray[np.float64]
+    predicted_prob: npt.NDArray[np.float64]
+    smoothed_prob: npt.NDArray[np.float64]
+    llf: float
+    n_iter: int
+    converged: bool

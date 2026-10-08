@@ -1,0 +1,476 @@
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
+import numpy as np
+import numpy.typing as npt
+
+from .._core import (
+    _KSC_MU_PRIOR,
+    _KSC_PHI_PRIOR,
+    _KSC_SIGMA2_PRIOR,
+    _UCSV_VOL_OF_VOL_PRIOR,
+    _validate_hyperparameter_pair,
+)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _PriorContext:
+    """What a prior needs to know about the sample before it can state itself.
+
+    Built once by the estimator and read by every prior in a stack, so two
+    priors cannot disagree about the design's column order or a variable's
+    scale. Everything here comes from the data or the specification; nothing
+    comes from the prior.
+
+    Attributes:
+        k_endog: Number of modelled variables.
+        order: Autoregressive order.
+        scales: Per-variable residual scale, from :func:`minnesota_scales`.
+        presample_mean: Mean of the first ``order`` observations, which the
+            sum-of-coefficients restriction is centred on.
+        k_exog: Exogenous regressors carried after the lag block.
+        n_deterministic: Width of the leading deterministic block, which is a
+            count rather than a flag because families disagree about it: none
+            for a trendless specification, one for a constant, two for a
+            constant and trend, and one per unit for a fixed-effects panel. A
+            boolean would have been silently one column short for every
+            ``"ct"`` model and off by ``N - 1`` for every panel, and a prior
+            whose columns do not line up with the design is inert at the limits
+            while still looking plausible in between -- which is worse than
+            being wrong loudly.
+        include_constant: Whether the design carries a leading intercept
+            column. Dummy columns must match the design's own ordering, and a
+            prior that guesses wrong is inert at the limits while still looking
+            plausible in between -- which is worse than being wrong loudly.
+    """
+
+    k_endog: int
+    order: int
+    scales: npt.NDArray[np.float64]
+    presample_mean: npt.NDArray[np.float64]
+    k_exog: int = 0
+    n_deterministic: int = 1
+    include_constant: bool = True
+
+    @property
+    def width(self) -> int:
+        """Design columns a prior's blocks must match."""
+        return self.n_deterministic + self.k_endog * self.order + self.k_exog
+
+    @property
+    def lag_offset(self) -> int:
+        """Design columns ahead of the endogenous lag block."""
+        return self.n_deterministic
+
+    def _lead(self, rows: int, value: float = 0.0) -> npt.NDArray[np.float64]:
+        """The deterministic columns a dummy block carries, one per term."""
+        return np.full((rows, self.n_deterministic), value, dtype=np.float64)
+
+
+class _Prior(ABC):
+    """A prior on a vector autoregression's coefficients.
+
+    Stated as *moments* -- a mean and a variance over the coefficient matrix --
+    rather than as artificial observations. The distinction is not stylistic.
+    Banbura-Giannone-Reichlin dummy rows are convenient because stacking them
+    under the sample turns the posterior into an ordinary least-squares solve,
+    but that convenience is exactly what forces Litterman's cross-equation
+    weight to one: a weight that differs between own and cross lags breaks the
+    Kronecker structure the dummy form depends on. Choosing moments as the
+    interface keeps that hyperparameter, and it is also what the sparse and
+    global-local priors need, since a Gibbs sampler redraws their conditional
+    variances every sweep and has nowhere to put that in a fixed block of rows.
+
+    Dummy observations do not disappear -- a restriction on a *sum* of
+    coefficients has no diagonal-variance form and must be rows -- so a prior
+    supplies both hooks and leaves the one it does not use empty. That is what
+    Giannone, Lenza and Primiceri do, and it is why the two coexist here.
+
+    Addition composes, and composition flattens.
+    """
+
+    __slots__ = ()
+
+    @abstractmethod
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Prior mean of the coefficient matrix, shaped like the design.
+
+        Args:
+            context: What the prior needs to know about the sample.
+
+        Returns:
+            A ``(width, k)`` array in design-column order.
+        """
+
+    @abstractmethod
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Prior variance of each coefficient, shaped like the design.
+
+        Diagonal by construction. A prior that wants correlated coefficients
+        expresses that through :meth:`dummy_observations`, where a row can
+        restrict a combination.
+
+        Args:
+            context: What the prior needs to know about the sample.
+
+        Returns:
+            A ``(width, k)`` array of variances. Entries may be infinite, which
+            is how a prior says it has no opinion about a coefficient.
+        """
+
+    def dummy_observations(
+        self, context: _PriorContext
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Artificial rows this prior contributes, for restrictions on sums.
+
+        Defaults to none, which is the statement that this prior's content is
+        entirely in its moments.
+
+        Args:
+            context: What the prior needs to know about the sample.
+
+        Returns:
+            A ``(rows, k)`` target block and a ``(rows, width)`` design block.
+        """
+        return (
+            np.zeros((0, context.k_endog), dtype=np.float64),
+            np.zeros((0, context.width), dtype=np.float64),
+        )
+
+    @abstractmethod
+    def _label(self) -> str:
+        """Short description for a summary table."""
+
+    def __add__(self, other: _Prior) -> _Prior:
+        """Compose two priors."""
+        if not isinstance(other, _Prior):
+            return NotImplemented
+        return _CompositePrior(components=(*self._components(), *other._components()))
+
+    def _components(self) -> tuple[_Prior, ...]:
+        """This prior as a flat tuple, so composition does not nest."""
+        return (self,)
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _CompositePrior(_Prior):
+    """Several priors combined, which ``+`` returns.
+
+    Moments multiply as precisions -- combining two opinions about the same
+    coefficient is adding what each knows, which is what independent
+    information does -- while dummy rows concatenate. Means combine as the
+    precision-weighted average, so a prior with no opinion about a coefficient
+    contributes nothing to it rather than dragging it toward zero.
+
+    Attributes:
+        components: The priors in the stack, already flattened.
+    """
+
+    components: tuple[_Prior, ...]
+
+    def _combined(
+        self, context: _PriorContext
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Precision-weighted mean and combined variance."""
+        precision = np.zeros((context.width, context.k_endog), dtype=np.float64)
+        weighted = np.zeros((context.width, context.k_endog), dtype=np.float64)
+        for component in self.components:
+            variance = component.coefficient_variance(context)
+            share = np.where(np.isfinite(variance), 1.0 / np.maximum(variance, 1e-300), 0.0)
+            precision += share
+            weighted += share * component.coefficient_mean(context)
+        variance = np.where(precision > 0.0, 1.0 / np.maximum(precision, 1e-300), np.inf)
+        mean = np.where(precision > 0.0, weighted / np.maximum(precision, 1e-300), 0.0)
+        return mean, variance
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Precision-weighted average of the components' means."""
+        return self._combined(context)[0]
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Reciprocal of the summed precisions."""
+        return self._combined(context)[1]
+
+    def dummy_observations(
+        self, context: _PriorContext
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Concatenate what each component contributes."""
+        targets: list[npt.NDArray[np.float64]] = []
+        blocks: list[npt.NDArray[np.float64]] = []
+        for component in self.components:
+            target, block = component.dummy_observations(context)
+            targets.append(target)
+            blocks.append(block)
+        if not targets:
+            return super(_CompositePrior, self).dummy_observations(context)
+        return np.vstack(targets), np.vstack(blocks)
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return " + ".join(component._label() for component in self.components)
+
+    def _components(self) -> tuple[_Prior, ...]:
+        """Flatten rather than nest."""
+        return self.components
+
+
+class _NoPrior(_Prior):
+    """The absence of shrinkage, which is unrestricted least squares.
+
+    Present so that "no prior" is something a caller passes rather than
+    something they express by passing nothing, and so that a stack assembled in
+    a loop needs no special first case: it is the identity of composition.
+    """
+
+    __slots__ = ()
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Zero, which no infinite variance will ever pull toward."""
+        return np.zeros((context.width, context.k_endog), dtype=np.float64)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Infinite everywhere: no opinion about any coefficient."""
+        return np.full((context.width, context.k_endog), np.inf, dtype=np.float64)
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return "none"
+
+    def _components(self) -> tuple[_Prior, ...]:
+        """Contribute nothing to a composition."""
+        return ()
+
+
+class _AdaptivePrior(_Prior):
+    """A prior whose coefficient variances are Gibbs conditionals, not constants.
+
+    The global-local and selection priors -- horseshoe, spike-and-slab,
+    Dirichlet-Laplace, Normal-Gamma -- have no fixed variance to state: each
+    coefficient's variance is a product of latent scales with their own full
+    conditionals, redrawn every sweep. This class is the moments interface's
+    promise kept: the static hooks report the variance *at the initial
+    scales* (which is what admissibility checks need), and the sampler
+    drives the three adaptive hooks -- initialize the scales, redraw them
+    given the current coefficients, and read the variance they imply.
+
+    The latent state travels as a plain mapping of named arrays owned by the
+    sampler, so the prior object itself stays frozen and reusable across
+    fits. Two conventions keep every subclass unit-honest and aligned with
+    the family's grammar: shrinkage applies to the *standardized* coefficient
+    -- the raw coefficient divided by the Minnesota scale ratio
+    ``s_i / s_j``, so one latent scale means the same thing whatever the
+    variables' units -- and only the endogenous lag block is shrunk, with
+    deterministic and exogenous columns held at a fixed loose variance,
+    exactly where the Minnesota prior leaves them.
+
+    Adaptive priors do not compose: ``+`` builds a :class:`_CompositePrior`,
+    which has no conditionals to expose, and the sampler refuses the result
+    rather than silently freezing the scales.
+    """
+
+    __slots__ = ()
+
+    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Zero everywhere: sparsity's claim is that coefficients are zero.
+
+        There is no persistence hyperparameter here on purpose. Centering a
+        selection prior away from zero would change what an exclusion means,
+        so a caller who wants random-walk centering should difference the
+        data or use the Minnesota family instead.
+        """
+        return np.zeros((context.width, context.k_endog), dtype=np.float64)
+
+    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """The variance at the initial scales -- finite, so shrunk-admissible."""
+        return self._scale_variance(
+            self._initial_scales(context, self._unit_ratio(context)), context
+        )
+
+    def _unit_ratio(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Minnesota's unit fix as a matrix: ``s_i / s_j`` on the lag block.
+
+        Entry ``[column, i]`` scales equation ``i``'s coefficient on that
+        design column: ``s_i / s_j`` when the column is a lag of variable
+        ``j``, and ``s_i`` on the deterministic and exogenous columns, where
+        the coefficient itself carries the equation's units.
+        """
+        scales = context.scales
+        out = np.tile(scales[None, :], (context.width, 1)).astype(np.float64)
+        offset = context.lag_offset
+        for lag in range(context.order):
+            for source in range(context.k_endog):
+                column = offset + lag * context.k_endog + source
+                out[column] = scales / scales[source]
+        return out
+
+    def _penalized_mask(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+        """Ones on the endogenous lag rows, zeros elsewhere."""
+        mask = np.zeros(context.width, dtype=np.float64)
+        offset = context.lag_offset
+        mask[offset : offset + context.k_endog * context.order] = 1.0
+        return mask
+
+    @abstractmethod
+    def _initial_scales(
+        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """The latent scales the sampler starts from.
+
+        Args:
+            context: What the prior needs to know about the sample.
+            reference: ``(width, k)`` data-driven reference scales for each
+                coefficient -- least-squares standard errors when the
+                sampler can compute them, the unit ratio otherwise. The
+                spike-and-slab prior anchors its two variances here
+                (George-Sun-Ni's semiautomatic default); the global-local
+                priors ignore it.
+
+        Returns:
+            Named arrays, owned by the sampler and passed back verbatim.
+        """
+
+    @abstractmethod
+    def _draw_scales(
+        self,
+        standardized: npt.NDArray[np.float64],
+        context: _PriorContext,
+        rng: np.random.Generator,
+        scales: dict[str, npt.NDArray[np.float64]],
+    ) -> dict[str, npt.NDArray[np.float64]]:
+        """One sweep of the latent scales' full conditionals.
+
+        Args:
+            standardized: ``(width, k)`` current coefficients divided by the
+                unit ratio, so the conditionals see unit-free magnitudes.
+            context: What the prior needs to know about the sample.
+            rng: Random generator.
+            scales: The current latent state.
+
+        Returns:
+            The refreshed latent state.
+        """
+
+    @abstractmethod
+    def _scale_variance(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The ``(width, k)`` coefficient variance the current scales imply.
+
+        On the raw-coefficient scale: the unit ratio squared multiplies the
+        latent variance on the lag block, and the deterministic and
+        exogenous rows carry their fixed loose variance.
+        """
+
+    @abstractmethod
+    def _tracked(
+        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+    ) -> npt.NDArray[np.float64]:
+        """The ``(width, k)`` per-coefficient diagnostic worth averaging.
+
+        Inclusion probabilities for a selection prior, local scales for a
+        global-local one; the sampler averages this over kept sweeps.
+        """
+
+    @abstractmethod
+    def _tracked_label(self) -> str:
+        """What the averaged diagnostic *is*, for the result's summary."""
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _VolatilityPrior:
+    """The Kim-Shephard-Chib prior on a stationary log-AR(1) volatility law.
+
+    ``h_{t+1} = mu + phi (h_t - mu) + sigma eta_t`` carries three
+    hyperparameters, and every model in the package whose volatility
+    follows this law -- the univariate stochastic-volatility model, the
+    volatility-identified SVAR, the factor stochastic-volatility model --
+    states its prior through this one record: Gaussian on ``mu``, Beta on
+    ``(phi + 1) / 2``, inverse-gamma on ``sigma2``. The defaults are Kim,
+    Shephard and Chib's (1998), which put the persistence near ``0.86`` a
+    priori and keep the innovation variance small; a model that pins
+    ``mu`` for identification says so and leaves that entry unread.
+
+    Attributes:
+        mu: ``(mean, variance)`` of the Gaussian prior on the log-variance
+            mean.
+        phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``, both
+            positive.
+        sigma2: ``(shape, rate)`` of the inverse-gamma prior on the
+            log-variance innovation variance, both positive.
+    """
+
+    mu: tuple[float, float] = _KSC_MU_PRIOR
+    phi: tuple[float, float] = _KSC_PHI_PRIOR
+    sigma2: tuple[float, float] = _KSC_SIGMA2_PRIOR
+
+    def __post_init__(self) -> None:
+        """Validate every pair and store it as floats."""
+        object.__setattr__(
+            self, "mu", _validate_hyperparameter_pair(self.mu, name="mu", positive_first=False)
+        )
+        object.__setattr__(
+            self, "phi", _validate_hyperparameter_pair(self.phi, name="phi", positive_first=True)
+        )
+        object.__setattr__(
+            self,
+            "sigma2",
+            _validate_hyperparameter_pair(self.sigma2, name="sigma2", positive_first=True),
+        )
+
+    @property
+    def phi_mean(self) -> float:
+        """The prior mean of the persistence, ``2a / (a + b) - 1``."""
+        a, b = self.phi
+        return 2.0 * a / (a + b) - 1.0
+
+    @property
+    def sigma2_mean(self) -> float:
+        """Prior mean of ``sigma2``, ``rate / (shape - 1)``; ``inf`` for a shape of one or less."""
+        shape, rate = self.sigma2
+        return rate / (shape - 1.0) if shape > 1.0 else float("inf")
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return (
+            f"ksc(mu~N({self.mu[0]:g}, {self.mu[1]:g}), phi~Beta({self.phi[0]:g}, "
+            f"{self.phi[1]:g}), sigma2~IG({self.sigma2[0]:g}, {self.sigma2[1]:g}))"
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class _RandomWalkVolatilityPrior:
+    """The prior on a random-walk log-variance law with an estimated step variance.
+
+    ``h_{t+1} = h_t + gamma eta_t`` carries one hyperparameter, the
+    variance of the step, and the unobserved-components stochastic-
+    volatility model states its prior on it through this record: an
+    inverse-gamma on ``gamma**2`` for each of its two volatility paths.
+    The walk has no mean and no persistence to put a prior on; a model
+    that fixes ``gamma`` outright does not read this record at all.
+
+    Attributes:
+        vol_of_vol: ``(shape, rate)`` of the inverse-gamma prior on the
+            step variance ``gamma**2``, both positive.
+    """
+
+    vol_of_vol: tuple[float, float] = _UCSV_VOL_OF_VOL_PRIOR
+
+    def __post_init__(self) -> None:
+        """Validate the pair and store it as floats."""
+        object.__setattr__(
+            self,
+            "vol_of_vol",
+            _validate_hyperparameter_pair(self.vol_of_vol, name="vol_of_vol", positive_first=True),
+        )
+
+    @property
+    def vol_of_vol_mean(self) -> float:
+        """Prior mean of ``gamma2``, ``rate / (shape - 1)``; ``inf`` for a shape of one or less."""
+        shape, rate = self.vol_of_vol
+        return rate / (shape - 1.0) if shape > 1.0 else float("inf")
+
+    def _label(self) -> str:
+        """Short description for a summary table."""
+        return f"rw(gamma2~IG({self.vol_of_vol[0]:g}, {self.vol_of_vol[1]:g}))"

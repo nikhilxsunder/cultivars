@@ -3,7 +3,7 @@ name: Build, Publish and Sign Release
 on:
   push:
     tags:
-      - "v*"
+      - "v[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
     inputs:
       release_version:
@@ -29,7 +29,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           persist-credentials: false
+
+      - name: Verify ref is on main
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            git merge-base --is-ancestor HEAD origin/main \
+              || { echo "::error::Tag $GITHUB_REF_NAME is not reachable from main"; exit 1; }
+          elif [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Manual releases must be dispatched from main (got $GITHUB_REF)"
+            exit 1
+          fi
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -41,6 +52,12 @@ jobs:
 
       - name: Build package
         run: uv build
+
+      - name: Verify tag matches built version
+        if: github.ref_type == 'tag'
+        run: |
+          test -f "dist/cultivars-${GITHUB_REF_NAME#v}.tar.gz" \
+            || { echo "::error::No sdist for ${GITHUB_REF_NAME#v} in dist/ ($(ls dist))"; exit 1; }
 
       - name: Sync conda recipe
         run: uv run python scripts/sync_conda_recipe.py
@@ -145,7 +162,9 @@ jobs:
 
   update-feedstock:
     name: Update Conda-Forge Feedstock
-    needs: build
+    needs:
+      - build
+      - publish-to-pypi
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -190,7 +209,7 @@ jobs:
           TARBALL_PATH=$(realpath dist/cultivars-${VERSION}.tar.gz)
           SHA256=$(sha256sum $TARBALL_PATH | cut -d ' ' -f 1)
           sed -i "s/version:.*/version: $VERSION/" conda-recipe/meta.yaml
-          sed -i "s|url:.*|url: \"https://pypi.io/packages/source/f/cultivars/cultivars-${VERSION}.tar.gz\"|" conda-recipe/meta.yaml
+          sed -i "s|url:.*|url: \"https://pypi.io/packages/source/c/cultivars/cultivars-${VERSION}.tar.gz\"|" conda-recipe/meta.yaml
           sed -i "s/sha256:.*/sha256: \"$SHA256\"/" conda-recipe/meta.yaml
           cp conda-recipe/meta.yaml feedstock/recipe/meta.yaml
 

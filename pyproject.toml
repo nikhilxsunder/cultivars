@@ -4,40 +4,52 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cultivars"
-version = "0.0.1"
-description = "A modern computing library in python for providing vector autoregressions and similar economic models."
+dynamic = ["version"]
+description = "Research-grade time series econometrics: ARIMA to state space, VAR to structural identification, Bayesian and spectral methods."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
     { name = "Nikhil Sunder", email = "nsunder724@gmail.com" }
 ]
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.12,<4.0"
 keywords = [
-    "vector autoregression", "VAR", "econometrics", "time series", "economic modeling", "financial modeling"
+    "econometrics", "time series", "vector autoregression", "VAR", "state space", "Kalman filter",
+    "Bayesian", "spectral analysis", "forecasting", "macroeconomics",
 ]
 classifiers = [
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3.14',
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
     "Intended Audience :: Financial and Insurance Industry",
-    "Topic :: Office/Business :: Financial :: Investment"
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Typing :: Typed",
 ]
 dependencies = [
     "numpy",
+#    "numba",
+    "scipy",
     "fedfred",
+    "matplotlib",
 ]
 
 [project.optional-dependencies]
+pandas = ["pandas"]
+polars = ["polars"]
+# cuda-12 = ["cupy-cuda12x"]
+# cuda-13 = ["cupy-cuda13x"]
+# rocm = ["cupy-rocm-7-0"]
+# mlx = ["mlx"]
+
 
 [project.urls]
-Repository    = "https://github.com/nikhilxsunder/cultivars"
+Repository    = "https://github.com/nikhilxsunder/cultivars/tree/dev"
 Documentation = "https://nikhilxsunder.github.io/cultivars/"
 
 # ── Composable dependency groups ─────────────────────────────────────────────
@@ -45,7 +57,10 @@ Documentation = "https://nikhilxsunder.github.io/cultivars/"
 # CI jobs use the minimal group they need (e.g. --group test for test runs).
 
 [dependency-groups]
-types = []
+extras = [ "pandas", "polars" ]
+types = [
+    "scipy-stubs",
+]
 test = [
     "pytest",
     "pytest-cov",
@@ -71,18 +86,30 @@ docs = [
     "sphinx-sitemap",
     "sphinxext-opengraph",
     "matplotlib",
+    "sphinx-codeautolink",
+    "sphinx-copybutton",
+    "sphinx-remove-toctrees",
+    "sphinx-last-updated-by-git",
+    "sphinxcontrib-bibtex",
+    "sphinx-gallery",
+    "sphinx-tippy",
 ]
 notebooks = [
+    "jupyterlab",
     "ipykernel",
+    "ipympl",
+    "ipywidgets",
+    "jupyterlab-lsp",
+    "nbdime",
     "notebook",
+    "matplotlib",
 ]
-extras = []
 dev = [
+    { include-group = "types" },
     { include-group = "test" },
     { include-group = "lint" },
     { include-group = "docs" },
     { include-group = "notebooks" },
-    { include-group = "extras" },
 ]
 
 # ── uv config ────────────────────────────────────────────────────────────────
@@ -92,8 +119,29 @@ managed = true
 
 # ── build ────────────────────────────────────────────────────────────────────
 
+[tool.hatch.version]
+path = "src/cultivars/__about__.py"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/cultivars"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".docs",
+    ".github",
+    ".vscode",
+    "assets",
+    "benchmarks",
+    "conda-forge",
+    "conda-recipe",
+    "docs",
+    "examples",
+    "node_modules",
+    "paper",
+    "*.md",
+    "!README.md",
+    "!CHANGELOG.md",
+]
 
 # ── tool configs ─────────────────────────────────────────────────────────────
 
