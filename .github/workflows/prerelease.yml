@@ -1,209 +1,167 @@
-name: Build and Deploy Docs
+name: Build and Publish Prerelease
 
 on:
   push:
-    branches: [main, dev]
-    tags: ["v*"]
+    tags:
+      # PEP 440 prerelease segments only: v1.2.3a1, v1.2.3b2, v1.2.3rc1
+      - "v[0-9]+.[0-9]+.[0-9]+[ab][0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+  # Re-run for a tag that already exists, e.g. after a workflow fix: the tag
+  # is checked out and verified exactly as a tag push would be.
   workflow_dispatch:
     inputs:
-      version:
-        description: "Which build to (re)deploy: dev, stable, or a release like 1.0.0a1"
+      tag:
+        description: "Existing prerelease tag to publish (e.g. v1.0.0a2)"
         required: true
-        default: dev
-      strict:
-        description: "Treat Sphinx warnings and failing gallery examples as errors"
-        required: false
-        type: boolean
-        default: false
+        type: string
 
-permissions:
-  contents: write
+# Every job needs the tag name; a tag push supplies it as the ref, a manual
+# run supplies it as the input.
+env:
+  TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
 
-# One deploy at a time: every job pushes to the gh-pages branch.
 concurrency:
-  group: gh-pages
+  group: prerelease-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
-env:
-  DOCS_BASE_URL: https://nikhilxsunder.github.io/cultivars/
-  PYTHON_VERSION: "3.14"
-  # Non-interactive backend for sphinx-gallery; no display on the runner.
-  MPLBACKEND: Agg
-
 jobs:
-  # Decide what this run builds. main -> stable, dev -> dev, a tag -> its own
-  # numbered directory, a manual run -> what it was asked for. stable is built
-  # from main rather than from the tag so documentation fixes merged after a
-  # release reach the site without waiting for the next one.
-  plan:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.plan.outputs.matrix }}
-    steps:
-      - id: plan
-        shell: bash
-        env:
-          REQUESTED: ${{ github.event.inputs.version }}
-        run: |
-          set -euo pipefail
-          case "${GITHUB_EVENT_NAME}" in
-            workflow_dispatch)
-              v="${REQUESTED}"
-              if [ "$v" = "dev" ]; then ref=dev; elif [ "$v" = "stable" ]; then ref=main; else ref="v${v}"; fi
-              builds="[{\"version\":\"$v\",\"ref\":\"$ref\"}]" ;;
-            *)
-              if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-                tag="${GITHUB_REF#refs/tags/}"; ver="${tag#v}"
-                builds="[{\"version\":\"$ver\",\"ref\":\"$tag\"}]"
-              elif [ "${GITHUB_REF_NAME}" = "main" ]; then
-                builds='[{"version":"stable","ref":"main"}]'
-              else
-                builds='[{"version":"dev","ref":"dev"}]'
-              fi ;;
-          esac
-          echo "matrix=$builds" >> "$GITHUB_OUTPUT"
-          echo "plan: $builds"
-
   build:
-    needs: plan
+    name: Build distribution
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
-      matrix:
-        include: ${{ fromJson(needs.plan.outputs.matrix) }}
+
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ matrix.ref }}
+          ref: ${{ env.TAG }}
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: astral-sh/setup-uv@v6
+      - name: Verify tag is a prerelease and is on dev
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(a|b|rc)[0-9]+$ ]] \
+            || { echo "::error::${TAG} is not a PEP 440 prerelease tag"; exit 1; }
+          git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null \
+            || { echo "::error::Tag ${TAG} does not exist"; exit 1; }
+          git merge-base --is-ancestor "${TAG}" origin/dev \
+            || { echo "::error::Tag ${TAG} is not reachable from dev"; exit 1; }
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: "3.14"
           enable-cache: true
           cache-dependency-glob: uv.lock
 
       - name: Install dependencies
-        run: uv sync --group docs
+        run: uv sync --group dev
 
-      # Warnings are logged, counted and surfaced, but do not fail the build
-      # unless the run was dispatched with strict=true. A failing gallery
-      # example renders as a warning for the same reason (see conf.py:
-      # sphinx_gallery_conf["only_warn_on_example_error"]). Extension errors
-      # -- a missing gallery header, a broken conf.py -- are still fatal,
-      # because there is nothing to deploy when Sphinx cannot start.
-      - name: Build docs
-        id: sphinx
+      - name: Build package
+        run: uv build
+
+      - name: Verify tag matches built version
         shell: bash
-        env:
-          DOCS_VERSION: ${{ matrix.version }}
-          DOCS_GIT_REF: ${{ matrix.ref }}
-          STRICT: ${{ github.event.inputs.strict == 'true' && '1' || '0' }}
         run: |
           set -euo pipefail
-          rm -rf docs/source/*/generated
-          log="$(pwd)/docs/build/sphinx-warnings.log"
-          mkdir -p docs/build
-          opts="-j auto --keep-going -w ${log}"
-          if [ "${STRICT}" = "1" ]; then
-            opts="${opts} -W"
-            echo "strict: warnings are errors"
-          fi
-          uv run --no-sync make -C docs html SPHINXOPTS="${opts}"
-          test -f docs/build/html/index.html
-          count=$(grep -c . "${log}" || true)
-          echo "warnings=${count}" >> "$GITHUB_OUTPUT"
-          {
-            echo "### Docs build: ${DOCS_VERSION} (${DOCS_GIT_REF})"
-            echo
-            echo "Sphinx warnings: **${count}**"
-            if [ "${count}" -gt 0 ]; then
-              echo
-              echo '<details><summary>first 50</summary>'
-              echo
-              echo '```'
-              head -n 50 "${log}"
-              echo '```'
-              echo '</details>'
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
+          version="${TAG#v}"
+          test -f "dist/cultivars-${version}.tar.gz" \
+            || { echo "::error::No sdist for ${version} in dist/ ($(ls dist))"; exit 1; }
+          ls -la dist/
 
-      - name: Upload warnings log
-        if: always() && steps.sphinx.outputs.warnings != '0'
+      - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
-          name: sphinx-warnings-${{ matrix.version }}
-          path: docs/build/sphinx-warnings.log
-          if-no-files-found: ignore
-          retention-days: 14
+          name: python-package-distributions
+          path: dist/
 
-      - name: Deploy ${{ matrix.version }}
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build/html
-          destination_dir: ${{ matrix.version }}
-          commit_message: "docs: deploy ${{ matrix.version }} from ${{ matrix.ref }} (${{ github.sha }})"
-
-  # Root of the site: redirect, robots.txt, the switcher list, the IndexNow
-  # key. keep_files is what protects the version directories from this push.
-  root:
-    needs: build
+  publish-to-pypi:
+    name: Publish prerelease to PyPI
+    needs:
+      - build
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.14"
+
+      - name: Publish to PyPI
+        run: uv publish dist/*
+
+  sign-and-release:
+    name: Sign and publish GitHub prerelease
+    needs:
+      - publish-to-pypi
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          ref: ${{ env.TAG }}
 
-      - uses: astral-sh/setup-uv@v6
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          enable-cache: true
-          cache-dependency-glob: uv.lock
+          name: python-package-distributions
+          path: dist/
 
-      - name: Install dependencies
-        run: uv sync --group docs
+      - name: Sign the dists with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v3.0.0
+        with:
+          inputs: >-
+            ./dist/*.tar.gz
+            ./dist/*.whl
 
-      - name: Assemble root
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v7
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: GPG sign packages
         shell: bash
-        env:
-          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: |
           set -euo pipefail
-          mkdir -p site-root
-          cp docs/root/index.html docs/root/robots.txt site-root/
-          uv run --no-sync python docs/switcher.py write \
-            --base-url "${DOCS_BASE_URL}" --output site-root/switcher.json
-          if [ -n "${INDEXNOW_KEY}" ]; then
-            echo "${INDEXNOW_KEY}" > "site-root/${INDEXNOW_KEY}.txt"
-          else
-            echo "::warning::INDEXNOW_KEY secret is unset; skipping key file"
-          fi
+          for file in dist/*.tar.gz dist/*.whl; do
+            echo "Signing $file"
+            gpg --detach-sign --armor "$file"
+          done
+          ls -la dist/
 
-      - name: Deploy root
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site-root
-          keep_files: true
-          commit_message: "docs: refresh site root (${{ github.sha }})"
-
-      # Best effort: a search-engine ping must never fail a deploy.
-      - name: Notify IndexNow (Bing)
-        if: github.ref == 'refs/heads/main'
-        continue-on-error: true
+      - name: Verify GPG signatures
         shell: bash
-        env:
-          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: |
           set -euo pipefail
-          if [ -z "${INDEXNOW_KEY}" ]; then
-            echo "::warning::INDEXNOW_KEY secret is unset; skipping IndexNow"
-            exit 0
-          fi
-          base="${DOCS_BASE_URL%/}"
-          payload=$(printf '{"host":"nikhilxsunder.github.io","key":"%s","keyLocation":"%s/%s.txt","urlList":["%s/stable/","%s/stable/sitemap.xml"]}' \
-            "$INDEXNOW_KEY" "$base" "$INDEXNOW_KEY" "$base" "$base")
-          echo "$payload" | curl -sS --fail-with-body -X POST "https://www.bing.com/indexnow" \
-            -H "Content-Type: application/json; charset=utf-8" --data-binary @-
-          echo "IndexNow notification sent."
+          for asc in dist/*.asc; do
+            echo "Verifying ${asc%.asc}"
+            gpg --verify "$asc" "${asc%.asc}"
+          done
+
+      - name: Create GitHub prerelease
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: Prerelease ${{ env.TAG }}
+          draft: false
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            dist/*.tar.gz
+            dist/*.whl
+            dist/*.asc
+            dist/*.sigstore.json
+          token: ${{ secrets.GITHUB_TOKEN }}
