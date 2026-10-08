@@ -104,6 +104,11 @@ class CultivarsError(Exception):
     one of the three subclasses, each of which also derives from the
     builtin that matches its failure mode.
 
+    See Also:
+        * :class:`DimensionError` -- the geometry of an input is wrong.
+        * :class:`SpecificationError` -- the content of a choice is wrong.
+        * :class:`NumericalError` -- the arithmetic could not be carried out.
+
     Example:
         >>> import numpy as np
         >>> from cultivars.univariate.box_jenkins import ARIMA
@@ -112,6 +117,8 @@ class CultivarsError(Exception):
         ... except CultivarsError as error:
         ...     print(type(error).__name__)
         SpecificationError
+        >>> CultivarsError.__mro__[1:3]
+        (<class 'Exception'>, <class 'BaseException'>)
     """
 
 
@@ -122,7 +129,14 @@ class DimensionError(CultivarsError, ValueError):
     where a panel was expected, a coefficient block whose trailing shape
     disagrees with the state dimension, two series of different lengths
     handed to a bivariate test. Also a ``ValueError``, so code that
-    already catches that keeps working.
+    already catches that keeps working. Raised almost entirely by the
+    shape validators in ``_core`` (``validate_endog``,
+    ``validate_endog_matrix``, ``validate_aligned``, ``validate_panel``)
+    before any model logic runs.
+
+    See Also:
+        * :class:`SpecificationError` -- when the shape is fine and the
+          choice is not.
 
     Example:
         >>> import numpy as np
@@ -131,6 +145,11 @@ class DimensionError(CultivarsError, ValueError):
         Traceback (most recent call last):
             ...
         cultivars.exceptions.DimensionError: endog must be two-dimensional (nobs, k); got a ...
+        >>> try:
+        ...     VAR(np.zeros((50, 2, 2)), order=1)
+        ... except ValueError as error:
+        ...     print(isinstance(error, CultivarsError))
+        True
     """
 
 
@@ -142,7 +161,17 @@ class SpecificationError(CultivarsError, ValueError):
     requested depth, a result handed to a consumer that does not expose
     the surface it reads, a transition matrix whose rows do not sum to
     one. The most common exception in the package, and the one a
-    misspelled keyword lands on. Also a ``ValueError``.
+    misspelled keyword lands on. Also a ``ValueError``. The closed lists
+    a message quotes are the ``Literal`` aliases in
+    :mod:`~cultivars.typing`, and the check that fires is usually
+    ``validate_choice``, ``validate_order`` or ``validate_transition``
+    in ``_core``.
+
+    See Also:
+        * :class:`DimensionError` -- when the choice is fine and the
+          shape is not.
+        * :mod:`~cultivars.typing` -- the permitted values quoted in the
+          messages.
 
     Example:
         >>> import numpy as np
@@ -151,6 +180,10 @@ class SpecificationError(CultivarsError, ValueError):
         Traceback (most recent call last):
             ...
         cultivars.exceptions.SpecificationError: trend must be one of ('n', 'c', 'ct'); got ...
+        >>> ARIMA(np.arange(50.0), order=(-1, 0, 0))  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+            ...
+        cultivars.exceptions.SpecificationError: ...
     """
 
 
@@ -162,8 +195,14 @@ class NumericalError(CultivarsError, RuntimeError):
     in the data or a system matrix, a covariance that is not positive
     semidefinite, a lag polynomial exactly singular at some frequency,
     an unstable transition matrix where a stationary solution was asked
-    for. A ``RuntimeError`` rather than a ``ValueError`` because the
-    failure is discovered in the computation, not in the argument.
+    for, an identification whose restrictions no factorization can
+    honor. A ``RuntimeError`` rather than a ``ValueError`` because the
+    failure is discovered in the computation, not in the argument, so a
+    handler written for bad arguments does not swallow it.
+
+    See Also:
+        * :class:`StabilityWarning` -- the warning category for a fit
+          that succeeded but is non-stationary, which is not an error.
 
     Example:
         >>> import numpy as np
@@ -172,26 +211,50 @@ class NumericalError(CultivarsError, RuntimeError):
         Traceback (most recent call last):
             ...
         cultivars.exceptions.NumericalError: stationary_covariance requires a stable transition ...
+        >>> try:
+        ...     LinearGaussianSSM.stationary_covariance([[1.0]], [[1.0]], [[1.0]])
+        ... except ValueError:
+        ...     print("argument handler")
+        ... except RuntimeError:
+        ...     print("computation handler")
+        computation handler
     """
 
 
 class StabilityWarning(UserWarning):
-    """Emitted by higher layers when a fitted model is non-stationary.
+    """The warning category for a fitted model that is non-stationary.
 
     A fit that converged to a companion matrix with a root on or outside
-    the unit circle is still a fit -- the estimates are reported and the
-    result's ``stability`` says what it found -- but forecasts,
-    impulse responses and spectral densities from it are not the
-    objects their names promise. A ``UserWarning`` rather than a
-    :class:`CultivarsError` because nothing has failed; filter it with
-    :func:`warnings.filterwarnings` when the non-stationarity is the
-    point of the exercise.
+    the unit circle is still a fit -- the estimates are reported, and the
+    result's ``is_stable`` and ``stability_check()`` say what it found
+    -- but forecasts, impulse responses and spectral densities from it
+    are not the objects their names promise. This is the category a
+    layer uses when it chooses to warn about that rather than refuse; a
+    ``UserWarning`` rather than a :class:`CultivarsError` because
+    nothing has failed. Filter it with :func:`warnings.filterwarnings`
+    when the non-stationarity is the point of the exercise. Results
+    also report instability in their summary notes, which are not
+    affected by the filter.
+
+    See Also:
+        * :class:`NumericalError` -- raised, not warned, when a
+          computation *requires* stationarity and does not have it.
 
     Example:
+        The category can be silenced or promoted on its own, leaving
+        other warnings alone:
+
         >>> import warnings
         >>> with warnings.catch_warnings(record=True) as caught:
         ...     warnings.simplefilter("always")
         ...     warnings.warn("root on the unit circle", StabilityWarning)
-        >>> issubclass(caught[0].category, UserWarning)
-        True
+        >>> issubclass(caught[0].category, UserWarning), caught[0].category.__name__
+        (True, 'StabilityWarning')
+        >>> with warnings.catch_warnings(record=True) as caught:
+        ...     warnings.simplefilter("always")
+        ...     warnings.filterwarnings("ignore", category=StabilityWarning)
+        ...     warnings.warn("root on the unit circle", StabilityWarning)
+        ...     warnings.warn("something else", UserWarning)
+        >>> [w.category.__name__ for w in caught]
+        ['UserWarning']
     """

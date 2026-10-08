@@ -73,6 +73,7 @@ jobs:
         run: uv sync --group docs
       - name: Build docs
         env:
+          DOCS_SITE_URL: ${{ env.DOCS_BASE_URL }}
           DOCS_VERSION: ${{ matrix.version }}
           DOCS_GIT_REF: ${{ matrix.ref }}
         run: |

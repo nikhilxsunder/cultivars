@@ -16,7 +16,6 @@ from typing import TypeAliasType
 
 from sphinx.application import Sphinx
 from sphinx.pycode import ModuleAnalyzer
-from sphinx_gallery.sorting import ExampleTitleSortKey
 
 # -- Path setup --------------------------------------------------------------
 _ROOT = Path(__file__).resolve().parents[2]
@@ -62,16 +61,25 @@ extensions: list[str] = [
 ]
 
 templates_path: list[str] = ["_templates"]
-exclude_patterns: list[str] = []
+exclude_patterns: list[str] = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    # sphinx-gallery writes notebooks and backreference stubs next to the
+    # rendered pages; they are outputs, not sources.
+    "auto_examples/**/*.ipynb",
+    "auto_examples/**/*.py",
+    "gen_modules/backreferences/*.examples",
+]
 
 source_suffix: dict[str, str] = {
     ".rst": "restructuredtext",
     ".md": "markdown",
 }
 
-# Sphinx >= 8 fails the build on missing references only if nitpicky is on.
-# Keep it off: private-base cross-refs (``_VectorInferenceMixin``) are
-# intentionally undocumented.
+# Warnings never fail a build here; the workflow adds ``-W`` only when run
+# with strict=true. Private-base cross-refs (``_VectorInferenceMixin``) are
+# intentionally undocumented, so nitpicky stays off.
 nitpicky: bool = False
 suppress_warnings: list[str] = [
     # Inherited dataclass fields whose annotation names a private type that is
@@ -80,6 +88,9 @@ suppress_warnings: list[str] = [
     "sphinx_autodoc_typehints.forward_reference",
     # Relative Markdown links inside the included root CONTRIBUTING/SECURITY.
     "myst.xref_missing",
+    # Unpicklable config values disable the environment cache but not the
+    # build; every value below is picklable, this is insurance.
+    "config.cache",
 ]
 
 # -- MyST --------------------------------------------------------------------
@@ -87,7 +98,7 @@ myst_enable_extensions: list[str] = [
     "colon_fence",
     "deflist",
     "dollarmath",
-    "linkify",
+    "linkify",  # requires linkify-it-py in the docs dependency group
     "replacements",
     "smartquotes",
     "substitution",
@@ -97,9 +108,9 @@ myst_heading_anchors: int = 4
 
 # -- autodoc / autosummary ---------------------------------------------------
 autosummary_generate: bool = True
-# Respect ``__all__`` in each subpackage ``__init__`` so re-exported classes
-# are documented under their public path (cultivars.univariate.AR, not
-# cultivars.univariate.autoregression.AR).
+# Subpackage ``__init__`` files re-export modules only, so honouring their
+# ``__all__`` documents each model under its module path
+# (cultivars.multivariate.reduced_form.vector_autoregression.VAR).
 autosummary_ignore_module_all: bool = False
 autosummary_imported_members: bool = False
 
@@ -170,6 +181,15 @@ extlinks: dict[str, tuple[str, str]] = {
 
 _DOCS_VERSION: str = os.environ.get("DOCS_VERSION", "dev")  # dev | stable | <release>
 _DOCS_GIT_REF: str = os.environ.get("DOCS_GIT_REF", "dev")  # branch or tag, for Edit on GitHub
+# Origin and path prefix the site is served from, with the live site as the
+# default. The deploy workflow passes its DOCS_BASE_URL; ``make preview``
+# passes http://localhost:<port>/ and mirrors the live layout (switcher.json
+# at the root, one directory per version), so the same switcher works in
+# both. Canonical-URL metadata (html_baseurl, opengraph, sitemap) stays on
+# the live stable URL regardless.
+_DOCS_SITE_URL: str = os.environ.get("DOCS_SITE_URL", "https://nikhilxsunder.github.io/cultivars/")
+if not _DOCS_SITE_URL.endswith("/"):
+    _DOCS_SITE_URL += "/"
 
 # Every build declares stable as canonical: dev and archives consolidate to it.
 html_baseurl: str = "https://nikhilxsunder.github.io/cultivars/stable/"
@@ -184,10 +204,12 @@ html_title: str = "cultivars"
 html_logo: str = "_static/cultivars-logo.png"
 html_favicon: str = "_static/cultivars-favicon.ico"
 html_static_path: list[str] = ["_static"]
-html_extra_path: list[str] = ["robots.txt", "cb111522167c411f83b8b3f2cf083d63.txt"]
+# robots.txt and the IndexNow key live at the site root and are written by
+# the deploy workflow's ``root`` job from docs/root/ and a secret; per-version
+# copies under stable/ are ignored by crawlers and would duplicate the key.
+html_extra_path: list[str] = []
 html_css_files: list[str] = ["custom.css", "consent.css"]
 html_js_files: list[tuple[str, dict[str, str]]] = [("consent.js", {"defer": "defer"})]
-# html_js_files: list[str] = ["json_ld.js"]
 html_show_sourcelink: bool = False
 
 html_theme_options: dict[str, object] = {
@@ -199,7 +221,7 @@ html_theme_options: dict[str, object] = {
     "header_links_before_dropdown": 3,
     "navbar_start": ["navbar-logo", "version-switcher"],
     "switcher": {
-        "json_url": "https://nikhilxsunder.github.io/cultivars/switcher.json",
+        "json_url": _DOCS_SITE_URL + "switcher.json",
         "version_match": _DOCS_VERSION,
     },
     "check_switcher": False,
@@ -224,12 +246,10 @@ html_theme_options: dict[str, object] = {
             "url": "https://app.codecov.io/gh/nikhilxsunder/cultivars",
             "icon": "fas fa-umbrella",
         },
-        {
-            "name": "OpenSSF",
-            "url": "",
-            "icon": "fas fa-trophy",
-        },
-        {"name": "Zenodo", "url": "", "icon": "fas fa-book"},
+        # Re-enable with real URLs once the badges exist; an empty url renders
+        # a self-link and warns in current pydata-sphinx-theme.
+        # {"name": "OpenSSF", "url": "", "icon": "fas fa-trophy"},
+        # {"name": "Zenodo", "url": "", "icon": "fas fa-book"},
     ],
     "use_edit_page_button": True,
     "show_toc_level": 2,
@@ -282,12 +302,14 @@ plot_formats: list[tuple[str, int]] = [("png", 150)]
 plot_pre_code: str = "import numpy as np\nimport matplotlib.pyplot as plt\nimport cultivars"
 
 # -- sphinx-gallery ----------------------------------------------------------
+# Every value is picklable (sort keys by name, not by class) so Sphinx can
+# cache the environment between builds.
 sphinx_gallery_conf: dict[str, object] = {
-    "examples_dirs": [str(_ROOT / "examples")],
+    "examples_dirs": [str(_ROOT / "examples")],  # needs examples/GALLERY_HEADER.rst
     "gallery_dirs": ["auto_examples"],  # relative to docs/source
     "filename_pattern": r"/plot_",  # only plot_*.py are executed
     "ignore_pattern": r"/_",
-    "within_subsection_order": ExampleTitleSortKey,
+    "within_subsection_order": "ExampleTitleSortKey",
     "doc_module": ("cultivars",),
     "reference_url": {"cultivars": None},  # None = link into this build
     "backreferences_dir": "gen_modules/backreferences",
@@ -300,13 +322,15 @@ sphinx_gallery_conf: dict[str, object] = {
     "show_memory": False,
     "show_signature": False,
     "min_reported_time": 10,
-    "abort_on_example_error": True,
+    # A failing example is rendered with its traceback and reported as a
+    # Sphinx warning; it fails the build only under -W (workflow strict=true).
+    "abort_on_example_error": False,
+    "only_warn_on_example_error": True,
     "plot_gallery": os.environ.get("DOCS_PLOT_GALLERY", "1") == "1",
     "default_thumb_file": str(_ROOT / "docs" / "source" / "_static" / "cultivars-logo.png"),
 }
 
-# Keep generated backreference stubs out of the sidebar toctree
-# (you already load sphinx_remove_toctrees but never configured it).
+# Keep generated backreference stubs out of the sidebar toctree.
 remove_from_toctrees: list[str] = ["gen_modules/backreferences/*"]
 
 # -- sphinx-tippy ------------------------------------------------------------
@@ -321,7 +345,7 @@ tippy_anchor_parent_selector: str = "article.bd-article"  # pydata body only; sk
 tippy_skip_anchor_classes: list[str] = ["headerlink", "sd-stretched-link"]
 tippy_enable_mathjax: bool = True  # tips for equation references
 tippy_enable_wikitips: bool = False  # build-time network fetch; low value here
-tippy_enable_doitips: bool = False  # see note 3
+tippy_enable_doitips: bool = False
 tippy_add_class: str = "has-tippy"
 
 # -- doctest -----------------------------------------------------------------
