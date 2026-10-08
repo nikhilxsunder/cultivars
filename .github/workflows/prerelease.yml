@@ -130,7 +130,7 @@ jobs:
 
       - name: Upload warnings log
         if: always() && steps.sphinx.outputs.warnings != '0'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sphinx-warnings-${{ matrix.version }}
           path: docs/build/sphinx-warnings.log
