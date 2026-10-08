@@ -94,9 +94,10 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.14"
+          enable-cache: false
 
       - name: Publish to PyPI
-        run: uv publish dist/*
+        run: uv publish --check-url https://pypi.org/simple/cultivars/ dist/*
 
   sign-and-release:
     name: Sign and publish GitHub prerelease
