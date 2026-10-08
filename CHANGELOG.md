@@ -9,6 +9,11 @@ listed under Changed.
 
 ## [Unreleased]
 
+### Fixed
+
+- `ARMA` validates the two-element order before unpacking, so wrong-length
+  orders raise `SpecificationError` with the expected `p` and `q` terms.
+
 ## [1.0.0a2] - 2026-10-08
 
 Documentation release. Every public module, class, method and dataclass field

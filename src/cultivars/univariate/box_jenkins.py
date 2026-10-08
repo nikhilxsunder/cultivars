@@ -138,6 +138,7 @@ from .._core import (
     expand_ar,
     expand_ma,
     n_deterministic,
+    validate_order_tuple,
 )
 from .._internals import (
     _BoxJenkinsFit,
@@ -1020,8 +1021,8 @@ class ARMA(SARIMAX):
         trend: Deterministic specification.
 
     Raises:
-        SpecificationError: If either order is negative or the trend is
-            unrecognized.
+        SpecificationError: If ``order`` does not have two non-negative
+            integers or the trend is unrecognized.
         DimensionError: If the series is too short for the
             specification.
 
@@ -1063,8 +1064,8 @@ class ARMA(SARIMAX):
             trend: Deterministic specification.
 
         Raises:
-            SpecificationError: If either order is negative or the trend
-                is invalid.
+            SpecificationError: If ``order`` does not have two non-negative
+                integers or the trend is invalid.
             DimensionError: If the series is too short.
 
         Example:
@@ -1076,5 +1077,5 @@ class ARMA(SARIMAX):
                 ...
             cultivars.exceptions.SpecificationError: q must be >= 0; got -1.
         """
-        p, q = order
+        p, q = validate_order_tuple(order, ("p", "q"))
         super().__init__(endog, order=(p, 0, q), trend=trend)
