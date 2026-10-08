@@ -1,0 +1,94 @@
+/* cultivars: keep autosummary tables readable at narrow widths */
+table.autosummary td:first-child {
+  white-space: nowrap;
+}
+
+/* ---- Full-width layout-------------------------------------------- */
+
+/* The theme caps header and body at 88rem and centres them. */
+.bd-page-width {
+  max-width: 100%;
+}
+
+/* PyTorch re-caps at 1800px on very wide displays so line lengths stay sane. */
+@media (min-width: 1800px) {
+  .bd-page-width {
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* The theme caps the article at 60em. Keep this rule separate from the one
+   above: merging the selectors lowers specificity and the override fails. */
+.bd-main .bd-content .bd-article-container {
+  max-width: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.bd-main .bd-content .bd-article-container .bd-article {
+  padding-left: 0;
+  padding-right: 1rem;
+  padding-top: 1rem;
+}
+
+/* Sidebars: 15% each instead of 25%, with floors, pushed to the screen edges.
+   Scoped to the breakpoints at which the theme renders them in-flow, so the
+   off-canvas mobile drawers keep the theme's own 75% width. */
+@media (min-width: 960px) {
+  .bd-sidebar-primary {
+    width: 15%;
+    min-width: 200px;
+    padding: 1rem 1.5rem 1rem 3rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .bd-sidebar-secondary {
+    width: 15%;
+    min-width: 180px;
+    padding: 1rem 3rem 1rem 1rem;
+  }
+}
+
+/* Header gutters match the article so the brand lines up with the sidebar. */
+.bd-header .bd-header__inner {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* cultivars docs: green accent for pydata-sphinx-theme.
+ * Save as _static/css/custom.css and register via html_css_files in conf.py.
+ * Swap the hex values for your logo green; keep the light/dark contrast
+ * relationship (darker on white, lighter on #14181e).
+ */
+
+html:not([data-theme]),
+html[data-theme="light"] {
+  --pst-color-primary: #2e7d32; /* 5.1:1 on white */
+  --pst-color-primary-bg: #c8e6c9;
+  --pst-color-secondary: #1b5e20; /* hover: darker */
+  --pst-color-secondary-bg: #e8f5e9;
+  --pst-color-accent: #43a047; /* focus rings */
+  --pst-color-accent-bg: #e8f5e9;
+  --pst-color-link: var(--pst-color-primary);
+  --pst-color-link-hover: var(--pst-color-secondary);
+  --pst-color-link-higher-contrast: #1b5e20;
+  --pst-color-inline-code-links: var(--pst-color-link);
+  --pst-color-table-row-hover-bg: #e8f5e9;
+}
+
+html[data-theme="dark"] {
+  --pst-color-primary: #66bb6a; /* 7.4:1 on #14181e */
+  --pst-color-primary-bg: #163d1c;
+  --pst-color-secondary: #a5d6a7; /* hover: lighter */
+  --pst-color-secondary-bg: #163d1c;
+  --pst-color-accent: #81c784;
+  --pst-color-accent-bg: #163d1c;
+  --pst-color-link: var(--pst-color-primary);
+  --pst-color-link-hover: var(--pst-color-secondary);
+  --pst-color-link-higher-contrast: #81c784;
+  --pst-color-inline-code-links: var(--pst-color-link);
+  --pst-color-table-row-hover-bg: #1e3b21;
+}

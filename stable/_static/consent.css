@@ -1,0 +1,279 @@
+/* ---- Storage preferences: floating button + right-hand drawer ------------
+   Themed entirely through pydata-sphinx-theme's CSS variables, so it follows
+   the light/dark switch. z-index sits above the theme's off-canvas sidebars
+   (1055) so the drawer is never hidden behind them. */
+
+.cv-consent-button {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1060;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--pst-color-border);
+  border-radius: 50%;
+  background: var(--pst-color-background);
+  color: var(--pst-color-primary);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cv-consent-button:hover,
+.cv-consent-button:focus-visible {
+  border-color: var(--pst-color-primary);
+  outline: none;
+}
+
+.cv-consent-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cv-consent-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1061;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease-out,
+    visibility 0.2s ease-out;
+}
+
+.cv-consent-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1062;
+  height: 100dvh;
+  width: min(26rem, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--pst-color-background);
+  color: var(--pst-color-text-base);
+  border-left: 1px solid var(--pst-color-border);
+  box-shadow: -0.5rem 0 1.5rem rgba(0, 0, 0, 0.3);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.25s ease-out,
+    visibility 0.25s ease-out;
+  font-size: var(--pst-font-size-base, 1rem);
+}
+
+.cv-consent-open .cv-consent-backdrop {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cv-consent-open .cv-consent-drawer {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-consent-backdrop,
+  .cv-consent-drawer {
+    transition: none;
+  }
+}
+
+.cv-consent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+}
+
+.cv-consent-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.cv-consent-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--pst-color-text-base);
+  color: var(--pst-color-background);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cv-consent-close:focus-visible {
+  outline: 2px solid var(--pst-color-primary);
+  outline-offset: 2px;
+}
+
+.cv-consent-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0 1.5rem;
+}
+
+.cv-consent-intro {
+  margin: 0 0 1rem;
+  color: var(--pst-color-text-muted);
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.cv-consent-category {
+  padding: 1rem 0;
+  border-top: 1px solid var(--pst-color-border);
+}
+
+.cv-consent-category-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cv-consent-category-head label {
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+.cv-consent-category p {
+  margin: 0.5rem 0 0;
+  color: var(--pst-color-text-muted);
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+/* The switch: a checkbox with appearance removed, drawn as a pill. */
+.cv-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 1.5rem;
+  margin: 0;
+  border: 0;
+  border-radius: 1rem;
+  background: var(--pst-color-border);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s ease-out;
+}
+
+.cv-switch::before {
+  content: "";
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--pst-color-background);
+  transition: transform 0.15s ease-out;
+}
+
+.cv-switch:checked {
+  background: var(--pst-color-primary);
+}
+
+.cv-switch:checked::before {
+  transform: translateX(1.25rem);
+}
+
+.cv-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cv-switch:focus-visible {
+  outline: 2px solid var(--pst-color-primary);
+  outline-offset: 2px;
+}
+
+.cv-consent-disclosures {
+  margin-top: 0.75rem;
+}
+
+.cv-consent-disclosures summary {
+  cursor: pointer;
+  color: var(--pst-color-primary);
+  font-weight: 600;
+  font-size: 0.95em;
+  list-style: none;
+}
+
+.cv-consent-disclosures summary::-webkit-details-marker {
+  display: none;
+}
+
+.cv-consent-disclosures table {
+  width: 100%;
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+.cv-consent-disclosures th,
+.cv-consent-disclosures td {
+  padding: 0.3rem 0.4rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid
+    var(--pst-color-border-muted, var(--pst-color-border));
+}
+
+.cv-consent-disclosures th {
+  color: var(--pst-color-text-muted);
+  font-weight: 600;
+}
+
+.cv-consent-disclosures code {
+  font-size: 0.95em;
+}
+
+.cv-consent-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--pst-color-border);
+}
+
+.cv-consent-footer button {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 1.05em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cv-consent-save {
+  border: 1px solid var(--pst-color-primary);
+  background: var(--pst-color-primary);
+  color: var(--pst-color-primary-text, #fff);
+}
+
+.cv-consent-accept {
+  border: 1px solid var(--pst-color-border);
+  background: transparent;
+  color: var(--pst-color-text-base);
+}
+
+.cv-consent-footer button:focus-visible {
+  outline: 2px solid var(--pst-color-primary);
+  outline-offset: 2px;
+}
