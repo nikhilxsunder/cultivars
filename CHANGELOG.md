@@ -20,6 +20,9 @@ listed under Changed.
 - `cultivars.multivariate.structural.sign_restrictions.__all__` lists
   `NarrativeSignRestrictedSVAR`, so star imports and the API reference
   see it (#452, #496).
+- `ARMA` validates `order` before unpacking it, so a wrong-length or
+  non-integer order raises `SpecificationError` naming `p` and `q`
+  instead of a bare `ValueError` (#81, #494).
 
 ## [1.0.0a4] - 2026-10-13
 
