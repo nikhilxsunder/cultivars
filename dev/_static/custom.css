@@ -92,3 +92,184 @@ html[data-theme="dark"] {
   --pst-color-inline-code-links: var(--pst-color-link);
   --pst-color-table-row-hover-bg: #1e3b21;
 }
+
+/* ---- Footer ------------------------------------------------------------ */
+
+/* The theme renders footer_start inside a padded, width-capped flex row.
+   Let the template own the full width so its bands can bleed edge to edge. */
+.bd-footer {
+  padding: 0;
+  border-top: 0;
+  background: transparent;
+}
+.bd-footer .bd-footer__inner {
+  max-width: none;
+  padding: 0;
+  display: block;
+}
+.bd-footer .footer-items__start,
+.bd-footer .footer-item {
+  width: 100%;
+  margin: 0;
+}
+
+/* Band colours are fixed dark in both themes, like the header of a printed
+   report: the footer is a destination, not part of the reading surface.
+   Links use the dark-theme green so contrast holds on both bands. */
+.cv-footer {
+  --cv-footer-guide-bg: #262a2f;
+  --cv-footer-site-bg: #111417;
+  --cv-footer-fg: #e8eaed;
+  --cv-footer-muted: #a8adb3;
+  --cv-footer-rule: #3a3f45;
+  --cv-footer-link: #81c784;
+  --cv-footer-link-hover: #a5d6a7;
+  --cv-footer-code-bg: #1c2024;
+  color: var(--cv-footer-fg);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+html[data-theme="dark"] .cv-footer {
+  --cv-footer-guide-bg: #1a1e23;
+  --cv-footer-site-bg: #0b0e11;
+}
+
+.cv-footer__band--guide {
+  background: var(--cv-footer-guide-bg);
+}
+.cv-footer__band--site {
+  background: var(--cv-footer-site-bg);
+}
+
+.cv-footer__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.cv-footer h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.75rem;
+  color: var(--cv-footer-fg);
+}
+.cv-footer p {
+  margin: 0 0 1rem;
+}
+.cv-footer a {
+  color: var(--cv-footer-link);
+  text-decoration: none;
+}
+.cv-footer a:hover,
+.cv-footer a:focus-visible {
+  color: var(--cv-footer-link-hover);
+  text-decoration: underline;
+}
+
+/* Band 1: three equal columns with a "View x ›" call to action. */
+.cv-footer__columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.5rem;
+}
+.cv-footer__column p {
+  color: var(--cv-footer-muted);
+}
+.cv-footer__cta {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Band 2: install block, two link lists, icon row, legal. */
+.cv-footer__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem;
+}
+.cv-footer__install p {
+  color: var(--cv-footer-muted);
+  max-width: 48ch;
+}
+.cv-footer__code {
+  display: inline-block;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  background: var(--cv-footer-code-bg);
+  border: 1px solid var(--cv-footer-rule);
+  border-radius: 0.25rem;
+  color: var(--cv-footer-fg);
+  font-size: 0.9rem;
+}
+.cv-footer__links h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.cv-footer__links ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cv-footer__links li {
+  margin: 0.25rem 0;
+}
+.cv-footer__links a {
+  color: var(--cv-footer-fg);
+}
+.cv-footer__links a:hover {
+  color: var(--cv-footer-link-hover);
+}
+.cv-footer__muted {
+  color: var(--cv-footer-muted);
+  font-size: 0.85rem;
+}
+
+.cv-footer__social {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 2.5rem 0 0;
+  padding: 0 0 1.5rem;
+  border-bottom: 1px solid var(--cv-footer-rule);
+}
+.cv-footer__social a {
+  color: var(--cv-footer-fg);
+  font-size: 1.4rem;
+}
+.cv-footer__social a:hover {
+  color: var(--cv-footer-link);
+  text-decoration: none;
+}
+
+.cv-footer__legal {
+  padding-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--cv-footer-muted);
+}
+.cv-footer__legal p {
+  margin: 0 0 0.4rem;
+  max-width: 100ch;
+}
+.cv-footer__legal a {
+  color: var(--cv-footer-fg);
+  text-decoration: underline;
+}
+.cv-footer__build {
+  color: var(--cv-footer-muted);
+}
+
+@media (max-width: 960px) {
+  .cv-footer__columns,
+  .cv-footer__grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+  .cv-footer__inner {
+    padding: 2.25rem 1.25rem;
+  }
+  .cv-footer__social {
+    gap: 1.5rem;
+  }
+}
