@@ -144,27 +144,35 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import (
+from ..engine._core._defaults import (
     _BDS_RADIUS,
     _CRITICAL_LEVELS,
     _DEFAULT_GRID,
     _DEFAULT_TRIM,
     _HANSEN_REPLICATIONS,
-    _NULL,
-    SummaryTable,
+)
+from ..engine._core._estimators import (
     _bds,
     _hansen_threshold,
     _reset_test,
     _simulated_critical_values,
     _terasvirta_lm,
     _tsay_arranged,
-    _validate_specification,
-    validate_endog,
-    validate_open_interval,
-    validate_order,
 )
-from ..engine._internals import _HypothesisTest
+from ..engine._core._notes import (
+    _NULL,
+)
+from ..engine._core._validators import (
+    _validate_endog,
+    _validate_open_interval,
+    _validate_order,
+    _validate_specification,
+)
+from ..engine._internals._tests import _HypothesisTest
 from ..exceptions import SpecificationError
+from ..summary import (
+    SummaryTable,
+)
 
 __all__ = [
     "BDSTest",
@@ -675,9 +683,9 @@ def terasvirta(endog: npt.ArrayLike, *, order: int, delay: int = 1) -> Linearity
         >>> [(c.name, round(c.pvalue, 4)) for c in verdict.companions]
         [('H04', 0.1403), ('H03', 0.0002), ('H02', 0.0)]
     """
-    y = validate_endog(endog)
-    order = validate_order(order, "order", minimum=1)
-    delay = validate_order(delay, "delay", minimum=1)
+    y = _validate_endog(endog)
+    order = _validate_order(order, "order", minimum=1)
+    delay = _validate_order(delay, "delay", minimum=1)
     _validate_specification(y, order, delay)
     (statistic, pvalue, df1, df2), steps = _terasvirta_lm(y, order, delay)
     nobs = y.shape[0] - max(order, delay)
@@ -794,9 +802,9 @@ def tsay(endog: npt.ArrayLike, *, order: int, delay: int = 1) -> LinearityTest:
         >>> tsay(rng.standard_normal(300), order=1).reject()
         False
     """
-    y = validate_endog(endog)
-    order = validate_order(order, "order", minimum=1)
-    delay = validate_order(delay, "delay", minimum=1)
+    y = _validate_endog(endog)
+    order = _validate_order(order, "order", minimum=1)
+    delay = _validate_order(delay, "delay", minimum=1)
     _validate_specification(y, order, delay)
     statistic, pvalue, df1, df2 = _tsay_arranged(y, order, delay)
     return LinearityTest(
@@ -889,9 +897,9 @@ def ramsey_reset(endog: npt.ArrayLike, *, order: int, powers: int = 3) -> Linear
         >>> ramsey_reset(z, order=1).reject()
         True
     """
-    y = validate_endog(endog)
-    order = validate_order(order, "order", minimum=1)
-    powers = validate_order(powers, "powers", minimum=2)
+    y = _validate_endog(endog)
+    order = _validate_order(order, "order", minimum=1)
+    powers = _validate_order(powers, "powers", minimum=2)
     _validate_specification(y, order, 1)
     statistic, pvalue, df1, df2 = _reset_test(y, order, powers)
     return LinearityTest(
@@ -1012,16 +1020,16 @@ def hansen_threshold(
         >>> hansen_threshold(y, order=2, delay=2, replications=500, seed=0).reject()
         False
     """
-    y = validate_endog(endog)
-    order = validate_order(order, "order", minimum=1)
-    trim = validate_open_interval(trim, "trim", low=0.0, high=0.5)
-    n_grid = validate_order(n_grid, "n_grid", minimum=1)
+    y = _validate_endog(endog)
+    order = _validate_order(order, "order", minimum=1)
+    trim = _validate_open_interval(trim, "trim", low=0.0, high=0.5)
+    n_grid = _validate_order(n_grid, "n_grid", minimum=1)
     if replications < 200:
         raise SpecificationError(f"replications must be at least 200; got {replications}.")
     delays = (
         tuple(range(1, order + 1))
         if delay is None
-        else (validate_order(delay, "delay", minimum=1),)
+        else (_validate_order(delay, "delay", minimum=1),)
     )
     _validate_specification(y, order, max(delays))
     rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
@@ -1121,8 +1129,8 @@ def bds(endog: npt.ArrayLike, *, dimension: int = 3, epsilon: float | None = Non
             ...
         cultivars.exceptions.NumericalError: a radius of 1e-09 leaves the correlation integral ...
     """
-    y = validate_endog(endog)
-    dimension = validate_order(dimension, "dimension", minimum=2)
+    y = _validate_endog(endog)
+    dimension = _validate_order(dimension, "dimension", minimum=2)
     if y.shape[0] < 10 * dimension + 50:
         raise SpecificationError(
             f"the BDS test at dimension {dimension} needs at least {10 * dimension + 50} "

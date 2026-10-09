@@ -113,20 +113,26 @@ from dataclasses import dataclass, replace
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import (
-    _HEGY_REPLICATIONS,
-    _canova_hansen,
+from ..engine._core._converters import (
     _frequency_labels,
+)
+from ..engine._core._defaults import (
+    _HEGY_REPLICATIONS,
+)
+from ..engine._core._estimators import (
+    _canova_hansen,
     _hegy_null_draws,
     _hegy_statistics,
     _newey_west_bandwidth,
     _schwert_max_lags,
     _select_hegy_lags,
     _simulated_critical_values,
-    _validate_seasonal,
     _von_mises_draws,
-    validate_choice,
-    validate_order,
+)
+from ..engine._core._validators import (
+    _validate_choice,
+    _validate_order,
+    _validate_seasonal,
 )
 from ..exceptions import SpecificationError
 from .unit_roots import UnitRootTest
@@ -409,17 +415,17 @@ def hegy(
         (False, [True, True, True, True])
     """
     y = _validate_seasonal(endog, period)
-    trend = validate_choice(trend, ("n", "c", "ct"), "trend")
+    trend = _validate_choice(trend, ("n", "c", "ct"), "trend")
     if replications < 500:
         raise SpecificationError(f"replications must be at least 500; got {replications}.")
     if lags is None:
         ceiling = _schwert_max_lags(y.shape[0]) if max_lags is None else int(max_lags)
-        ceiling = validate_order(ceiling, "max_lags", minimum=0)
-        method = validate_choice(method, ("aic", "bic", "t-stat"), "method")
+        ceiling = _validate_order(ceiling, "max_lags", minimum=0)
+        method = _validate_choice(method, ("aic", "bic", "t-stat"), "method")
         chosen = _select_hegy_lags(y, period, trend, ceiling, method, seasonal=seasonal)
         label = f"{method} over 0..{ceiling}"
     else:
-        chosen = validate_order(lags, "lags", minimum=0)
+        chosen = _validate_order(lags, "lags", minimum=0)
         label = "fixed"
     statistics, nobs = _hegy_statistics(y, period, trend, chosen, seasonal=seasonal)
     rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
@@ -576,14 +582,14 @@ def canova_hansen(
         (True, [True, True])
     """
     y = _validate_seasonal(endog, period)
-    trend = validate_choice(trend, ("n", "c", "ct"), "trend")
-    lags = validate_order(lags, "lags", minimum=0)
+    trend = _validate_choice(trend, ("n", "c", "ct"), "trend")
+    lags = _validate_order(lags, "lags", minimum=0)
     if n_draws < 500 or grid < 100:
         raise SpecificationError(
             f"n_draws must be at least 500 and grid at least 100; got {n_draws}, {grid}."
         )
     width = _newey_west_bandwidth(y.shape[0]) if bandwidth is None else int(np.floor(bandwidth))
-    width = validate_order(width, "bandwidth", minimum=0)
+    width = _validate_order(width, "bandwidth", minimum=0)
     statistics, degrees, nobs = _canova_hansen(y, period, trend, lags, bandwidth=width)
     rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
     draws = {

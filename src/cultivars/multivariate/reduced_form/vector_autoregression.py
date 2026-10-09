@@ -141,9 +141,11 @@ from ...engine._internals import (
     _VectorPropagationMixin,
     _VectorResult,
 )
+from ...engine._internals._inferences import _CoefficientInference as CoefficientInference
+from ...engine._internals._levels import _ConditionalLevels as ConditionalLevels
 from ...exceptions import DimensionError, SpecificationError
 
-__all__ = ["VAR", "VARX", "VARResult", "VARXResult"]
+__all__ = ["VAR", "VARX", "CoefficientInference", "ConditionalLevels", "VARResult", "VARXResult"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)

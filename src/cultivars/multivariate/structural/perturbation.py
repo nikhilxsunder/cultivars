@@ -154,12 +154,15 @@ import numpy.typing as npt
 from ...engine._core import _SIMULATION_BURN, SummaryTable
 from ...engine._internals import (
     _impulse_responses,
-    _PerturbationDSGEPosterior,
     _PerturbationFit,
     _PerturbationModel,
-    _PerturbationSolution,
     _simulate_perturbation,
     _SummaryMixin,
+)
+from ...engine._internals._posteriors import _PerturbationDSGEPosterior as PerturbationDSGEPosterior
+from ...engine._internals._solutions import _PerturbationDSGESolution as PerturbationDSGESolution
+from ...engine._internals._specifications import (
+    _PerturbationModelSpecification as PerturbationModelSpecification,
 )
 from ...exceptions import SpecificationError
 from ...state_space.linear_gaussian import LinearGaussianSSM
@@ -167,7 +170,10 @@ from ...state_space.nonlinear import NonlinearSSM
 
 __all__ = [
     "PerturbationDSGE",
+    "PerturbationDSGEPosterior",
     "PerturbationDSGEResult",
+    "PerturbationDSGESolution",
+    "PerturbationModelSpecification",
 ]
 
 

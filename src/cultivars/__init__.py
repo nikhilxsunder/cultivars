@@ -105,6 +105,7 @@ from . import (
     multivariate,
     spectral,
     state_space,
+    summary,
     typing,
     univariate,
 )
@@ -119,6 +120,7 @@ __all__ = [
     "multivariate",
     "spectral",
     "state_space",
+    "summary",
     "typing",
     "univariate",
 ]

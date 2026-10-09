@@ -151,10 +151,10 @@ from ...engine._internals import (
     _ComparisonMixin,
     _MarkovSwitchingVectorAutoRegressionModel,
     _RegimeSwitchingLinearStateSpace,
-    _RegimeSystemResult,
     _SummaryMixin,
     _VectorMarkovSwitchingFit,
 )
+from ...engine._internals._results import _RegimeSystemResult as RegimeSystemResult
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from ..structural.zero_restrictions import RecursiveSVAR
 
@@ -165,6 +165,7 @@ __all__ = [
     "MarkovSwitchingSVARResult",
     "MarkovSwitchingVAR",
     "MarkovSwitchingVARResult",
+    "RegimeSystemResult",
 ]
 
 

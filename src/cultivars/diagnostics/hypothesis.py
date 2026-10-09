@@ -121,10 +121,10 @@ Example:
 
 from __future__ import annotations
 
-from ..engine._internals import _ChiSquaredTest as ChiSquaredTest
-from ..engine._internals import _HypothesisTest as HypothesisTest
-from ..engine._internals import _LikelihoodRatioTest as LikelihoodRatioTest
-from ..engine._internals import _TabulatedTest as TabulatedTest
-from ..engine._internals import _WaldTest as WaldTest
+from ..engine._internals._tests import _ChiSquaredTest as ChiSquaredTest
+from ..engine._internals._tests import _HypothesisTest as HypothesisTest
+from ..engine._internals._tests import _LikelihoodRatioTest as LikelihoodRatioTest
+from ..engine._internals._tests import _TabulatedTest as TabulatedTest
+from ..engine._internals._tests import _WaldTest as WaldTest
 
 __all__ = ["ChiSquaredTest", "HypothesisTest", "LikelihoodRatioTest", "TabulatedTest", "WaldTest"]

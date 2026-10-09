@@ -157,15 +157,11 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import (
-    _DFGLS_CRITICAL,
-    _GLS_DETREND_C,
-    _KPSS_CRITICAL,
-    _NG_PERRON_CRITICAL,
-    _ZIVOT_ANDREWS_CRITICAL,
+from ..engine._core._converters import (
     _critical_value_table,
+)
+from ..engine._core._estimators import (
     _dickey_fuller_regression,
-    _gls_detrend,
     _kpss_pvalue,
     _kpss_statistic,
     _long_run_variance,
@@ -177,10 +173,22 @@ from ..engine._core import (
     _resolve_dickey_fuller_lags,
     _schwert_max_lags,
     _zivot_andrews,
-    validate_choice,
-    validate_endog,
 )
-from ..engine._internals import _TabulatedTest
+from ..engine._core._mappings import (
+    _DFGLS_CRITICAL,
+    _GLS_DETREND_C,
+    _KPSS_CRITICAL,
+    _NG_PERRON_CRITICAL,
+    _ZIVOT_ANDREWS_CRITICAL,
+)
+from ..engine._core._transforms import (
+    _gls_detrend,
+)
+from ..engine._core._validators import (
+    _validate_choice,
+    _validate_endog,
+)
+from ..engine._internals._tests import _TabulatedTest
 from ..exceptions import SpecificationError
 
 __all__ = [
@@ -453,8 +461,8 @@ def adf(
         >>> test.reject(), test.method
         (True, 'aic (max 15)')
     """
-    validate_choice(trend, ("n", "c", "ct"), "trend")
-    y = validate_endog(endog)
+    _validate_choice(trend, ("n", "c", "ct"), "trend")
+    y = _validate_endog(endog)
     chosen, label = _resolve_dickey_fuller_lags(y, lags, max_lags, trend, method)
     tau, _, _, _, n_eff = _dickey_fuller_regression(y, chosen, trend)
     return UnitRootTest(
@@ -544,8 +552,8 @@ def phillips_perron(
         >>> phillips_perron(walk, bandwidth=3).lags
         3
     """
-    validate_choice(trend, ("n", "c", "ct"), "trend")
-    y = validate_endog(endog)
+    _validate_choice(trend, ("n", "c", "ct"), "trend")
+    y = _validate_endog(endog)
     z_t, _, n_eff = _phillips_perron(y, trend, kernel=kernel, bandwidth=bandwidth)
     width = _newey_west_bandwidth(n_eff) if bandwidth is None else int(np.floor(bandwidth))
     return UnitRootTest(
@@ -646,8 +654,8 @@ def kpss(
         >>> kpss(rng.standard_normal(300)).pvalue
         0.1
     """
-    validate_choice(trend, ("c", "ct"), "trend")
-    y = validate_endog(endog)
+    _validate_choice(trend, ("c", "ct"), "trend")
+    y = _validate_endog(endog)
     statistic, _ = _kpss_statistic(y, trend, kernel=kernel, bandwidth=bandwidth)
     table = dict(_KPSS_CRITICAL[trend])
     width = _newey_west_bandwidth(y.shape[0]) if bandwidth is None else int(np.floor(bandwidth))
@@ -755,8 +763,8 @@ def dfgls(
         >>> dfgls(noise).lags, dfgls(noise, method="aic").lags
         (9, 0)
     """
-    validate_choice(trend, ("c", "ct"), "trend")
-    y = validate_endog(endog)
+    _validate_choice(trend, ("c", "ct"), "trend")
+    y = _validate_endog(endog)
     detrended = _gls_detrend(y, trend, _GLS_DETREND_C[trend])
     chosen, label = _resolve_dickey_fuller_lags(y, lags, max_lags, trend, method)
     tau, _, _, _, n_eff = _dickey_fuller_regression(detrended, chosen, "n")
@@ -876,8 +884,8 @@ def ng_perron(
         >>> [(c.name, c.reject()) for c in test.companions]
         [('MZ_a', True), ('MSB', True), ('MP_T', True)]
     """
-    validate_choice(trend, ("c", "ct"), "trend")
-    y = validate_endog(endog)
+    _validate_choice(trend, ("c", "ct"), "trend")
+    y = _validate_endog(endog)
     detrended = _gls_detrend(y, trend, _GLS_DETREND_C[trend])
     chosen, label = _resolve_dickey_fuller_lags(y, lags, max_lags, trend, method)
     stats = _ng_perron_statistics(detrended, chosen, trend)
@@ -1005,10 +1013,10 @@ def zivot_andrews(
         >>> adf(y, trend="ct").reject()
         False
     """
-    validate_choice(model, ("c", "t", "ct"), "model")
+    _validate_choice(model, ("c", "t", "ct"), "model")
     if not 0.0 < trimming < 0.5:
         raise SpecificationError(f"trimming must lie in (0, 0.5); got {trimming}.")
-    y = validate_endog(endog)
+    y = _validate_endog(endog)
     ceiling = _schwert_max_lags(y.shape[0]) if max_lags is None else int(max_lags)
     statistic, break_index, used = _zivot_andrews(
         y, model=model, lags=lags, max_lags=ceiling, trimming=trimming
@@ -1097,5 +1105,5 @@ def long_run_variance(
         >>> bool(long_run_variance(y) < long_run_variance(y, bandwidth=50) < 100)
         True
     """
-    y = validate_endog(endog)
+    y = _validate_endog(endog)
     return _long_run_variance(y - y.mean(), kernel=kernel, bandwidth=bandwidth)

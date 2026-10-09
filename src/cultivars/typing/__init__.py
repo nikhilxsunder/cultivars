@@ -88,10 +88,12 @@ Example:
     ('none', 'restricted_constant', 'constant', 'restricted_trend', 'trend')
 """
 
-from ..engine._core import (
+from ..engine._core._protocols import Identification
+from ..engine._core._types import (
     Activation,
     CointegrationTrend,
     Frequency,
+    FTest,
     FunctionalBasis,
     LongMemoryMethod,
     Mean,
@@ -102,6 +104,7 @@ from ..engine._core import (
     Penalty,
     ProbabilityType,
     Regime,
+    Residuals,
     Transition,
     Trend,
     Vol,
@@ -110,8 +113,10 @@ from ..engine._core import (
 __all__ = [
     "Activation",
     "CointegrationTrend",
+    "FTest",
     "Frequency",
     "FunctionalBasis",
+    "Identification",
     "LongMemoryMethod",
     "Mean",
     "Method",
@@ -121,6 +126,7 @@ __all__ = [
     "Penalty",
     "ProbabilityType",
     "Regime",
+    "Residuals",
     "Transition",
     "Trend",
     "Vol",

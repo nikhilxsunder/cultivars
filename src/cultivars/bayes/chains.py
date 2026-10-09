@@ -121,18 +121,22 @@ from collections.abc import Sequence
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import (
+from ..engine._core._converters import (
+    _per_column,
+    _stack,
+)
+from ..engine._core._defaults import (
     _MIN_ESS_PER_CHAIN,
     _RHAT_TOL,
+)
+from ..engine._core._estimators import (
     _ess_bulk,
     _ess_tail,
     _geweke,
     _mcse_mean,
-    _per_column,
     _rhat,
-    _stack,
 )
-from ..engine._internals import _ConvergenceTest as ConvergenceTest
+from ..engine._internals._tests import _ConvergenceTest as ConvergenceTest
 from ..exceptions import DimensionError
 
 __all__ = ["ConvergenceTest", "convergence", "ess_bulk", "ess_tail", "geweke", "mcse", "rhat"]

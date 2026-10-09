@@ -62,16 +62,16 @@ is a unit root or a stable root is a numerical question, and the
 record carries the ``tol`` that decided it so that two assessments can
 be compared on the same footing.
 
-Layout. :class:`StabilityTest` is the record, re-exported here under
+Layout. :class:`StabilityAssessment` is the record, re-exported here under
 its public name from ``_internals``, where the models that produce it
 live. It is reached from a fitted result: ``stability`` and
 ``invertibility`` on the ARMA-family results, ``stability_check`` and
 ``is_stable`` on the VAR family and the error-correction models, and
 the Markov-switching results per regime; its class methods
-:meth:`~StabilityTest.assess_stability`,
-:meth:`~StabilityTest.assess_stability_from_companion`,
-:meth:`~StabilityTest.is_stationary`, and
-:meth:`~StabilityTest.is_invertible` read a coefficient array or a
+:meth:`~StabilityAssessment.assess_stability`,
+:meth:`~StabilityAssessment.assess_stability_from_companion`,
+:meth:`~StabilityAssessment.is_stationary`, and
+:meth:`~StabilityAssessment.is_invertible` read a coefficient array or a
 companion matrix directly. The companion is built by ``_core``'s
 ``companion_matrix``; the eigenvalues are NumPy's.
 
@@ -101,15 +101,16 @@ Example:
     (True, True)
     >>> round(res.stability.max_modulus, 2)
     0.75
-    >>> walk = StabilityTest.assess_stability([1.0])
+    >>> walk = StabilityAssessment.assess_stability([1.0])
     >>> walk.is_stable, walk.n_unit_roots, walk.n_explosive
     (False, 1, 0)
-    >>> StabilityTest.assess_stability([1.0], allow_unit_roots=True).is_stable
+    >>> StabilityAssessment.assess_stability([1.0], allow_unit_roots=True).is_stable
     True
 """
 
 from __future__ import annotations
 
-from ..engine._internals import _StabilityAssessment as StabilityTest
+from ..engine._internals._assessments import _StabilityAssessment as StabilityAssessment
+from ..engine._internals._selections import _LagOrderSelection as LagOrderSelection
 
-__all__ = ["StabilityTest"]
+__all__ = ["LagOrderSelection", "StabilityAssessment"]

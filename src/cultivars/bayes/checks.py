@@ -136,22 +136,32 @@ from typing import Any, cast
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import (
-    _DISCREPANCY_NAMES,
+from ..engine._core._converters import (
+    _source_label,
+    _variable_names,
+)
+from ..engine._core._defaults import (
     _DISCREPANCY_STATISTICS,
     _EXTREME_PVALUE,
     _MIN_REPLICATIONS,
-    ReplicatingModel,
-    ReplicatingResult,
-    SummaryTable,
+)
+from ..engine._core._estimators import (
+    _DISCREPANCY_NAMES,
     _discrepancy_statistics,
     _predictive_pvalues,
-    _source_label,
+)
+from ..engine._core._protocols import (
+    ReplicatingModel,
+    ReplicatingResult,
+)
+from ..engine._core._validators import (
     _validate_replications,
     _validate_statistics,
-    _variable_names,
 )
 from ..exceptions import SpecificationError
+from ..summary import (
+    SummaryTable,
+)
 
 __all__ = [
     "PredictiveCheckTest",
@@ -599,7 +609,7 @@ class PredictiveCheckTest:
             level: The tail size on each side that marks a row.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`, titled
+            The :class:`~cultivars._core._SummaryTable`, titled
             ``"{Kind} predictive check: {source}"``; ``print`` it, display
             it in a notebook, or call its ``to_pandas()``.
 

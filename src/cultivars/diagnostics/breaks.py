@@ -140,21 +140,29 @@ from itertools import pairwise
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import (
+from ..engine._core._defaults import (
     _CRITICAL_ALPHAS,
     _CRITICAL_LEVELS,
-    _CUSUM_BOUNDARY,
-    SummaryTable,
+)
+from ..engine._core._estimators import (
     _bai_perron_partition,
     _bridge_functionals,
     _cusum_squares_quantiles,
     _recursive_residuals,
     _segment_ssr,
     _simulated_critical_values,
+)
+from ..engine._core._mappings import (
+    _CUSUM_BOUNDARY,
+)
+from ..engine._core._validators import (
     _validate_regression,
 )
-from ..engine._internals import _TabulatedTest
+from ..engine._internals._tests import _TabulatedTest
 from ..exceptions import SpecificationError
+from ..summary import (
+    SummaryTable,
+)
 
 __all__ = ["BreakTest", "MultipleBreakTest", "bai_perron", "cusum", "sup_wald"]
 

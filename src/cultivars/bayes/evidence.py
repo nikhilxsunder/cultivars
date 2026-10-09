@@ -134,9 +134,16 @@ from collections.abc import Callable, Sequence
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import _MHM_TAU, SummaryTable, _bridge_sampling, _modified_harmonic_mean
-from ..engine._internals import _MarginalLikelihoodSelection as MarginalLikelihoodSelection
+from ..engine._core._defaults import _MHM_TAU
+from ..engine._core._estimators import (
+    _bridge_sampling,
+    _modified_harmonic_mean,
+)
+from ..engine._internals._selections import (
+    _MarginalLikelihoodSelection as MarginalLikelihoodSelection,
+)
 from ..exceptions import SpecificationError
+from ..summary import SummaryTable
 
 __all__ = [
     "MarginalLikelihoodSelection",
@@ -565,7 +572,7 @@ def compare(
             every model the same prior probability.
 
     Returns:
-        The :class:`~cultivars._core.SummaryTable` with columns ``model``,
+        The :class:`~cultivars._core._SummaryTable` with columns ``model``,
         ``log ML``, ``mcse``, ``log BF vs best``, ``evidence``,
         ``post. prob.``, and ``method``; ``print`` it or call its
         ``to_pandas()``.

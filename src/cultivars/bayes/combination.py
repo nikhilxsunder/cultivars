@@ -122,14 +122,18 @@ import numpy as np
 import numpy.typing as npt
 from scipy.special import logsumexp
 
-from ..engine._core import (
+from ..engine._core._estimators import (
     _stacking_weights,
+)
+from ..engine._core._validators import (
     _validate_log_density_matrix,
     _validate_names,
     _validate_predictive,
 )
-from ..engine._internals import _MarginalLikelihoodSelection as MarginalLikelihoodSelection
-from ..engine._internals import _ModelCombinationSelection as ModelCombinationSelection
+from ..engine._internals._selections import (
+    _MarginalLikelihoodSelection as MarginalLikelihoodSelection,
+)
+from ..engine._internals._selections import _ModelCombinationSelection as ModelCombinationSelection
 from ..exceptions import DimensionError, SpecificationError
 from .evidence import marginal_likelihood
 

@@ -164,11 +164,11 @@ from ..engine._internals import (
     _StochasticVolatilityModel,
     _StochasticVolatilityParameters,
     _SummaryMixin,
-    _SVPosterior,
     _TrendVolatilityModel,
-    _UCSVPosterior,
     _volatility_state_space,
 )
+from ..engine._internals._posteriors import _SVPosterior as SVPosterior
+from ..engine._internals._posteriors import _UCSVPosterior as UCSVPosterior
 from ..exceptions import SpecificationError
 from ..state_space.linear_gaussian import LinearGaussianSSM
 from ..state_space.nonlinear import NonlinearSSM
@@ -176,7 +176,9 @@ from ..state_space.nonlinear import NonlinearSSM
 __all__ = [
     "SV",
     "UCSV",
+    "SVPosterior",
     "SVResult",
+    "UCSVPosterior",
 ]
 
 

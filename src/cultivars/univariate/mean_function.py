@@ -158,10 +158,11 @@ from ..engine._internals import (
     _NeuralThresholdFit,
     _NeuralThresholdModel,
 )
+from ..engine._internals._engines import MeanFunctionEngine
 from ..exceptions import DimensionError, SpecificationError
 from ..state_space.nonlinear import NonlinearSSM
 
-__all__ = ["ARNN", "TARNN", "ARNNResult", "TARNNResult"]
+__all__ = ["ARNN", "TARNN", "ARNNResult", "MeanFunctionEngine", "TARNNResult"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)

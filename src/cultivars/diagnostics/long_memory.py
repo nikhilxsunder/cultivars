@@ -124,21 +124,25 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import norm
 
-from ..engine._core import (
+from ..engine._core._defaults import (
     _ELW_BOUNDS,
     _GPH_EXPONENT,
     _LW_BOUNDS,
     _METHOD_LABELS,
     _MIN_LONG_MEMORY_OBS,
     _WHITTLE_EXPONENT,
-    SummaryTable,
+)
+from ..engine._core._estimators import (
     _exact_local_whittle,
     _gph,
-    _validate_semiparametric,
-    local_whittle_d,
+    _local_whittle_d,
 )
-from ..engine._internals import _HypothesisTest
+from ..engine._core._validators import (
+    _validate_semiparametric,
+)
+from ..engine._internals._tests import _HypothesisTest
 from ..exceptions import SpecificationError
+from ..summary import SummaryTable
 
 __all__ = ["LongMemoryEstimate", "exact_local_whittle", "gph", "local_whittle"]
 
@@ -616,7 +620,7 @@ def local_whittle(
         1.0
     """
     y, m = _validate_semiparametric(endog, f_bandwidth, exponent, minimum=_MIN_LONG_MEMORY_OBS)
-    d, m_eff = local_whittle_d(y, m, exponent, bounds=_LW_BOUNDS)
+    d, m_eff = _local_whittle_d(y, m, exponent, bounds=_LW_BOUNDS)
     se = 1.0 / (2.0 * np.sqrt(m_eff))
     return LongMemoryEstimate._record(d, se, method="local_whittle", m=m_eff, nobs=y.shape[0])
 

@@ -168,11 +168,13 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from ..engine._core import _draw_generalized_inverse_gaussian
-from ..engine._internals import _AdaptivePrior, _Prior, _PriorContext
-from ..engine._internals import _NoPrior as NoPrior
-from ..engine._internals import _RandomWalkVolatilityPrior as RandomWalkVolatilityPrior
-from ..engine._internals import _VolatilityPrior as VolatilityPrior
+from ..engine._core._samplers import _draw_generalized_inverse_gaussian
+from ..engine._internals._priors import _AdaptivePrior
+from ..engine._internals._priors import _NoPrior as NoPrior
+from ..engine._internals._priors import _Prior as Prior
+from ..engine._internals._priors import _PriorContext as PriorContext
+from ..engine._internals._priors import _RandomWalkVolatilityPrior as RandomWalkVolatilityPrior
+from ..engine._internals._priors import _VolatilityPrior as VolatilityPrior
 from ..exceptions import DimensionError, SpecificationError
 
 __all__ = [
@@ -184,6 +186,8 @@ __all__ = [
     "NoPrior",
     "NormalGammaPrior",
     "NormalInverseWishartPrior",
+    "Prior",
+    "PriorContext",
     "RandomWalkVolatilityPrior",
     "SpikeAndSlabPrior",
     "SumOfCoefficientsPrior",
@@ -192,7 +196,7 @@ __all__ = [
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
-class MinnesotaPrior(_Prior):
+class MinnesotaPrior(Prior):
     r"""Litterman's prior: shrink toward independent random walks.
 
     The prior of Litterman (1986) and Doan, Litterman, and Sims (1984) states
@@ -403,7 +407,7 @@ class MinnesotaPrior(_Prior):
     coefficient matrix is centred at zero regardless.
     """
 
-    def _persistence(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def _persistence(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Broadcast the prior mean of the own first lags to one value per variable.
 
         A scalar ``persistence`` is repeated ``k_endog`` times; a sequence is
@@ -423,8 +427,8 @@ class MinnesotaPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> MinnesotaPrior(persistence=0.9)._persistence(ctx)
@@ -474,7 +478,7 @@ class MinnesotaPrior(_Prior):
                 f"sum_of_coefficients must be positive when given; got {self.sum_of_coefficients}."
             )
 
-    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_mean(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Each variable's own first lag at ``persistence``, everything else zero.
 
         The random-walk centre: row ``lag_offset + j`` of column ``j`` holds
@@ -495,8 +499,8 @@ class MinnesotaPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> MinnesotaPrior(persistence=(1.0, 0.0)).coefficient_mean(ctx)
@@ -512,7 +516,7 @@ class MinnesotaPrior(_Prior):
             out[offset + index, index] = means[index]
         return out
 
-    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_variance(self, context: PriorContext) -> npt.NDArray[np.float64]:
         r"""Litterman's variances, tighter for cross terms and for longer lags.
 
         Three kinds of column, three rules. A variable's own lag gets
@@ -554,8 +558,8 @@ class MinnesotaPrior(_Prior):
             :math:`(1/4)^2` and in the second scaled up by :math:`4^2`:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.array([1.0, 4.0]),
             ...     presample_mean=np.zeros(2),
             ... )
@@ -587,7 +591,7 @@ class MinnesotaPrior(_Prior):
         return out
 
     def dummy_observations(
-        self, context: _PriorContext
+        self, context: PriorContext
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         r"""The sum-of-coefficients rows, when that restriction is asked for.
 
@@ -677,8 +681,8 @@ class MinnesotaPrior(_Prior):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
-class NormalInverseWishartPrior(_Prior):
-    r"""The conjugate Minnesota prior: Litterman's variances with the one weight pinned.
+class NormalInverseWishartPrior(Prior):
+    r"""The conjugate Normal-inverse-Wishart prior: Litterman's variances with the one weight pinned.
 
     Exactly :class:`MinnesotaPrior` with ``cross_equation`` fixed at one, and
     that is not a simplification but a purchase. With :math:`\lambda_2 = 1`
@@ -858,7 +862,7 @@ class NormalInverseWishartPrior(_Prior):
             persistence=self.persistence,
         )
 
-    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_mean(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Each variable's own first lag at ``persistence``, everything else zero.
 
         Delegates to :meth:`MinnesotaPrior.coefficient_mean` through
@@ -877,8 +881,8 @@ class NormalInverseWishartPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> NormalInverseWishartPrior(persistence=0.0).coefficient_mean(ctx)
@@ -888,7 +892,7 @@ class NormalInverseWishartPrior(_Prior):
         """
         return self._minnesota().coefficient_mean(context)
 
-    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_variance(self, context: PriorContext) -> npt.NDArray[np.float64]:
         r"""Litterman's variances with the cross-equation weight at one.
 
         Delegates to :meth:`MinnesotaPrior.coefficient_variance` through
@@ -916,8 +920,8 @@ class NormalInverseWishartPrior(_Prior):
             constant, the factorization that makes the posterior exact:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.array([1.0, 4.0]),
             ...     presample_mean=np.zeros(2),
             ... )
@@ -951,7 +955,7 @@ class NormalInverseWishartPrior(_Prior):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
-class SumOfCoefficientsPrior(_Prior):
+class SumOfCoefficientsPrior(Prior):
     r"""The no-cointegration dummies of Doan, Litterman & Sims.
 
     One artificial observation per variable, each saying that a series
@@ -1103,7 +1107,7 @@ class SumOfCoefficientsPrior(_Prior):
         if self.tightness <= 0.0:
             raise SpecificationError(f"tightness must be positive; got {self.tightness}.")
 
-    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_mean(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Zero: this prior's content is entirely in its rows.
 
         A component with no moment content reports a zero mean so that
@@ -1120,8 +1124,8 @@ class SumOfCoefficientsPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> SumOfCoefficientsPrior().coefficient_mean(ctx)
@@ -1131,7 +1135,7 @@ class SumOfCoefficientsPrior(_Prior):
         """
         return np.zeros((context.width, context.k_endog), dtype=np.float64)
 
-    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_variance(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Infinite: no diagonal opinion about any coefficient.
 
         Infinity is how a prior says it has no view of a coefficient, and
@@ -1149,8 +1153,8 @@ class SumOfCoefficientsPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> bool(np.isinf(SumOfCoefficientsPrior().coefficient_variance(ctx)).all())
@@ -1159,7 +1163,7 @@ class SumOfCoefficientsPrior(_Prior):
         return np.full((context.width, context.k_endog), np.inf, dtype=np.float64)
 
     def dummy_observations(
-        self, context: _PriorContext
+        self, context: PriorContext
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         r"""One row per variable, centred on its pre-sample mean.
 
@@ -1185,8 +1189,8 @@ class SumOfCoefficientsPrior(_Prior):
             Under a constant and a trend the row carries two leading zeros:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2),
             ...     presample_mean=np.array([10.0, 20.0]), n_deterministic=2,
             ... )
@@ -1225,7 +1229,7 @@ class SumOfCoefficientsPrior(_Prior):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
-class DummyInitialObservationPrior(_Prior):
+class DummyInitialObservationPrior(Prior):
     r"""Sims' co-persistence dummy, the single-unit-root prior.
 
     One artificial observation in which every variable sits at its
@@ -1356,7 +1360,7 @@ class DummyInitialObservationPrior(_Prior):
         if self.tightness <= 0.0:
             raise SpecificationError(f"tightness must be positive; got {self.tightness}.")
 
-    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_mean(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Zero: this prior's content is entirely in its row.
 
         With infinite variance the component has zero precision, so in a
@@ -1372,8 +1376,8 @@ class DummyInitialObservationPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> DummyInitialObservationPrior().coefficient_mean(ctx).shape
@@ -1381,7 +1385,7 @@ class DummyInitialObservationPrior(_Prior):
         """
         return np.zeros((context.width, context.k_endog), dtype=np.float64)
 
-    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_variance(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Infinite: no diagonal opinion about any coefficient.
 
         Zero precision in a composition, so stacking this component onto a
@@ -1398,8 +1402,8 @@ class DummyInitialObservationPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> bool(np.isinf(DummyInitialObservationPrior().coefficient_variance(ctx)).all())
@@ -1408,7 +1412,7 @@ class DummyInitialObservationPrior(_Prior):
         return np.full((context.width, context.k_endog), np.inf, dtype=np.float64)
 
     def dummy_observations(
-        self, context: _PriorContext
+        self, context: PriorContext
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         r"""A single artificial observation at the pre-sample means.
 
@@ -1436,8 +1440,8 @@ class DummyInitialObservationPrior(_Prior):
             to the tightness:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2),
             ...     presample_mean=np.array([10.0, 20.0]), n_deterministic=2,
             ... )
@@ -1474,7 +1478,7 @@ class DummyInitialObservationPrior(_Prior):
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
-class IndependentNormalWishartPrior(_Prior):
+class IndependentNormalWishartPrior(Prior):
     r"""Litterman's full prior under an independent inverse-Wishart pairing.
 
     The variances are exactly :class:`MinnesotaPrior`'s, cross-equation
@@ -1660,7 +1664,7 @@ class IndependentNormalWishartPrior(_Prior):
             persistence=self.persistence,
         )
 
-    def coefficient_mean(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_mean(self, context: PriorContext) -> npt.NDArray[np.float64]:
         """Each variable's own first lag at ``persistence``, everything else zero.
 
         Delegates to :meth:`MinnesotaPrior.coefficient_mean` through
@@ -1679,8 +1683,8 @@ class IndependentNormalWishartPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> IndependentNormalWishartPrior().coefficient_mean(ctx)
@@ -1690,7 +1694,7 @@ class IndependentNormalWishartPrior(_Prior):
         """
         return self._minnesota().coefficient_mean(context)
 
-    def coefficient_variance(self, context: _PriorContext) -> npt.NDArray[np.float64]:
+    def coefficient_variance(self, context: PriorContext) -> npt.NDArray[np.float64]:
         r"""Litterman's variances, the cross-equation weight kept.
 
         Delegates to :meth:`MinnesotaPrior.coefficient_variance` through
@@ -1719,8 +1723,8 @@ class IndependentNormalWishartPrior(_Prior):
             cross-equation weight:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.array([1.0, 4.0]),
             ...     presample_mean=np.zeros(2),
             ... )
@@ -1733,7 +1737,7 @@ class IndependentNormalWishartPrior(_Prior):
         return self._minnesota().coefficient_variance(context)
 
     def dummy_observations(
-        self, context: _PriorContext
+        self, context: PriorContext
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         """The sum-of-coefficients rows, when that restriction is asked for.
 
@@ -1758,8 +1762,8 @@ class IndependentNormalWishartPrior(_Prior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2),
             ...     presample_mean=np.array([10.0, 20.0]),
             ... )
@@ -1943,7 +1947,7 @@ class HorseshoePrior(_AdaptivePrior):
             )
 
     def _initial_scales(
-        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+        self, context: PriorContext, reference: npt.NDArray[np.float64]
     ) -> dict[str, npt.NDArray[np.float64]]:
         r"""Unit local scales, unit global scale.
 
@@ -1968,8 +1972,8 @@ class HorseshoePrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = HorseshoePrior()
@@ -1989,7 +1993,7 @@ class HorseshoePrior(_AdaptivePrior):
     def _draw_scales(
         self,
         standardized: npt.NDArray[np.float64],
-        context: _PriorContext,
+        context: PriorContext,
         rng: np.random.Generator,
         scales: dict[str, npt.NDArray[np.float64]],
     ) -> dict[str, npt.NDArray[np.float64]]:
@@ -2015,8 +2019,8 @@ class HorseshoePrior(_AdaptivePrior):
         Args:
             standardized: ``(width, k)`` current coefficients divided by the
                 unit ratio.
-            context: The sample description; ``k_endog``, ``order``, and
-                ``lag_offset`` are read.
+            context: The sample description; :class:`PriorContext` providing
+                ``k_endog``, ``order``, and ``lag_offset``.
             rng: Random generator.
             scales: The current latent state, as returned by
                 :meth:`_initial_scales` or the previous sweep.
@@ -2030,8 +2034,8 @@ class HorseshoePrior(_AdaptivePrior):
             local-global scale separates them by an order of magnitude:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = HorseshoePrior()
@@ -2067,7 +2071,7 @@ class HorseshoePrior(_AdaptivePrior):
         }
 
     def _scale_variance(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         r"""``ratio**2 * tau**2 * lambda**2`` on the lag block, loose elsewhere.
 
@@ -2092,8 +2096,8 @@ class HorseshoePrior(_AdaptivePrior):
             hundred times the squared residual scale:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.array([1.0, 4.0]),
             ...     presample_mean=np.zeros(2),
             ... )
@@ -2112,7 +2116,7 @@ class HorseshoePrior(_AdaptivePrior):
         return out
 
     def _tracked(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         r"""The local-global scale ``tau * lambda`` per lag coefficient.
 
@@ -2133,8 +2137,8 @@ class HorseshoePrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = HorseshoePrior()
@@ -2387,7 +2391,7 @@ class SpikeAndSlabPrior(_AdaptivePrior):
             )
 
     def _initial_scales(
-        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+        self, context: PriorContext, reference: npt.NDArray[np.float64]
     ) -> dict[str, npt.NDArray[np.float64]]:
         r"""Anchor both widths to the reference scale; start everything in.
 
@@ -2420,8 +2424,8 @@ class SpikeAndSlabPrior(_AdaptivePrior):
             two-hundredth and the slab a half:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> state = SpikeAndSlabPrior()._initial_scales(ctx, np.full((3, 2), 0.05))
@@ -2442,7 +2446,7 @@ class SpikeAndSlabPrior(_AdaptivePrior):
     def _draw_scales(
         self,
         standardized: npt.NDArray[np.float64],
-        context: _PriorContext,
+        context: PriorContext,
         rng: np.random.Generator,
         scales: dict[str, npt.NDArray[np.float64]],
     ) -> dict[str, npt.NDArray[np.float64]]:
@@ -2479,8 +2483,8 @@ class SpikeAndSlabPrior(_AdaptivePrior):
             prior odds discounted by the width ratio:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = SpikeAndSlabPrior()
@@ -2507,7 +2511,7 @@ class SpikeAndSlabPrior(_AdaptivePrior):
         return {"tau0": tau0, "tau1": tau1, "gamma": gamma, "prob": prob}
 
     def _scale_variance(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         r"""Spike or slab variance per the current indicators, loose elsewhere.
 
@@ -2529,8 +2533,8 @@ class SpikeAndSlabPrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = SpikeAndSlabPrior()
@@ -2550,7 +2554,7 @@ class SpikeAndSlabPrior(_AdaptivePrior):
         return out
 
     def _tracked(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         """The Rao-Blackwellized inclusion probability per lag coefficient.
 
@@ -2571,8 +2575,8 @@ class SpikeAndSlabPrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = SpikeAndSlabPrior(inclusion=0.2)
@@ -2776,7 +2780,7 @@ class DirichletLaplacePrior(_AdaptivePrior):
             )
 
     def _initial_scales(
-        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+        self, context: PriorContext, reference: npt.NDArray[np.float64]
     ) -> dict[str, npt.NDArray[np.float64]]:
         r"""Uniform simplex, unit local scales, unit global magnitude.
 
@@ -2802,8 +2806,8 @@ class DirichletLaplacePrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = DirichletLaplacePrior()
@@ -2826,7 +2830,7 @@ class DirichletLaplacePrior(_AdaptivePrior):
     def _draw_scales(
         self,
         standardized: npt.NDArray[np.float64],
-        context: _PriorContext,
+        context: PriorContext,
         rng: np.random.Generator,
         scales: dict[str, npt.NDArray[np.float64]],
     ) -> dict[str, npt.NDArray[np.float64]]:
@@ -2915,7 +2919,7 @@ class DirichletLaplacePrior(_AdaptivePrior):
         return {"psi": psi, "phi": phi, "tau": np.array([tau])}
 
     def _scale_variance(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         r"""``ratio**2 * psi * (phi * tau)**2`` on the lag block, loose elsewhere.
 
@@ -2940,8 +2944,8 @@ class DirichletLaplacePrior(_AdaptivePrior):
             block is the squared unit ratio over sixteen:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.array([1.0, 4.0]),
             ...     presample_mean=np.zeros(2),
             ... )
@@ -2962,7 +2966,7 @@ class DirichletLaplacePrior(_AdaptivePrior):
         return out
 
     def _tracked(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         r"""The local-global scale per lag coefficient.
 
@@ -2983,8 +2987,8 @@ class DirichletLaplacePrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = DirichletLaplacePrior()
@@ -3191,7 +3195,7 @@ class NormalGammaPrior(_AdaptivePrior):
             )
 
     def _initial_scales(
-        self, context: _PriorContext, reference: npt.NDArray[np.float64]
+        self, context: PriorContext, reference: npt.NDArray[np.float64]
     ) -> dict[str, npt.NDArray[np.float64]]:
         r"""Minnesota-tightness local variances; the rate that implies them.
 
@@ -3218,8 +3222,8 @@ class NormalGammaPrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = NormalGammaPrior()
@@ -3241,7 +3245,7 @@ class NormalGammaPrior(_AdaptivePrior):
     def _draw_scales(
         self,
         standardized: npt.NDArray[np.float64],
-        context: _PriorContext,
+        context: PriorContext,
         rng: np.random.Generator,
         scales: dict[str, npt.NDArray[np.float64]],
     ) -> dict[str, npt.NDArray[np.float64]]:
@@ -3284,8 +3288,8 @@ class NormalGammaPrior(_AdaptivePrior):
             separates them by an order of magnitude:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = NormalGammaPrior()
@@ -3311,7 +3315,7 @@ class NormalGammaPrior(_AdaptivePrior):
         return {"psi": psi, "rate": np.array([rate])}
 
     def _scale_variance(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         r"""``ratio**2 * psi`` on the lag block, loose elsewhere.
 
@@ -3335,8 +3339,8 @@ class NormalGammaPrior(_AdaptivePrior):
             lag block is ``0.04`` times the squared unit ratio:
 
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.array([1.0, 4.0]),
             ...     presample_mean=np.zeros(2),
             ... )
@@ -3355,7 +3359,7 @@ class NormalGammaPrior(_AdaptivePrior):
         return out
 
     def _tracked(
-        self, scales: dict[str, npt.NDArray[np.float64]], context: _PriorContext
+        self, scales: dict[str, npt.NDArray[np.float64]], context: PriorContext
     ) -> npt.NDArray[np.float64]:
         r"""The local scale per lag coefficient.
 
@@ -3377,8 +3381,8 @@ class NormalGammaPrior(_AdaptivePrior):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars._internals import _PriorContext
-            >>> ctx = _PriorContext(
+            >>> from cultivars._internals._priors import PriorContext
+            >>> ctx = PriorContext(
             ...     k_endog=2, order=1, scales=np.ones(2), presample_mean=np.zeros(2)
             ... )
             >>> prior = NormalGammaPrior()
