@@ -69,5 +69,4 @@ Example:
 from .engine._core._containers import _InformationCriteria as InformationCriteria
 from .engine._core._containers import _SummaryTable as SummaryTable
 
-
 __all__ = ["InformationCriteria", "SummaryTable"]
