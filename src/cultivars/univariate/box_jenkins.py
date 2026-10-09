@@ -130,7 +130,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _SIMULATION_BURN,
     InformationCriteria,
     SummaryTable,
@@ -139,7 +139,7 @@ from .._core import (
     expand_ma,
     n_deterministic,
 )
-from .._internals import (
+from ..engine._internals import (
     _BoxJenkinsFit,
     _BoxJenkinsModel,
     _ComparisonMixin,

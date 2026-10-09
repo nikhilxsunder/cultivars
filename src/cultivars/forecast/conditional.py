@@ -109,7 +109,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
-from .._core import (
+from ..engine._core import (
     SummaryTable,
     _conditional_restrictions,
     _draw_conditional_shocks,
@@ -119,7 +119,7 @@ from .._core import (
     _source_label,
     _validate_conditions,
 )
-from .._internals import _simulate_vector_autoregression, _SummaryMixin
+from ..engine._internals import _simulate_vector_autoregression, _SummaryMixin
 from ..exceptions import DimensionError, SpecificationError
 
 __all__ = ["ConditionalForecastResult", "conditional_forecast"]

@@ -137,7 +137,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _METHOD_TITLES,
     SummaryTable,
     _beveridge_nelson,
@@ -148,7 +148,7 @@ from .._core import (
     validate_endog_matrix,
     validate_order,
 )
-from .._internals import _SummaryMixin
+from ..engine._internals import _SummaryMixin
 from ..exceptions import SpecificationError
 from ..univariate.box_jenkins import ARMAResult
 

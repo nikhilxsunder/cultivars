@@ -124,7 +124,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
-from .._core import (
+from ..engine._core import (
     _MIN_SPECTRUM_OBS,
     _SPECTRAL_METHOD_TITLES,
     SummaryTable,
@@ -135,7 +135,7 @@ from .._core import (
     _welch_density,
     validate_order,
 )
-from .._internals import _SummaryMixin
+from ..engine._internals import _SummaryMixin
 from ..exceptions import SpecificationError
 
 __all__ = ["DaniellSpectrum", "MultitaperSpectrum", "SpectrumEstimate", "WelchSpectrum"]

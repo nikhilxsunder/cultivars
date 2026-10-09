@@ -110,6 +110,6 @@ Example:
 
 from __future__ import annotations
 
-from .._internals import _StabilityAssessment as StabilityTest
+from ..engine._internals import _StabilityAssessment as StabilityTest
 
 __all__ = ["StabilityTest"]

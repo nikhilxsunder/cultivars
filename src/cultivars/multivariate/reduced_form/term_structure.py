@@ -126,8 +126,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable, _nelson_siegel_loadings
-from ..._internals import (
+from ...engine._core import SummaryTable, _nelson_siegel_loadings
+from ...engine._internals import (
     _ComparisonMixin,
     _decay_nelson_siegel_state_space,
     _DecayNelsonSiegelFit,

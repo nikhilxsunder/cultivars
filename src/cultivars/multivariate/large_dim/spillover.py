@@ -135,8 +135,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import ClosedSystemResult, SummaryTable
-from ..._internals import _SummaryMixin
+from ...engine._core import ClosedSystemResult, SummaryTable
+from ...engine._internals import _SummaryMixin
 from ...exceptions import SpecificationError
 
 __all__ = ["Spillover", "SpilloverResult"]

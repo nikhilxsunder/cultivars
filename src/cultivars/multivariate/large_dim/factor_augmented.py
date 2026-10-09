@@ -134,14 +134,14 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     SummaryTable,
     Trend,
     _validate_wide_panel,
     principal_components,
     validate_exog_matrix,
 )
-from ..._internals import _SummaryMixin
+from ...engine._internals import _SummaryMixin
 from ...exceptions import SpecificationError
 from ..reduced_form.vector_autoregression import VAR, VARResult
 

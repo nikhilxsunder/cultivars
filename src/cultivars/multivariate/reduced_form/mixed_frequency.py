@@ -157,7 +157,7 @@ from typing import Self
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     _AGGREGATION_NOTE,
     _CHOLESKY_NOTE,
     _MIDAS_CONDITIONAL_NOTE,
@@ -174,7 +174,7 @@ from ..._core import (
     lag_matrix,
     validate_exog_matrix,
 )
-from ..._internals import (
+from ...engine._internals import (
     _ComparisonMixin,
     _DurbinKoopmanSmootherResult,
     _KalmanFilterResult,

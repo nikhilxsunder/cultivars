@@ -138,7 +138,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     _NARRATIVE_NOTE,
     _SIGN_QUANTILE_NOTE,
     _UNIT_SHOCK_NOTE,
@@ -151,7 +151,7 @@ from ..._core import (
     _validate_quantiles,
     _validate_sign_patterns,
 )
-from ..._internals import _IdentificationModel, _SummaryMixin
+from ...engine._internals import _IdentificationModel, _SummaryMixin
 from ...exceptions import SpecificationError
 
 __all__ = ["SignRestrictedSVAR", "SignRestrictedSVARResult"]

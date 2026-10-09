@@ -113,7 +113,7 @@ from dataclasses import dataclass, replace
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _HEGY_REPLICATIONS,
     _canova_hansen,
     _frequency_labels,

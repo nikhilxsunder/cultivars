@@ -110,7 +110,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _TURNING_POINT_RULES,
     SummaryTable,
     _alternate_turns,
@@ -122,7 +122,7 @@ from .._core import (
     validate_endog,
     validate_order,
 )
-from .._internals import _SummaryMixin
+from ..engine._internals import _SummaryMixin
 from ..exceptions import DimensionError, SpecificationError
 
 __all__ = ["TurningPoints", "TurningPointsResult", "concordance"]

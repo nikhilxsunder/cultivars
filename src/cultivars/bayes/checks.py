@@ -136,7 +136,7 @@ from typing import Any, cast
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _DISCREPANCY_NAMES,
     _DISCREPANCY_STATISTICS,
     _EXTREME_PVALUE,

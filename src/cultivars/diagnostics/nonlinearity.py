@@ -144,7 +144,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _BDS_RADIUS,
     _CRITICAL_LEVELS,
     _DEFAULT_GRID,
@@ -163,7 +163,7 @@ from .._core import (
     validate_open_interval,
     validate_order,
 )
-from .._internals import _HypothesisTest
+from ..engine._internals import _HypothesisTest
 from ..exceptions import SpecificationError
 
 __all__ = [

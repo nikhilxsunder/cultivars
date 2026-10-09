@@ -157,7 +157,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _DFGLS_CRITICAL,
     _GLS_DETREND_C,
     _KPSS_CRITICAL,
@@ -180,7 +180,7 @@ from .._core import (
     validate_choice,
     validate_endog,
 )
-from .._internals import _TabulatedTest
+from ..engine._internals import _TabulatedTest
 from ..exceptions import SpecificationError
 
 __all__ = [

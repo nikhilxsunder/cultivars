@@ -124,7 +124,7 @@ import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
 
-from .._core import (
+from ..engine._core import (
     _MIN_COMPARISON_ORIGINS,
     SummaryTable,
     _bartlett_long_run_variance,
@@ -135,8 +135,8 @@ from .._core import (
     _mincer_zarnowitz,
     _validate_aligned_series,
 )
-from .._internals import _ForecastComparisonTest as ForecastComparisonTest
-from .._internals import _SummaryMixin
+from ..engine._internals import _ForecastComparisonTest as ForecastComparisonTest
+from ..engine._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = [

@@ -153,8 +153,9 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable
-from .._internals import (
+from ..bayes.priors import RandomWalkVolatilityPrior, VolatilityPrior
+from ..engine._core import SummaryTable
+from ..engine._internals import (
     _ComparisonMixin,
     _quasi_volatility_state_space,
     _SeriesMixin,
@@ -168,7 +169,6 @@ from .._internals import (
     _UCSVPosterior,
     _volatility_state_space,
 )
-from ..bayes.priors import RandomWalkVolatilityPrior, VolatilityPrior
 from ..exceptions import SpecificationError
 from ..state_space.linear_gaussian import LinearGaussianSSM
 from ..state_space.nonlinear import NonlinearSSM

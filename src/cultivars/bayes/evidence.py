@@ -134,8 +134,8 @@ from collections.abc import Callable, Sequence
 import numpy as np
 import numpy.typing as npt
 
-from .._core import _MHM_TAU, SummaryTable, _bridge_sampling, _modified_harmonic_mean
-from .._internals import _MarginalLikelihoodSelection as MarginalLikelihoodSelection
+from ..engine._core import _MHM_TAU, SummaryTable, _bridge_sampling, _modified_harmonic_mean
+from ..engine._internals import _MarginalLikelihoodSelection as MarginalLikelihoodSelection
 from ..exceptions import SpecificationError
 
 __all__ = [

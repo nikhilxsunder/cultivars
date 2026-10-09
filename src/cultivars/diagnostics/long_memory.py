@@ -124,7 +124,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import norm
 
-from .._core import (
+from ..engine._core import (
     _ELW_BOUNDS,
     _GPH_EXPONENT,
     _LW_BOUNDS,
@@ -137,7 +137,7 @@ from .._core import (
     _validate_semiparametric,
     local_whittle_d,
 )
-from .._internals import _HypothesisTest
+from ..engine._internals import _HypothesisTest
 from ..exceptions import SpecificationError
 
 __all__ = ["LongMemoryEstimate", "exact_local_whittle", "gph", "local_whittle"]

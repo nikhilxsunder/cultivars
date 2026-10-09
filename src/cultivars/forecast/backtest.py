@@ -122,7 +122,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     PredictiveResult,
     SummaryTable,
     _kernel_log_score,
@@ -131,7 +131,7 @@ from .._core import (
     _variable_names,
     crps_from_draws,
 )
-from .._internals import _SummaryMixin
+from ..engine._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = ["Backtest", "BacktestResult"]

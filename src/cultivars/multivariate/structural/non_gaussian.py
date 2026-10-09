@@ -119,12 +119,12 @@ from collections.abc import Sequence
 
 import numpy as np
 
-from ..._core import (
+from ...engine._core import (
     ClosedSystemResult,
     _cumulant_slices,
     _lower_cholesky,
 )
-from ..._internals import _CoDiagonalObjective, _IdentificationModel, _solve
+from ...engine._internals import _CoDiagonalObjective, _IdentificationModel, _solve
 from ...exceptions import SpecificationError
 from .zero_restrictions import SVARResult
 

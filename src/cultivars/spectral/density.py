@@ -54,14 +54,14 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     ClosedSystemResult,
     SummaryTable,
     frequency_grid,
     spectral_matrix,
     transfer_function,
 )
-from .._internals import _SummaryMixin
+from ..engine._internals import _SummaryMixin
 from ..exceptions import SpecificationError
 
 __all__ = ["SpectralDensity", "SpectralDensityResult"]

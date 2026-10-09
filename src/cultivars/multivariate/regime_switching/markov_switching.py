@@ -139,7 +139,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
 
-from ..._core import (
+from ...engine._core import (
     InformationCriteria,
     ProbabilityType,
     StructuralResult,
@@ -147,7 +147,7 @@ from ..._core import (
     validate_choice,
     validate_endog_matrix,
 )
-from ..._internals import (
+from ...engine._internals import (
     _ComparisonMixin,
     _MarkovSwitchingVectorAutoRegressionModel,
     _RegimeSwitchingLinearStateSpace,

@@ -116,12 +116,12 @@ from collections.abc import Sequence
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     ClosedSystemResult,
     _lower_cholesky,
     _validate_regimes,
 )
-from ..._internals import _CoDiagonalObjective, _IdentificationModel, _solve
+from ...engine._internals import _CoDiagonalObjective, _IdentificationModel, _solve
 from ...exceptions import NumericalError, SpecificationError
 from .zero_restrictions import SVARResult
 

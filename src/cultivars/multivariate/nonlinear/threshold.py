@@ -136,8 +136,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import Regime, SummaryTable, validate_choice
-from ..._internals import (
+from ...engine._core import Regime, SummaryTable, validate_choice
+from ...engine._internals import (
     _ThresholdVectorAutoRegressionModel,
     _VectorObservedRegimeResult,
     _VectorThresholdFit,

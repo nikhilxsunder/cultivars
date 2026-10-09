@@ -126,8 +126,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable
-from .._internals import (
+from ..engine._core import SummaryTable
+from ..engine._internals import (
     _ComparisonMixin,
     _SeriesMixin,
     _structural_matrices,

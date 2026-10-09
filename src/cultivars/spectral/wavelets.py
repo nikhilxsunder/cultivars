@@ -132,7 +132,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
-from .._core import (
+from ..engine._core import (
     _COHERENCE_SURROGATES,
     _DEFAULT_ALPHA,
     _MIN_SPECTRUM_OBS,
@@ -153,7 +153,7 @@ from .._core import (
     validate_open_interval,
     validate_order,
 )
-from .._internals import _SummaryMixin
+from ..engine._internals import _SummaryMixin
 from ..exceptions import SpecificationError
 
 __all__ = ["MODWT", "MODWTResult", "WaveletCoherence", "WaveletCoherenceResult"]

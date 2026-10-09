@@ -130,7 +130,7 @@ from typing import NoReturn
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     _CHOLESKY_NOTE,
     _HR_CONDITIONAL_NOTE,
     _UNSTABLE_NOTE,
@@ -141,7 +141,7 @@ from ..._core import (
     lag_matrix,
     validate_order_tuple,
 )
-from ..._internals import (
+from ...engine._internals import (
     _ComparisonMixin,
     _StabilityAssessment,
     _SummaryMixin,

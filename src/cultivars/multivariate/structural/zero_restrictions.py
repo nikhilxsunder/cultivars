@@ -134,7 +134,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
-from ..._core import (
+from ...engine._core import (
     _LOG_2PI,
     _PARTIAL_IDENTIFICATION_NOTE,
     _UNIT_SHOCK_NOTE,
@@ -145,7 +145,7 @@ from ..._core import (
     _validate_impact_pattern,
     _validate_ordering,
 )
-from ..._internals import (
+from ...engine._internals import (
     _IdentificationModel,
     _maximize_likelihood,
     _MixedHorizonObjective,

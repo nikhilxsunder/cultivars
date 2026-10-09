@@ -149,14 +149,14 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _SIMULATION_BURN,
     InformationCriteria,
     ProbabilityType,
     SummaryTable,
     validate_choice,
 )
-from .._internals import (
+from ..engine._internals import (
     _ComparisonMixin,
     _MarkovSwitchingFit,
     _MarkovSwitchingModel,

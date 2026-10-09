@@ -93,6 +93,12 @@ suppress_warnings: list[str] = [
     "config.cache",
 ]
 
+# sphinx -b doctest runs only explicit .. testcode:: / .. doctest:: blocks.
+# Bare >>> blocks in docstrings share one namespace per document under
+# this builder and fail by the hundreds; those are pytest --doctest-modules'
+# job, where each docstring gets its own globals.
+doctest_test_doctest_blocks: str = ""
+
 # -- MyST --------------------------------------------------------------------
 myst_enable_extensions: list[str] = [
     "colon_fence",
@@ -199,6 +205,8 @@ if _DOCS_VERSION != "stable":
     extensions.remove("sphinx_sitemap")
 
 # -- HTML output -------------------------------------------------------------
+html_last_updated_fmt: str = "%Y-%m-%d"
+
 html_theme: str = "pydata_sphinx_theme"
 html_title: str = "cultivars"
 html_logo: str = "_static/cultivars-logo.png"
@@ -254,8 +262,9 @@ html_theme_options: dict[str, object] = {
     "use_edit_page_button": True,
     "show_toc_level": 2,
     "show_prev_next": True,
-    "footer_start": ["copyright"],
-    "footer_end": ["sphinx-version", "theme-version"],
+    "footer_start": ["cultivars-footer"],
+    "footer_center": [],
+    "footer_end": [],
     "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "pygments_light_style": "friendly",
     "pygments_dark_style": "monokai",

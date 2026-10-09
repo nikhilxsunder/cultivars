@@ -128,7 +128,7 @@ import numpy as np
 import numpy.typing as npt
 from scipy.interpolate import BSpline
 
-from ..._core import (
+from ...engine._core import (
     FunctionalBasis,
     SummaryTable,
     Trend,
@@ -137,7 +137,7 @@ from ..._core import (
     _validate_curves,
     validate_choice,
 )
-from ..._internals import _SummaryMixin
+from ...engine._internals import _SummaryMixin
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from .vector_autoregression import VAR, VARResult
 

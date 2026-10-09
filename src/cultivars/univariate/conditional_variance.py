@@ -160,14 +160,14 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _DEFAULT_TRUNCATION,
     _SIMULATION_BURN,
     InformationCriteria,
     SummaryTable,
     _mean_label,
 )
-from .._internals import (
+from ..engine._internals import (
     _ConditionalVarianceResult,
     _FractionalVarianceFit,
     _FractionalVarianceModel,

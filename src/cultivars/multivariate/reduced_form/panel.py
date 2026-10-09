@@ -128,13 +128,13 @@ from typing import Self
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     _CHOLESKY_NOTE,
     _UNSTABLE_NOTE,
     SummaryTable,
     deterministic_columns,
 )
-from ..._internals import (
+from ...engine._internals import (
     _ComparisonMixin,
     _PanelVectorAutoRegressionModel,
     _SummaryMixin,

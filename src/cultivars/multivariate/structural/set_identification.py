@@ -126,7 +126,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     _SET_BOUNDS_NOTE,
     _UNIT_SHOCK_NOTE,
     ClosedSystemResult,
@@ -137,7 +137,7 @@ from ..._core import (
     _sphere_extrema,
     _validate_sign_patterns,
 )
-from ..._internals import (
+from ...engine._internals import (
     _IdentificationModel,
     _SummaryMixin,
 )

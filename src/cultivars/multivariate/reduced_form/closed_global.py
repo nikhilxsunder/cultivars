@@ -152,8 +152,8 @@ import numpy as np
 import numpy.typing as npt
 from scipy.stats import chi2
 
-from ..._core import SummaryTable, validate_weights
-from ..._internals import _SummaryMixin, _VectorPropagationMixin, _WaldTest, solve_global
+from ...engine._core import SummaryTable, validate_weights
+from ...engine._internals import _SummaryMixin, _VectorPropagationMixin, _WaldTest, solve_global
 from ...exceptions import SpecificationError
 from .error_correction import VECMXResult
 from .vector_autoregression import VARXResult

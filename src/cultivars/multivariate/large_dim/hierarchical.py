@@ -135,15 +135,15 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable, Trend, _gamma_from_mode
-from ..._internals import (
-    _BayesianVectorAutoRegressionModel,
-    _Prior,
-)
 from ...bayes.priors import (
     DummyInitialObservationPrior,
     NormalInverseWishartPrior,
     SumOfCoefficientsPrior,
+)
+from ...engine._core import SummaryTable, Trend, _gamma_from_mode
+from ...engine._internals import (
+    _BayesianVectorAutoRegressionModel,
+    _Prior,
 )
 from ...exceptions import SpecificationError
 from .bayesian import BVARResult

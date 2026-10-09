@@ -149,8 +149,8 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable, trailing_lag
-from .._internals import (
+from ..engine._core import SummaryTable, trailing_lag
+from ..engine._internals import (
     MeanPredictor,
     _MeanFunctionResult,
     _NeuralAutoRegressionFit,

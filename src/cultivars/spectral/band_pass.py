@@ -114,8 +114,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable, _ideal_weights, _validate_band, validate_endog_matrix
-from .._internals import _SummaryMixin
+from ..engine._core import SummaryTable, _ideal_weights, _validate_band, validate_endog_matrix
+from ..engine._internals import _SummaryMixin
 from ..exceptions import SpecificationError
 
 __all__ = ["BandPassResult", "BaxterKingFilter", "ChristianoFitzgeraldFilter"]

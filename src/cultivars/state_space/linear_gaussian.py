@@ -137,13 +137,13 @@ Example:
 
 from __future__ import annotations
 
-from .._internals import (
+from ..engine._internals import (
     _DurbinKoopmanSmootherResult as DurbinKoopmanSmootherResult,
 )
-from .._internals import (
+from ..engine._internals import (
     _KalmanFilterResult as KalmanFilterResult,
 )
-from .._internals import (
+from ..engine._internals import (
     _LinearGaussianStateSpace as LinearGaussianSSM,
 )
 

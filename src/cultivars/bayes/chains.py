@@ -121,7 +121,7 @@ from collections.abc import Sequence
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _MIN_ESS_PER_CHAIN,
     _RHAT_TOL,
     _ess_bulk,
@@ -132,7 +132,7 @@ from .._core import (
     _rhat,
     _stack,
 )
-from .._internals import _ConvergenceTest as ConvergenceTest
+from ..engine._internals import _ConvergenceTest as ConvergenceTest
 from ..exceptions import DimensionError
 
 __all__ = ["ConvergenceTest", "convergence", "ess_bulk", "ess_tail", "geweke", "mcse", "rhat"]

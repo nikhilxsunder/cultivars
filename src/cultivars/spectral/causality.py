@@ -130,7 +130,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     ClosedSystemResult,
     SummaryTable,
     _pairwise_measure,
@@ -138,7 +138,7 @@ from .._core import (
     spectral_matrix,
     transfer_function,
 )
-from .._internals import _spectral_factor, _SummaryMixin
+from ..engine._internals import _spectral_factor, _SummaryMixin
 from ..exceptions import SpecificationError
 
 __all__ = [

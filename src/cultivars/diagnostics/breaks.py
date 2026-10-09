@@ -140,7 +140,7 @@ from itertools import pairwise
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _CRITICAL_ALPHAS,
     _CRITICAL_LEVELS,
     _CUSUM_BOUNDARY,
@@ -153,7 +153,7 @@ from .._core import (
     _simulated_critical_values,
     _validate_regression,
 )
-from .._internals import _TabulatedTest
+from ..engine._internals import _TabulatedTest
 from ..exceptions import SpecificationError
 
 __all__ = ["BreakTest", "MultipleBreakTest", "bai_perron", "cusum", "sup_wald"]

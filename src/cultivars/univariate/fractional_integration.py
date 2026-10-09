@@ -124,8 +124,8 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import _D_MAX, InformationCriteria, SummaryTable
-from .._internals import (
+from ..engine._core import _D_MAX, InformationCriteria, SummaryTable
+from ..engine._internals import (
     _ComparisonMixin,
     _FractionalIntegrationFit,
     _FractionalIntegrationModel,

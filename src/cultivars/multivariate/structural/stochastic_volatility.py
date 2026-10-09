@@ -152,7 +152,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...bayes.priors import VolatilityPrior
+from ...engine._core import (
     _LABEL_NOTE,
     _SCALE_NOTE,
     ClosedSystemResult,
@@ -161,7 +162,7 @@ from ..._core import (
     _validate_quantiles,
     _variance_ratio_test,
 )
-from ..._internals import (
+from ...engine._internals import (
     _ComparisonMixin,
     _ConvergenceMixin,
     _long_memory_quasi_state_space,
@@ -173,7 +174,6 @@ from ..._internals import (
     _VolatilityIdentificationModel,
     _VolatilityStructuralFit,
 )
-from ...bayes.priors import VolatilityPrior
 from ...exceptions import SpecificationError
 from ...state_space.linear_gaussian import LinearGaussianSSM
 from .zero_restrictions import SVARResult

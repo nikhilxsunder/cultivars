@@ -133,14 +133,14 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable, _validate_quantiles
-from ..._internals import (
+from ...bayes.priors import VolatilityPrior
+from ...engine._core import SummaryTable, _validate_quantiles
+from ...engine._internals import (
     _ConvergenceMixin,
     _FactorVolatilityFit,
     _FactorVolatilityModel,
     _SummaryMixin,
 )
-from ...bayes.priors import VolatilityPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["FactorSV", "FactorSVResult"]

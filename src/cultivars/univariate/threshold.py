@@ -139,8 +139,8 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import _SIMULATION_BURN, SummaryTable, trailing_lag
-from .._internals import (
+from ..engine._core import _SIMULATION_BURN, SummaryTable, trailing_lag
+from ..engine._internals import (
     _ObservedRegimeResult,
     _ThresholdFit,
     _ThresholdModel,

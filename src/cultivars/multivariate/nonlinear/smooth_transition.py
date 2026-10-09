@@ -141,8 +141,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import Regime, SummaryTable
-from ..._internals import (
+from ...engine._core import Regime, SummaryTable
+from ...engine._internals import (
     _SmoothTransitionVectorAutoRegressionModel,
     _VectorObservedRegimeResult,
     _VectorSmoothTransitionFit,

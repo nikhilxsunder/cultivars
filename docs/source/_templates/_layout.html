@@ -1,0 +1,104 @@
+{#- Structured data for search engines, emitted on every page. Three graphs: the
+software itself (site-wide, identical on every page so crawlers see one
+canonical entity), the website with its search action, and the current page as a
+TechArticle with its breadcrumb trail. Values come from the Sphinx template
+context: `release`, `title`, `pagename`, `parents`, `last_updated`, and
+`pageurl`, which Sphinx fills from html_baseurl. The landing page is typed as a
+WebPage rather than an article. -#} {% extends "pydata_sphinx_theme/layout.html"
+%} {%- set site_url = "https://nikhilxsunder.github.io/cultivars/" -%} {%- set
+repo_url = "https://github.com/nikhilxsunder/cultivars" -%} {%- set page_url =
+pageurl if pageurl else site_url ~ "stable/" ~ pagename ~ file_suffix -%} {%-
+set clean_title = title | striptags | replace('"', '\\"') -%} {% block extrahead
+%} {{ super() }}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareSourceCode",
+        "@id": "{{ repo_url }}#software",
+        "name": "cultivars",
+        "alternateName": "cultivars {{ release }}",
+        "description": "Research-grade time series econometrics for Python: ARIMA to state space, VAR to structural identification, Bayesian and spectral methods, on numpy and scipy alone.",
+        "codeRepository": "{{ repo_url }}",
+        "url": "{{ site_url }}",
+        "programmingLanguage": {"@type": "ComputerLanguage", "name": "Python"},
+        "runtimePlatform": "Python 3.12+",
+        "version": "{{ release }}",
+        "license": "https://opensource.org/license/mit",
+        "isAccessibleForFree": true,
+        "applicationCategory": "Econometrics",
+        "keywords": "econometrics, time series, vector autoregression, structural VAR, state space, Bayesian, spectral analysis, forecasting",
+        "author": {"@id": "{{ site_url }}#author"},
+        "maintainer": {"@id": "{{ site_url }}#author"},
+        "downloadUrl": "https://pypi.org/project/cultivars/",
+        "installUrl": "https://pypi.org/project/cultivars/",
+        "softwareHelp": {"@id": "{{ site_url }}#website"},
+        "discussionUrl": "{{ repo_url }}/issues",
+        "targetProduct": {
+          "@type": "SoftwareApplication",
+          "name": "cultivars",
+          "operatingSystem": "Linux, macOS, Windows",
+          "applicationCategory": "DeveloperApplication",
+          "softwareVersion": "{{ release }}",
+          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "{{ site_url }}#author",
+        "name": "Nikhil Sunder",
+        "url": "https://github.com/nikhilxsunder",
+        "sameAs": ["https://github.com/nikhilxsunder"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "{{ site_url }}#website",
+        "name": "cultivars documentation",
+        "url": "{{ site_url }}",
+        "inLanguage": "en",
+        "about": {"@id": "{{ repo_url }}#software"},
+        "publisher": {"@id": "{{ site_url }}#author"},
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ site_url }}stable/search.html?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "{{ 'WebPage' if pagename == 'index' else 'TechArticle' }}",
+        "@id": "{{ page_url }}",
+        "url": "{{ page_url }}",
+        "name": "{{ clean_title }}",
+        "headline": "{{ clean_title }}",
+        "inLanguage": "en",
+        "isPartOf": {"@id": "{{ site_url }}#website"},
+        "about": {"@id": "{{ repo_url }}#software"},
+        "author": {"@id": "{{ site_url }}#author"},
+        "license": "https://opensource.org/license/mit",
+        "version": "{{ release }}"{% if last_updated %},
+        "dateModified": "{{ last_updated }}"{% endif %}{% if pagename != 'index' %},
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "cultivars", "item": "{{ site_url }}stable/"}
+            {%- set page_dir = pagename.split('/')[:-1] -%}
+            {%- for parent in parents -%}
+            {%- set ups = parent.link.count('../') -%}
+            {%- set rel = parent.link | replace('../', '') -%}
+            {%- set base = page_dir[:(page_dir | length) - ups] | join('/') -%}
+            ,
+            {"@type": "ListItem", "position": {{ loop.index + 1 }}, "name": "{{ parent.title | striptags | replace('"', '\\"') }}", "item": "{{ site_url }}stable/{{ base ~ '/' if base else '' }}{{ rel }}"}
+            {%- endfor -%}
+            ,
+            {"@type": "ListItem", "position": {{ parents | length + 2 }}, "name": "{{ clean_title }}", "item": "{{ page_url }}"}
+          ]
+        }{% endif %}
+      }
+    ]
+  }
+</script>
+{% endblock %}

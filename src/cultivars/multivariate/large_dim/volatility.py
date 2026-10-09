@@ -126,14 +126,14 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable, Trend
-from ..._internals import (
+from ...bayes.priors import MinnesotaPrior
+from ...engine._core import SummaryTable, Trend
+from ...engine._internals import (
     _Prior,
     _VectorPosteriorDrawsResult,
     _VectorVolatilityFit,
     _VolatilityBayesianVectorAutoRegressionModel,
 )
-from ...bayes.priors import MinnesotaPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["BVARSV", "BVARSVResult"]

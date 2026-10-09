@@ -146,7 +146,7 @@ from typing import Self, cast
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import (
+from ...engine._core import (
     _CHOLESKY_NOTE,
     _CONDITIONAL_REFUSAL,
     _LEVELS_TREND,
@@ -157,7 +157,7 @@ from ..._core import (
     deterministic_columns,
     validate_exog_matrix,
 )
-from ..._internals import (
+from ...engine._internals import (
     _ComparisonMixin,
     _ConditionalLevels,
     _ErrorCorrectionResult,

@@ -154,15 +154,15 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable, Trend
-from ..._internals import (
+from ...bayes.priors import IndependentNormalWishartPrior
+from ...engine._core import SummaryTable, Trend
+from ...engine._internals import (
     _GibbsBayesianVectorAutoRegressionModel,
     _MarginalLikelihoodSelection,
     _Prior,
     _VectorGibbsFit,
     _VectorPosteriorDrawsResult,
 )
-from ...bayes.priors import IndependentNormalWishartPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["GibbsBVAR", "GibbsBVARResult"]

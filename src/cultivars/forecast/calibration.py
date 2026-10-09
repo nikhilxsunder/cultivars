@@ -121,8 +121,8 @@ import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
 
-from .._core import SummaryTable, _berkowitz_likelihood_ratio, pit_from_draws
-from .._internals import _LikelihoodRatioTest, _SummaryMixin
+from ..engine._core import SummaryTable, _berkowitz_likelihood_ratio, pit_from_draws
+from ..engine._internals import _LikelihoodRatioTest, _SummaryMixin
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = ["Calibration", "CalibrationResult"]

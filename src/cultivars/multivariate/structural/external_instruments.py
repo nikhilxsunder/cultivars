@@ -107,8 +107,8 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import ClosedSystemResult
-from ..._internals import _IdentificationModel
+from ...engine._core import ClosedSystemResult
+from ...engine._internals import _IdentificationModel
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from .zero_restrictions import SVARResult
 

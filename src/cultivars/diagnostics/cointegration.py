@@ -119,6 +119,6 @@ Example:
 
 from __future__ import annotations
 
-from .._internals import _JohansenRankTest as JohansenRankTest
+from ..engine._internals import _JohansenRankTest as JohansenRankTest
 
 __all__ = ["JohansenRankTest"]

@@ -115,14 +115,14 @@ from collections.abc import Sequence
 import numpy as np
 import numpy.typing as npt
 
-from .._core import (
+from ..engine._core import (
     _MCS_ALPHA,
     _MCS_BOOTSTRAP,
     _model_confidence_set,
     _validate_names,
     _variable_names,
 )
-from .._internals import _ModelConfidenceSetSelection as ModelConfidenceSetSelection
+from ..engine._internals import _ModelConfidenceSetSelection as ModelConfidenceSetSelection
 from ..exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = ["ModelConfidenceSetSelection", "model_confidence_set"]

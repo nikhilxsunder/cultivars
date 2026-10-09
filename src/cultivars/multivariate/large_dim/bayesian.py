@@ -97,8 +97,9 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from ..._core import SummaryTable, Trend, companion_matrix
-from ..._internals import (
+from ...bayes.priors import NormalInverseWishartPrior
+from ...engine._core import SummaryTable, Trend, companion_matrix
+from ...engine._internals import (
     _BayesianVectorAutoRegressionModel,
     _ConvergenceMixin,
     _MarginalLikelihoodSelection,
@@ -107,7 +108,6 @@ from ..._internals import (
     _SummaryMixin,
     _VectorConjugateFit,
 )
-from ...bayes.priors import NormalInverseWishartPrior
 from ...exceptions import SpecificationError
 
 __all__ = ["BVAR", "BVARResult"]

@@ -108,8 +108,14 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 
-from .._core import SummaryTable, _kernel_log_score, _pinball_loss, crps_from_draws, energy_score
-from .._internals import _SummaryMixin
+from ..engine._core import (
+    SummaryTable,
+    _kernel_log_score,
+    _pinball_loss,
+    crps_from_draws,
+    energy_score,
+)
+from ..engine._internals import _SummaryMixin
 from ..exceptions import DimensionError, NumericalError
 
 __all__ = ["DensityScore", "DensityScoreResult", "pinball_loss"]
