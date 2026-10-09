@@ -80,7 +80,7 @@ __all__ = [
     "_LinearGaussianStateSpace",
     "_MarkovSwitchingStateSpace",
     "_NonlinearStateSpace",
-    "_RegimeSwitchingStateSpace",
+    "_RegimeSwitchingLinearStateSpace",
     "_StateSpace",
 ]
 
