@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_filters.py
+# filepath: /src/cultivars/engine/_internals/_filters.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -24,16 +24,24 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import (
+from .._core._defaults import (
     _ROW_SUM_ATOL,
     _TINY,
-    ergodic_distribution,
-    validate_transition,
+)
+from .._core._estimators import (
+    _ergodic_distribution,
+)
+from .._core._validators import (
+    _validate_transition,
 )
 from ._results import _HamiltonFilterResult
 
+__all__ = [
+    "_hamilton_filter",
+]
 
-def hamilton_filter(
+
+def _hamilton_filter(
     log_conditional_density: npt.ArrayLike,
     transition: npt.ArrayLike,
     *,
@@ -68,7 +76,7 @@ def hamilton_filter(
     Example:
         >>> p = np.array([[0.95, 0.05], [0.10, 0.90]])
         >>> logd = np.log(np.array([[0.9, 0.1], [0.2, 0.8], [0.3, 0.7]]))
-        >>> res = hamilton_filter(logd, p)
+        >>> res = _hamilton_filter(logd, p)
         >>> res.filtered_prob.shape
         (3, 2)
         >>> bool(np.allclose(res.filtered_prob.sum(axis=1), 1.0))
@@ -80,10 +88,10 @@ def hamilton_filter(
     if np.isnan(logd).any():
         raise NumericalError("log_conditional_density contains NaN values.")
     n, k = logd.shape
-    p = validate_transition(transition, k)
+    p = _validate_transition(transition, k)
 
     if initial_prob is None:
-        xi0 = ergodic_distribution(p)
+        xi0 = _ergodic_distribution(p)
     else:
         xi0 = np.asarray(initial_prob, dtype=np.float64)
         if xi0.shape != (k,):

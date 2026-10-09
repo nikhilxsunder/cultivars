@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_validators.py
+# filepath: /src/cultivars/engine/_core/_validators.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -38,11 +38,52 @@ import numpy.typing as npt
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from ._converters import _variable_names
 from ._defaults import _MIN_SEASONAL_CYCLES
-from ._matrices import deterministic_columns
+from ._matrices import _deterministic_columns
 from ._protocols import PredictiveResult
 
+__all__ = [
+    "_bandwidth",
+    "_validate_aligned",
+    "_validate_aligned_series",
+    "_validate_band",
+    "_validate_choice",
+    "_validate_chronology",
+    "_validate_conditions",
+    "_validate_curves",
+    "_validate_endog",
+    "_validate_endog_matrix",
+    "_validate_exog",
+    "_validate_exog_matrix",
+    "_validate_hyperparameter_pair",
+    "_validate_impact_pattern",
+    "_validate_log_density_matrix",
+    "_validate_names",
+    "_validate_narrative_events",
+    "_validate_observed",
+    "_validate_open_interval",
+    "_validate_order",
+    "_validate_order_tuple",
+    "_validate_ordering",
+    "_validate_panel",
+    "_validate_posterior_draws",
+    "_validate_predictive",
+    "_validate_quantiles",
+    "_validate_regimes",
+    "_validate_regression",
+    "_validate_replications",
+    "_validate_seasonal",
+    "_validate_semiparametric",
+    "_validate_sign_patterns",
+    "_validate_specification",
+    "_validate_spectrum_panel",
+    "_validate_statistics",
+    "_validate_transition",
+    "_validate_weights",
+    "_validate_wide_panel",
+]
 
-def validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
+
+def _validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     """Coerce and check an endogenous series.
 
     Args:
@@ -63,7 +104,7 @@ def validate_endog(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return arr
 
 
-def validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float64]:
+def _validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float64]:
     """Coerce optional exogenous regressors to a ``(nobs, k)`` matrix.
 
     A 1-D input is promoted to a single column.
@@ -91,7 +132,7 @@ def validate_exog(exog: npt.ArrayLike | None, nobs: int) -> npt.NDArray[np.float
     return x
 
 
-def validate_aligned(values: npt.ArrayLike, nobs: int, label: str) -> npt.NDArray[np.float64]:
+def _validate_aligned(values: npt.ArrayLike, nobs: int, label: str) -> npt.NDArray[np.float64]:
     """Coerce a covariate that must align one-to-one with the endogenous series.
 
     Args:
@@ -116,7 +157,7 @@ def validate_aligned(values: npt.ArrayLike, nobs: int, label: str) -> npt.NDArra
     return arr
 
 
-def validate_order(value: object, label: str, *, minimum: int = 0) -> int:
+def _validate_order(value: object, label: str, *, minimum: int = 0) -> int:
     """Check a single integral order term.
 
     ``bool`` is rejected explicitly: ``isinstance(True, int)`` is ``True`` in
@@ -141,7 +182,7 @@ def validate_order(value: object, label: str, *, minimum: int = 0) -> int:
     return out
 
 
-def validate_order_tuple(
+def _validate_order_tuple(
     order: Sequence[int], labels: Sequence[str], *, minimum: int = 0
 ) -> tuple[int, ...]:
     """Check a tuple of integral order terms such as ``(p, d, q)``.
@@ -166,11 +207,11 @@ def validate_order_tuple(
             f"order must have {len(labels)} elements {tuple(labels)}; got {tuple(order)}."
         )
     return tuple(
-        validate_order(v, lab, minimum=minimum) for v, lab in zip(order, labels, strict=True)
+        _validate_order(v, lab, minimum=minimum) for v, lab in zip(order, labels, strict=True)
     )
 
 
-def validate_choice[T](value: T, allowed: object, label: str) -> T:
+def _validate_choice[T](value: T, allowed: object, label: str) -> T:
     """Check a categorical specification against its permitted values.
 
     Accepts either a plain sequence of options or a PEP 695 ``type`` alias over
@@ -208,7 +249,7 @@ def validate_choice[T](value: T, allowed: object, label: str) -> T:
     return value
 
 
-def validate_open_interval(value: float, label: str, *, low: float, high: float) -> float:
+def _validate_open_interval(value: float, label: str, *, low: float, high: float) -> float:
     """Check that a float lies strictly inside ``(low, high)``.
 
     Args:
@@ -229,7 +270,7 @@ def validate_open_interval(value: float, label: str, *, low: float, high: float)
     return out
 
 
-def validate_transition(transition: npt.ArrayLike, n_regimes: int) -> npt.NDArray[np.float64]:
+def _validate_transition(transition: npt.ArrayLike, n_regimes: int) -> npt.NDArray[np.float64]:
     """Check a row-stochastic Markov transition matrix.
 
     Args:
@@ -260,7 +301,7 @@ def validate_transition(transition: npt.ArrayLike, n_regimes: int) -> npt.NDArra
     return mat
 
 
-def validate_endog_matrix(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
+def _validate_endog_matrix(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     """Coerce and check an endogenous panel for a vector model.
 
     The counterpart to :func:`validate_endog` for models whose observation is a
@@ -306,7 +347,7 @@ def validate_endog_matrix(endog: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return arr
 
 
-def validate_exog_matrix(
+def _validate_exog_matrix(
     exog: npt.ArrayLike, *, nobs: int, label: str = "exog"
 ) -> npt.NDArray[np.float64]:
     """Coerce a required exogenous regressor block and align it to a time index.
@@ -366,7 +407,7 @@ def validate_exog_matrix(
     return arr
 
 
-def validate_panel(
+def _validate_panel(
     panel: npt.ArrayLike | Sequence[npt.ArrayLike], *, label: str = "panel"
 ) -> tuple[npt.NDArray[np.float64], ...]:
     """Coerce a collection of per-unit series into a tuple of aligned matrices.
@@ -443,7 +484,7 @@ def validate_panel(
     return tuple(blocks)
 
 
-def validate_weights(
+def _validate_weights(
     weights: npt.ArrayLike, *, n_units: int, label: str = "weights"
 ) -> npt.NDArray[np.float64]:
     """Coerce and check a cross-unit weight matrix.
@@ -1007,7 +1048,7 @@ def _validate_statistics(
     return chosen
 
 
-def bandwidth(nobs: int, m: int | None, exponent: float) -> int:
+def _bandwidth(nobs: int, m: int | None, exponent: float) -> int:
     """Resolve the number of Fourier frequencies for a semiparametric estimator.
 
     Args:
@@ -1061,13 +1102,13 @@ def _validate_semiparametric(
         >>> y.shape, m
         ((400,), 20)
     """
-    y = validate_endog(endog)
+    y = _validate_endog(endog)
     n = y.shape[0]
     if n < minimum:
         raise SpecificationError(
             f"a semiparametric estimate needs at least {minimum} observations; got {n}."
         )
-    resolved = bandwidth(n, m, exponent)
+    resolved = _bandwidth(n, m, exponent)
     if resolved > n // 2:
         raise SpecificationError(
             f"bandwidth {resolved} exceeds the {n // 2} Fourier frequencies available."
@@ -1104,8 +1145,8 @@ def _validate_spectrum_panel(
         >>> panel.shape, trend, labels
         ((40, 2), 'c', ('y1', 'y2'))
     """
-    panel = validate_endog_matrix(data)
-    detrend = validate_choice(detrend, ("n", "c", "ct"), "detrend")
+    panel = _validate_endog_matrix(data)
+    detrend = _validate_choice(detrend, ("n", "c", "ct"), "detrend")
     n, k = panel.shape
     if n < minimum:
         raise SpecificationError(
@@ -1276,10 +1317,10 @@ def _validate_regression(
         >>> x.shape
         (4, 2)
     """
-    validate_choice(trend, ("n", "c", "ct"), "trend")
-    y = validate_endog(endog)
+    _validate_choice(trend, ("n", "c", "ct"), "trend")
+    y = _validate_endog(endog)
     nobs = y.shape[0]
-    design = np.hstack([deterministic_columns(trend, nobs), validate_exog(exog, nobs)])
+    design = np.hstack([_deterministic_columns(trend, nobs), _validate_exog(exog, nobs)])
     if design.shape[1] == 0:
         raise SpecificationError("the regression has no coefficients: pass exog or a trend.")
     if np.linalg.matrix_rank(design) < design.shape[1]:
@@ -1414,8 +1455,8 @@ def _validate_seasonal(endog: npt.ArrayLike, period: int) -> npt.NDArray[np.floa
         SpecificationError: If the period is odd or below 2, or the
             series holds fewer than ``_MIN_SEASONAL_CYCLES`` full cycles.
     """
-    y = validate_endog(endog)
-    period = validate_order(period, "period", minimum=2)
+    y = _validate_endog(endog)
+    period = _validate_order(period, "period", minimum=2)
     if period % 2:
         raise SpecificationError(f"period must be even; got {period}.")
     if y.shape[0] < _MIN_SEASONAL_CYCLES * period:

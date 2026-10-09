@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_engines.py
+# filepath: /src/cultivars/engine/_internals/_engines.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -28,8 +28,13 @@ import numpy.typing as npt
 from scipy.optimize import minimize
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import _DEFAULT_MAX_ITER
+from .._core._defaults import _DEFAULT_MAX_ITER
 from ._predictors import MeanPredictor, _FittedMLP
+
+__all__ = [
+    "MeanFunctionEngine",
+    "NumpyMLPEngine",
+]
 
 
 @runtime_checkable

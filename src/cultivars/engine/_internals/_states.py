@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_states.py
+# filepath: /src/cultivars/engine/_internals/_states.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -26,6 +26,11 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
+
+__all__ = [
+    "_ExpectationMaximizationState",
+    "_VectorExpectationMaximizationState",
+]
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_scores.py
+# filepath: /src/cultivars/engine/_core/_scores.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -40,6 +40,17 @@ import numpy.typing as npt
 
 from ...exceptions import DimensionError, SpecificationError
 
+__all__ = [
+    "_check_draws",
+    "_concordance",
+    "_crps_from_draws",
+    "_energy_score",
+    "_kernel_log_score",
+    "_phase_statistics",
+    "_pinball_loss",
+    "_pit_from_draws",
+]
+
 
 def _check_draws(draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float64]) -> None:
     """Reject a draw block and realization that cannot be scored together.
@@ -59,7 +70,7 @@ def _check_draws(draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float6
         )
 
 
-def crps_from_draws(
+def _crps_from_draws(
     draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
     """The continuous ranked probability score, exactly, per column.
@@ -95,7 +106,7 @@ def crps_from_draws(
     return np.asarray(absolute - spread, dtype=np.float64)
 
 
-def energy_score(draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float64]) -> float:
+def _energy_score(draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float64]) -> float:
     """The energy score of a multivariate predictive sample.
 
     ``E||X - y|| - E||X - X'|| / 2`` in the Euclidean norm: the
@@ -122,7 +133,7 @@ def energy_score(draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float6
     return first - pairwise / (2.0 * count**2)
 
 
-def pit_from_draws(
+def _pit_from_draws(
     draws: npt.NDArray[np.float64], realized: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
     """The probability integral transform of each realization, per column.

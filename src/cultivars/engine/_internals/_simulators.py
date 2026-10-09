@@ -6,8 +6,22 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import DimensionError, SpecificationError
-from .._core import _SQRT_2_OVER_PI, deterministic_columns, psd_sqrt
+from .._core._defaults import _SQRT_2_OVER_PI
+from .._core._matrices import _deterministic_columns, _psd_sqrt
 from ._solutions import _PerturbationSolution
+
+__all__ = [
+    "_impulse_responses",
+    "_integrate",
+    "_simulate_arma",
+    "_simulate_conditional_variance",
+    "_simulate_markov_switching",
+    "_simulate_perturbation",
+    "_simulate_pruned",
+    "_simulate_stochastic_volatility",
+    "_simulate_two_regime",
+    "_simulate_vector_autoregression",
+]
 
 
 def _simulate_pruned(
@@ -104,7 +118,7 @@ def _simulate_perturbation(
     states, controls = _simulate_pruned(solution, shocks)
     latent = np.hstack([states[burn:], controls[burn:]])
     p = design.shape[0]
-    noise = rng.standard_normal((n, p)) @ psd_sqrt(obs_cov).T
+    noise = rng.standard_normal((n, p)) @ _psd_sqrt(obs_cov).T
     return np.asarray(latent @ design.T + intercept + noise, dtype=np.float64)
 
 
@@ -183,7 +197,7 @@ def _simulate_vector_autoregression(
     n, k = noise.shape
     if trend not in ("n", "c", "ct"):
         raise SpecificationError(f"trend must be 'n', 'c', or 'ct'; got {trend!r}.")
-    det = deterministic_columns(trend, n, start=start)
+    det = _deterministic_columns(trend, n, start=start)
     offset = det.shape[1]
     if beta.shape != (offset + k * order, k):
         raise DimensionError(

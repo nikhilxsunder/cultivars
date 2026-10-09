@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_matrices.py
+# filepath: /src/cultivars/engine/_core/_matrices.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -33,8 +33,39 @@ import scipy.linalg as sla
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from ._defaults import _RANK_TOL, _TREND_WIDTH
 
+__all__ = [
+    "_as_coefficient_stack",
+    "_companion_matrix",
+    "_companion_spectral_radius",
+    "_conditional_design",
+    "_conditional_instruments",
+    "_conditional_restrictions",
+    "_deterministic_columns",
+    "_discrete_lyapunov",
+    "_face_projectors",
+    "_first_order",
+    "_lag_matrix",
+    "_link_matrix",
+    "_long_run_matrix",
+    "_lower_cholesky",
+    "_moving_average_from_stack",
+    "_n_deterministic",
+    "_null_basis",
+    "_null_basis_or_none",
+    "_numerical_hessian",
+    "_numerical_jacobian",
+    "_orthogonal_from_angles",
+    "_psd_sqrt",
+    "_quantiles",
+    "_second_order",
+    "_selector_matrix",
+    "_sphere_extrema",
+    "_stack_point",
+    "_trailing_lag",
+]
 
-def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
+
+def _companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
     """Build the companion matrix from autoregressive coefficients.
 
     For ``y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + u_t`` the companion is the
@@ -72,7 +103,7 @@ def companion_matrix(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return companion
 
 
-def selector_matrix(k: int, p: int) -> npt.NDArray[np.float64]:
+def _selector_matrix(k: int, p: int) -> npt.NDArray[np.float64]:
     """The selector ``J = [I_k, 0, ..., 0]`` extracting the leading block.
 
     Used to project companion powers back to the original ``k`` variables, e.g.
@@ -95,7 +126,7 @@ def selector_matrix(k: int, p: int) -> npt.NDArray[np.float64]:
     return selector
 
 
-def n_deterministic(trend: str) -> int:
+def _n_deterministic(trend: str) -> int:
     """Number of deterministic regressors implied by a trend specification.
 
     Args:
@@ -119,7 +150,7 @@ def n_deterministic(trend: str) -> int:
         ) from None
 
 
-def deterministic_columns(trend: str, nobs: int, *, start: int = 1) -> npt.NDArray[np.float64]:
+def _deterministic_columns(trend: str, nobs: int, *, start: int = 1) -> npt.NDArray[np.float64]:
     """Build the deterministic regressor block.
 
     Args:
@@ -138,7 +169,7 @@ def deterministic_columns(trend: str, nobs: int, *, start: int = 1) -> npt.NDArr
                [1., 3.],
                [1., 4.]])
     """
-    width = n_deterministic(trend)
+    width = _n_deterministic(trend)
     out = np.empty((nobs, width), dtype=np.float64)
     if width >= 1:
         out[:, 0] = 1.0
@@ -147,7 +178,7 @@ def deterministic_columns(trend: str, nobs: int, *, start: int = 1) -> npt.NDArr
     return out
 
 
-def trailing_lag(
+def _trailing_lag(
     series: npt.NDArray[np.float64], *, delay: int, length: int
 ) -> npt.NDArray[np.float64]:
     """Take the last ``length`` values of ``series`` shifted back by ``delay``.
@@ -185,7 +216,7 @@ def trailing_lag(
     return series[start - delay : n - delay]
 
 
-def lag_matrix(
+def _lag_matrix(
     y: npt.NDArray[np.float64], order: int, *, start: int | None = None
 ) -> npt.NDArray[np.float64]:
     """Build the matrix of lagged levels ``[y_{t-1}, ..., y_{t-order}]``.
@@ -218,7 +249,7 @@ def lag_matrix(
     return np.column_stack([y[first - i : n - i] for i in range(1, order + 1)])
 
 
-def conditional_design(
+def _conditional_design(
     y: npt.NDArray[np.float64], order: int, trend: str
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], int]:
     """Build the target and regressor matrix for a conditional least-squares fit.
@@ -242,8 +273,8 @@ def conditional_design(
             f"series of length {n} is too short for a conditional design of order {order}."
         )
     eff = n - order
-    det = deterministic_columns(trend, eff, start=order + 1)
-    lags = lag_matrix(y, order)
+    det = _deterministic_columns(trend, eff, start=order + 1)
+    lags = _lag_matrix(y, order)
     return y[order:], np.column_stack([det, lags]), eff
 
 
@@ -293,7 +324,7 @@ def _conditional_instruments(
     return differential[drop:], np.column_stack(columns)
 
 
-def psd_sqrt(matrix: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def _psd_sqrt(matrix: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """A matrix square root valid for symmetric positive-semidefinite input.
 
     Negative eigenvalues arising from round-off are clipped to zero, so a
@@ -339,7 +370,7 @@ def _as_coefficient_stack(ar_coeffs: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return ar
 
 
-def link_matrix(
+def _link_matrix(
     unit: int,
     *,
     weights: npt.ArrayLike,
@@ -674,7 +705,7 @@ def _companion_spectral_radius(stack: npt.NDArray[np.float64]) -> float:
     Returns:
         The spectral radius of the companion matrix.
     """
-    eigenvalues = np.linalg.eigvals(companion_matrix(stack))
+    eigenvalues = np.linalg.eigvals(_companion_matrix(stack))
     return float(np.abs(eigenvalues).max(initial=0.0))
 
 
@@ -910,7 +941,7 @@ def _moving_average_from_stack(
     out[0] = np.eye(k)
     if p == 0 or horizon == 1:
         return out
-    companion = companion_matrix(stack)
+    companion = _companion_matrix(stack)
     power = np.eye(k * p, dtype=np.float64)
     for h in range(1, horizon):
         power = companion @ power

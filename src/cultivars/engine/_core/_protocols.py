@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_protocols.py
+# filepath: /src/cultivars/engine/_core/_protocols.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -40,7 +40,19 @@ from typing import Protocol, runtime_checkable
 import numpy as np
 import numpy.typing as npt
 
-from ._containers import InformationCriteria
+from ._containers import _InformationCriteria
+
+__all__ = [
+    "ClosedSystemResult",
+    "FittedResult",
+    "Identification",
+    "PredictiveResult",
+    "ReplicatingModel",
+    "ReplicatingResult",
+    "SimulatingResult",
+    "StructuralResult",
+    "VolatilityResult",
+]
 
 
 @runtime_checkable
@@ -51,7 +63,7 @@ class FittedResult(Protocol):
     nobs: int
 
     @property
-    def information_criteria(self) -> InformationCriteria: ...
+    def information_criteria(self) -> _InformationCriteria: ...
     @property
     def aic(self) -> float: ...
     @property

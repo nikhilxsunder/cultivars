@@ -1,3 +1,25 @@
+# filepath: /src/cultivars/engine/_internals/_tests.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -7,19 +29,32 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import DimensionError, SpecificationError
-from .._core import (
+from .._core._containers import _SummaryTable
+from .._core._defaults import (
     _CRITICAL_LEVELS,
     _DEFAULT_ALPHA,
     _MIN_CHAIN_DRAWS,
     _MIN_ESS_PER_CHAIN,
     _RHAT_TOL,
-    SummaryTable,
+)
+from .._core._estimators import (
     _ess_bulk,
     _ess_tail,
     _geweke,
     _mcse_mean,
     _rhat,
 )
+
+__all__ = [
+    "_ChiSquaredTest",
+    "_ConvergenceTest",
+    "_ForecastComparisonTest",
+    "_HypothesisTest",
+    "_JohansenRankTest",
+    "_LikelihoodRatioTest",
+    "_TabulatedTest",
+    "_WaldTest",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -101,7 +136,7 @@ class _JohansenRankTest:
                 return rank
         return self.k_endog
 
-    def to_table(self, *, alpha: float = 0.05) -> SummaryTable:
+    def to_table(self, *, alpha: float = 0.05) -> _SummaryTable:
         """Render both sequences with the rank each one selects."""
         chosen = self.selected_rank(alpha=alpha)
         notes = [
@@ -126,7 +161,7 @@ class _JohansenRankTest:
                 "the well-known upward size distortion of the asymptotic test back toward "
                 "its nominal level in short samples."
             )
-        return SummaryTable(
+        return _SummaryTable(
             title="Johansen cointegration rank test",
             metadata=(
                 ("Observations", f"{self.nobs}"),
@@ -197,7 +232,7 @@ class _HypothesisTest:
             )
         return self.pvalue < alpha
 
-    def _summary_table(self) -> SummaryTable:
+    def _summary_table(self) -> _SummaryTable:
         """Build the structured summary for this test.
 
         Raises:
@@ -207,7 +242,7 @@ class _HypothesisTest:
             f"{type(self).__name__} must implement _summary_table() to be displayable."
         )
 
-    def summary(self) -> SummaryTable:
+    def summary(self) -> _SummaryTable:
         """The test as a table, renderable as text, HTML, or a dataframe."""
         return self._summary_table()
 
@@ -256,10 +291,10 @@ class _ChiSquaredTest(_HypothesisTest):
         """The table title."""
         return "Chi-Squared Test"
 
-    def _summary_table(self) -> SummaryTable:
+    def _summary_table(self) -> _SummaryTable:
         """One row: the statistic, its degrees of freedom, and the p-value."""
         verdict = "reject" if self.reject() else "keep"
-        return SummaryTable(
+        return _SummaryTable(
             title=self._title(),
             metadata=(("Verdict at 5%", verdict),),
             columns=("null", "statistic", "df", "p-value"),
@@ -294,9 +329,9 @@ class _ForecastComparisonTest(_HypothesisTest):
         columns: tuple[str, ...],
         rows: tuple[tuple[str, ...], ...],
         notes: tuple[str, ...],
-    ) -> SummaryTable:
+    ) -> _SummaryTable:
         """Assemble the family's table around its common header."""
-        return SummaryTable(
+        return _SummaryTable(
             title=title,
             metadata=(
                 ("Origins", str(self.nobs)),
@@ -394,9 +429,9 @@ class _TabulatedTest(_HypothesisTest):
         tail = "lower" if self.lower_tail else "upper"
         return (f"Rejection lies in the {tail} tail.",)
 
-    def _summary_table(self) -> SummaryTable:
+    def _summary_table(self) -> _SummaryTable:
         """The statistic and its companions against the critical values."""
-        return SummaryTable(
+        return _SummaryTable(
             title=self._title(),
             metadata=(*self._metadata(), ("Verdict at 5%", self._verdict())),
             columns=("statistic", "value", "p-value", *_CRITICAL_LEVELS),
@@ -661,7 +696,7 @@ class _ConvergenceTest:
         order = np.argsort(np.nan_to_num(self.rhat, nan=-np.inf))[::-1]
         return tuple(np.asarray(self.names)[order[:n]].tolist())
 
-    def summary(self, *, top: int | None = 20) -> SummaryTable:
+    def summary(self, *, top: int | None = 20) -> _SummaryTable:
         """Render as a table sorted by R-hat, descending.
 
         Args:
@@ -729,7 +764,7 @@ class _ConvergenceTest:
             "Rank-normalized split-R-hat with folding, bulk and tail ESS by Geyer's initial "
             "monotone sequence (Vehtari et al., 2021); Geweke z on the first 10% versus last 50%."
         )
-        return SummaryTable(
+        return _SummaryTable(
             title=f"Convergence: {self.source}",
             metadata=metadata,
             columns=(

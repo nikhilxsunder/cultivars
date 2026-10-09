@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_coefficients.py
+# filepath: /src/cultivars/engine/_internals/_coefficients.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -26,6 +26,10 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
+
+__all__ = [
+    "_MeanCoefficients",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)

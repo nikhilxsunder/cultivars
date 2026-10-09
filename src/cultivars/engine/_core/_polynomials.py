@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_polynomials.py
+# filepath: /src/cultivars/engine/_core/_polynomials.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import get_args
 
 import numpy as np
 import numpy.typing as npt
@@ -30,8 +31,19 @@ import numpy.typing as npt
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from ._types import Frequency
 
+__all__ = [
+    "_aggregation_weights",
+    "_expand_ar",
+    "_expand_ma",
+    "_midas_weights",
+    "_midas_windows",
+    "_nelson_siegel_loadings",
+    "_projection_scores",
+    "_star_variables",
+]
 
-def expand_ar(
+
+def _expand_ar(
     ar: npt.NDArray[np.float64], seasonal_ar: npt.NDArray[np.float64], period: int
 ) -> npt.NDArray[np.float64]:
     """Expand the product ``phi(L) * Phi(L**s)`` into a single AR coefficient vector.
@@ -69,7 +81,7 @@ def expand_ar(
     return -poly[1:]
 
 
-def expand_ma(
+def _expand_ma(
     ma: npt.NDArray[np.float64], seasonal_ma: npt.NDArray[np.float64], period: int
 ) -> npt.NDArray[np.float64]:
     """Expand the product ``theta(L) * Theta(L**s)`` into a single MA coefficient vector.
@@ -99,7 +111,7 @@ def expand_ma(
     return poly[1:]
 
 
-def star_variables(
+def _star_variables(
     panel: npt.ArrayLike,
     weights: npt.ArrayLike,
     *,
@@ -151,62 +163,26 @@ def star_variables(
     return tuple(out)
 
 
-def aggregation_weights(
-    kind: Frequency, period: int, *, weights: npt.ArrayLike | None = None
-) -> npt.NDArray[np.float64]:
-    """Sub-period weights a single low-frequency reading places on the latent path.
-
-    Args:
-        kind: One of :data:`Frequency`.
-        period: Sub-periods per low-frequency period.
-        weights: Explicit flow weights, newest sub-period first. Defaults to a
-            simple average, which is the right convention for a series in
-            levels. A series in log-differences needs the triangular weights of
-            Mariano and Murasawa instead, because summing growth rates is not
-            the same as averaging levels -- pass them here rather than hoping
-            the default is close.
-
-    Returns:
-        A vector of length ``period``, newest sub-period first.
-
-    Raises:
-        SpecificationError: If the kind or period is unrecognized, or explicit
-            weights are the wrong length.
-    """
-    if kind not in Frequency.__value__:
-        raise SpecificationError(f"kind must be one of {Frequency.__value__}; got {kind!r}.")
-    if period < 1:
-        raise SpecificationError(f"period must be at least 1; got {period}.")
-    if kind in ("high", "stock"):
-        out = np.zeros(period, dtype=np.float64)
-        out[0] = 1.0
-        return out
-    if weights is None:
-        return np.full(period, 1.0 / period, dtype=np.float64)
-    supplied = np.asarray(weights, dtype=np.float64).ravel()
-    if supplied.shape != (period,):
-        raise SpecificationError(
-            f"weights must have one entry per sub-period ({period}); got {supplied.shape}."
-        )
-    return supplied
-
-
 def _aggregation_weights(
     kind: Frequency, period: int, *, weights: npt.ArrayLike | None = None
 ) -> npt.NDArray[np.float64]:
     """Sub-period weights a single low-frequency reading places on the latent path.
 
     Args:
-        kind: How the series relates to the latent path.
-        period: Number of high-frequency sub-periods per low-frequency period.
-        weights: Explicit sub-period weights, most recent first. Overrides the
-            default for ``kind``. Length must equal ``period``.
+        kind: One of :data:`Frequency`. ``"high"`` and ``"stock"`` observe the
+            latest sub-period; ``"flow"`` averages the ``period`` sub-periods.
+        period: Sub-periods per low-frequency period, at least one.
+        weights: Explicit flow weights, newest sub-period first; overrides the
+            default for any kind. A series in log-differences needs the
+            Mariano-Murasawa triangular weights rather than the default simple
+            average, because summing growth rates is not averaging levels.
 
     Returns:
-        Weights of length ``period``, most recent sub-period first.
+        A vector of length ``period``, newest sub-period first.
 
     Raises:
-        SpecificationError: If ``weights`` has the wrong length or is not finite.
+        SpecificationError: If the kind or period is unrecognized, or explicit
+            weights have the wrong length or are not finite.
 
     Example:
         >>> _aggregation_weights("flow", 3)
@@ -214,13 +190,20 @@ def _aggregation_weights(
         >>> _aggregation_weights("stock", 3)
         array([1., 0., 0.])
     """
+    options = get_args(Frequency.__value__)
+    if kind not in options:
+        raise SpecificationError(f"kind must be one of {options}; got {kind!r}.")
+    if period < 1:
+        raise SpecificationError(f"period must be at least 1; got {period}.")
     if weights is not None:
-        w = np.asarray(weights, dtype=np.float64).ravel()
-        if w.shape[0] != period:
-            raise SpecificationError(f"weights must have length period={period}; got {w.shape[0]}.")
-        if not np.all(np.isfinite(w)):
+        supplied = np.asarray(weights, dtype=np.float64).ravel()
+        if supplied.shape != (period,):
+            raise SpecificationError(
+                f"weights must have one entry per sub-period ({period}); got {supplied.shape}."
+            )
+        if not np.all(np.isfinite(supplied)):
             raise SpecificationError("weights must be finite.")
-        return w
+        return supplied
     out = np.zeros(period, dtype=np.float64)
     if kind == "flow":
         out[:] = 1.0 / period

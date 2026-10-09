@@ -1,3 +1,24 @@
+# filepath: /src/cultivars/engine/_internals/_assessments.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -7,7 +28,11 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import companion_matrix
+from .._core._matrices import _companion_matrix
+
+__all__ = [
+    "_StabilityAssessment",
+]
 
 
 @dataclass(frozen=True)
@@ -103,7 +128,7 @@ class _StabilityAssessment:
         ar = np.asarray(ar_coeffs, dtype=np.float64)
         if ar.size == 0:
             return cls._trivial()
-        return cls._assess(companion_matrix(ar), tol=tol, allow_unit_roots=allow_unit_roots)
+        return cls._assess(_companion_matrix(ar), tol=tol, allow_unit_roots=allow_unit_roots)
 
     @classmethod
     def assess_stability_from_companion(
@@ -152,4 +177,4 @@ class _StabilityAssessment:
         ma = np.asarray(ma_coeffs, dtype=np.float64)
         if ma.size == 0:
             return True
-        return cls._assess(companion_matrix(ma), tol=tol, allow_unit_roots=False).is_stable
+        return cls._assess(_companion_matrix(ma), tol=tol, allow_unit_roots=False).is_stable

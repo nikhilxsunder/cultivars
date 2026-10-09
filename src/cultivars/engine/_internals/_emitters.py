@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_emitters.py
+# filepath: /src/cultivars/engine/_internals/_emitters.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -37,13 +37,17 @@ import numpy.typing as npt
 from scipy.special import digamma, gammaln, polygamma
 
 from ...exceptions import SpecificationError
-from .._core import (
+from .._core._defaults import (
     _LOG_2PI,
     _LOG_CHI2_MEAN,
     _LOG_CHI2_VAR,
+)
+from .._core._matrices import (
+    _companion_matrix,
     _discrete_lyapunov,
-    companion_matrix,
-    fractional_difference_weights,
+)
+from .._core._transforms import (
+    _fractional_difference_weights,
 )
 from ._parameters import (
     _DecayNelsonSiegelParameters,
@@ -53,6 +57,17 @@ from ._parameters import (
 )
 from ._solutions import _PerturbationSolution
 from ._substrates import _LinearGaussianStateSpace, _NonlinearStateSpace
+
+__all__ = [
+    "_decay_nelson_siegel_state_space",
+    "_linear_state_space",
+    "_log_scale_mixture_moments",
+    "_long_memory_quasi_state_space",
+    "_pruned_state_space",
+    "_quasi_volatility_state_space",
+    "_trend_volatility_state_space",
+    "_volatility_state_space",
+]
 
 
 def _log_scale_mixture_moments(nu: float) -> tuple[float, float]:
@@ -440,11 +455,11 @@ def _long_memory_quasi_state_space(
     if truncation < 1:
         raise SpecificationError(f"truncation must be at least 1; got {truncation}.")
     # AR(inf) of (1 - phi L)(1 - L)^d: weights of (1 - L)^d convolved with (1, -phi)
-    frac = fractional_difference_weights(params.d, truncation + 1)
+    frac = _fractional_difference_weights(params.d, truncation + 1)
     poly = np.convolve(frac, np.array([1.0, -params.phi]))[: truncation + 1]
     ar = -poly[1:]
     m = truncation
-    transition = companion_matrix(ar)
+    transition = _companion_matrix(ar)
     selection = np.zeros((m, 1))
     selection[0, 0] = 1.0
     state_cov = np.array([[params.sigma2]])

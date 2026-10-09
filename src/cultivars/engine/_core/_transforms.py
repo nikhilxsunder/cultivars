@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_transforms.py
+# filepath: /src/cultivars/engine/_core/_transforms.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -35,8 +35,25 @@ from scipy.linalg import solveh_banded
 from scipy.stats import norm, rankdata
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ._containers import Standardized
-from ._matrices import deterministic_columns
+from ._containers import _Standardized
+from ._matrices import _deterministic_columns
+
+__all__ = [
+    "_as_finite",
+    "_combined_difference",
+    "_difference",
+    "_fractional_difference",
+    "_fractional_difference_weights",
+    "_gls_detrend",
+    "_log_transform",
+    "_ols_detrend",
+    "_penalized_trend",
+    "_rank_normalize",
+    "_seasonal_difference",
+    "_split_chains",
+    "_standardize",
+    "_undifference",
+]
 
 
 def _as_finite(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
@@ -49,7 +66,7 @@ def _as_finite(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return arr
 
 
-def difference(y: npt.ArrayLike, d: int = 1, *, axis: int = 0) -> npt.NDArray[np.float64]:
+def _difference(y: npt.ArrayLike, d: int = 1, *, axis: int = 0) -> npt.NDArray[np.float64]:
     """Apply the ``d``-th difference ``(1 - L)**d``.
 
     Args:
@@ -76,7 +93,7 @@ def difference(y: npt.ArrayLike, d: int = 1, *, axis: int = 0) -> npt.NDArray[np
     return np.diff(arr, n=d, axis=axis)
 
 
-def seasonal_difference(
+def _seasonal_difference(
     y: npt.ArrayLike, s: int, capital_d: int = 1, *, axis: int = 0
 ) -> npt.NDArray[np.float64]:
     """Apply the seasonal difference ``(1 - L**s)**capital_d``.
@@ -109,7 +126,7 @@ def seasonal_difference(
     return out
 
 
-def log_transform(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
+def _log_transform(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
     """Natural logarithm, with an explicit positivity guard.
 
     Raises:
@@ -122,7 +139,7 @@ def log_transform(y: npt.ArrayLike) -> npt.NDArray[np.float64]:
     return np.log(arr)
 
 
-def standardize(y: npt.ArrayLike, *, axis: int = 0, ddof: int = 0) -> Standardized:
+def _standardize(y: npt.ArrayLike, *, axis: int = 0, ddof: int = 0) -> _Standardized:
     """Center and scale to zero mean and unit standard deviation.
 
     Args:
@@ -150,14 +167,14 @@ def standardize(y: npt.ArrayLike, *, axis: int = 0, ddof: int = 0) -> Standardiz
     if np.any(scale == 0.0):
         raise NumericalError("Cannot standardize a series with zero standard deviation.")
     values = (arr - mean) / scale
-    return Standardized(
+    return _Standardized(
         values=values,
         mean=np.squeeze(mean, axis=axis),
         scale=np.squeeze(scale, axis=axis),
     )
 
 
-def undifference(
+def _undifference(
     dx: npt.ArrayLike, initials: npt.ArrayLike, *, d: int = 1
 ) -> npt.NDArray[np.float64]:
     """Invert ``d``-th differencing along ``axis=0`` (integration).
@@ -199,7 +216,7 @@ def undifference(
     return cur
 
 
-def fractional_difference_weights(d: float, length: int) -> npt.NDArray[np.float64]:
+def _fractional_difference_weights(d: float, length: int) -> npt.NDArray[np.float64]:
     """Return the first ``length`` coefficients of the operator ``(1 - L)**d``.
 
     The coefficients ``b_k`` satisfy the recursion ``b_0 = 1`` and
@@ -230,7 +247,7 @@ def fractional_difference_weights(d: float, length: int) -> npt.NDArray[np.float
     return weights
 
 
-def fractional_difference(
+def _fractional_difference(
     y: npt.ArrayLike, d: float, *, truncation: int | None = None
 ) -> npt.NDArray[np.float64]:
     """Apply the truncated fractional difference ``(1 - L)**d``.
@@ -266,11 +283,11 @@ def fractional_difference(
     m = n if truncation is None else int(truncation)
     if m < 1:
         raise SpecificationError(f"truncation must be >= 1; got {m}.")
-    weights = fractional_difference_weights(d, min(m, n))
+    weights = _fractional_difference_weights(d, min(m, n))
     return np.convolve(arr, weights)[:n]
 
 
-def combined_difference(
+def _combined_difference(
     y: npt.NDArray[np.float64], d: int, capital_d: int, s: int
 ) -> npt.NDArray[np.float64]:
     """Apply non-seasonal then seasonal differencing.
@@ -286,9 +303,9 @@ def combined_difference(
     """
     w = y
     if d > 0:
-        w = difference(w, d)
+        w = _difference(w, d)
     if capital_d > 0:
-        w = seasonal_difference(w, s, capital_d)
+        w = _seasonal_difference(w, s, capital_d)
     return w
 
 
@@ -416,6 +433,6 @@ def _ols_detrend(panel: npt.NDArray[np.float64], trend: str) -> npt.NDArray[np.f
     """
     if trend == "n":
         return panel
-    design = deterministic_columns(trend, panel.shape[0])
+    design = _deterministic_columns(trend, panel.shape[0])
     beta, _, _, _ = np.linalg.lstsq(design, panel, rcond=None)
     return np.asarray(panel - design @ beta, dtype=np.float64)

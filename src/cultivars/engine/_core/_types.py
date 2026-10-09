@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_types.py
+# filepath: /src/cultivars/engine/_core/_types.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -47,6 +47,27 @@ else:
     is private to the stubs and does not exist at runtime, hence the guard; the
     runtime fallback keeps ``typing.get_type_hints`` working for Sphinx autodoc.
     """
+
+__all__ = [
+    "Activation",
+    "CointegrationTrend",
+    "FTest",
+    "Frequency",
+    "FunctionalBasis",
+    "LongMemoryMethod",
+    "Mean",
+    "Method",
+    "OptimizerMethod",
+    "OptimizerOptions",
+    "PanelEffects",
+    "Penalty",
+    "ProbabilityType",
+    "Regime",
+    "Residuals",
+    "Transition",
+    "Trend",
+    "Vol",
+]
 
 type CointegrationTrend = Literal[
     "none", "restricted_constant", "constant", "restricted_trend", "trend"
@@ -136,7 +157,7 @@ type Regime = Literal["lower", "upper"]
 type Penalty = Literal["lasso", "adaptive", "scad", "mcp", "group"]
 """Sparse-VAR penalty families: elementwise, reweighted, nonconvex, and lag-group."""
 
-type _Residuals = Callable[
+type Residuals = Callable[
     [
         npt.NDArray[np.float64],
         npt.NDArray[np.float64],
@@ -146,5 +167,5 @@ type _Residuals = Callable[
     npt.NDArray[np.float64],
 ]
 
-type _FTest = tuple[float, float, int, int]
+type FTest = tuple[float, float, int, int]
 """F-test result: (statistic, p-value, numerator df, denominator df)."""

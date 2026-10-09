@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_means.py
+# filepath: /src/cultivars/engine/_internals/_means.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -65,8 +65,15 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from .._core import ols, pack_stationary, unpack_stationary
+from .._core._estimators import _ols
+from .._core._reparams import _pack_stationary, _unpack_stationary
 from ._coefficients import _MeanCoefficients
+
+__all__ = [
+    "_ARMAMean",
+    "_LinearMean",
+    "_MeanLayer",
+]
 
 
 class _MeanLayer(ABC):
@@ -181,7 +188,7 @@ class _LinearMean(_MeanLayer):
         """Ordinary least squares on the design, or an empty block."""
         if not self.n_parameters:
             return np.zeros(0, dtype=np.float64)
-        return ols(self.design, self.endog_target)[0]
+        return _ols(self.design, self.endog_target)[0]
 
     def unpack(self, params: npt.NDArray[np.float64]) -> _MeanCoefficients:
         """Split the coefficient vector into an intercept and lag weights."""
@@ -248,8 +255,8 @@ class _ARMAMean(_MeanLayer):
         """Map search coordinates to an intercept and two natural-scale blocks."""
         offset = int(self.include_const)
         const = float(params[0]) if self.include_const else 0.0
-        ar = unpack_stationary(np.asarray(params[offset : offset + self.p], dtype=np.float64))
-        ma = unpack_stationary(np.asarray(params[offset + self.p :], dtype=np.float64))
+        ar = _unpack_stationary(np.asarray(params[offset : offset + self.p], dtype=np.float64))
+        ma = _unpack_stationary(np.asarray(params[offset + self.p :], dtype=np.float64))
         return const, ar, ma
 
     def residuals(self, params: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
@@ -289,10 +296,10 @@ class _ARMAMean(_MeanLayer):
                 ([np.ones(y.shape[0] - burn)] if self.include_const else [])
                 + [y[burn - i - 1 : y.shape[0] - i - 1] for i in range(self.p)]
             )
-            coeffs = ols(design, y[burn:])[0]
+            coeffs = _ols(design, y[burn:])[0]
             if self.include_const:
                 blocks.append(coeffs[:1])
-            blocks.append(pack_stationary(np.asarray(coeffs[int(self.include_const) :])))
+            blocks.append(_pack_stationary(np.asarray(coeffs[int(self.include_const) :])))
         elif self.include_const:
             blocks.append(np.array([float(np.mean(y[burn:]))]))
         blocks.append(np.zeros(self.q, dtype=np.float64))

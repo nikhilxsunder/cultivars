@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_mixins.py
+# filepath: /src/cultivars/engine/_internals/_mixins.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -47,19 +47,25 @@ import numpy.typing as npt
 from scipy.stats import chi2
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import (
+from .._core._containers import (
+    _InformationCriteria,
+    _SummaryTable,
+)
+from .._core._converters import (
+    _to_pandas_frame,
+    _to_polars_frame,
+)
+from .._core._defaults import (
     _MIN_ESS_PER_CHAIN,
-    _NO_CLOSED_SYSTEM,
     _RHAT_TOL,
     _SIMULATION_BURN,
-    Identification,
-    InformationCriteria,
-    SummaryTable,
-    companion_matrix,
-    deterministic_columns,
-    to_pandas_frame,
-    to_polars_frame,
 )
+from .._core._matrices import (
+    _companion_matrix,
+    _deterministic_columns,
+)
+from .._core._notes import _NO_CLOSED_SYSTEM
+from .._core._protocols import Identification
 from ._assessments import _StabilityAssessment
 from ._covariances import _CoefficientCovariance
 from ._inferences import _CoefficientInference
@@ -69,6 +75,20 @@ from ._tests import _ConvergenceTest, _LikelihoodRatioTest, _WaldTest
 if TYPE_CHECKING:
     import pandas as pd
     import polars as pl
+
+__all__ = [
+    "_ComparisonMixin",
+    "_ConditionalSystemMixin",
+    "_ConditionalVarianceMixin",
+    "_ConvergenceMixin",
+    "_InvertibilityMixin",
+    "_ReplicationMixin",
+    "_SeriesMixin",
+    "_StationarityMixin",
+    "_SummaryMixin",
+    "_VectorInferenceMixin",
+    "_VectorPropagationMixin",
+]
 
 
 class _StationarityMixin:
@@ -139,11 +159,11 @@ class _SummaryMixin:
 
     __slots__ = ()
 
-    def _summary_table(self) -> SummaryTable:
+    def _summary_table(self) -> _SummaryTable:
         """Build the structured summary for this result.
 
         Returns:
-            The :class:`SummaryTable` every renderer draws from.
+            The :class:`_SummaryTable` every renderer draws from.
 
         Raises:
             NotImplementedError: If the concrete result does not supply one.
@@ -152,7 +172,7 @@ class _SummaryMixin:
             f"{type(self).__name__} must implement _summary_table() to be displayable."
         )
 
-    def summary(self) -> SummaryTable:
+    def summary(self) -> _SummaryTable:
         """The estimation summary, renderable as text, HTML, or a dataframe."""
         return self._summary_table()
 
@@ -216,7 +236,7 @@ class _SeriesMixin:
         Raises:
             ImportError: If pandas is not installed.
         """
-        return to_pandas_frame(self._series(), index=index, index_name="obs")
+        return _to_pandas_frame(self._series(), index=index, index_name="obs")
 
     def to_polars(self) -> pl.DataFrame:
         """The aligned per-observation outputs as a :class:`polars.DataFrame`.
@@ -227,7 +247,7 @@ class _SeriesMixin:
         Raises:
             ImportError: If polars is not installed.
         """
-        return to_polars_frame(self._series())
+        return _to_polars_frame(self._series())
 
 
 class _ComparisonMixin:
@@ -256,11 +276,11 @@ class _ComparisonMixin:
         return type(self).__name__
 
     @property
-    def information_criteria(self) -> InformationCriteria:
+    def information_criteria(self) -> _InformationCriteria:
         """AIC, BIC, and HQIC derived from the likelihood and parameter count."""
-        return InformationCriteria.from_likelihood(self.llf, self.nobs, self.n_params)
+        return _InformationCriteria.from_likelihood(self.llf, self.nobs, self.n_params)
 
-    def compare(self, *others: _ComparisonMixin, criterion: str = "aic") -> SummaryTable:
+    def compare(self, *others: _ComparisonMixin, criterion: str = "aic") -> _SummaryTable:
         """Rank this result against others by an information criterion.
 
         Args:
@@ -268,7 +288,7 @@ class _ComparisonMixin:
             criterion: ``"aic"``, ``"bic"``, or ``"hqic"``.
 
         Returns:
-            A :class:`SummaryTable` ordered best-first, with the gap to the
+            A :class:`_SummaryTable` ordered best-first, with the gap to the
             best model in the final column.
 
         Raises:
@@ -292,7 +312,7 @@ class _ComparisonMixin:
             key=lambda pair: pair[0],
         )
         best = scored[0][0]
-        return SummaryTable(
+        return _SummaryTable(
             title=f"Model comparison by {criterion.upper()}",
             metadata=(("Observations", f"{self.nobs}"), ("Models", f"{len(models)}")),
             columns=("model", "llf", "k", criterion.upper(), f"d{criterion.upper()}"),
@@ -883,7 +903,7 @@ class _VectorInferenceMixin:
 
     def residual_diagnostics(
         self, *, portmanteau_lags: int = 10, arch_lags: int = 5
-    ) -> SummaryTable:
+    ) -> _SummaryTable:
         """Run every residual test and collect them into one table.
 
         Args:
@@ -891,14 +911,14 @@ class _VectorInferenceMixin:
             arch_lags: Lags for the per-equation ARCH test.
 
         Returns:
-            A :class:`SummaryTable` with one row per test.
+            A :class:`_SummaryTable` with one row per test.
         """
         tests: list[tuple[str, _WaldTest]] = [
             (f"portmanteau({portmanteau_lags})", self.portmanteau_test(portmanteau_lags)),
             *((f"jarque-bera[{n}]", self.normality_test(n)) for n in self.names),
             *((f"arch-lm({arch_lags})[{n}]", self.arch_test(n, arch_lags)) for n in self.names),
         ]
-        return SummaryTable(
+        return _SummaryTable(
             title="Residual diagnostics",
             metadata=(("Observations", f"{self.nobs}"), ("Equations", f"{self.k_endog}")),
             columns=("test", "statistic", "df", "p-value"),
@@ -1010,7 +1030,7 @@ class _VectorPropagationMixin:
     @property
     def companion(self) -> npt.NDArray[np.float64]:
         """The ``(kp, kp)`` companion matrix of the autoregressive block."""
-        return companion_matrix(self.coefficients)
+        return _companion_matrix(self.coefficients)
 
     def stability_check(self) -> _StabilityAssessment:
         """Eigenvalue verdict for the companion matrix.
@@ -1201,7 +1221,7 @@ class _VectorPropagationMixin:
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
         k, p, n = self.k_endog, self.order, self.endog.shape[0]
-        future = deterministic_columns(self.trend, steps, start=n + 1)
+        future = _deterministic_columns(self.trend, steps, start=n + 1)
         history = [self.endog[n - i - 1] for i in range(p)]
         out = np.empty((steps, k), dtype=np.float64)
         for h in range(steps):

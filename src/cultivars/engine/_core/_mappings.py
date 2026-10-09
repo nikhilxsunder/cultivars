@@ -1,10 +1,50 @@
+# filepath: /src/cultivars/engine/_core/_mappings.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import annotations
 
 from typing import Final
 
 from ._types import CointegrationTrend
 
-#: Unrestricted deterministic terms each Johansen case leaves in the short-run equation.
+__all__ = [
+    "_CUSUM_BOUNDARY",
+    "_DFGLS_CRITICAL",
+    "_GLS_DETREND_C",
+    "_KASS_RAFTERY_SCALE",
+    "_KPSS_CRITICAL",
+    "_LEVELS_TREND",
+    "_MACKINNON_CRITICAL_2010",
+    "_MACKINNON_TAU_LARGE",
+    "_MACKINNON_TAU_MAX",
+    "_MACKINNON_TAU_MIN",
+    "_MACKINNON_TAU_SMALL",
+    "_MACKINNON_TAU_STAR",
+    "_NG_PERRON_CRITICAL",
+    "_TURNING_POINT_RULES",
+    "_UNRESTRICTED_TREND",
+    "_ZIVOT_ANDREWS_CRITICAL",
+]
+
 _UNRESTRICTED_TREND: dict[CointegrationTrend, str] = {
     "none": "n",
     "restricted_constant": "n",
@@ -13,8 +53,6 @@ _UNRESTRICTED_TREND: dict[CointegrationTrend, str] = {
     "trend": "ct",
 }
 
-#: Deterministic terms the implied levels representation carries once the
-#: restricted terms are folded back out of the cointegrating space.
 _LEVELS_TREND: dict[CointegrationTrend, str] = {
     "none": "n",
     "restricted_constant": "c",

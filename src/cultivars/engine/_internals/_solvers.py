@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_solvers.py
+# filepath: /src/cultivars/engine/_internals/_solvers.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -30,21 +30,32 @@ from scipy.optimize import minimize
 from scipy.special import multigammaln
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import (
+from .._core._matrices import (
     _first_order,
+    _link_matrix,
     _numerical_hessian,
     _numerical_jacobian,
-    _Residuals,
     _second_order,
     _stack_point,
-    link_matrix,
 )
+from .._core._types import Residuals
 from ._covariances import _PosteriorCovariance
 from ._levels import _ConditionalLevels
 from ._objectives import _Objective
 from ._posteriors import _ConjugatePosterior
 from ._priors import _Prior, _PriorContext
 from ._solutions import _PerturbationSolution
+
+__all__ = [
+    "_conjugate_posterior",
+    "_fista_penalized",
+    "_maximize_likelihood",
+    "_posterior_coefficients",
+    "_solve",
+    "_solve_global",
+    "_solve_perturbation",
+    "_spectral_factor",
+]
 
 
 def _solve[P](objective: _Objective[P]) -> tuple[P, float]:
@@ -89,7 +100,7 @@ def _maximize_likelihood[P](objective: _Objective[P]) -> tuple[P, float]:
     return parameters, -criterion
 
 
-def solve_global(
+def _solve_global(
     units: Sequence[_ConditionalLevels],
     *,
     weights: npt.NDArray[np.float64],
@@ -146,7 +157,7 @@ def solve_global(
     drift = np.zeros((drift_rows, width), dtype=np.float64)
     cursor = 0
     for index, unit in enumerate(units):
-        selector = link_matrix(
+        selector = _link_matrix(
             index,
             weights=weights,
             unit_of_column=unit_of_column,
@@ -177,7 +188,7 @@ def solve_global(
     return g_zero, blocks, np.linalg.solve(g_zero, drift.T).T
 
 
-def posterior_coefficients(
+def _posterior_coefficients(
     target: npt.NDArray[np.float64],
     design: npt.NDArray[np.float64],
     prior: _Prior,
@@ -478,7 +489,7 @@ def _spectral_factor(
 
 
 def _solve_perturbation(
-    equations: _Residuals,
+    equations: Residuals,
     x_ss: npt.NDArray[np.float64],
     y_ss: npt.NDArray[np.float64],
     eta: npt.NDArray[np.float64],

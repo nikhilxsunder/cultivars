@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_models.py
+# filepath: /src/cultivars/engine/_internals/_models.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 """Protected base classes for model specifications and fitted results.
 
 Two hierarchies live here, and they are deliberately separate.
@@ -61,7 +60,7 @@ from scipy.optimize import linear_sum_assignment, linprog, minimize
 from scipy.special import gammaln
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import (
+from .._core._defaults import (
     _D_MAX,
     _DEFAULT_GRID,
     _DEFAULT_MAX_ITER,
@@ -74,17 +73,35 @@ from .._core import (
     _NU_PRIOR_RATE,
     _STUDENT_DF_GRID,
     _TINY,
-    _UNRESTRICTED_TREND,
-    ClosedSystemResult,
-    CointegrationTrend,
-    Mean,
-    Method,
-    PanelEffects,
-    Penalty,
-    Transition,
-    Trend,
-    Vol,
+)
+from .._core._estimators import (
     _chib_independent_normal_wishart,
+    _concentrated_gaussian,
+    _deterministic_columns,
+    _ergodic_distribution,
+    _ewma_mean_square,
+    _lag_matrix,
+    _local_whittle_d,
+    _minnesota_scales,
+    _ols,
+    _simulate_cointegration_null,
+)
+from .._core._mappings import (
+    _UNRESTRICTED_TREND,
+)
+from .._core._matrices import (
+    _conditional_design,
+    _n_deterministic,
+)
+from .._core._protocols import (
+    ClosedSystemResult,
+)
+from .._core._reparams import (
+    _inv_softplus,
+    _pack_stationary,
+    _sigmoid,
+)
+from .._core._samplers import (
     _draw_degrees_of_freedom,
     _draw_factors,
     _draw_inverse_gamma,
@@ -96,36 +113,38 @@ from .._core import (
     _draw_triangular_volatility_block,
     _draw_volatility_parameters,
     _draw_volatility_path,
-    _fractional_spectrum,
     _interweave_volatility_parameters,
     _scalar_ffbs,
+)
+from .._core._spectra import (
+    _fractional_spectrum,
+)
+from .._core._transforms import (
+    _combined_difference,
+    _fractional_difference,
+)
+from .._core._types import (
+    CointegrationTrend,
+    Mean,
+    Method,
+    PanelEffects,
+    Penalty,
+    Transition,
+    Trend,
+    Vol,
+)
+from .._core._validators import (
+    _validate_aligned,
+    _validate_choice,
+    _validate_endog,
+    _validate_endog_matrix,
+    _validate_exog,
+    _validate_exog_matrix,
+    _validate_open_interval,
+    _validate_order,
+    _validate_order_tuple,
+    _validate_panel,
     _validate_wide_panel,
-    combined_difference,
-    concentrated_gaussian,
-    conditional_design,
-    deterministic_columns,
-    ergodic_distribution,
-    ewma_mean_square,
-    fractional_difference,
-    inv_softplus,
-    lag_matrix,
-    local_whittle_d,
-    minnesota_scales,
-    n_deterministic,
-    ols,
-    pack_stationary,
-    sigmoid,
-    simulate_cointegration_null,
-    validate_aligned,
-    validate_choice,
-    validate_endog,
-    validate_endog_matrix,
-    validate_exog,
-    validate_exog_matrix,
-    validate_open_interval,
-    validate_order,
-    validate_order_tuple,
-    validate_panel,
 )
 from ._assessments import _StabilityAssessment
 from ._chains import _ParticleMarginalChain
@@ -137,7 +156,7 @@ from ._emitters import (
     _volatility_state_space,
 )
 from ._engines import MeanFunctionEngine, NumpyMLPEngine
-from ._filters import hamilton_filter
+from ._filters import _hamilton_filter
 from ._fits import (
     _AutoRegressionFit,
     _BoxJenkinsFit,
@@ -211,15 +230,15 @@ from ._priors import (
 )
 from ._selections import _LagOrderSelection, _MarginalLikelihoodSelection
 from ._simulators import _simulate_stochastic_volatility, _simulate_vector_autoregression
-from ._smoothers import kim_smoother
+from ._smoothers import _kim_smoother
 from ._solutions import _PerturbationSolution
 from ._solvers import (
     _conjugate_posterior,
     _fista_penalized,
     _maximize_likelihood,
+    _posterior_coefficients,
     _solve,
     _solve_perturbation,
-    posterior_coefficients,
 )
 from ._specifications import _PerturbationModelSpecification
 from ._states import _ExpectationMaximizationState, _VectorExpectationMaximizationState
@@ -229,6 +248,50 @@ from ._substrates import (
     _NonlinearStateSpace,
 )
 from ._tests import _JohansenRankTest
+
+__all__ = [
+    "_AutoRegressionModel",
+    "_BaseModel",
+    "_BayesianVectorAutoRegressionModel",
+    "_BoxJenkinsModel",
+    "_ConditionalVarianceModel",
+    "_DecayNelsonSiegelModel",
+    "_ExogenousVectorAutoRegressionModel",
+    "_ExogenousVectorErrorCorrectionModel",
+    "_FactorVolatilityModel",
+    "_FractionalIntegrationModel",
+    "_FractionalVarianceModel",
+    "_FunctionalCoefficientVectorAutoRegressionModel",
+    "_GibbsBayesianVectorAutoRegressionModel",
+    "_IdentificationModel",
+    "_LongMemoryVolatilityModel",
+    "_MarkovSwitchingModel",
+    "_MarkovSwitchingVectorAutoRegressionModel",
+    "_MeanFunctionModel",
+    "_MultivariateModel",
+    "_NeuralAutoRegressionModel",
+    "_NeuralThresholdModel",
+    "_ObservedRegimeVectorModel",
+    "_PanelVectorAutoRegressionModel",
+    "_PerturbationModel",
+    "_QuantileVectorAutoRegressionModel",
+    "_ShortMemoryVarianceModel",
+    "_SmoothTransitionModel",
+    "_SmoothTransitionVectorAutoRegressionModel",
+    "_SparseVectorAutoRegressionModel",
+    "_StochasticVolatilityModel",
+    "_StudentBayesianVectorAutoRegressionModel",
+    "_ThresholdModel",
+    "_ThresholdVectorAutoRegressionModel",
+    "_TimeVaryingVectorAutoRegressionModel",
+    "_TrendVolatilityModel",
+    "_UnivariateModel",
+    "_UnobservedComponentsModel",
+    "_VectorAutoRegressionModel",
+    "_VectorErrorCorrectionModel",
+    "_VolatilityBayesianVectorAutoRegressionModel",
+    "_VolatilityIdentificationModel",
+]
 
 
 class _BaseModel[R](ABC):
@@ -249,7 +312,7 @@ class _BaseModel[R](ABC):
 
     def __init__(self, endog: npt.ArrayLike) -> None:
         """Validate and store the endogenous series."""
-        self._endog = validate_endog(endog)
+        self._endog = _validate_endog(endog)
 
     @property
     def endog(self) -> npt.NDArray[np.float64]:
@@ -312,9 +375,9 @@ class _AutoRegressionModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
-        self._order = validate_order(order, "order")
-        self._trend = validate_choice(trend, Trend, "trend")
-        self._method = validate_choice(method, Method, "method")
+        self._order = _validate_order(order, "order")
+        self._trend = _validate_choice(trend, Trend, "trend")
+        self._method = _validate_choice(method, Method, "method")
         if self._method == "exact" and self._trend == "ct":
             raise SpecificationError(
                 "exact ML with trend='ct' is not supported in this release; "
@@ -347,12 +410,12 @@ class _AutoRegressionModel[R](_UnivariateModel[R]):
             The packed :class:`_AutoRegressionFit`.
         """
         y, order, trend = self.endog, self._order, self._trend
-        target, regressors, eff = conditional_design(y, order, trend)
+        target, regressors, eff = _conditional_design(y, order, trend)
         beta = np.linalg.lstsq(regressors, target, rcond=None)[0]
         fitted = regressors @ beta
         resid = target - fitted
         sigma2 = float(resid @ resid) / eff
-        n_det = n_deterministic(trend)
+        n_det = _n_deterministic(trend)
         const = float(beta[0]) if trend in ("c", "ct") else None
         trend_coeff = float(beta[1]) if trend == "ct" else None
         ar_params = np.asarray(beta[n_det:], dtype=np.float64)
@@ -388,7 +451,7 @@ class _AutoRegressionModel[R](_UnivariateModel[R]):
         phi0 = warm.ar_params
         if not _StabilityAssessment.assess_stability(phi0).is_stable:
             phi0 = np.zeros(order, dtype=np.float64)
-        psi0 = pack_stationary(phi0)
+        psi0 = _pack_stationary(phi0)
         log_sigma0 = np.log(warm.sigma2)
         theta0 = (
             np.concatenate([[warm.const or 0.0], psi0, [log_sigma0]])
@@ -419,7 +482,7 @@ class _AutoRegressionModel[R](_UnivariateModel[R]):
             resid=y - fitted,
             llf=llf,
             nobs=y.shape[0],
-            n_params=order + n_deterministic(trend) + 1,
+            n_params=order + _n_deterministic(trend) + 1,
             const=parameters.const if objective.has_const else None,
             trend_coeff=None,
             ar_params=parameters.ar_params,
@@ -458,12 +521,12 @@ class _FractionalIntegrationModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
-        self._p, self._q = validate_order_tuple(order, ("p", "q"))
-        self._const = validate_choice(trend, Trend, "trend") == "c"
+        self._p, self._q = _validate_order_tuple(order, ("p", "q"))
+        self._const = _validate_choice(trend, Trend, "trend") == "c"
         self._truncation = (
             self.endog.shape[0]
             if truncation is None
-            else validate_order(truncation, "truncation", minimum=1)
+            else _validate_order(truncation, "truncation", minimum=1)
         )
         self._ensure_length(2 * (self._p + self._q) + 8, f"ARFIMA({self._p}, d, {self._q})")
 
@@ -491,11 +554,11 @@ class _FractionalIntegrationModel[R](_UnivariateModel[R]):
         y, p, q = self.endog, self._p, self._q
         estimate_mean, truncation = self._const, self._truncation
         try:
-            d0 = float(np.clip(local_whittle_d(y)[0], -_D_MAX + 1e-3, _D_MAX - 1e-3))
+            d0 = float(np.clip(_local_whittle_d(y)[0], -_D_MAX + 1e-3, _D_MAX - 1e-3))
         except (NumericalError, SpecificationError):
             d0 = 0.0
         mu0 = float(y.mean()) if estimate_mean else 0.0
-        w0 = fractional_difference(y - mu0, d0, truncation=truncation)
+        w0 = _fractional_difference(y - mu0, d0, truncation=truncation)
         log_sigma0 = float(np.log(max(float(np.var(w0)), 1e-8)))
 
         parts: list[npt.NDArray[np.float64]] = []
@@ -577,16 +640,16 @@ class _BoxJenkinsModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
-        p, d, q = validate_order_tuple(order, ("p", "d", "q"))
-        cap_p, cap_d, cap_q, s = validate_order_tuple(seasonal_order, ("P", "D", "Q", "s"))
+        p, d, q = _validate_order_tuple(order, ("p", "d", "q"))
+        cap_p, cap_d, cap_q, s = _validate_order_tuple(seasonal_order, ("P", "D", "Q", "s"))
         if (cap_p or cap_d or cap_q) and s < 2:
             raise SpecificationError(
                 f"seasonal period s must be >= 2 when seasonal terms are present; got s={s}."
             )
         self._order = (p, d, q)
         self._seasonal = (cap_p, cap_d, cap_q, s)
-        self._trend = validate_choice(trend, Trend, "trend")
-        self._exog = validate_exog(exog, self.endog.shape[0])
+        self._trend = _validate_choice(trend, Trend, "trend")
+        self._exog = _validate_exog(exog, self.endog.shape[0])
         self._ensure_length(
             p + d + q + s * (cap_p + cap_d + cap_q) + 2,
             f"SARIMA{self._order}{self._seasonal}",
@@ -626,11 +689,11 @@ class _BoxJenkinsModel[R](_UnivariateModel[R]):
         order, seasonal_order, trend = self._order, self._seasonal, self._trend
         p, d, q = order
         cap_p, cap_d, cap_q, s = seasonal_order
-        w = combined_difference(endog, d, cap_d, s)
+        w = _combined_difference(endog, d, cap_d, s)
         n_eff = w.shape[0]
-        det = deterministic_columns(trend, n_eff)
+        det = _deterministic_columns(trend, n_eff)
         if exog is not None:
-            exog_w = combined_difference(exog, d, cap_d, s) if (d or cap_d) else exog
+            exog_w = _combined_difference(exog, d, cap_d, s) if (d or cap_d) else exog
             design_x = np.column_stack([det, exog_w]) if det.shape[1] else exog_w
         else:
             design_x = det
@@ -659,7 +722,7 @@ class _BoxJenkinsModel[R](_UnivariateModel[R]):
         theta0 = np.concatenate(
             [
                 beta0,
-                pack_stationary(ar0),
+                _pack_stationary(ar0),
                 np.zeros(cap_p),
                 np.zeros(q),
                 np.zeros(cap_q),
@@ -734,9 +797,9 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the conditional-mean specification and the data."""
         super().__init__(endog)
-        self._const = validate_choice(mean, Mean, "mean") == "constant"
-        self._ar_lags = validate_order(ar_lags, "ar_lags")
-        self._ma_lags = validate_order(ma_lags, "ma_lags")
+        self._const = _validate_choice(mean, Mean, "mean") == "constant"
+        self._ar_lags = _validate_order(ar_lags, "ar_lags")
+        self._ma_lags = _validate_order(ma_lags, "ma_lags")
 
     @property
     def has_constant_mean(self) -> bool:
@@ -828,10 +891,10 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog, mean=mean, ar_lags=ar_lags, ma_lags=ma_lags)
-        self._vol = validate_choice(vol, Vol, "vol")
-        self._p = validate_order(p, "p")
-        self._o = validate_order(o, "o")
-        self._q = validate_order(q, "q")
+        self._vol = _validate_choice(vol, Vol, "vol")
+        self._p = _validate_order(p, "p")
+        self._o = _validate_order(o, "o")
+        self._q = _validate_order(q, "q")
         if self._vol == "GARCH" and self._o != 0:
             raise SpecificationError("GARCH has no asymmetry term; set the asymmetry order o = 0.")
         if self._vol in ("GJR", "EGARCH") and self._o < 1:
@@ -868,17 +931,17 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
             var_raw0 = np.concatenate(
                 [
                     [np.log(var0 * (1 - a_init - b_init))],
-                    [inv_softplus(a_init)] * p,
-                    [inv_softplus(b_init)] * q,
+                    [_inv_softplus(a_init)] * p,
+                    [_inv_softplus(b_init)] * q,
                 ]
             )
         elif vol == "GJR":
             var_raw0 = np.concatenate(
                 [
                     [np.log(var0 * (1 - a_init - b_init - 0.5 * g_init))],
-                    [inv_softplus(a_init)] * p,
+                    [_inv_softplus(a_init)] * p,
                     [g_init] * o,
-                    [inv_softplus(b_init)] * q,
+                    [_inv_softplus(b_init)] * q,
                 ]
             )
         else:
@@ -888,7 +951,7 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
 
         return _ConditionalVarianceObjective(
             mean=mean,
-            backcast=ewma_mean_square(resid0),
+            backcast=_ewma_mean_square(resid0),
             vol=vol,
             p=p,
             o=o,
@@ -963,7 +1026,7 @@ class _FractionalVarianceModel[R](_ConditionalVarianceModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog, mean=mean, ar_lags=ar_lags, ma_lags=ma_lags)
-        self._truncation = validate_order(truncation, "truncation", minimum=1)
+        self._truncation = _validate_order(truncation, "truncation", minimum=1)
         self._ensure_length(
             int(self._const) + max(self._ar_lags, self._ma_lags) + 4, "FIGARCH(1, d, 1)"
         )
@@ -986,7 +1049,7 @@ class _FractionalVarianceModel[R](_ConditionalVarianceModel[R]):
         var0 = max(float(np.var(resid0)), 1e-8)
         return _FractionalVarianceObjective(
             mean=mean,
-            backcast=ewma_mean_square(resid0),
+            backcast=_ewma_mean_square(resid0),
             truncation=truncation,
             theta0=np.concatenate([mean0, [np.log(var0 * 0.4), -1.0, -0.2, 0.4]]),
         )
@@ -1046,7 +1109,7 @@ class _MeanFunctionModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification, the engine, and the data."""
         super().__init__(endog)
-        self._order = validate_order(order, "order", minimum=1)
+        self._order = _validate_order(order, "order", minimum=1)
         self._engine: MeanFunctionEngine = engine if engine is not None else NumpyMLPEngine()
         if not isinstance(self._engine, MeanFunctionEngine):
             raise SpecificationError(
@@ -1079,11 +1142,11 @@ class _NeuralAutoRegressionModel[R](_MeanFunctionModel[R]):
         """
         y, order, engine = self.endog, self._order, self._engine
         target = y[order:]
-        features = lag_matrix(y, order)
+        features = _lag_matrix(y, order)
         predictor = engine.fit(features, target)
         fitted = predictor.predict(features)
         resid = target - fitted
-        sigma2, llf = concentrated_gaussian(float(resid @ resid), target.shape[0])
+        sigma2, llf = _concentrated_gaussian(float(resid @ resid), target.shape[0])
         return _NeuralAutoRegressionFit(
             predictor=predictor,
             sigma2=sigma2,
@@ -1128,13 +1191,13 @@ class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog, order=order, engine=engine)
-        self._delay = validate_order(delay, "delay", minimum=1)
+        self._delay = _validate_order(delay, "delay", minimum=1)
         self._threshold = None if threshold is None else float(threshold)
         self._trim = float(trim)
         self._threshold_variable = (
             None
             if threshold_variable is None
-            else validate_aligned(threshold_variable, self.endog.shape[0], "threshold_variable")
+            else _validate_aligned(threshold_variable, self.endog.shape[0], "threshold_variable")
         )
         self._ensure_length(2 * (self._order + 3) + self._delay, f"TAR-NN({self._order})")
 
@@ -1168,7 +1231,7 @@ class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
         start = max(order, delay)
         target = y[start:]
         n_eff = target.shape[0]
-        features = lag_matrix(y, order, start=start)
+        features = _lag_matrix(y, order, start=start)
         base = threshold_variable if threshold_variable is not None else y
         z = base[start - delay : n - delay]
         r = float(np.median(z)) if threshold is None else float(threshold)
@@ -1187,7 +1250,7 @@ class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
         fitted[~lower] = upper_predictor.predict(features[~lower])
         resid = target - fitted
         ssr = float(resid @ resid)
-        sigma2, llf = concentrated_gaussian(ssr, n_eff)
+        sigma2, llf = _concentrated_gaussian(ssr, n_eff)
         return _NeuralThresholdFit(
             delay=delay,
             threshold=r,
@@ -1244,8 +1307,8 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
-        self._order = validate_order(order, "order")
-        self._k = validate_order(n_regimes, "n_regimes", minimum=2)
+        self._order = _validate_order(order, "order")
+        self._k = _validate_order(n_regimes, "n_regimes", minimum=2)
         self._sw_mean = bool(switching_mean)
         self._sw_var = bool(switching_variance)
         self._sw_ar = bool(switching_ar)
@@ -1396,7 +1459,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
             A tuple ``(target, lags)``, where ``target`` drops the first
             ``order`` observations and ``lags`` is the aligned lag matrix.
         """
-        return self.endog[self._order :], lag_matrix(self.endog, self._order)
+        return self.endog[self._order :], _lag_matrix(self.endog, self._order)
 
     def _parameter_layout(self) -> _ParameterLayout:
         """Column bookkeeping for the stacked coefficient system."""
@@ -1614,7 +1677,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
             filtered_prob=fit.filtered_prob[:, perm],
             predicted_prob=fit.predicted_prob[:, perm],
             smoothed_prob=smoothed,
-            ergodic_prob=ergodic_distribution(transition),
+            ergodic_prob=_ergodic_distribution(transition),
             expected_durations=1.0 / np.clip(1.0 - np.diag(transition), 1e-12, None),
             resid=target - fitted,
             fittedvalues=fitted,
@@ -1652,18 +1715,18 @@ class _ThresholdModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
-        self._order = validate_order(order, "order", minimum=1)
-        self._trim = validate_open_interval(trim, "trim", low=0.0, high=0.5)
-        self._n_grid = validate_order(n_grid, "n_grid", minimum=1)
+        self._order = _validate_order(order, "order", minimum=1)
+        self._trim = _validate_open_interval(trim, "trim", low=0.0, high=0.5)
+        self._n_grid = _validate_order(n_grid, "n_grid", minimum=1)
         self._delays = (
-            [validate_order(delay, "delay", minimum=1)]
+            [_validate_order(delay, "delay", minimum=1)]
             if delay is not None
             else list(range(1, self._order + 1))
         )
         self._threshold_variable = (
             None
             if threshold_variable is None
-            else validate_aligned(threshold_variable, self.endog.shape[0], "threshold_variable")
+            else _validate_aligned(threshold_variable, self.endog.shape[0], "threshold_variable")
         )
         self._ensure_length(
             2 * (self._order + 2) + max(self._delays), f"threshold AR({self._order})"
@@ -1706,7 +1769,7 @@ class _ThresholdModel[R](_UnivariateModel[R]):
         target = y[start:]
         n_eff = target.shape[0]
         design = np.column_stack(
-            [deterministic_columns("c", y.shape[0] - start), lag_matrix(y, order, start=start)]
+            [_deterministic_columns("c", y.shape[0] - start), _lag_matrix(y, order, start=start)]
         )
         base = threshold_var if threshold_var is not None else y
         min_regime = order + 2
@@ -1724,8 +1787,8 @@ class _ThresholdModel[R](_UnivariateModel[R]):
                 n_hi = n_eff - n_lo
                 if n_lo < min_regime or n_hi < min_regime:
                     continue
-                b_lo, ssr_lo = ols(design[lower], target[lower])
-                b_hi, ssr_hi = ols(design[~lower], target[~lower])
+                b_lo, ssr_lo = _ols(design[lower], target[lower])
+                b_hi, ssr_hi = _ols(design[~lower], target[~lower])
                 ssr = ssr_lo + ssr_hi
                 if ssr < best_ssr:
                     best_ssr = ssr
@@ -1776,9 +1839,9 @@ class _SmoothTransitionModel[R](_UnivariateModel[R]):
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog)
-        self._order = validate_order(order, "order", minimum=1)
-        self._delay = validate_order(delay, "delay", minimum=1)
-        self._transition = validate_choice(transition, Transition, "transition")
+        self._order = _validate_order(order, "order", minimum=1)
+        self._delay = _validate_order(delay, "delay", minimum=1)
+        self._transition = _validate_choice(transition, Transition, "transition")
         self._ensure_length(2 * (self._order + 2) + self._delay, f"STAR({self._order})")
 
     @property
@@ -1816,7 +1879,7 @@ class _SmoothTransitionModel[R](_UnivariateModel[R]):
         target = y[start:]
         n_eff = target.shape[0]
         design = np.column_stack(
-            [deterministic_columns("c", n_eff), lag_matrix(y, order, start=start)]
+            [_deterministic_columns("c", n_eff), _lag_matrix(y, order, start=start)]
         )
         z = y[start - delay : n - delay]
         scale = float(np.std(z))
@@ -1830,7 +1893,9 @@ class _SmoothTransitionModel[R](_UnivariateModel[R]):
             n_lo = int(lower.sum())
             if n_lo < order + 2 or n_eff - n_lo < order + 2:
                 continue
-            ssr_hard = ols(design[lower], target[lower])[1] + ols(design[~lower], target[~lower])[1]
+            ssr_hard = (
+                _ols(design[lower], target[lower])[1] + _ols(design[~lower], target[~lower])[1]
+            )
             if ssr_hard < best_hard:
                 best_hard, c_seed = ssr_hard, float(candidate)
 
@@ -1904,7 +1969,7 @@ class _MultivariateModel[R](_BaseModel[R]):
 
     def __init__(self, endog: npt.ArrayLike) -> None:
         """Validate and store the endogenous panel."""
-        self._endog = validate_endog_matrix(endog)
+        self._endog = _validate_endog_matrix(endog)
 
     @property
     def k_endog(self) -> int:
@@ -1944,12 +2009,12 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
             SpecificationError: If the order, trend, or names are malformed.
             DimensionError: If the sample cannot support the specification.
         """
-        self._endog = validate_endog_matrix(endog)
+        self._endog = _validate_endog_matrix(endog)
         k = self._endog.shape[1]
         if int(order) != order or order < 0:
             raise SpecificationError(f"order must be an integer >= 0; got {order!r}.")
         self._order = int(order)
-        self._trend: str = validate_choice(trend, Trend, "trend")
+        self._trend: str = _validate_choice(trend, Trend, "trend")
         self._names = self._resolve_names(names, k, "names", "y")
         self._prior: _Prior = _NoPrior() if prior is None else prior
         need = (
@@ -2022,7 +2087,7 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         return _PriorContext(
             k_endog=self.k_endog,
             order=self._order,
-            scales=minnesota_scales(self._endog, self._order),
+            scales=_minnesota_scales(self._endog, self._order),
             presample_mean=self._endog[: self._order].mean(axis=0),
             k_exog=self.n_regressors - self._n_deterministic_columns - self.k_endog * self._order,
             n_deterministic=self._n_deterministic_columns,
@@ -2058,12 +2123,12 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
     def _n_deterministic_columns(self) -> int:
         """Width of the leading deterministic block.
 
-        Split out from :func:`n_deterministic` because a fixed-effects panel
+        Split out from :func:`_n_deterministic` because a fixed-effects panel
         replaces the trend specification with one indicator per unit, and every
         offset downstream is expressed against this number rather than against
         the trend string.
         """
-        return n_deterministic(self._trend)
+        return _n_deterministic(self._trend)
 
     @property
     def n_regressors(self) -> int:
@@ -2124,8 +2189,8 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         if nobs <= lags:
             raise DimensionError(f"{nobs} observations is too few for a design of order {lags}.")
         effective = nobs - lags
-        det = deterministic_columns(self._trend, effective, start=trim + lags + 1)
-        return panel[lags:], np.column_stack([det, lag_matrix(panel, lags)]), effective
+        det = _deterministic_columns(self._trend, effective, start=trim + lags + 1)
+        return panel[lags:], np.column_stack([det, _lag_matrix(panel, lags)]), effective
 
     @staticmethod
     def _least_squares(
@@ -2197,7 +2262,7 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         Raises:
             NumericalError: If the residual covariance is singular.
         """
-        posterior = posterior_coefficients(target, design, self._prior, self._prior_context())
+        posterior = _posterior_coefficients(target, design, self._prior, self._prior_context())
         coef = posterior.coefficients
         fitted = design @ coef
         resid = target - fitted
@@ -2365,7 +2430,7 @@ class _PanelVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             DimensionError: If the panel is malformed or a unit is too short to
                 supply the lags.
         """
-        self._units = validate_panel(panel)
+        self._units = _validate_panel(panel)
         self._lengths = tuple(int(unit.shape[0]) for unit in self._units)
         if effects not in ("none", "unit"):
             raise SpecificationError(f"effects must be one of ('none', 'unit'); got {effects!r}.")
@@ -2414,7 +2479,7 @@ class _PanelVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
     @property
     def _n_deterministic_columns(self) -> int:
         """Unit indicators under fixed effects, otherwise the trend block."""
-        return self.n_units if self._effects == "unit" else n_deterministic(self._trend)
+        return self.n_units if self._effects == "unit" else _n_deterministic(self._trend)
 
     def _rows_lost(self, order: int) -> int:
         """Rows lost across the stack: ``order`` from each unit."""
@@ -2439,7 +2504,7 @@ class _PanelVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             A ``(rows, _n_deterministic_columns)`` block.
         """
         if self._effects != "unit":
-            return deterministic_columns(self._trend, rows, start=start)
+            return _deterministic_columns(self._trend, rows, start=start)
         block = np.zeros((rows, self.n_units), dtype=np.float64)
         block[:, index] = 1.0
         return block
@@ -2472,7 +2537,7 @@ class _PanelVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
                 )
             det = self._unit_deterministic(index, nobs - lags, start=trim + lags + 1)
             targets.append(trimmed[lags:])
-            designs.append(np.column_stack([det, lag_matrix(trimmed, lags)]))
+            designs.append(np.column_stack([det, _lag_matrix(trimmed, lags)]))
         target = np.vstack(targets)
         return target, np.vstack(designs), int(target.shape[0])
 
@@ -2524,8 +2589,8 @@ class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             DimensionError: If the two samples are not aligned or the sample is
                 too short for the specification.
         """
-        rows = validate_endog_matrix(endog).shape[0]
-        self._exog = validate_exog(exog, nobs=rows)
+        rows = _validate_endog_matrix(endog).shape[0]
+        self._exog = _validate_exog(exog, nobs=rows)
         if int(exog_order) != exog_order or exog_order < 0:
             raise SpecificationError(f"exog_order must be an integer >= 0; got {exog_order!r}.")
         self._exog_order = int(exog_order)
@@ -2608,9 +2673,9 @@ class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
                 f"{self._exog_order} exogenous lags."
             )
         effective = nobs - burn
-        det = deterministic_columns(self._trend, effective, start=trim + burn + 1)
+        det = _deterministic_columns(self._trend, effective, start=trim + burn + 1)
         design = np.column_stack(
-            [det, lag_matrix(panel, lags, start=burn), self._exog_block(exog, burn)]
+            [det, _lag_matrix(panel, lags, start=burn), self._exog_block(exog, burn)]
         )
         return panel[burn:], design, effective
 
@@ -2717,7 +2782,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
                 admissible range.
             DimensionError: If the sample cannot support the specification.
         """
-        self._trend_case: str = validate_choice(
+        self._trend_case: str = _validate_choice(
             cointegration_trend, CointegrationTrend, "cointegration_trend"
         )
         if int(order) != order or order < 1:
@@ -2726,11 +2791,11 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             )
         self._rank = -1
         self._contemporaneous = bool(contemporaneous)
-        rows = int(validate_endog_matrix(endog).shape[0])
+        rows = int(_validate_endog_matrix(endog).shape[0])
         self._exog = (
             np.zeros((rows, 0), dtype=np.float64)
             if exog is None
-            else validate_exog_matrix(exog, nobs=rows)
+            else _validate_exog_matrix(exog, nobs=rows)
         )
         self._exog_names = self._resolve_names(exog_names, self._exog.shape[1], "exog_names", "x")
         super().__init__(
@@ -2807,7 +2872,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
     def n_regressors(self) -> int:
         """Short-run regressors per equation."""
         return (
-            n_deterministic(self._trend)
+            _n_deterministic(self._trend)
             + (self.k_endog + self.k_exog) * self._n_short_run_lags
             + self.k_exog * int(self.contemporaneous)
             + max(self._rank, 0)
@@ -2846,7 +2911,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             levels = np.column_stack([levels, np.ones(effective)])
         elif self._trend_case == "restricted_trend":
             levels = np.column_stack([levels, index])
-        det = deterministic_columns(self._trend, effective, start=order + 1)
+        det = _deterministic_columns(self._trend, effective, start=order + 1)
         short_run = (
             np.column_stack([det, *blocks]) if blocks or det.shape[1] else np.zeros((effective, 0))
         )
@@ -2923,7 +2988,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         trace_p = np.empty(k, dtype=np.float64)
         maximum_p = np.empty(k, dtype=np.float64)
         for rank in range(k):
-            trace_null, maximum_null = simulate_cointegration_null(
+            trace_null, maximum_null = _simulate_cointegration_null(
                 k - rank,
                 self._trend_case,
                 n_exog=self.k_exog,
@@ -2963,7 +3028,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         correction = moments.levels @ beta
         design = np.column_stack([moments.short_run, correction])
         least_squares: _VectorMoments = self._gaussian_moments(moments.differences, design)
-        width_det = n_deterministic(self._trend)
+        width_det = _n_deterministic(self._trend)
         lags = self._n_short_run_lags
         gamma = (
             np.stack(
@@ -3172,7 +3237,7 @@ class _ObservedRegimeVectorModel[R](_VectorAutoRegressionModel[R]):
             self._transition_series = self._endog[:, self._names.index(transition_variable)]
         else:
             self._threshold_name = "external"
-            self._transition_series = validate_aligned(
+            self._transition_series = _validate_aligned(
                 transition_variable, self._endog.shape[0], "transition_variable"
             )
         if delay is None:
@@ -3184,7 +3249,7 @@ class _ObservedRegimeVectorModel[R](_VectorAutoRegressionModel[R]):
                 )
             self._delays = list(range(1, self._order + 1))
         else:
-            self._delays = [validate_order(delay, "delay", minimum=1)]
+            self._delays = [_validate_order(delay, "delay", minimum=1)]
         burn = self._rows_lost(self._order) + max(self._delays) - self._order
         need = 2 * (self.n_regressors + 1) + burn
         if self._endog.shape[0] < need:
@@ -3235,8 +3300,8 @@ class _ObservedRegimeVectorModel[R](_VectorAutoRegressionModel[R]):
         n = y.shape[0]
         start = max(order, delay)
         n_eff = n - start
-        det = deterministic_columns(self._trend, n_eff, start=start + 1)
-        design = np.column_stack([det, lag_matrix(y, order, start=start)])
+        det = _deterministic_columns(self._trend, n_eff, start=start + 1)
+        design = np.column_stack([det, _lag_matrix(y, order, start=start)])
         z = self._transition_series[start - delay : n - delay]
         return y[start:], design, z, start
 
@@ -3318,8 +3383,8 @@ class _ThresholdVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R]):
             trend=trend,
             names=names,
         )
-        self._trim = validate_open_interval(trim, "trim", low=0.0, high=0.5)
-        self._n_grid = validate_order(n_grid, "n_grid", minimum=1)
+        self._trim = _validate_open_interval(trim, "trim", low=0.0, high=0.5)
+        self._n_grid = _validate_order(n_grid, "n_grid", minimum=1)
 
     def _fit_regimes(self) -> _VectorThresholdFit:
         """Fit both regimes and the split by exhaustive grid search.
@@ -3429,7 +3494,7 @@ class _SmoothTransitionVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R
             trend=trend,
             names=names,
         )
-        self._transition: str = validate_choice(transition, Transition, "transition")
+        self._transition: str = _validate_choice(transition, Transition, "transition")
 
     @property
     def transition(self) -> str:
@@ -3949,7 +4014,7 @@ class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             NumericalError: If any program does not solve.
         """
         raw = tuple(
-            validate_open_interval(float(q), "quantiles", low=0.0, high=1.0) for q in quantiles
+            _validate_open_interval(float(q), "quantiles", low=0.0, high=1.0) for q in quantiles
         )
         if not raw:
             raise SpecificationError("quantiles must name at least one level.")
@@ -4465,7 +4530,7 @@ class _SparseVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
                 specification is malformed, or the sample cannot support
                 the rolling validation.
         """
-        choice = validate_choice(penalty, Penalty, "penalty")
+        choice = _validate_choice(penalty, Penalty, "penalty")
         if lam is not None and lam <= 0.0:
             raise SpecificationError(f"lam must be positive when given; got {lam}.")
         if n_lambdas < 2 or not 0.0 < lambda_min_ratio < 1.0:
@@ -4770,7 +4835,7 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
     ) -> None:
         """Validate the specification and the data."""
         super().__init__(endog, order=order, trend=trend, names=names)
-        self._m = validate_order(n_regimes, "n_regimes", minimum=2)
+        self._m = _validate_order(n_regimes, "n_regimes", minimum=2)
         self._sw_mean = bool(switching_mean)
         self._sw_var = bool(switching_variance)
         self._sw_ar = bool(switching_ar)
@@ -4980,8 +5045,8 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
         converged = False
         for n_iter in range(1, max_iter + 1):
             density = self._log_densities(target, design, coefficients, sigmas)
-            filt = hamilton_filter(density, transition)
-            smooth = kim_smoother(filt, transition)
+            filt = _hamilton_filter(density, transition)
+            smooth = _kim_smoother(filt, transition)
             filtered = filt.filtered_prob
             predicted = filt.predicted_prob
             smoothed = smooth.smoothed_prob
@@ -5118,7 +5183,7 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
             filtered_prob=state.filtered_prob[:, perm],
             predicted_prob=state.predicted_prob[:, perm],
             smoothed_prob=smoothed,
-            ergodic_prob=ergodic_distribution(transition),
+            ergodic_prob=_ergodic_distribution(transition),
             expected_durations=1.0 / np.clip(1.0 - np.diag(transition), 1e-12, None),
             resid=target - fitted,
             fittedvalues=fitted,
@@ -5182,7 +5247,7 @@ class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         if training is None:
             resolved = max(floor, min(40, n_eff // 3))
         else:
-            resolved = validate_order(training, "training", minimum=1)
+            resolved = _validate_order(training, "training", minimum=1)
         if resolved < floor:
             raise SpecificationError(
                 f"a training sample of {resolved} rows cannot identify the "
@@ -6120,7 +6185,7 @@ class _VolatilityBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel
         prior_mean, prior_variance = self._volatility_inputs()
         k, width = self.k_endog, self.n_regressors
         context = self._prior_context()
-        point = posterior_coefficients(target, design, self._prior, context).coefficients
+        point = _posterior_coefficients(target, design, self._prior, context).coefficients
         resid0 = target - design @ point
         sigma0 = resid0.T @ resid0 / max(n_eff - width, 1)
         a_mat, log_diag0 = _TimeVaryingVectorAutoRegressionModel._triangularize(sigma0)
@@ -7079,7 +7144,7 @@ class _PerturbationModel[R](ABC):
         out = np.empty_like(z)
         for j in range(z.shape[0]):
             if np.isfinite(lo[j]) and np.isfinite(hi[j]):
-                out[j] = lo[j] + (hi[j] - lo[j]) * sigmoid(float(z[j]))
+                out[j] = lo[j] + (hi[j] - lo[j]) * _sigmoid(float(z[j]))
             elif np.isfinite(lo[j]):
                 out[j] = lo[j] + np.exp(z[j])
             elif np.isfinite(hi[j]):
@@ -7094,7 +7159,7 @@ class _PerturbationModel[R](ABC):
         total = 0.0
         for j in range(z.shape[0]):
             if np.isfinite(lo[j]) and np.isfinite(hi[j]):
-                s = sigmoid(float(z[j]))
+                s = _sigmoid(float(z[j]))
                 total += np.log(hi[j] - lo[j]) + np.log(s) + np.log1p(-s)
             elif np.isfinite(lo[j]) or np.isfinite(hi[j]):
                 total += float(z[j])

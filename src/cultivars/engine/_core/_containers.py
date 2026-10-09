@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_containers.py
+# filepath: /src/cultivars/engine/_core/_containers.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -32,14 +32,22 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ._loaders import require_optional
+from ._loaders import _require_optional
 
 if TYPE_CHECKING:  # pragma: no cover
     import pandas as pd
     import polars as pl
 
+__all__ = [
+    "_ForwardPass",
+    "_InformationCriteria",
+    "_LagPolynomial",
+    "_Standardized",
+    "_SummaryTable",
+]
 
-class Standardized(NamedTuple):
+
+class _Standardized(NamedTuple):
     """A standardized series together with the parameters needed to invert it.
 
     Attributes:
@@ -57,7 +65,7 @@ class Standardized(NamedTuple):
         return np.asarray(values, dtype=np.float64) * self.scale + self.mean
 
 
-class LagPolynomial:
+class _LagPolynomial:
     """A scalar or matrix lag polynomial ``c_0 + c_1 L + ... + c_p L**p``.
 
     The coefficients are stored as an immutable float array of shape
@@ -104,9 +112,9 @@ class LagPolynomial:
         c.setflags(write=False)
         self._c = c
 
-    def __mul__(self, other: LagPolynomial) -> LagPolynomial:
+    def __mul__(self, other: _LagPolynomial) -> _LagPolynomial:
         """Polynomial product (coefficient convolution)."""
-        if not isinstance(other, LagPolynomial):
+        if not isinstance(other, _LagPolynomial):
             return NotImplemented
         if self.is_matrix != other.is_matrix:
             raise DimensionError("Cannot multiply a scalar and a matrix lag polynomial.")
@@ -120,12 +128,12 @@ class LagPolynomial:
             for i in range(self.degree + 1):
                 for j in range(other.degree + 1):
                     out[i + j] += self._c[i] @ other._c[j]
-            return LagPolynomial(out)
-        return LagPolynomial(np.convolve(self._c, other._c))
+            return _LagPolynomial(out)
+        return _LagPolynomial(np.convolve(self._c, other._c))
 
     def __eq__(self, other: object) -> bool:
         """Check equality of two lag polynomials."""
-        if not isinstance(other, LagPolynomial):
+        if not isinstance(other, _LagPolynomial):
             return NotImplemented
         return self._c.shape == other._c.shape and bool(np.array_equal(self._c, other._c))
 
@@ -135,7 +143,7 @@ class LagPolynomial:
 
     # Class methods
     @classmethod
-    def from_ar_coeffs(cls, ar_coeffs: npt.ArrayLike) -> LagPolynomial:
+    def from_ar_coeffs(cls, ar_coeffs: npt.ArrayLike) -> _LagPolynomial:
         """Build the monic AR polynomial ``I - A_1 L - ... - A_p L**p``.
 
         Args:
@@ -261,7 +269,7 @@ class LagPolynomial:
         return np.roots(self._c[::-1]).astype(np.complex128)
 
 
-class InformationCriteria(NamedTuple):
+class _InformationCriteria(NamedTuple):
     """Model-selection criteria computed from a fitted log-likelihood.
 
     Attributes:
@@ -275,7 +283,7 @@ class InformationCriteria(NamedTuple):
     hqic: float
 
     @classmethod
-    def from_likelihood(cls, llf: float, nobs: int, n_params: float) -> InformationCriteria:
+    def from_likelihood(cls, llf: float, nobs: int, n_params: float) -> _InformationCriteria:
         """Compute all three information criteria from a fit summary.
 
         Args:
@@ -286,14 +294,14 @@ class InformationCriteria(NamedTuple):
                 effective rather than the nominal freedom.
 
         Returns:
-            The populated :class:`InformationCriteria`.
+            The populated :class:`_InformationCriteria`.
 
         Raises:
             SpecificationError: If ``nobs < 3`` (``log(log(n))`` is undefined or
                 negative below that) or ``n_params`` is negative.
 
         Example:
-            >>> ic = InformationCriteria.from_likelihood(-100.0, 200, 3)
+            >>> ic = _InformationCriteria.from_likelihood(-100.0, 200, 3)
             >>> round(ic.aic, 2)
             206.0
         """
@@ -324,7 +332,7 @@ class _ForwardPass(NamedTuple):
 
 
 @dataclass(frozen=True, slots=True)
-class SummaryTable:
+class _SummaryTable:
     """A rendered-on-demand estimation summary.
 
     Holds the *structure* of a summary rather than a formatted string, so the
@@ -499,7 +507,7 @@ class SummaryTable:
         Raises:
             ImportError: If pandas is not installed.
         """
-        pd = require_optional("pandas")
+        pd = _require_optional("pandas")
         frame = pd.DataFrame(
             [row[1:] for row in self.rows],
             index=[row[0] for row in self.rows],
@@ -523,7 +531,7 @@ class SummaryTable:
         Raises:
             ImportError: If polars is not installed.
         """
-        pl = require_optional("polars")
+        pl = _require_optional("polars")
         columns = {name: [row[i] for row in self.rows] for i, name in enumerate(self.columns)}
         return pl.DataFrame(columns)
 

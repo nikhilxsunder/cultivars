@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_recursions.py
+# filepath: /src/cultivars/engine/_core/_recursions.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -20,11 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 import numpy as np
 import numpy.typing as npt
 
 from ._defaults import _SQRT_2_OVER_PI
-from ._transforms import fractional_difference_weights
+from ._transforms import _fractional_difference_weights
+
+__all__ = [
+    "_arch_infinity_variance",
+    "_arch_infinity_weights",
+    "_linear_variance_recursion",
+    "_log_variance_recursion",
+    "_moving_average_paths",
+]
 
 
 def _linear_variance_recursion(
@@ -138,7 +148,7 @@ def _arch_infinity_weights(
     References:
         Chung, C.-F. (1999). Estimating the fractionally integrated GARCH model.
     """
-    delta = -fractional_difference_weights(d, truncation + 1)[1:]
+    delta = -_fractional_difference_weights(d, truncation + 1)[1:]
     lam = np.empty(truncation, dtype=np.float64)
     lam[0] = phi - beta + d
     for i in range(1, truncation):

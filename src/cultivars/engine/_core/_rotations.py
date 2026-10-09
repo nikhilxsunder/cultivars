@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_rotations.py
+# filepath: /src/cultivars/engine/_internals/_rotations.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -34,6 +34,12 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import SpecificationError
+
+__all__ = [
+    "_accepted_rotations",
+    "_haar_rotation",
+    "_narrative_rotations",
+]
 
 
 def _haar_rotation(rng: np.random.Generator, size: int) -> npt.NDArray[np.float64]:

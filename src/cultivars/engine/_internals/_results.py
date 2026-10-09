@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_results.py
+# filepath: /src/cultivars/engine/_internals/_results.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -28,17 +28,23 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import SpecificationError
-from .._core import (
+from .._core._containers import _InformationCriteria
+from .._core._defaults import (
     _CAPACITY_WARNING,
     _SCHEMA_VERSION,
     _SIMULATION_BURN,
-    CointegrationTrend,
-    InformationCriteria,
-    Regime,
+)
+from .._core._matrices import (
+    _companion_matrix,
     _companion_spectral_radius,
-    companion_matrix,
-    deterministic_columns,
-    validate_choice,
+    _deterministic_columns,
+)
+from .._core._types import (
+    CointegrationTrend,
+    Regime,
+)
+from .._core._validators import (
+    _validate_choice,
 )
 from ._assessments import _StabilityAssessment
 from ._inferences import _CoefficientInference
@@ -52,6 +58,29 @@ from ._mixins import (
 )
 from ._simulators import _simulate_two_regime
 from ._tests import _LikelihoodRatioTest
+
+__all__ = [
+    "_ConditionalVarianceResult",
+    "_DurbinKoopmanSmootherResult",
+    "_ErrorCorrectionResult",
+    "_FilterResult",
+    "_FittedResult",
+    "_HamiltonFilterResult",
+    "_KalmanFilterResult",
+    "_KimFilterResult",
+    "_KimSmootherResult",
+    "_MeanFunctionResult",
+    "_MeanResult",
+    "_ObservedRegimeResult",
+    "_ParticleFilterResult",
+    "_ParticleSmootherResult",
+    "_RegimeSystemResult",
+    "_RtsSmootherResult",
+    "_SmootherResult",
+    "_VectorObservedRegimeResult",
+    "_VectorPosteriorDrawsResult",
+    "_VectorResult",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -78,9 +107,9 @@ class _FittedResult:
     schema_version: int = field(default=_SCHEMA_VERSION, repr=False)
 
     @property
-    def information_criteria(self) -> InformationCriteria:
+    def information_criteria(self) -> _InformationCriteria:
         """All three model-selection criteria for this fit."""
-        return InformationCriteria.from_likelihood(self.llf, self.nobs, self.n_params)
+        return _InformationCriteria.from_likelihood(self.llf, self.nobs, self.n_params)
 
     @property
     def aic(self) -> float:
@@ -463,7 +492,7 @@ class _MeanFunctionResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
 
     def _summary_metadata(self) -> tuple[tuple[str, str], ...]:
         """Left/right metadata pairs shared by both members."""
-        ic: InformationCriteria = self.information_criteria
+        ic: _InformationCriteria = self.information_criteria
         return (
             ("Model", self._comparison_label()),
             ("Log-likelihood", f"{self.llf:.3f}"),
@@ -724,7 +753,7 @@ class _ObservedRegimeResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
 
     def _summary_metadata(self) -> tuple[tuple[str, str], ...]:
         """Left/right metadata pairs shared by both transition shapes."""
-        ic: InformationCriteria = self.information_criteria
+        ic: _InformationCriteria = self.information_criteria
         return (
             ("Model", self._comparison_label()),
             ("Log-likelihood", f"{self.llf:.3f}"),
@@ -948,7 +977,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
 
     def _regime_stack(self, regime: Regime) -> npt.NDArray[np.float64]:
         """The named regime's lag stack, after validating the name."""
-        choice = validate_choice(regime, Regime, "regime")
+        choice = _validate_choice(regime, Regime, "regime")
         return self.lower_coefficients if choice == "lower" else self.upper_coefficients
 
     @property
@@ -1004,7 +1033,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
         selector = np.zeros((k, k * p), dtype=np.float64)
         selector[:, :k] = np.eye(k)
         power = np.eye(k * p, dtype=np.float64)
-        companion = companion_matrix(stack)
+        companion = _companion_matrix(stack)
         for h in range(horizon + 1):
             out[h] = selector @ power @ selector.T
             power = power @ companion
@@ -1118,7 +1147,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
                     f"forecasting {steps} steps at delay {d} needs at least "
                     f"{needed}."
                 )
-        det = deterministic_columns(self.trend, steps, start=n + 1)
+        det = _deterministic_columns(self.trend, steps, start=n + 1)
         history = [self.endog[n - i - 1] for i in range(p)]
         out = np.empty((steps, k), dtype=np.float64)
         for h in range(steps):
@@ -1164,7 +1193,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
         """
         if name not in self.names:
             raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
-        choice = validate_choice(regime, Regime, "regime")
+        choice = _validate_choice(regime, Regime, "regime")
         stack = self._regime_stack(choice)
         deterministic = self.lower_deterministic if choice == "lower" else self.upper_deterministic
         row = self.names.index(name)
@@ -1224,7 +1253,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
 
     def _summary_metadata(self) -> tuple[tuple[str, str], ...]:
         """Left/right metadata pairs shared by both transition shapes."""
-        ic: InformationCriteria = self.information_criteria
+        ic: _InformationCriteria = self.information_criteria
         return (
             ("Model", self._comparison_label()),
             ("Log-likelihood", f"{self.llf:.3f}"),
@@ -1343,7 +1372,7 @@ class _RegimeSystemResult:
         selector = np.zeros((k, k * p), dtype=np.float64)
         selector[:, :k] = np.eye(k)
         power = np.eye(k * p, dtype=np.float64)
-        companion = companion_matrix(self.coefficients)
+        companion = _companion_matrix(self.coefficients)
         for h in range(horizon + 1):
             out[h] = selector @ power @ selector.T
             power = power @ companion

@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_reparam.py
+# filepath: /src/cultivars/engine/_core/_reparam.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -37,8 +37,18 @@ import numpy.typing as npt
 
 from ._defaults import _PACF_CLIP
 
+__all__ = [
+    "_coeffs_to_pacf",
+    "_inv_softplus",
+    "_pacf_to_coeffs",
+    "_pack_stationary",
+    "_sigmoid",
+    "_softplus",
+    "_unpack_stationary",
+]
 
-def pacf_to_coeffs(pacf: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+
+def _pacf_to_coeffs(pacf: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Map partial autocorrelations to AR coefficients (Durbin-Levinson).
 
     Args:
@@ -63,7 +73,7 @@ def pacf_to_coeffs(pacf: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     return out
 
 
-def coeffs_to_pacf(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def _coeffs_to_pacf(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Map AR coefficients back to partial autocorrelations (inverse recursion).
 
     Args:
@@ -89,7 +99,7 @@ def coeffs_to_pacf(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     return pacf
 
 
-def pack_stationary(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def _pack_stationary(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Map stationary AR coefficients to unconstrained optimizer coordinates.
 
     Args:
@@ -100,10 +110,10 @@ def pack_stationary(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """
     if coeffs.size == 0:
         return np.zeros(0, dtype=np.float64)
-    return np.arctanh(np.clip(coeffs_to_pacf(coeffs), -_PACF_CLIP, _PACF_CLIP))
+    return np.arctanh(np.clip(_coeffs_to_pacf(coeffs), -_PACF_CLIP, _PACF_CLIP))
 
 
-def unpack_stationary(psi: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def _unpack_stationary(psi: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Map unconstrained optimizer coordinates to stationary AR coefficients.
 
     Args:
@@ -119,20 +129,20 @@ def unpack_stationary(psi: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """
     if psi.size == 0:
         return np.zeros(0, dtype=np.float64)
-    return pacf_to_coeffs(np.tanh(psi))
+    return _pacf_to_coeffs(np.tanh(psi))
 
 
-def softplus(x: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def _softplus(x: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """Map the real line to the positive half-line, overflow-safe."""
     return np.logaddexp(0.0, x)
 
 
-def inv_softplus(x: float) -> float:
+def _inv_softplus(x: float) -> float:
     """Inverse of :func:`_softplus`, for constructing starting values."""
     return float(np.log(np.expm1(x)))
 
 
-def sigmoid(x: float) -> float:
+def _sigmoid(x: float) -> float:
     """Map the real line to the unit interval.
 
     Args:

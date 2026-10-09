@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_estimators.py
+# filepath: /src/cultivars/engine/_core/_estimators.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -54,14 +54,105 @@ from ._mappings import (
     _MACKINNON_TAU_SMALL,
     _MACKINNON_TAU_STAR,
 )
-from ._matrices import deterministic_columns, lag_matrix
+from ._matrices import _deterministic_columns, _lag_matrix
 from ._spectra import _seasonal_frequencies
-from ._transforms import _rank_normalize, _split_chains, fractional_difference_weights
-from ._types import CointegrationTrend, _FTest
-from ._validators import _validate_posterior_draws, bandwidth, validate_choice
+from ._transforms import _fractional_difference_weights, _rank_normalize, _split_chains
+from ._types import CointegrationTrend, FTest
+from ._validators import _bandwidth, _validate_choice, _validate_posterior_draws
+
+__all__ = [
+    "_DISCREPANCIES",
+    "_DISCREPANCY_NAMES",
+    "_alternate_turns",
+    "_andrews_bandwidth",
+    "_autocovariance",
+    "_autoregressive_design",
+    "_bai_perron_partition",
+    "_bartlett_long_run_variance",
+    "_bds",
+    "_berkowitz_likelihood_ratio",
+    "_beveridge_nelson",
+    "_bridge_functionals",
+    "_bridge_sampling",
+    "_candidate_turns",
+    "_canova_hansen",
+    "_chib_independent_normal_wishart",
+    "_clark_west",
+    "_concentrated_gaussian",
+    "_cumulant_slices",
+    "_cusum_squares_quantiles",
+    "_dickey_fuller_design",
+    "_dickey_fuller_regression",
+    "_discrepancy_statistics",
+    "_effective_sample_size",
+    "_enforce_durations",
+    "_ergodic_distribution",
+    "_ess_bulk",
+    "_ess_mean",
+    "_ess_tail",
+    "_ewma_mean_square",
+    "_exact_local_whittle",
+    "_excess_kurtosis",
+    "_forecast_encompassing",
+    "_gaussian_envelope",
+    "_gaussian_negloglik",
+    "_geweke",
+    "_giacomini_white",
+    "_gph",
+    "_hamilton_regression",
+    "_hansen_threshold",
+    "_hegy_design",
+    "_hegy_null_draws",
+    "_hegy_regressors",
+    "_hegy_statistics",
+    "_kpss_pvalue",
+    "_kpss_statistic",
+    "_lag_one_autocorrelation",
+    "_local_whittle_d",
+    "_log_mean_mcse",
+    "_long_run_variance",
+    "_mackinnon_critical_values",
+    "_mackinnon_pvalue",
+    "_mcse_mean",
+    "_mincer_zarnowitz",
+    "_minnesota_scales",
+    "_model_confidence_set",
+    "_modified_harmonic_mean",
+    "_nested_f_test",
+    "_newey_west_bandwidth",
+    "_ng_perron_statistics",
+    "_null_functional",
+    "_ols",
+    "_periodogram",
+    "_phillips_perron",
+    "_potential_scale_reduction",
+    "_predictive_pvalues",
+    "_principal_components",
+    "_recursive_residuals",
+    "_reset_test",
+    "_resolve_dickey_fuller_lags",
+    "_rhat",
+    "_schwert_max_lags",
+    "_seasonal_deterministics",
+    "_seasonal_trig_columns",
+    "_segment_ssr",
+    "_select_dickey_fuller_lags",
+    "_select_hegy_lags",
+    "_simulate_cointegration_null",
+    "_simulated_critical_values",
+    "_skewness",
+    "_stacking_weights",
+    "_standardized",
+    "_stationary_bootstrap_indices",
+    "_terasvirta_lm",
+    "_tsay_arranged",
+    "_variance_ratio_test",
+    "_von_mises_draws",
+    "_zivot_andrews",
+]
 
 
-def ols(
+def _ols(
     design: npt.NDArray[np.float64], target: npt.NDArray[np.float64]
 ) -> tuple[npt.NDArray[np.float64], float]:
     """Least-squares fit returning coefficients and the residual sum of squares.
@@ -93,13 +184,13 @@ def ols(
     return np.asarray(beta, dtype=np.float64), float(resid @ resid)
 
 
-def concentrated_gaussian(ssr: float, nobs: int) -> tuple[float, float]:
+def _concentrated_gaussian(ssr: float, nobs: int) -> tuple[float, float]:
     """Concentrated Gaussian variance and log-likelihood from an SSR."""
     sigma2 = ssr / nobs
     return sigma2, -0.5 * nobs * (_LOG_2PI + np.log(sigma2) + 1.0)
 
 
-def periodogram(
+def _periodogram(
     y: npt.NDArray[np.float64],
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Positive Fourier frequencies and the periodogram, with the DC term dropped.
@@ -126,7 +217,7 @@ def periodogram(
     return freqs[1:], ordinates[1:]
 
 
-def local_whittle_d(
+def _local_whittle_d(
     y: npt.NDArray[np.float64],
     m: int | None = None,
     exponent: float = 0.65,
@@ -150,8 +241,8 @@ def local_whittle_d(
     from ._defaults import _D_MAX
 
     low, high = (-_D_MAX, _D_MAX) if bounds is None else bounds
-    freqs, ordinates = periodogram(y)
-    m_eff = min(bandwidth(y.shape[0], m, exponent), freqs.shape[0])
+    freqs, ordinates = _periodogram(y)
+    m_eff = min(_bandwidth(y.shape[0], m, exponent), freqs.shape[0])
     lam = freqs[:m_eff]
     power = ordinates[:m_eff]
     log_lam_mean = float(np.log(lam).mean())
@@ -166,7 +257,9 @@ def local_whittle_d(
     return float(result.x), m_eff
 
 
-def ewma_mean_square(x: npt.NDArray[np.float64], *, decay: float = 0.94, window: int = 75) -> float:
+def _ewma_mean_square(
+    x: npt.NDArray[np.float64], *, decay: float = 0.94, window: int = 75
+) -> float:
     """Exponentially weighted pre-sample variance estimate.
 
     Args:
@@ -183,7 +276,7 @@ def ewma_mean_square(x: npt.NDArray[np.float64], *, decay: float = 0.94, window:
     return float(np.sum(w * x[:tau] ** 2))
 
 
-def ergodic_distribution(
+def _ergodic_distribution(
     transition: npt.NDArray[np.float64],
 ) -> npt.NDArray[np.float64]:
     """Stationary distribution of a row-stochastic Markov transition matrix.
@@ -255,7 +348,7 @@ def _null_functional(
 
 
 @lru_cache(maxsize=128)
-def simulate_cointegration_null(
+def _simulate_cointegration_null(
     n: int,
     case: CointegrationTrend,
     *,
@@ -318,7 +411,7 @@ def simulate_cointegration_null(
         raise SpecificationError(f"n must be at least 1; got {n}.")
     if n_exog < 0:
         raise SpecificationError(f"n_exog must be non-negative; got {n_exog}.")
-    validate_choice(case, CointegrationTrend, "case")
+    _validate_choice(case, CointegrationTrend, "case")
     if simulations < 1 or steps < 1:
         raise SpecificationError("simulations and steps must both be positive.")
     rng = np.random.default_rng(seed)
@@ -344,7 +437,7 @@ def simulate_cointegration_null(
     return np.sort(trace), np.sort(maximum)
 
 
-def minnesota_scales(endog: npt.NDArray[np.float64], order: int) -> npt.NDArray[np.float64]:
+def _minnesota_scales(endog: npt.NDArray[np.float64], order: int) -> npt.NDArray[np.float64]:
     """Per-variable residual scale, from univariate autoregressions.
 
     The ``sigma_i`` every Minnesota variance is written against, and the choice
@@ -424,7 +517,7 @@ def _cumulant_slices(
     return tuple(out)
 
 
-def principal_components(
+def _principal_components(
     standardized: npt.NDArray[np.float64], count: int
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Principal-component scores, loadings, and variance shares of a panel.
@@ -1774,7 +1867,7 @@ def _dickey_fuller_design(
             f"the sample of {y.shape[0]} observations is too short for {lags} lags."
         )
     target = dy[start:]
-    columns = [deterministic_columns(trend, n_eff, start=start + 2), y[start:-1, None]]
+    columns = [_deterministic_columns(trend, n_eff, start=start + 2), y[start:-1, None]]
     for j in range(1, lags + 1):
         columns.append(dy[start - j : dy.shape[0] - j, None])
     return target, np.hstack(columns)
@@ -1953,7 +2046,7 @@ def _kpss_statistic(
         True
     """
     nobs = y.shape[0]
-    design = deterministic_columns(trend, nobs)
+    design = _deterministic_columns(trend, nobs)
     coef, _, _, _ = np.linalg.lstsq(design, y, rcond=None)
     resid = y - design @ coef
     partial = np.cumsum(resid)
@@ -2341,13 +2434,13 @@ def _autoregressive_design(
     """
     n = y.shape[0]
     start = max(order, delay)
-    design = np.column_stack([np.ones(n - start), lag_matrix(y, order, start=start)])
+    design = np.column_stack([np.ones(n - start), _lag_matrix(y, order, start=start)])
     return y[start:], design, y[start - delay : n - delay]
 
 
 def _terasvirta_lm(
     y: npt.NDArray[np.float64], order: int, delay: int
-) -> tuple[_FTest, tuple[_FTest, _FTest, _FTest]]:
+) -> tuple[FTest, tuple[FTest, FTest, FTest]]:
     """Teräsvirta's (1994) linearity test against smooth transition, with its escalation.
 
     The auxiliary regression of the AR(``p``) residual on ``w_t = (1,
@@ -2383,11 +2476,11 @@ def _terasvirta_lm(
     target, design, z = _autoregressive_design(y, order, delay)
     lags = design[:, 1:]
     count = target.shape[0]
-    _beta, ssr0 = ols(design, target)
+    _beta, ssr0 = _ols(design, target)
     blocks = [lags * (z[:, None] ** j) for j in (1, 2, 3)]
-    _b, ssr3 = ols(np.column_stack([design, *blocks]), target)
-    _b, ssr2 = ols(np.column_stack([design, *blocks[:2]]), target)
-    _b, ssr1 = ols(np.column_stack([design, blocks[0]]), target)
+    _b, ssr3 = _ols(np.column_stack([design, *blocks]), target)
+    _b, ssr2 = _ols(np.column_stack([design, *blocks[:2]]), target)
+    _b, ssr1 = _ols(np.column_stack([design, blocks[0]]), target)
     df4, df3, df2 = (count - (1 + k * order) for k in (4, 3, 2))
     overall = (*_nested_f_test(ssr0, ssr3, 3 * order, df4), 3 * order, df4)
     h04 = (*_nested_f_test(ssr2, ssr3, order, df4), order, df4)
@@ -2454,7 +2547,7 @@ def _tsay_arranged(
         beta = beta + gain * error / (1.0 + leverage)
         gram_inverse = gram_inverse - np.outer(gain, gain) / (1.0 + leverage)
     regressors = x_sorted[start:]
-    _b, ssr = ols(regressors, predictive)
+    _b, ssr = _ols(regressors, predictive)
     total = float(predictive @ predictive)
     df2 = predictive.shape[0] - width
     return (*_nested_f_test(total, ssr, width, df2), width, df2)
@@ -2487,13 +2580,13 @@ def _reset_test(
         ((2, 295), True)
     """
     target, design, _z = _autoregressive_design(y, order, 1)
-    beta, ssr0 = ols(design, target)
+    beta, ssr0 = _ols(design, target)
     fitted = design @ beta
     scale = float(np.abs(fitted).max())
     if scale <= 1e-12:
         raise NumericalError("the fitted values are zero; RESET has nothing to raise to a power.")
     extra = np.column_stack([(fitted / scale) ** k for k in range(2, powers + 1)])
-    _b, ssr1 = ols(np.column_stack([design, extra]), target)
+    _b, ssr1 = _ols(np.column_stack([design, extra]), target)
     df1 = powers - 1
     df2 = target.shape[0] - design.shape[1] - df1
     return (*_nested_f_test(ssr0, ssr1, df1, df2), df1, df2)
@@ -2620,7 +2713,7 @@ def _hansen_threshold(
     start = max(order, max(delays))
     target = y[start:]
     count = target.shape[0]
-    design = np.column_stack([np.ones(count), lag_matrix(y, order, start=start)])
+    design = np.column_stack([np.ones(count), _lag_matrix(y, order, start=start)])
     width = design.shape[1]
     min_regime = width + 1
     q_full, _r = np.linalg.qr(design)
@@ -2689,7 +2782,7 @@ def _gph(y: npt.NDArray[np.float64], m: int) -> tuple[float, float]:
         >>> bool(abs(d) < 3 * se), round(se, 3)
         (True, 0.137)
     """
-    freqs, ordinates = periodogram(y)
+    freqs, ordinates = _periodogram(y)
     lam = freqs[:m]
     power = ordinates[:m]
     if np.any(power <= 0.0):
@@ -2746,7 +2839,7 @@ def _exact_local_whittle(
     def objective(d: float) -> float:
         w = weight(d)
         centered = y - (w * mean + (1.0 - w) * first)
-        differenced = np.convolve(centered, fractional_difference_weights(d, n))[:n]
+        differenced = np.convolve(centered, _fractional_difference_weights(d, n))[:n]
         transform = np.fft.rfft(differenced)[1 : m + 1]
         power = (np.abs(transform) ** 2) / n
         g = float(power.mean())
@@ -2837,7 +2930,7 @@ def _seasonal_deterministics(
         >>> _seasonal_deterministics(4, 3, "c", seasonal=True, start=1).shape
         (3, 4)
     """
-    blocks = [deterministic_columns(trend, nobs, start=start)]
+    blocks = [_deterministic_columns(trend, nobs, start=start)]
     if seasonal:
         blocks.append(_seasonal_trig_columns(period, nobs, start=start))
     return np.column_stack(blocks)
@@ -2873,7 +2966,7 @@ def _hegy_design(
     levels = _hegy_regressors(y, period)[start - period : start - period + count]
     seasonal_difference = y[period:] - y[:-period]
     augmentation = (
-        lag_matrix(seasonal_difference, lags, start=start - period)
+        _lag_matrix(seasonal_difference, lags, start=start - period)
         if lags
         else np.zeros((count, 0))
     )
@@ -2922,7 +3015,7 @@ def _hegy_statistics(
         raise NumericalError(
             f"the HEGY regression has {width} regressors on {count} observations; shorten the lags."
         )
-    beta, ssr = ols(design, target)
+    beta, ssr = _ols(design, target)
     df = count - width
     if ssr <= 1e-300:
         raise NumericalError("the HEGY regression fits exactly; the series is degenerate.")
@@ -2983,7 +3076,7 @@ def _select_hegy_lags(
             target, design, _ = _hegy_design(
                 y, period, trend, lags, seasonal=seasonal, drop=max_lags
             )
-            beta, ssr = ols(design, target)
+            beta, ssr = _ols(design, target)
             n_eff, k = design.shape
             sigma2 = ssr / (n_eff - k)
             inverse = np.linalg.pinv(design.T @ design)
@@ -2993,7 +3086,7 @@ def _select_hegy_lags(
     best_lags, best_value = 0, np.inf
     for lags in range(max_lags + 1):
         target, design, _ = _hegy_design(y, period, trend, lags, seasonal=seasonal, drop=max_lags)
-        _beta, ssr = ols(design, target)
+        _beta, ssr = _ols(design, target)
         n_eff, k = design.shape
         penalty = 2.0 * k / n_eff if method == "aic" else k * np.log(n_eff) / n_eff
         value = np.log(max(ssr / n_eff, 1e-300)) + penalty
@@ -3117,11 +3210,11 @@ def _canova_hansen(
     """
     target = y[lags:]
     count = target.shape[0]
-    deterministic = deterministic_columns(trend, count, start=lags + 1)
+    deterministic = _deterministic_columns(trend, count, start=lags + 1)
     seasonal = _seasonal_trig_columns(period, count, start=lags + 1)
-    augmentation = lag_matrix(y, lags, start=lags) if lags else np.zeros((count, 0))
+    augmentation = _lag_matrix(y, lags, start=lags) if lags else np.zeros((count, 0))
     design = np.column_stack([deterministic, seasonal, augmentation])
-    beta, _ssr = ols(design, target)
+    beta, _ssr = _ols(design, target)
     residual = target - design @ beta
     scores = seasonal * residual[:, None]
     meat = scores.T @ scores / count
@@ -3189,7 +3282,7 @@ def _hamilton_regression(
     design = np.column_stack(
         [np.ones(count), *(y[lags - 1 - j : lags - 1 - j + count] for j in range(lags))]
     )
-    beta, _ssr = ols(design, target)
+    beta, _ssr = _ols(design, target)
     trend = design @ beta
     return trend, target - trend
 

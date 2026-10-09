@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_objectives.py
+# filepath: /src/cultivars/engine/_internals/_objectives.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -32,33 +32,49 @@ import numpy.typing as npt
 from scipy.special import gamma as gamma_fn
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import (
+from .._core._defaults import (
     _D_MAX,
     _LOG_2PI,
     _LOG_CHI2_MEAN,
     _LOG_CHI2_VAR,
     _PENALTY,
-    OptimizerMethod,
-    OptimizerOptions,
-    _arch_infinity_variance,
-    _arch_infinity_weights,
-    _fractional_spectrum,
+)
+from .._core._estimators import (
     _gaussian_negloglik,
-    _linear_variance_recursion,
-    _log_variance_recursion,
+    _local_whittle_d,
+    _ols,
+    _periodogram,
+)
+from .._core._matrices import (
+    _companion_matrix,
+    _orthogonal_from_angles,
+)
+from .._core._polynomials import (
+    _expand_ar,
+    _expand_ma,
     _midas_weights,
     _nelson_siegel_loadings,
-    _orthogonal_from_angles,
-    companion_matrix,
-    expand_ar,
-    expand_ma,
-    fractional_difference,
-    local_whittle_d,
-    ols,
-    periodogram,
-    sigmoid,
-    softplus,
-    unpack_stationary,
+)
+from .._core._recursions import (
+    _arch_infinity_variance,
+    _arch_infinity_weights,
+    _linear_variance_recursion,
+    _log_variance_recursion,
+)
+from .._core._reparams import (
+    _sigmoid,
+    _softplus,
+    _unpack_stationary,
+)
+from .._core._spectra import (
+    _fractional_spectrum,
+)
+from .._core._transforms import (
+    _fractional_difference,
+)
+from .._core._types import (
+    OptimizerMethod,
+    OptimizerOptions,
 )
 from ._emitters import (
     _decay_nelson_siegel_state_space,
@@ -83,6 +99,30 @@ from ._substrates import _LinearGaussianStateSpace, _NonlinearStateSpace
 
 if TYPE_CHECKING:
     from ._models import _PerturbationModel
+
+__all__ = [
+    "_AutoRegressionObjective",
+    "_BoxJenkinsObjective",
+    "_CoDiagonalObjective",
+    "_ConditionalVarianceObjective",
+    "_DecayNelsonSiegelObjective",
+    "_FractionalIntegrationObjective",
+    "_FractionalVarianceObjective",
+    "_MidasProfileObjective",
+    "_MixedHorizonObjective",
+    "_NelsonSiegelObjective",
+    "_NonlinearLikelihoodObjective",
+    "_Objective",
+    "_ParticleLikelihoodObjective",
+    "_PerturbationObjective",
+    "_QuasiVolatilityObjective",
+    "_ShortRunObjective",
+    "_SmoothTransitionObjective",
+    "_StructuralObjective",
+    "_VarianceObjective",
+    "_VectorSmoothTransitionObjective",
+    "_WhittleVolatilityObjective",
+]
 
 
 class _Objective[P](ABC):
@@ -200,7 +240,7 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
         offset = 1 if self.has_const else 0
         return _AutoRegressionParameters(
             const=float(theta[0]) if self.has_const else 0.0,
-            ar_params=unpack_stationary(theta[offset : offset + p]),
+            ar_params=_unpack_stationary(theta[offset : offset + p]),
             sigma2=float(np.exp(theta[offset + p])),
         )
 
@@ -216,7 +256,7 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
         Returns:
             The state-space model whose likelihood is the AR(p) likelihood.
         """
-        transition = companion_matrix(parameters.ar_params)
+        transition = _companion_matrix(parameters.ar_params)
         state_intercept = parameters.const * self.state_unit
         initial_state = (
             np.linalg.solve(self.identity - transition, state_intercept)
@@ -299,13 +339,13 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
         idx = self.bounds
         return _BoxJenkinsParameters(
             beta=theta[: idx[0]],
-            ar_params=unpack_stationary(theta[idx[0] : idx[1]]) if p else np.zeros(0),
+            ar_params=_unpack_stationary(theta[idx[0] : idx[1]]) if p else np.zeros(0),
             seasonal_ar_params=(
-                unpack_stationary(theta[idx[1] : idx[2]]) if cap_p else np.zeros(0)
+                _unpack_stationary(theta[idx[1] : idx[2]]) if cap_p else np.zeros(0)
             ),
-            ma_params=-unpack_stationary(theta[idx[2] : idx[3]]) if q else np.zeros(0),
+            ma_params=-_unpack_stationary(theta[idx[2] : idx[3]]) if q else np.zeros(0),
             seasonal_ma_params=(
-                -unpack_stationary(theta[idx[3] : idx[4]]) if cap_q else np.zeros(0)
+                -_unpack_stationary(theta[idx[3] : idx[4]]) if cap_q else np.zeros(0)
             ),
             sigma2=float(np.exp(theta[idx[4]])),
         )
@@ -335,8 +375,8 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
         """
         s = self.seasonal_order[3]
         return _LinearGaussianStateSpace._from_arma(
-            expand_ar(parameters.ar_params, parameters.seasonal_ar_params, s),
-            expand_ma(parameters.ma_params, parameters.seasonal_ma_params, s),
+            _expand_ar(parameters.ar_params, parameters.seasonal_ar_params, s),
+            _expand_ma(parameters.ma_params, parameters.seasonal_ma_params, s),
             parameters.sigma2,
             self.obs_intercept(parameters),
         )
@@ -400,8 +440,8 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
         return _FractionalIntegrationParameters(
             mean=float(theta[0]) if self.estimate_mean else 0.0,
             d=_D_MAX * float(np.tanh(theta[i_d])),
-            ar_params=unpack_stationary(theta[i_ar:i_ma]) if self.p else np.zeros(0),
-            ma_params=-unpack_stationary(theta[i_ma:i_sigma]) if self.q else np.zeros(0),
+            ar_params=_unpack_stationary(theta[i_ar:i_ma]) if self.p else np.zeros(0),
+            ma_params=-_unpack_stationary(theta[i_ma:i_sigma]) if self.q else np.zeros(0),
             sigma2=float(np.exp(theta[i_sigma])),
         )
 
@@ -414,7 +454,7 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
         Returns:
             The short-memory series the ARMA block is fitted to.
         """
-        return fractional_difference(
+        return _fractional_difference(
             self.y - parameters.mean, parameters.d, truncation=self.truncation
         )
 
@@ -551,17 +591,17 @@ class _ConditionalVarianceObjective(_VarianceObjective[_ConditionalVarianceParam
             return _ConditionalVarianceParameters(
                 mean=mean,
                 omega=float(np.exp(v[0])),
-                alpha=softplus(v[1 : 1 + p]),
+                alpha=_softplus(v[1 : 1 + p]),
                 gamma=np.zeros(0),
-                beta=softplus(v[1 + p : 1 + p + q]),
+                beta=_softplus(v[1 + p : 1 + p + q]),
             )
         if self.vol == "GJR":
             return _ConditionalVarianceParameters(
                 mean=mean,
                 omega=float(np.exp(v[0])),
-                alpha=softplus(v[1 : 1 + p]),
+                alpha=_softplus(v[1 : 1 + p]),
                 gamma=v[1 + p : 1 + p + o],
-                beta=softplus(v[1 + p + o : 1 + p + o + q]),
+                beta=_softplus(v[1 + p + o : 1 + p + o + q]),
             )
         return _ConditionalVarianceParameters(
             mean=mean,
@@ -629,9 +669,9 @@ class _FractionalVarianceObjective(_VarianceObjective[_FractionalVarianceParamet
         return _FractionalVarianceParameters(
             mean=theta[:k],
             omega=float(np.exp(theta[k])),
-            phi=sigmoid(float(theta[k + 1])),
-            d=sigmoid(float(theta[k + 2])),
-            beta=sigmoid(float(theta[k + 3])),
+            phi=_sigmoid(float(theta[k + 1])),
+            d=_sigmoid(float(theta[k + 2])),
+            beta=_sigmoid(float(theta[k + 3])),
         )
 
     def variance_path(
@@ -750,7 +790,7 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
             coefficients ahead of the upper-regime coefficients.
         """
         regressors = self.regressors(parameters)
-        beta, ssr = ols(regressors, self.target)
+        beta, ssr = _ols(regressors, self.target)
         return ssr, beta, self.target - regressors @ beta
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
@@ -1171,8 +1211,8 @@ class _StructuralObjective(_Objective[_StructuralParameters]):
             at += 1
         cycle_rho = cycle_freq = sigma2_cycle = None
         if self.cycle:
-            cycle_rho = float(sigmoid(theta[at]))
-            cycle_freq = float(0.05 + (np.pi - 0.1) * sigmoid(theta[at + 1]))
+            cycle_rho = float(_sigmoid(theta[at]))
+            cycle_freq = float(0.05 + (np.pi - 0.1) * _sigmoid(theta[at + 1]))
             sigma2_cycle = float(np.exp(theta[at + 2]))
             at += 3
         sigma2_seasonal = None
@@ -1637,7 +1677,7 @@ class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
         chi-squared floor pins a starting ``sigma2`` once ``d`` is known.
         """
         star = self._log_squared()
-        d0, _ = local_whittle_d(star)
+        d0, _ = _local_whittle_d(star)
         d0 = float(np.clip(d0, 0.05, 0.45))
         excess = max(float(np.var(star)) - _LOG_CHI2_VAR, 0.05)
         scale = float(gamma_fn(1.0 - 2.0 * d0) / gamma_fn(1.0 - d0) ** 2)
@@ -1663,7 +1703,7 @@ class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
         params = self.unpack(theta)
         if abs(params.d) >= _D_MAX or abs(params.phi) > 0.9999:
             return _PENALTY
-        freqs, ordinates = periodogram(self._log_squared())
+        freqs, ordinates = _periodogram(self._log_squared())
         # the package periodogram is |FFT|**2 / n; the density carries 1 / (2 pi)
         density_ordinates = ordinates / (2.0 * np.pi)
         spectrum = _fractional_spectrum(

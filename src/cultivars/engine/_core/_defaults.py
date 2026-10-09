@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_defaults.py
+# filepath: /src/cultivars/engine/_core/_defaults.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -34,58 +34,131 @@ from typing import Final
 import numpy as np
 import numpy.typing as npt
 
-_SCHEMA_VERSION: int = 1
+__all__ = [
+    "_ADAPT_FLOOR",
+    "_BDS_RADIUS",
+    "_BRIDGE_MAX_ITER",
+    "_BRIDGE_TOL",
+    "_CAPACITY_WARNING",
+    "_COHERENCE_SURROGATES",
+    "_CRITICAL_ALPHAS",
+    "_CRITICAL_LEVELS",
+    "_DEFAULT_ALPHA",
+    "_DEFAULT_GRID",
+    "_DEFAULT_MAX_ITER",
+    "_DEFAULT_STARTS",
+    "_DEFAULT_TOL",
+    "_DEFAULT_TRIM",
+    "_DEFAULT_TRUNCATION",
+    "_DISCREPANCY_STATISTICS",
+    "_D_MAX",
+    "_ELW_BOUNDS",
+    "_EXTRA",
+    "_EXTREME_PVALUE",
+    "_GIG_MAX_ROUNDS",
+    "_GIG_TINY",
+    "_GPH_EXPONENT",
+    "_HANSEN_REPLICATIONS",
+    "_HEGY_REPLICATIONS",
+    "_KSC_MEAN",
+    "_KSC_MU_PRIOR",
+    "_KSC_PHI_PRIOR",
+    "_KSC_PROB",
+    "_KSC_SIGMA2_PRIOR",
+    "_KSC_VAR",
+    "_LOG_2PI",
+    "_LOG_CHI2_MEAN",
+    "_LOG_CHI2_VAR",
+    "_LW_BOUNDS",
+    "_MCS_ALPHA",
+    "_MCS_BOOTSTRAP",
+    "_METHOD_LABELS",
+    "_METHOD_TITLES",
+    "_MHM_TAU",
+    "_MIN_CHAIN_DRAWS",
+    "_MIN_COMPARISON_ORIGINS",
+    "_MIN_ESS_PER_CHAIN",
+    "_MIN_LONG_MEMORY_OBS",
+    "_MIN_REPLICATIONS",
+    "_MIN_SEASONAL_CYCLES",
+    "_MIN_SPECTRUM_OBS",
+    "_MORLET_OMEGA0",
+    "_NU_PRIOR_RATE",
+    "_OFFSET",
+    "_PACF_CLIP",
+    "_PENALTY",
+    "_PERSISTENCE_MAX",
+    "_RANK_TOL",
+    "_RHAT_TOL",
+    "_ROW_SUM_ATOL",
+    "_SCALES_PER_OCTAVE",
+    "_SCALING_FILTERS",
+    "_SCHEMA_VERSION",
+    "_SIMULATION_BURN",
+    "_SPECTRAL_METHOD_TITLES",
+    "_SQRT2",
+    "_SQRT_2_OVER_PI",
+    "_STABILITY_TOL",
+    "_STUDENT_DF_GRID",
+    "_TARGET_ACCEPTANCE",
+    "_TINY",
+    "_TREND_WIDTH",
+    "_UCSV_VOL_OF_VOL_PRIOR",
+    "_WHITTLE_EXPONENT",
+]
+
+_SCHEMA_VERSION: Final[int] = 1
 """Serialization schema version stamped onto every result object."""
 
-_LOG_2PI: float = float(np.log(2.0 * np.pi))
+_LOG_2PI: Final[float] = float(np.log(2.0 * np.pi))
 """``log(2 * pi)``; the Gaussian log-likelihood constant."""
 
-_SQRT_2_OVER_PI: float = float(np.sqrt(2.0 / np.pi))
+_SQRT_2_OVER_PI: Final[float] = float(np.sqrt(2.0 / np.pi))
 """``E|z|`` for standard normal ``z``; the EGARCH asymmetry centering term."""
 
-_PACF_CLIP: float = 0.999
+_PACF_CLIP: Final[float] = 0.999
 """Clip applied to partial autocorrelations before the arctanh transform."""
 
-_D_MAX: float = 0.499
+_D_MAX: Final[float] = 0.499
 """Upper bound on the fractional differencing parameter (stationary region)."""
 
-_PERSISTENCE_MAX: float = 0.999
+_PERSISTENCE_MAX: Final[float] = 0.999
 """Upper bound on total variance persistence for a covariance-stationary fit."""
 
-_ROW_SUM_ATOL: float = 1e-6
+_ROW_SUM_ATOL: Final[float] = 1e-6
 """Absolute tolerance when checking that transition-matrix rows sum to one."""
 
-_STABILITY_TOL: float = 1e-8
+_STABILITY_TOL: Final[float] = 1e-8
 """Default modulus tolerance for unit-root and explosive-root classification."""
 
-_TINY: float = 1e-300
+_TINY: Final[float] = 1e-300
 """Floor guarding logarithms of mixture densities against underflow."""
 
-_DEFAULT_TRUNCATION: int = 1000
+_DEFAULT_TRUNCATION: Final[int] = 1000
 """Default ARCH(infinity) / AR(infinity) truncation lag."""
 
-_DEFAULT_GRID: int = 300
+_DEFAULT_GRID: Final[int] = 300
 """Default number of candidate thresholds in a threshold grid search."""
 
-_DEFAULT_TRIM: float = 0.15
+_DEFAULT_TRIM: Final[float] = 0.15
 """Default fraction trimmed from each tail of a threshold grid."""
 
-_DEFAULT_MAX_ITER: int = 500
+_DEFAULT_MAX_ITER: Final[int] = 500
 """Default maximum EM iterations."""
 
-_DEFAULT_TOL: float = 1e-6
+_DEFAULT_TOL: Final[float] = 1e-6
 """Default relative convergence tolerance for iterative estimators."""
 
-_DEFAULT_STARTS: int = 10
+_DEFAULT_STARTS: Final[int] = 10
 """Default number of random restarts for multimodal likelihoods."""
 
-_GPH_EXPONENT: float = 0.5
+_GPH_EXPONENT: Final[float] = 0.5
 """Default bandwidth exponent ``m = floor(n ** 0.5)`` for the GPH estimator."""
 
-_WHITTLE_EXPONENT: float = 0.65
+_WHITTLE_EXPONENT: Final[float] = 0.65
 """Default bandwidth exponent for the local Whittle estimator."""
 
-_TREND_WIDTH: dict[str, int] = {"n": 0, "c": 1, "ct": 2}
+_TREND_WIDTH: Final[dict[str, int]] = {"n": 0, "c": 1, "ct": 2}
 """Number of deterministic columns implied by each trend specification."""
 
 _PENALTY: Final[float] = 1e10
@@ -95,61 +168,61 @@ Large enough that no admissible parameter vector competes with it, finite so
 that a gradient-based optimizer can still step away from it.
 """
 
-_EXTRA: dict[str, str] = {"pandas": "pandas", "polars": "polars"}
+_EXTRA: Final[dict[str, str]] = {"pandas": "pandas", "polars": "polars"}
 """Distribution name for each optional frame backend, keyed by module name."""
 
-_CAPACITY_WARNING: float = 0.1
+_CAPACITY_WARNING: Final[float] = 0.1
 """Learner parameters per observation above which the summary flags capacity."""
 
 _DEFAULT_ALPHA: Final[float] = 0.05
 """Significance level assumed by a bare ``reject()`` call and by the repr."""
 
-_RANK_TOL: float = 1e-10
+_RANK_TOL: Final[float] = 1e-10
 """Tolerance for determining the numerical rank of a matrix."""
 
-_KSC_PROB: npt.NDArray[np.float64] = np.array(
+_KSC_PROB: Final[npt.NDArray[np.float64]] = np.array(
     [0.00730, 0.10556, 0.00002, 0.04395, 0.34001, 0.24566, 0.25750]
 )
 """Mixture weights of the KSC seven-component log chi-squared approximation."""
 
-_KSC_MEAN: npt.NDArray[np.float64] = (
+_KSC_MEAN: Final[npt.NDArray[np.float64]] = (
     np.array([-10.12999, -3.97281, -8.56686, 2.77786, 0.61942, 1.79518, -1.08819]) - 1.2704
 )
 """Component means, already shifted by the log chi-squared mean of -1.2704."""
 
-_KSC_VAR: npt.NDArray[np.float64] = np.array(
+_KSC_VAR: Final[npt.NDArray[np.float64]] = np.array(
     [5.79596, 2.61369, 5.17950, 0.16735, 0.64009, 0.34023, 1.26261]
 )
 """Component variances."""
 
-_OFFSET = 1e-6
+_OFFSET: Final[float] = 1e-6
 """Offset inside ``log(e**2 + offset)``, guarding the log at exact zeros."""
 
 
-_STUDENT_DF_GRID: npt.NDArray[np.float64] = np.concatenate(
+_STUDENT_DF_GRID: Final[npt.NDArray[np.float64]] = np.concatenate(
     [np.arange(2.0, 30.0), np.array([30.0, 35.0, 40.0, 50.0, 60.0, 80.0, 100.0])]
 )
 """Grid of candidate degrees of freedom for the Student-t innovations."""
 
-_GIG_TINY = 1e-12
+_GIG_TINY: Final[float] = 1e-12
 """Parameter floor below which a GIG boundary face is drawn as its limit."""
 
-_GIG_MAX_ROUNDS = 500
+_GIG_MAX_ROUNDS: Final[int] = 500
 """Vectorized rejection rounds before a conditional is declared degenerate."""
 
-_LOG_CHI2_MEAN = -1.2704
+_LOG_CHI2_MEAN: Final[float] = -1.2704
 """Mean of ``log(eps**2)`` for standard-normal ``eps``."""
 
-_LOG_CHI2_VAR = float(np.pi**2 / 2.0)
+_LOG_CHI2_VAR: Final[float] = float(np.pi**2 / 2.0)
 """Variance of ``log(eps**2)`` for standard-normal ``eps``."""
 
-_TARGET_ACCEPTANCE = 0.234
+_TARGET_ACCEPTANCE: Final[float] = 0.234
 """Roberts-Gelman-Gilks optimal random-walk acceptance rate, the tuning target."""
 
-_ADAPT_FLOOR = 1e-8
+_ADAPT_FLOOR: Final[float] = 1e-8
 """Diagonal jitter added to the adapted covariance so it never degenerates."""
 
-_NU_PRIOR_RATE = 0.1
+_NU_PRIOR_RATE: Final[float] = 0.1
 """Rate parameter for the prior on the degrees of freedom of the Student-t innovations."""
 
 _MIN_CHAIN_DRAWS: Final[int] = 8
@@ -322,9 +395,9 @@ _SCALES_PER_OCTAVE: Final[int] = 8
 _COHERENCE_SURROGATES: Final[int] = 300
 """AR(1) surrogate pairs behind a wavelet-coherence significance level."""
 
-_SQRT2 = float(np.sqrt(2.0))
+_SQRT2: Final[float] = float(np.sqrt(2.0))
 
-_SCALING_FILTERS: dict[str, tuple[float, ...]] = {
+_SCALING_FILTERS: Final[dict[str, tuple[float, ...]]] = {
     "haar": (1.0 / _SQRT2, 1.0 / _SQRT2),
     "d4": (
         0.4829629131445341,

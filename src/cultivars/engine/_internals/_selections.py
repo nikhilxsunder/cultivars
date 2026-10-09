@@ -1,3 +1,25 @@
+# filepath: /src/cultivars/engine/_internals/_selections.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -9,7 +31,17 @@ import numpy.typing as npt
 from scipy.special import logsumexp
 
 from ...exceptions import DimensionError, SpecificationError
-from .._core import PredictiveResult, SummaryTable, _evidence_label, _mix_predictive_paths
+from .._core._containers import _SummaryTable
+from .._core._converters import _evidence_label
+from .._core._protocols import PredictiveResult
+from .._core._samplers import _mix_predictive_paths
+
+__all__ = [
+    "_LagOrderSelection",
+    "_MarginalLikelihoodSelection",
+    "_ModelCombinationSelection",
+    "_ModelConfidenceSetSelection",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -114,15 +146,15 @@ class _LagOrderSelection:
         picks = set(self.selected.values())
         return picks.pop() if len(picks) == 1 else None
 
-    def to_table(self) -> SummaryTable:
+    def to_table(self) -> _SummaryTable:
         """The criterion curves as one table, minima marked.
 
         Returns:
-            A :class:`SummaryTable` with one row per order and one column per
+            A :class:`_SummaryTable` with one row per order and one column per
             criterion; each column's minimum carries a trailing asterisk.
         """
         chosen = self.selected
-        return SummaryTable(
+        return _SummaryTable(
             title="Lag order selection",
             metadata=(
                 ("Observations", f"{self.nobs}"),
@@ -207,7 +239,7 @@ class _MarginalLikelihoodSelection:
         *others: _MarginalLikelihoodSelection,
         names: Sequence[str] | None = None,
         prior_probabilities: Sequence[float] | None = None,
-    ) -> SummaryTable:
+    ) -> _SummaryTable:
         """Rank models by evidence with posterior model probabilities.
 
         Args:
@@ -295,7 +327,7 @@ class _MarginalLikelihoodSelection:
                 )
         for record, label in zip(records, labels, strict=True):
             notes.extend(f"{label}: {note}" for note in record.notes)
-        return SummaryTable(
+        return _SummaryTable(
             title="Marginal likelihood comparison",
             metadata=(
                 ("Models", str(len(records))),
@@ -422,7 +454,7 @@ class _ModelCombinationSelection:
             axis=-1,
         )
 
-    def summary(self) -> SummaryTable:
+    def summary(self) -> _SummaryTable:
         """Weights and the number each came from, heaviest first."""
         order = np.argsort(self.weights)[::-1]
         score_label = "log ML" if self.method == "bayesian model average" else "mean log score"
@@ -432,7 +464,7 @@ class _ModelCombinationSelection:
         metadata = [("Models", str(self.n_models)), ("Method", self.method)]
         if self.n_origins:
             metadata.append(("Evaluation origins", str(self.n_origins)))
-        return SummaryTable(
+        return _SummaryTable(
             title="Model combination",
             metadata=tuple(metadata),
             columns=("model", "weight", score_label),
@@ -510,7 +542,7 @@ class _ModelConfidenceSetSelection:
             raise SpecificationError(f"unknown model {name!r}; expected one of {self.names}.")
         return float(self.pvalues[self.names.index(name)])
 
-    def summary(self) -> SummaryTable:
+    def summary(self) -> _SummaryTable:
         """Render as a table in elimination order, survivor last."""
         rows = tuple(
             (
@@ -531,7 +563,7 @@ class _ModelConfidenceSetSelection:
             "The set contains the best model with probability at least the confidence "
             "level; a set that keeps many models reports what the window can separate.",
         ]
-        return SummaryTable(
+        return _SummaryTable(
             title="Model Confidence Set",
             metadata=(
                 ("Models", str(len(self.names))),

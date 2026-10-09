@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_converters.py
+# filepath: /src/cultivars/engine/_core/_converters.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -43,7 +43,7 @@ import numpy.typing as npt
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
 from ._defaults import _CRITICAL_LEVELS, _MIN_CHAIN_DRAWS
-from ._loaders import require_optional
+from ._loaders import _require_optional
 from ._mappings import _KASS_RAFTERY_SCALE
 from ._polynomials import _aggregation_weights
 from ._spectra import _seasonal_frequencies
@@ -54,6 +54,22 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
     import pandas as pd
     import polars as pl
+
+__all__ = [
+    "_as_chains",
+    "_check_equal_length",
+    "_critical_value_table",
+    "_evidence_label",
+    "_frequency_labels",
+    "_mean_label",
+    "_mixed_frequency_system",
+    "_per_column",
+    "_source_label",
+    "_stack",
+    "_to_pandas_frame",
+    "_to_polars_frame",
+    "_variable_names",
+]
 
 
 def _variable_names(source: object, k: int) -> tuple[str, ...]:
@@ -109,7 +125,7 @@ def _mean_label(mean_order: tuple[int, int], *, has_const: bool) -> str:
     return "const" if has_const else "zero"
 
 
-def to_pandas_frame(
+def _to_pandas_frame(
     columns: Mapping[str, npt.NDArray[Any]],
     *,
     index: npt.ArrayLike | None = None,
@@ -130,7 +146,7 @@ def to_pandas_frame(
         ImportError: If pandas is not installed.
         ValueError: If the columns are not all the same length.
     """
-    pd = require_optional("pandas")
+    pd = _require_optional("pandas")
     _check_equal_length(columns)
     frame = pd.DataFrame(dict(columns), index=None if index is None else np.asarray(index))
     if index_name is not None:
@@ -138,7 +154,7 @@ def to_pandas_frame(
     return frame
 
 
-def to_polars_frame(columns: Mapping[str, npt.NDArray[Any]]) -> pl.DataFrame:
+def _to_polars_frame(columns: Mapping[str, npt.NDArray[Any]]) -> pl.DataFrame:
     """Build a :class:`polars.DataFrame` from equal-length columns.
 
     Polars has no row index, so any positional information must be passed as an
@@ -154,7 +170,7 @@ def to_polars_frame(columns: Mapping[str, npt.NDArray[Any]]) -> pl.DataFrame:
         ImportError: If polars is not installed.
         ValueError: If the columns are not all the same length.
     """
-    pl = require_optional("polars")
+    pl = _require_optional("polars")
     _check_equal_length(columns)
     return pl.DataFrame({name: np.asarray(values) for name, values in columns.items()})
 

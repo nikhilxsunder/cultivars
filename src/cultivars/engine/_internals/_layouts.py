@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_layouts.py
+# filepath: /src/cultivars/engine/_internals/_layouts.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -20,7 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+__all__ = [
+    "_ParameterLayout",
+]
 
 
 @dataclass(frozen=True, slots=True)

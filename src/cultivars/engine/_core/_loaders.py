@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_loaders.py
+# filepath: /src/cultivars/engine/_core/_loaders.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -20,13 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 from importlib import import_module
 from types import ModuleType
 
 from ._defaults import _EXTRA
 
 
-def require_optional(module: str) -> ModuleType:
+def _require_optional(module: str) -> ModuleType:
     """Import an optional frame backend, or explain how to install it.
 
     Args:

@@ -1,5 +1,24 @@
-# filepath: /src/cultivars/_internals/_substrates.py
+# filepath: /src/cultivars/engine/_internals/_substrates.py
 #
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 """State-space substrates: the linear-Gaussian and nonlinear engines.
 
@@ -18,19 +37,29 @@ import numpy.typing as npt
 import scipy.linalg as sla
 
 from ...exceptions import DimensionError, NumericalError, SpecificationError
-from .._core import (
+from .._core._containers import (
+    _ForwardPass,
+)
+from .._core._converters import _aggregation_weights
+from .._core._defaults import (
     _LOG_2PI,
     _ROW_SUM_ATOL,
-    Frequency,
-    _ForwardPass,
-    _nelson_siegel_loadings,
-    aggregation_weights,
-    ergodic_distribution,
-    lag_matrix,
-    psd_sqrt,
-    validate_transition,
 )
-from ._filters import hamilton_filter
+from .._core._estimators import (
+    _ergodic_distribution,
+)
+from .._core._matrices import (
+    _lag_matrix,
+    _psd_sqrt,
+)
+from .._core._polynomials import _nelson_siegel_loadings
+from .._core._types import (
+    Frequency,
+)
+from .._core._validators import (
+    _validate_transition,
+)
+from ._filters import _hamilton_filter
 from ._parameters import _NelsonSiegelParameters, _StructuralParameters
 from ._results import (
     _DurbinKoopmanSmootherResult,
@@ -44,8 +73,16 @@ from ._results import (
     _RtsSmootherResult,
     _SmootherResult,
 )
-from ._smoothers import kim_smoother
+from ._smoothers import _kim_smoother
 from ._systems import _structural_matrices
+
+__all__ = [
+    "_LinearGaussianStateSpace",
+    "_MarkovSwitchingStateSpace",
+    "_NonlinearStateSpace",
+    "_RegimeSwitchingStateSpace",
+    "_StateSpace",
+]
 
 
 class _StateSpace[F: _FilterResult, S: _SmootherResult](ABC):
@@ -388,19 +425,19 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
         alpha = np.zeros((n, self._m))
         obs = np.zeros((n, self._p))
-        p1_sqrt = psd_sqrt(self._P1)
+        p1_sqrt = _psd_sqrt(self._P1)
         state = self._a1 + p1_sqrt @ rng.standard_normal(self._m)
         for t in range(n):
             z = self._at(self._Z, t, 2)
             d = self._at(self._d, t, 1)
             h = self._at(self._H, t, 2)
             alpha[t] = state
-            obs[t] = z @ state + d + psd_sqrt(h) @ rng.standard_normal(self._p)
+            obs[t] = z @ state + d + _psd_sqrt(h) @ rng.standard_normal(self._p)
             t_mat = self._at(self._T, t, 2)
             c = self._at(self._c, t, 1)
             r_mat = self._at(self._R, t, 2)
             q = self._at(self._Q, t, 2)
-            state = t_mat @ state + c + r_mat @ (psd_sqrt(q) @ rng.standard_normal(self._r))
+            state = t_mat @ state + c + r_mat @ (_psd_sqrt(q) @ rng.standard_normal(self._r))
         return alpha, obs
 
     def simulate(
@@ -587,7 +624,7 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
                 f"weights must have one entry per variable ({size}); got {len(supplied)}."
             )
         for index, kind in enumerate(labels):
-            row = aggregation_weights(cast(Frequency, kind), period, weights=supplied[index])
+            row = _aggregation_weights(cast(Frequency, kind), period, weights=supplied[index])
             for sub in range(period):
                 design[index, sub * size + index] = row[sub]
         return cls(
@@ -720,7 +757,7 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
         if c.ndim != 1:
             raise DimensionError(f"intercepts must be 1-D (K,); got shape {c.shape}.")
         k = int(c.shape[0])
-        self._transition = validate_transition(transition, k)
+        self._transition = _validate_transition(transition, k)
         ar = np.asarray(ar_params, dtype=np.float64)
         if ar.ndim != 2 or ar.shape[0] != k:
             raise DimensionError(f"ar_params must be ({k}, p); got shape {ar.shape}.")
@@ -734,7 +771,7 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
             raise SpecificationError(f"variances must be strictly positive; got {sigma2}.")
 
         if initial_prob is None:
-            pi0 = ergodic_distribution(self._transition)
+            pi0 = _ergodic_distribution(self._transition)
         else:
             pi0 = np.asarray(initial_prob, dtype=np.float64)
             if pi0.shape != (k,):
@@ -819,7 +856,7 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
                 f"a series of length {series.shape[0]} leaves no observations after "
                 f"trimming {self._p} lags."
             )
-        return series[self._p :], lag_matrix(series, self._p)
+        return series[self._p :], _lag_matrix(series, self._p)
 
     def conditional_means(self, lags: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """Per-regime conditional means ``E[y_t | S_t = j, lags]``.
@@ -865,11 +902,11 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
 
     def filter_densities(self, log_density: npt.NDArray[np.float64]) -> _HamiltonFilterResult:
         """Run the Hamilton filter over an already-built density matrix."""
-        return hamilton_filter(log_density, self._transition, initial_prob=self._pi0)
+        return _hamilton_filter(log_density, self._transition, initial_prob=self._pi0)
 
     def smooth_densities(self, filtered: _HamiltonFilterResult) -> _KimSmootherResult:
         """Run the Kim smoother over a completed forward pass."""
-        return kim_smoother(filtered, self._transition)
+        return _kim_smoother(filtered, self._transition)
 
     def filter(self, y: npt.ArrayLike) -> _HamiltonFilterResult:
         """Filter a series, returning regime probabilities and the likelihood.
@@ -1200,7 +1237,7 @@ class _NonlinearStateSpace:
         self, mean: npt.NDArray[np.float64], cov: npt.NDArray[np.float64], scale: float
     ) -> npt.NDArray[np.float64]:
         """The ``2m + 1`` unscented points around one moment pair."""
-        root = psd_sqrt((self._m + scale) * cov)
+        root = _psd_sqrt((self._m + scale) * cov)
         return np.vstack([mean[None, :], mean + root.T, mean - root.T])
 
     def _unscented_weights(
@@ -1429,7 +1466,7 @@ class _NonlinearStateSpace:
         """One transition draw per particle."""
         if self._sampler is not None:
             return np.asarray(self._sampler(particles, rng), dtype=np.float64)
-        noise = rng.standard_normal(particles.shape) @ psd_sqrt(self._Q).T
+        noise = rng.standard_normal(particles.shape) @ _psd_sqrt(self._Q).T
         return self._predict(particles, y_prev) + noise
 
     def _measure(
@@ -1521,7 +1558,7 @@ class _NonlinearStateSpace:
         data = self._prepare(y)
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         n, m, count = data.shape[0], self._m, int(n_particles)
-        particles = self._a1[None, :] + rng.standard_normal((count, m)) @ psd_sqrt(self._P1).T
+        particles = self._a1[None, :] + rng.standard_normal((count, m)) @ _psd_sqrt(self._P1).T
         log_weights = np.full(count, -np.log(count))
         filtered = np.empty((n, m))
         spread = np.empty((n, m))
@@ -1652,7 +1689,7 @@ class _NonlinearStateSpace:
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         n, m, count = data.shape[0], self._m, int(n_particles)
         log_det_q = 2.0 * float(np.sum(np.log(np.diag(chol_q))))
-        particles = self._a1[None, :] + rng.standard_normal((count, m)) @ psd_sqrt(self._P1).T
+        particles = self._a1[None, :] + rng.standard_normal((count, m)) @ _psd_sqrt(self._P1).T
         log_weights = np.full(count, -np.log(count))
         clouds = np.empty((n, count, m))
         weights = np.empty((n, count))
@@ -2068,7 +2105,7 @@ class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmoothe
             filtered_prob=forward.filtered_prob,
             predicted_prob=forward.predicted_prob,
         )
-        return kim_smoother(record, self._P)
+        return _kim_smoother(record, self._P)
 
     def loglikelihood(self, y: npt.ArrayLike) -> float:
         """The collapse-approximate log-likelihood."""

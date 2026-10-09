@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_core/_spectra.py
+# filepath: /src/cultivars/engine/_core/_spectra.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -40,6 +40,23 @@ import numpy.typing as npt
 
 from ...exceptions import NumericalError, SpecificationError
 
+__all__ = [
+    "_butterworth_penalty",
+    "_cross_periodogram",
+    "_daniell_density",
+    "_fourier_frequencies",
+    "_fractional_spectrum",
+    "_frequency_grid",
+    "_ideal_weights",
+    "_multitaper_density",
+    "_pairwise_measure",
+    "_penalty_cutoff_period",
+    "_seasonal_frequencies",
+    "_spectral_matrix",
+    "_transfer_function",
+    "_welch_density",
+]
+
 
 def _seasonal_frequencies(period: int) -> tuple[float, ...]:
     """Harmonic seasonal frequencies ``2 pi k / s`` for ``k = 1 .. s/2 - 1``.
@@ -51,7 +68,7 @@ def _seasonal_frequencies(period: int) -> tuple[float, ...]:
     return tuple(2.0 * np.pi * k / period for k in range(1, period // 2))
 
 
-def frequency_grid(n_frequencies: int) -> npt.NDArray[np.float64]:
+def _frequency_grid(n_frequencies: int) -> npt.NDArray[np.float64]:
     """An inclusive uniform grid on ``[0, pi]``.
 
     Args:
@@ -73,7 +90,7 @@ def frequency_grid(n_frequencies: int) -> npt.NDArray[np.float64]:
     return np.linspace(0.0, np.pi, n_frequencies)
 
 
-def transfer_function(
+def _transfer_function(
     coefficients: npt.NDArray[np.float64], frequencies: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.complex128]:
     """The moving-average transfer function ``Psi(omega)`` of a lag stack.
@@ -115,7 +132,7 @@ def transfer_function(
         ) from error
 
 
-def spectral_matrix(
+def _spectral_matrix(
     transfer: npt.NDArray[np.complex128], sigma_u: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.complex128]:
     """The spectral density matrix ``Psi Sigma Psi* / (2 pi)``.

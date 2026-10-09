@@ -7,7 +7,10 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import NumericalError, SpecificationError
-from .._core import _MHM_TAU, _SIMULATION_BURN, SummaryTable, _modified_harmonic_mean, _quantiles
+from .._core._containers import _SummaryTable
+from .._core._defaults import _MHM_TAU, _SIMULATION_BURN
+from .._core._estimators import _modified_harmonic_mean
+from .._core._matrices import _quantiles
 from ._emitters import (
     _trend_volatility_state_space,
     _volatility_state_space,
@@ -30,6 +33,13 @@ if TYPE_CHECKING:
         _StochasticVolatilityModel,
         _TrendVolatilityModel,
     )
+
+__all__ = [
+    "_ConjugatePosterior",
+    "_PerturbationDSGEPosterior",
+    "_SVPosterior",
+    "_UCSVPosterior",
+]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -372,7 +382,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
             "volatility_q95": bands[2],
         }
 
-    def _summary_table(self) -> SummaryTable:
+    def _summary_table(self) -> _SummaryTable:
         """Structured summary: posterior mean, sd, and a central interval."""
 
         def row(name: str, draws: npt.NDArray[np.float64]) -> tuple[str, ...]:
@@ -423,7 +433,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
             label = "Acceptance" if self.method == "particle" else "nu acceptance"
             metadata.append((label, f"{self.acceptance_rate:.3f}"))
             metadata.append(("Thin", f"{self.thin}"))
-        return SummaryTable(
+        return _SummaryTable(
             title=f"SV[{self._spec_label()}] Posterior",
             metadata=tuple(metadata),
             columns=("", "mean", "sd", "5%", "95%"),
@@ -581,7 +591,7 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
             "trend_volatility": self.trend_volatility,
         }
 
-    def _summary_table(self) -> SummaryTable:
+    def _summary_table(self) -> _SummaryTable:
         """Structured summary: vol-of-vol and end-of-sample volatilities."""
 
         def row(name: str, draws: npt.NDArray[np.float64]) -> tuple[str, ...]:
@@ -602,7 +612,7 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
             "Trend drawn exactly by the simulation smoother under the current "
             "variance paths; variances drawn by the Kim-Shephard-Chib mixture step.",
         ]
-        return SummaryTable(
+        return _SummaryTable(
             title="UC-SV Posterior",
             metadata=(
                 ("Sampler", "gibbs"),
@@ -814,7 +824,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
             solution, n, design=design, intercept=intercept, obs_cov=obs_cov, rng=rng, burn=burn
         )
 
-    def _summary_table(self) -> SummaryTable:
+    def _summary_table(self) -> _SummaryTable:
         """Structured summary: posterior mean, sd, and a central interval."""
         rows = []
         for j, name in enumerate(self.parameter_names):
@@ -823,7 +833,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
             rows.append(
                 (name, f"{draws.mean():.5g}", f"{draws.std():.4g}", f"{lo:.5g}", f"{hi:.5g}")
             )
-        return SummaryTable(
+        return _SummaryTable(
             title=f"Perturbation DSGE (order {self.order}) Posterior",
             metadata=(
                 ("Sampler", "particle MH"),

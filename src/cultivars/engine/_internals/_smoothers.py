@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/_internals/_smoothers.py
+# filepath: /src/cultivars/engine/_internals/_smoothers.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -24,14 +24,20 @@ import numpy as np
 import numpy.typing as npt
 
 from ...exceptions import DimensionError
-from .._core import (
+from .._core._defaults import (
     _TINY,
-    validate_transition,
+)
+from .._core._validators import (
+    _validate_transition,
 )
 from ._results import _HamiltonFilterResult, _KimSmootherResult
 
+__all__ = [
+    "_kim_smoother",
+]
 
-def kim_smoother(
+
+def _kim_smoother(
     filter_result: _HamiltonFilterResult, transition: npt.ArrayLike
 ) -> _KimSmootherResult:
     """Run the Kim backward smoother given a Hamilton-filter pass.
@@ -63,7 +69,7 @@ def kim_smoother(
     filtered = filter_result.filtered_prob
     predicted = filter_result.predicted_prob
     n, k = filtered.shape
-    p = validate_transition(transition, k)
+    p = _validate_transition(transition, k)
     if p.shape[0] != k:
         raise DimensionError(f"transition is {p.shape[0]}x{p.shape[0]} but filter implies K={k}.")
 
