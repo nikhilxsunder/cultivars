@@ -490,9 +490,14 @@ class VECMResult(
             True
             >>> res.normalized_alpha().ravel().round(2)
             array([0.15, 2.63])
+            >>> res.normalized_alpha(on=2)
+            Traceback (most recent call last):
+            cultivars.exceptions.SpecificationError: on must index a variable, 0..1; got 2.
         """
         if not self.rank:
             return np.zeros((self.k_endog, 0), dtype=np.float64)
+        if not 0 <= on < self.k_endog:
+            raise SpecificationError(f"on must index a variable, 0..{self.k_endog - 1}; got {on}.")
         return np.asarray(self.alpha * self.beta[on], dtype=np.float64)
 
     def error_correction_terms(self) -> npt.NDArray[np.float64]:
