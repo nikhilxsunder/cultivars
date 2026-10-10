@@ -40,7 +40,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import fields
-from typing import TYPE_CHECKING, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -144,13 +144,19 @@ class _SummaryMixin:
 
         Returns:
             The :class:`SummaryTable` every renderer draws from.
-
-        Raises:
-            NotImplementedError: If the concrete result does not supply one.
         """
-        raise NotImplementedError(
-            f"{type(self).__name__} must implement _summary_table() to be displayable."
+        metadata = tuple(
+            (field.name, self._summary_value(getattr(self, field.name)))
+            for field in fields(cast(Any, type(self)))
         )
+        return SummaryTable(title=type(self).__name__, metadata=metadata)
+
+    @staticmethod
+    def _summary_value(value: object) -> str:
+        """Format a result field without expanding array contents."""
+        if isinstance(value, np.ndarray):
+            return f"array(shape={value.shape}, dtype={value.dtype})"
+        return str(value)
 
     def summary(self) -> SummaryTable:
         """The estimation summary, renderable as text, HTML, or a dataframe."""
