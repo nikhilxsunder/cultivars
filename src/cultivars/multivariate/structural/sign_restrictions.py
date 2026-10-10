@@ -943,7 +943,7 @@ class NarrativeSignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]
         if not shock_signs and not contributions:
             raise SpecificationError(
                 "declare at least one narrative event; with traditional signs "
-                "alone, SignSVAR is that model."
+                "alone, SignRestrictedSVAR is that model."
             )
         if draws < 1:
             raise SpecificationError(f"draws must be at least 1; got {draws}.")
