@@ -154,7 +154,7 @@ from ..._core import (
 from ..._internals import _IdentificationModel, _SummaryMixin
 from ...exceptions import SpecificationError
 
-__all__ = ["SignRestrictedSVAR", "SignRestrictedSVARResult"]
+__all__ = ["NarrativeSignRestrictedSVAR", "SignRestrictedSVAR", "SignRestrictedSVARResult"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
