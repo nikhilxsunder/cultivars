@@ -98,7 +98,7 @@ class _FittedResult:
         return self.information_criteria.hqic
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _FilterResult:
     """Common ancestor of every forward-filtering output.
 
@@ -117,7 +117,7 @@ class _FilterResult:
     loglikelihood_contributions: npt.NDArray[np.float64]
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class _SmootherResult:
     """Common ancestor of every backward-smoothing output.
 
@@ -144,8 +144,8 @@ class _MeanResult(_FittedResult):
     fittedvalues: npt.NDArray[np.float64] = field(repr=False)
 
 
-@dataclass(frozen=True, kw_only=True)
-class _KalmanFilterResult(_FilterResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _KalmanFilterResult(_SummaryMixin, _FilterResult):
     """Output of a linear-Gaussian forward filtering pass.
 
     Attributes:
@@ -161,8 +161,8 @@ class _KalmanFilterResult(_FilterResult):
     filtered_state_cov: npt.NDArray[np.float64]
 
 
-@dataclass(frozen=True, kw_only=True)
-class _DurbinKoopmanSmootherResult(_SmootherResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _DurbinKoopmanSmootherResult(_SummaryMixin, _SmootherResult):
     """Output of a linear-Gaussian backward smoothing pass.
 
     Attributes:
@@ -174,8 +174,8 @@ class _DurbinKoopmanSmootherResult(_SmootherResult):
     smoothed_state_cov: npt.NDArray[np.float64]
 
 
-@dataclass(frozen=True, kw_only=True)
-class _HamiltonFilterResult(_FilterResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _HamiltonFilterResult(_SummaryMixin, _FilterResult):
     """Output of the Hamilton forward filter.
 
     Attributes:
@@ -191,8 +191,8 @@ class _HamiltonFilterResult(_FilterResult):
     predicted_prob: npt.NDArray[np.float64]
 
 
-@dataclass(frozen=True, kw_only=True)
-class _KimSmootherResult(_SmootherResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _KimSmootherResult(_SummaryMixin, _SmootherResult):
     """Output of the Kim backward smoother.
 
     Attributes:
@@ -208,8 +208,8 @@ class _KimSmootherResult(_SmootherResult):
     smoothed_joint_prob: npt.NDArray[np.float64]
 
 
-@dataclass(frozen=True, kw_only=True)
-class _ParticleFilterResult(_FilterResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ParticleFilterResult(_SummaryMixin, _FilterResult):
     """Output of a sequential-Monte-Carlo forward pass.
 
     The state distribution is carried as moments of the particle cloud
@@ -236,8 +236,8 @@ class _ParticleFilterResult(_FilterResult):
     method: str
 
 
-@dataclass(frozen=True, kw_only=True)
-class _KimFilterResult(_FilterResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _KimFilterResult(_SummaryMixin, _FilterResult):
     """Output of the Kim (1994) regime-switching Kalman forward pass.
 
     Attributes:
@@ -1736,8 +1736,8 @@ class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin, _Replication
         return stable / self.n_kept
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class _RtsSmootherResult(_SmootherResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _RtsSmootherResult(_SummaryMixin, _SmootherResult):
     """Output of a Rauch-Tung-Striebel backward pass on a nonlinear model.
 
     Emitted by both the extended and the unscented smoother -- the
@@ -1756,8 +1756,8 @@ class _RtsSmootherResult(_SmootherResult):
     method: str
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class _ParticleSmootherResult(_SmootherResult):
+@dataclass(frozen=True, kw_only=True, slots=True, repr=False)
+class _ParticleSmootherResult(_SummaryMixin, _SmootherResult):
     """Output of a forward-filtering backward-smoothing particle pass.
 
     As with the particle filter, the state distribution is carried as
