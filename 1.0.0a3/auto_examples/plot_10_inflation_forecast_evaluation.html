@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="An inflation forecasting horse race, evaluated properly" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/auto_examples/plot_10_inflation_forecast_evaluation.html" />
+<meta property="og:site_name" content="cultivars" />
+<meta property="og:description" content="Stock and Watson (2007) asked why U.S. inflation had become harder to forecast and answered with a tournament: autoregressions, Phillips-curve models with unemployment, the Atkeson-Ohanian four-quarter average, and an unobserved-components model with stochastic volatility, all run recursively ove..." />
+<meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
+<meta property="og:image:alt" content="cultivars" />
+<meta name="description" content="Stock and Watson (2007) asked why U.S. inflation had become harder to forecast and answered with a tournament: autoregressions, Phillips-curve models with unemployment, the Atkeson-Ohanian four-quarter average, and an unobserved-components model with stochastic volatility, all run recursively ove..." />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="cultivars Documentation" />
+<meta property="og:image:alt" content="cultivars Logo" />
+
+    <title>An inflation forecasting horse race, evaluated properly &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=b2176991" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=7fc003df" />
+    <link rel="stylesheet" type="text/css" href="../_static/consent.css?v=8cbde1cf" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=3700ee43"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../_static/tippy/auto_examples/plot_10_inflation_forecast_evaluation.6f270516-4e3c-4235-9c6b-ddcf3c959b3f.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_10_inflation_forecast_evaluation';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0a3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/stable/auto_examples/plot_10_inflation_forecast_evaluation.html" />
+    <link rel="icon" href="../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Business-cycle regimes: Markov switching against the NBER chronology" href="plot_06_business_cycle_regimes.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/cultivars-logo.png" class="logo__image only-light" alt="cultivars - Home"/>
+    <img src="../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt="cultivars - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">An inflation forecasting horse race, evaluated properly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_06_business_cycle_regimes.html">Business-cycle regimes: Markov switching against the NBER chronology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_09_volatility_models_var_backtest.html">Equity volatility: GARCH, asymmetric GARCH and stochastic volatility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_05_nelson_siegel_yield_curve.html">Forecasting the Treasury yield curve with dynamic Nelson-Siegel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_08_large_bvar_forecasting.html">Forecasting with a medium-sized Bayesian VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_01_monetary_policy_var.html">Monetary policy shocks in a recursive VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_04_heteroskedasticity_and_proxy.html">Monetary policy without recursiveness: heteroskedasticity and proxies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_03_oil_market_sign_restrictions.html">Oil supply and demand shocks: sign, narrative and set identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_02_blanchard_quah.html">Supply and demand shocks with long-run restrictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_07_great_ratios_vecm.html">The great ratios: cointegration and a vector error-correction model</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">An inflation forecasting horse race, evaluated properly</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-10-inflation-forecast-evaluation-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="an-inflation-forecasting-horse-race-evaluated-properly">
+<span id="sphx-glr-auto-examples-plot-10-inflation-forecast-evaluation-py"></span><h1>An inflation forecasting horse race, evaluated properly<a class="headerlink" href="#an-inflation-forecasting-horse-race-evaluated-properly" title="Link to this heading">#</a></h1>
+<p>Stock and Watson (2007) asked why U.S. inflation had become harder to
+forecast and answered with a tournament: autoregressions, Phillips-curve
+models with unemployment, the Atkeson-Ohanian four-quarter average, and
+an unobserved-components model with stochastic volatility, all run
+recursively over the Great Moderation. The finding was that the naive
+averages and the UC-SV model were hard to beat and that the Phillips
+curve added little after 1984.</p>
+<p>This example reproduces that design on CPI inflation and spends most of
+its effort on the evaluation, which is where forecasting papers are won
+or lost: pairwise Diebold-Mariano tests with the small-sample
+correction, the Clark-West adjustment for nested models, forecast
+encompassing, Mincer-Zarnowitz efficiency regressions, the model
+confidence set, density calibration for the two models that produce
+predictive distributions, and a forecast combination.</p>
+<section id="data">
+<h2>Data<a class="headerlink" href="#data" title="Link to this heading">#</a></h2>
+<p>Quarterly CPI inflation at an annualized rate (<code class="docutils literal notranslate"><span class="pre">units=&quot;cca&quot;</span></code> is the
+continuously compounded annual rate of change), the unemployment rate
+and the federal funds rate, 1960-2019. The evaluation sample starts
+in 1985.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">bayes</span><span class="nn">.</span><span class="nn">priors</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-bayes-priors sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.bayes.priors.NormalInverseWishartPrior.html#cultivars.bayes.priors.NormalInverseWishartPrior" title="cultivars.bayes.priors.NormalInverseWishartPrior"><span class="n">NormalInverseWishartPrior</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">forecast</span><span class="nn">.</span><span class="nn">backtest</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">forecast</span><span class="nn">.</span><span class="nn">calibration</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-forecast-calibration sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.calibration.Calibration.html#cultivars.forecast.calibration.Calibration" title="cultivars.forecast.calibration.Calibration"><span class="n">Calibration</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">forecast</span><span class="nn">.</span><span class="nn">comparison</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.comparison.ForecastComparison.html#cultivars.forecast.comparison.ForecastComparison" title="cultivars.forecast.comparison.ForecastComparison"><span class="n">ForecastComparison</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.comparison.clark_west.html#cultivars.forecast.comparison.clark_west" title="cultivars.forecast.comparison.clark_west"><span class="n">clark_west</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.comparison.encompassing.html#cultivars.forecast.comparison.encompassing" title="cultivars.forecast.comparison.encompassing"><span class="n">encompassing</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.comparison.mincer_zarnowitz.html#cultivars.forecast.comparison.mincer_zarnowitz" title="cultivars.forecast.comparison.mincer_zarnowitz"><span class="n">mincer_zarnowitz</span></a><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">forecast</span><span class="nn">.</span><span class="nn">confidence_set</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-forecast-confidence_set sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.confidence_set.model_confidence_set.html#cultivars.forecast.confidence_set.model_confidence_set" title="cultivars.forecast.confidence_set.model_confidence_set"><span class="n">model_confidence_set</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">multivariate</span><span class="nn">.</span><span class="nn">large_dim</span><span class="nn">.</span><span class="nn">bayesian</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-multivariate-large_dim-bayesian sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><span class="n">BVAR</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">multivariate</span><span class="nn">.</span><span class="nn">reduced_form</span><span class="nn">.</span><span class="nn">vector_autoregression</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-vector_autoregression sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">univariate</span><span class="nn">.</span><span class="nn">stochastic_volatility</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-univariate-stochastic_volatility sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSV.html#cultivars.univariate.stochastic_volatility.UCSV" title="cultivars.univariate.stochastic_volatility.UCSV"><span class="n">UCSV</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">_fred</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">data</span></a> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="w">
+</span>    <span class="p">{</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">CPIAUCSL</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">UNRATE</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ffr</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">FEDFUNDS</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">1959-10-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">2019-12-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">q</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">aggregation_method</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">avg</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">units</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">cca</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">inflation</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">data</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">panel</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_numpy.html#pandas.DataFrame.to_numpy" title="pandas.DataFrame.to_numpy"><span class="n">data</span><span class="o">.</span><span class="n">to_numpy</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.flatnonzero.html#numpy.flatnonzero" title="numpy.flatnonzero"><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">data</span><span class="o">.</span><span class="n">index</span></a> <span class="o">==</span> <span class="s2">&quot;</span><span class="s2">1985-01-01</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a> <span class="o">=</span> <span class="mi">4</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a> <span class="o">=</span> <span class="mi">2</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">data</span></a><span class="p">)</span><span class="si">}</span><span class="s2"> quarters; evaluation from </span><span class="si">{</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">data</span><span class="o">.</span><span class="n">index</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="p">]</span><span class="si">:</span><span class="s2">%Y-%m</span><span class="si">}</span><span class="s2"> at every second origin</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>241 quarters; evaluation from 1985-01 at every second origin
+</pre></div>
+</div>
+</section>
+<section id="five-forecasters">
+<h2>Five forecasters<a class="headerlink" href="#five-forecasters" title="Link to this heading">#</a></h2>
+<p>The Atkeson-Ohanian forecast is the mean of the last four quarters at
+every horizon. The AR(4) is a one-variable VAR, which carries the
+forecasting interface. The Phillips-curve model is a bivariate VAR(4)
+in inflation and unemployment, whose inflation equation nests the
+AR(4). The Bayesian VAR adds the funds rate under a Minnesota-type
+prior and forecasts from its posterior predictive. The UC-SV model is
+Stock and Watson’s trend-plus-noise model with both variances
+stochastic, forecasting by simulation from its Gibbs draws.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">class</span><span class="w"> </span><span class="nc">AtkesonOhanian</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Four-quarter trailing mean as the forecast at every horizon.&quot;&quot;&quot;</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">)</span> <span class="o">-</span><span class="o">&gt;</span> <span class="kc">None</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Keep the trailing mean of the last four observations.&quot;&quot;&quot;</span><span class="w">
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">(</span><span class="n">window</span><span class="p">)</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forecast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-</span><span class="o">&gt;</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Repeat the trailing mean.&quot;&quot;&quot;</span><span class="w">
+</span>        <span class="k">return</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.full.html#numpy.full" title="numpy.full"><span class="n">np</span><span class="o">.</span><span class="n">full</span></a><span class="p">(</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">def</span><span class="w"> </span><span class="nf">fit_bvar</span><span class="p">(</span><span class="n">window</span><span class="p">:</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">)</span> <span class="o">-</span><span class="o">&gt;</span> <span class="nb">object</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;BVAR(4) on inflation, unemployment and the funds rate.&quot;&quot;&quot;</span><span class="w">
+</span>    <span class="n">prior</span> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-bayes-priors sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.bayes.priors.NormalInverseWishartPrior.html#cultivars.bayes.priors.NormalInverseWishartPrior" title="cultivars.bayes.priors.NormalInverseWishartPrior"><span class="n">NormalInverseWishartPrior</span></a><span class="p">(</span><span class="n">tightness</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span><span class="w">
+</span>    <span class="k">return</span> <a class="sphx-glr-backref-module-cultivars-multivariate-large_dim-bayesian sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><span class="n">BVAR</span></a><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ffr</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">def</span><span class="w"> </span><span class="nf">fit_ucsv</span><span class="p">(</span><span class="n">window</span><span class="p">:</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">)</span> <span class="o">-</span><span class="o">&gt;</span> <span class="nb">object</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;UC-SV posterior with a short chain, enough for a predictive draw.&quot;&quot;&quot;</span><span class="w">
+</span>    <span class="k">return</span> <a class="sphx-glr-backref-module-cultivars-univariate-stochastic_volatility sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSV.html#cultivars.univariate.stochastic_volatility.UCSV" title="cultivars.univariate.stochastic_volatility.UCSV"><span class="n">UCSV</span></a><span class="p">(</span><span class="n">window</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">n_burn</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">def</span><span class="w"> </span><span class="nf">predict_ucsv</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-</span><span class="o">&gt;</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Predictive paths as (n_draws, steps, 1).&quot;&quot;&quot;</span><span class="w">
+</span>    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">n_paths</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">AO</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">inflation</span></a><span class="p">,</span> <span class="n">AtkesonOhanian</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">inflation</span></a><span class="p">,</span><span class="w">
+</span>        <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-vector_autoregression sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">PC-VAR(4)</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">panel</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-vector_autoregression sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">BVAR(4)</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">panel</span></a><span class="p">,</span> <span class="n">fit_bvar</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ffr</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">UC-SV</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">inflation</span></a><span class="p">,</span> <span class="n">fit_ucsv</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">horizons</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">start</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="p">,</span> <span class="n">predict</span><span class="o">=</span><span class="n">predict_ucsv</span><span class="w">
+</span>    <span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_origins</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AO</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">n_origins</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_origins</span></a><span class="si">}</span><span class="s2"> origins</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>69 origins
+</pre></div>
+</div>
+</section>
+<section id="point-accuracy">
+<h2>Point accuracy<a class="headerlink" href="#point-accuracy" title="Link to this heading">#</a></h2>
+<p>Root mean squared errors for inflation at one and four quarters,
+relative to the AR(4).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">inflation_rmse</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-</span><span class="o">&gt;</span> <span class="nb">float</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;RMSE of the inflation forecast at horizon h.&quot;&quot;&quot;</span><span class="w">
+</span>    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-property reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.rmse.html#cultivars.forecast.backtest.BacktestResult.rmse" title="cultivars.forecast.backtest.BacktestResult.rmse"><span class="n">record</span><span class="o">.</span><span class="n">rmse</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">'</span><span class="s1">model</span><span class="s1">'</span><span class="si">:</span><span class="s2">11s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'</span><span class="s1">h=1</span><span class="s1">'</span><span class="si">:</span><span class="s2">&gt;8s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'</span><span class="s1">h=4</span><span class="s1">'</span><span class="si">:</span><span class="s2">&gt;8s</span><span class="si">}</span><span class="s2">   (relative to AR(4))</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ratios</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">inflation_rmse</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="p">)</span> <span class="o">/</span> <span class="n">inflation_rmse</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="p">)</span> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">]</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="si">:</span><span class="s2">11s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ratios</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ratios</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>model            h=1      h=4   (relative to AR(4))
+AO             0.909    0.899
+AR(4)          1.000    1.000
+PC-VAR(4)      1.119    1.029
+BVAR(4)        0.916    1.012
+UC-SV          0.922    0.908
+</pre></div>
+</div>
+</section>
+<section id="pairwise-tests-against-the-autoregression">
+<h2>Pairwise tests against the autoregression<a class="headerlink" href="#pairwise-tests-against-the-autoregression" title="Link to this heading">#</a></h2>
+<p>Three statistics on the same loss differential: the Diebold-Mariano
+test, its Harvey-Leybourne-Newbold small-sample correction, and the
+Giacomini-White test of conditional predictive ability. The forecasts
+are two quarters apart, so at h = 4 consecutive errors still overlap
+and the long-run variance estimate matters; the <code class="docutils literal notranslate"><span class="pre">horizon</span></code> handed to
+the comparison is that overlap measured in origins, h / step.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">h = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="si">}</span><span class="s2">: squared-error loss relative to AR(4)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">benchmark</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">losses</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">squared</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">AO</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">PC-VAR(4)</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">BVAR(4)</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">UC-SV</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span> <span class="k">if</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">]</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">losses</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">]</span><span class="o">.</span><span class="n">losses</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">squared</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">)</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.comparison.ForecastComparison.html#cultivars.forecast.comparison.ForecastComparison" title="cultivars.forecast.comparison.ForecastComparison"><span class="n">ForecastComparison</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">losses</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">benchmark</span></a><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">horizon</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">/</span><span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span>        <span class="nb">print</span><span class="p">(</span><span class="w">
+</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">  </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="si">:</span><span class="s2">10s</span><span class="si">}</span><span class="s2"> DM </span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span><span class="o">.</span><span class="n">dm_statistic</span></a><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> (p=</span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span><span class="o">.</span><span class="n">dm_pvalue</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)  </span><span class="s2">&quot;</span><span class="w">
+</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">HLN </span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span><span class="o">.</span><span class="n">hln_statistic</span></a><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> (p=</span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span><span class="o">.</span><span class="n">hln_pvalue</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)  </span><span class="s2">&quot;</span><span class="w">
+</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">GW </span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span><span class="o">.</span><span class="n">gw_statistic</span></a><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> (p=</span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span><span class="o">.</span><span class="n">gw_pvalue</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)</span><span class="s2">&quot;</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>h = 1: squared-error loss relative to AR(4)
+  AO         DM  -0.81 (p=0.419)  HLN  -0.80 (p=0.426)  GW   0.66 (p=0.718)
+  PC-VAR(4)  DM   1.00 (p=0.320)  HLN   0.99 (p=0.327)  GW   2.16 (p=0.340)
+  BVAR(4)    DM  -0.82 (p=0.410)  HLN  -0.82 (p=0.416)  GW   0.68 (p=0.712)
+  UC-SV      DM  -0.48 (p=0.634)  HLN  -0.47 (p=0.638)  GW   0.93 (p=0.630)
+
+h = 4: squared-error loss relative to AR(4)
+  AO         DM  -2.33 (p=0.020)  HLN  -2.28 (p=0.026)  GW   4.36 (p=0.113)
+  PC-VAR(4)  DM   1.05 (p=0.295)  HLN   1.02 (p=0.310)  GW   2.26 (p=0.323)
+  BVAR(4)    DM   0.66 (p=0.512)  HLN   0.64 (p=0.523)  GW   0.94 (p=0.625)
+  UC-SV      DM  -1.49 (p=0.137)  HLN  -1.45 (p=0.150)  GW   1.80 (p=0.406)
+</pre></div>
+</div>
+</section>
+<section id="nested-models-the-clark-west-adjustment">
+<h2>Nested models: the Clark-West adjustment<a class="headerlink" href="#nested-models-the-clark-west-adjustment" title="Link to this heading">#</a></h2>
+<p>The Phillips-curve VAR nests the AR(4), and under the null that the
+unemployment terms are zero the larger model’s estimation noise makes
+its mean squared error <em>larger</em> in expectation. Clark and West (2007)
+subtract that noise before testing; a positive adjusted statistic
+says the extra variables have predictive content even when the raw
+RMSE ratio is above one.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">realized</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">realized</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">restricted</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">unrestricted</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">PC-VAR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.ClarkWestTest.html#cultivars.forecast.comparison.ClarkWestTest" title="cultivars.forecast.comparison.ClarkWestTest"><span class="n">test</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.comparison.clark_west.html#cultivars.forecast.comparison.clark_west" title="cultivars.forecast.comparison.clark_west"><span class="n">clark_west</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">realized</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">restricted</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">unrestricted</span></a><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">/</span><span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">step</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="w">
+</span>        <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">h = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="si">}</span><span class="s2">: Clark-West </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">statistic</span></a><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">pvalue</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">); </span><span class="s2">&quot;</span><span class="w">
+</span>        <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">MSPE restricted </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">mspe_restricted</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, unrestricted </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">mspe_unrestricted</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>h = 1: Clark-West  -0.51 (p = 0.695); MSPE restricted 2.901, unrestricted 3.632
+h = 4: Clark-West  -0.27 (p = 0.605); MSPE restricted 6.895, unrestricted 7.295
+</pre></div>
+</div>
+</section>
+<section id="encompassing-and-efficiency">
+<h2>Encompassing and efficiency<a class="headerlink" href="#encompassing-and-efficiency" title="Link to this heading">#</a></h2>
+<p>Forecast encompassing asks whether the AR(4) forecast would be
+improved by any weight on the UC-SV forecast; the Mincer-Zarnowitz
+regression asks whether each forecast is unbiased and efficient, a
+joint test of intercept zero and slope one.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">=</span> <span class="mi">1</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">realized</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">realized</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.EncompassingTest.html#cultivars.forecast.comparison.EncompassingTest" title="cultivars.forecast.comparison.EncompassingTest"><span class="n">enc</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.comparison.encompassing.html#cultivars.forecast.comparison.encompassing" title="cultivars.forecast.comparison.encompassing"><span class="n">encompassing</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">realized</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">UC-SV</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">AR(4) encompasses UC-SV: weight on UC-SV </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">enc</span><span class="o">.</span><span class="n">weight</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, p = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">enc</span><span class="o">.</span><span class="n">pvalue</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">'</span><span class="s1">model</span><span class="s1">'</span><span class="si">:</span><span class="s2">11s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'</span><span class="s1">intercept</span><span class="s1">'</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'</span><span class="s1">slope</span><span class="s1">'</span><span class="si">:</span><span class="s2">&gt;7s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'</span><span class="s1">R^2</span><span class="s1">'</span><span class="si">:</span><span class="s2">&gt;6s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'</span><span class="s1">p</span><span class="s1">'</span><span class="si">:</span><span class="s2">&gt;7s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.comparison.MincerZarnowitzTest.html#cultivars.forecast.comparison.MincerZarnowitzTest" title="cultivars.forecast.comparison.MincerZarnowitzTest"><span class="n">mz</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-comparison sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.comparison.mincer_zarnowitz.html#cultivars.forecast.comparison.mincer_zarnowitz" title="cultivars.forecast.comparison.mincer_zarnowitz"><span class="n">mincer_zarnowitz</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">realized</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">record</span><span class="o">.</span><span class="n">point</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="si">:</span><span class="s2">11s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">mz</span><span class="o">.</span><span class="n">intercept</span></a><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">mz</span><span class="o">.</span><span class="n">slope</span></a><span class="si">:</span><span class="s2">7.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">mz</span><span class="o">.</span><span class="n">r_squared</span></a><span class="si">:</span><span class="s2">6.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">mz</span><span class="o">.</span><span class="n">pvalue</span></a><span class="si">:</span><span class="s2">7.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>AR(4) encompasses UC-SV: weight on UC-SV 0.633, p = 0.056
+
+model        intercept   slope    R^2       p
+AO               1.069   0.618  0.206   0.143
+AR(4)            1.433   0.472  0.228   0.014
+PC-VAR(4)        1.706   0.376  0.184   0.006
+BVAR(4)          1.223   0.556  0.314   0.001
+UC-SV            1.083   0.601  0.181   0.116
+</pre></div>
+</div>
+</section>
+<section id="the-model-confidence-set">
+<h2>The model confidence set<a class="headerlink" href="#the-model-confidence-set" title="Link to this heading">#</a></h2>
+<p>Rather than one benchmark against the rest, Hansen, Lunde and Nason’s
+procedure eliminates models from the full set until the remaining ones
+cannot be told apart at the chosen level. The set reported is the
+collection of forecasters the evaluation sample cannot rank.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">loss_matrix</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.column_stack.html#numpy.column_stack" title="numpy.column_stack"><span class="n">np</span><span class="o">.</span><span class="n">column_stack</span></a><span class="p">(</span><span class="w">
+</span>        <span class="p">[</span><span class="w">
+</span>            <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">]</span><span class="o">.</span><span class="n">losses</span><span class="p">(</span><span class="w">
+</span>                <span class="s2">&quot;</span><span class="s2">squared</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">infl</span><span class="s2">&quot;</span> <span class="k">if</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">]</span><span class="o">.</span><span class="n">k_endog</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="w">
+</span>            <span class="p">)</span><span class="w">
+</span>            <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="w">
+</span>        <span class="p">]</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <span class="n">mcs</span> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-confidence_set sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.forecast.confidence_set.model_confidence_set.html#cultivars.forecast.confidence_set.model_confidence_set" title="cultivars.forecast.confidence_set.model_confidence_set"><span class="n">model_confidence_set</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">loss_matrix</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">)</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">h = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="n">mcs</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>h = 1
+                              Model Confidence Set
+================================================================================
+Models:                              5  Origins:                            69
+Level:                             90%  In set:                              5
+--------------------------------------------------------------------------------
+model         mean loss   MCS p
+PC-VAR(4)       3.63199   0.566   in
+AR(4)           2.90112   0.594   in
+UC-SV           2.46480   0.967   in
+BVAR(4)         2.43310   0.967   in
+AO              2.39917   1.000   in
+================================================================================
+5 of 5 models in the 90% set: AO, BVAR(4), UC-SV, AR(4), PC-VAR(4).
+Sequential elimination with the range statistic; null distribution from 1000
+stationary-bootstrap resamples with expected block length 4. A model's p-value
+is the running maximum of the elimination p-values up to its own (Hansen, Lunde
+&amp; Nason, 2011).
+The set contains the best model with probability at least the confidence level;
+a set that keeps many models reports what the window can separate.
+
+h = 4
+                              Model Confidence Set
+================================================================================
+Models:                              5  Origins:                            69
+Level:                             90%  In set:                              2
+--------------------------------------------------------------------------------
+model         mean loss   MCS p
+BVAR(4)         7.06202   0.062   out
+PC-VAR(4)       7.29514   0.085   out
+AR(4)           6.89504   0.085   out
+UC-SV           5.68316   0.843    in
+AO              5.57764   1.000    in
+================================================================================
+2 of 5 models in the 90% set: AO, UC-SV.
+Sequential elimination with the range statistic; null distribution from 1000
+stationary-bootstrap resamples with expected block length 4. A model's p-value
+is the running maximum of the elimination p-values up to its own (Hansen, Lunde
+&amp; Nason, 2011).
+The set contains the best model with probability at least the confidence level;
+a set that keeps many models reports what the window can separate.
+</pre></div>
+</div>
+</section>
+<section id="density-calibration">
+<h2>Density calibration<a class="headerlink" href="#density-calibration" title="Link to this heading">#</a></h2>
+<p>The BVAR and the UC-SV forecast distributions, not just points. The
+probability integral transforms of the one-quarter-ahead forecasts
+should be uniform; the Berkowitz test and the histogram say whether
+they are, and the CRPS compares the two densities directly.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">BVAR(4)</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">UC-SV</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-calibration sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.calibration.CalibrationResult.html#cultivars.forecast.calibration.CalibrationResult" title="cultivars.forecast.calibration.CalibrationResult"><span class="n">pit</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-calibration sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.calibration.Calibration.html#cultivars.forecast.calibration.Calibration" title="cultivars.forecast.calibration.Calibration"><span class="n">Calibration</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">record</span><span class="o">.</span><span class="n">paths</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">record</span><span class="o">.</span><span class="n">realized</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="si">}</span><span class="s2">: CRPS h=1 </span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-property reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.mean_crps.html#cultivars.forecast.backtest.BacktestResult.mean_crps" title="cultivars.forecast.backtest.BacktestResult.mean_crps"><span class="n">record</span><span class="o">.</span><span class="n">mean_crps</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, h=4 </span><span class="si">{</span><a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-property reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.mean_crps.html#cultivars.forecast.backtest.BacktestResult.mean_crps" title="cultivars.forecast.backtest.BacktestResult.mean_crps"><span class="n">record</span><span class="o">.</span><span class="n">mean_crps</span></a><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-forecast-calibration sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.forecast.calibration.CalibrationResult.summary.html#cultivars.forecast.calibration.CalibrationResult.summary" title="cultivars.forecast.calibration.CalibrationResult.summary"><span class="n">pit</span><span class="o">.</span><span class="n">summary</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">BVAR(4)</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">UC-SV</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cultivars-forecast-calibration sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.calibration.CalibrationResult.html#cultivars.forecast.calibration.CalibrationResult" title="cultivars.forecast.calibration.CalibrationResult"><span class="n">pit</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-calibration sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.forecast.calibration.Calibration.html#cultivars.forecast.calibration.Calibration" title="cultivars.forecast.calibration.Calibration"><span class="n">Calibration</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">record</span><span class="o">.</span><span class="n">paths</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">record</span><span class="o">.</span><span class="n">realized</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">counts</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-forecast-calibration sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.forecast.calibration.CalibrationResult.histogram.html#cultivars.forecast.calibration.CalibrationResult.histogram" title="cultivars.forecast.calibration.CalibrationResult.histogram"><span class="n">pit</span><span class="o">.</span><span class="n">histogram</span></a><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.bar.html#matplotlib.axes.Axes.bar" title="matplotlib.axes.Axes.bar"><span class="n">ax</span><span class="o">.</span><span class="n">bar</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">counts</span></a><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="matplotlib.axes.Axes.axhline"><span class="n">ax</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">counts</span></a><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">k</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">--</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">PIT histogram, </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="si">}</span><span class="s2">, h = 1</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../_images/sphx_glr_plot_10_inflation_forecast_evaluation_001.png" srcset="../_images/sphx_glr_plot_10_inflation_forecast_evaluation_001.png" alt="PIT histogram, BVAR(4), h = 1, PIT histogram, UC-SV, h = 1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BVAR(4): CRPS h=1 0.881, h=4 1.334
+                          Density Forecast Calibration
+================================================================================
+Series:                              1  Origins:                            69
+--------------------------------------------------------------------------------
+series     PIT mean   PIT sd   Berkowitz p
+y1            0.498    0.280        0.9351
+================================================================================
+Under correct calibration the PIT series is uniform: mean 0.500, standard
+deviation 0.289, Berkowitz p-value well away from zero. A U-shaped histogram is
+overconfidence, a hump is overdispersion, a slope is bias -- histogram() draws
+the picture.
+The Berkowitz null assumes one-step transforms; multi-step forecasts overlap
+mechanically, and their serial correlation reads as miscalibration here.
+UC-SV: CRPS h=1 0.860, h=4 1.178
+                          Density Forecast Calibration
+================================================================================
+Series:                              1  Origins:                            69
+--------------------------------------------------------------------------------
+series     PIT mean   PIT sd   Berkowitz p
+y1            0.511    0.269        0.3942
+================================================================================
+Under correct calibration the PIT series is uniform: mean 0.500, standard
+deviation 0.289, Berkowitz p-value well away from zero. A U-shaped histogram is
+overconfidence, a hump is overdispersion, a slope is bias -- histogram() draws
+the picture.
+The Berkowitz null assumes one-step transforms; multi-step forecasts overlap
+mechanically, and their serial correlation reads as miscalibration here.
+</pre></div>
+</div>
+</section>
+<section id="forecast-combination">
+<h2>Forecast combination<a class="headerlink" href="#forecast-combination" title="Link to this heading">#</a></h2>
+<p>The equal-weight combination of the five point forecasts is the
+benchmark every weighting scheme has to beat and rarely does by much.
+Its RMSE is reported beside the best single model’s.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">points</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.column_stack.html#numpy.column_stack" title="numpy.column_stack"><span class="n">np</span><span class="o">.</span><span class="n">column_stack</span></a><span class="p">(</span><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">realized</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">realized</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">combined</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">points</span></a><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">rmse_combined</span></a> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">combined</span></a> <span class="o">-</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">realized</span></a><span class="p">)</span> <span class="o">*</span><span class="o">*</span> <span class="mi">2</span><span class="p">)</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">single</span></a> <span class="o">=</span> <span class="p">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">:</span> <span class="n">inflation_rmse</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="p">)</span> <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-forecast-backtest sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">record</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="p">)</span><span class="p">}</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">best</span></a> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">single</span></a><span class="p">,</span> <span class="n">key</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">single</span></a><span class="o">.</span><span class="n">get</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">h = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="si">}</span><span class="s2">: equal-weight RMSE </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">rmse_combined</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">; best single </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">best</span></a><span class="si">}</span><span class="s2"> </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">single</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">best</span></a><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">dates</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">data</span><span class="o">.</span><span class="n">index</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">origins</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">dates</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">AR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">realized</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">k</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">realized</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">dates</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">UC-SV</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C3</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">UC-SV</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">dates</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">records</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">PC-VAR(4)</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">PC-VAR(4)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">One-quarter-ahead CPI inflation forecasts (annualized </span><span class="s2">%</span><span class="s2">)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">upper right</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../_images/sphx_glr_plot_10_inflation_forecast_evaluation_002.png" srcset="../_images/sphx_glr_plot_10_inflation_forecast_evaluation_002.png" alt="One-quarter-ahead CPI inflation forecasts (annualized %)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>h = 1: equal-weight RMSE 1.520; best single AO 1.549
+h = 4: equal-weight RMSE 2.476; best single AO 2.362
+</pre></div>
+</div>
+</section>
+<section id="what-to-take-away">
+<h2>What to take away<a class="headerlink" href="#what-to-take-away" title="Link to this heading">#</a></h2>
+<p>An evaluation sample of a few dozen origins can confirm that a model
+is not worse than the autoregression; it rarely proves one is better.
+The model confidence set makes that limitation explicit. The density
+diagnostics are where the UC-SV model earns its place: its trend
+volatility tracks the change in the inflation process that Stock and
+Watson documented, and a calibrated predictive distribution is worth
+more to a policymaker than a point forecast with a slightly lower
+RMSE.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.460 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-10-inflation-forecast-evaluation-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/1cf3914bd1902b4b81df08c2e7d9c392/plot_10_inflation_forecast_evaluation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_10_inflation_forecast_evaluation.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/f345c0da289585195ceda4224408df7e/plot_10_inflation_forecast_evaluation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_10_inflation_forecast_evaluation.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/4161ec109348181ea2b0431b70b93009/plot_10_inflation_forecast_evaluation.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_10_inflation_forecast_evaluation.zip</span></code></a></p>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_06_business_cycle_regimes.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Business-cycle regimes: Markov switching against the NBER chronology</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data">Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#five-forecasters">Five forecasters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-accuracy">Point accuracy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pairwise-tests-against-the-autoregression">Pairwise tests against the autoregression</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nested-models-the-clark-west-adjustment">Nested models: the Clark-West adjustment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#encompassing-and-efficiency">Encompassing and efficiency</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-model-confidence-set">The model confidence set</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#density-calibration">Density calibration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forecast-combination">Forecast combination</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-take-away">What to take away</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div class="cv-footer">
+  <section
+    class="cv-footer__band cv-footer__band--guide"
+    aria-label="Documentation sections"
+  >
+    <div class="cv-footer__inner cv-footer__columns">
+      <div class="cv-footer__column">
+        <h2>API reference</h2>
+        <p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+        <a class="cv-footer__cta" href="../api/index.html"
+          >View the API<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+      <div class="cv-footer__column">
+        <h2>Examples</h2>
+        <p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+        <a class="cv-footer__cta" href="index.html"
+          >View the examples<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+      <div class="cv-footer__column">
+        <h2>Engine</h2>
+        <p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+        <a class="cv-footer__cta" href="../engine/index.html"
+          >View the engine<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="cv-footer__band cv-footer__band--site"
+    aria-label="Project links"
+  >
+    <div class="cv-footer__inner">
+      <div class="cv-footer__grid">
+        <div class="cv-footer__install">
+          <h2>Get cultivars</h2>
+          <p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+          <pre
+            class="cv-footer__code"
+          ><code>pip install --pre cultivars==1.0.0a3</code></pre>
+        </div>
+
+        <nav class="cv-footer__links" aria-label="Resources">
+          <h2>Resources</h2>
+          <ul>
+            <li>
+              <a href="https://github.com/nikhilxsunder/cultivars/releases"
+                >Releases</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md"
+                >Changelog</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/nikhilxsunder/cultivars/issues"
+                >Issues</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md"
+                >Contributing</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md"
+                >Security</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md"
+                >Code of conduct</a
+              >
+            </li>
+          </ul>
+        </nav>
+
+        <nav class="cv-footer__links" aria-label="Related projects">
+          <h2>Related</h2>
+          <ul>
+            <li>
+              <a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a
+              ><span class="cv-footer__muted"> FRED client</span>
+            </li>
+            <li>
+              <a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a
+              ><span class="cv-footer__muted"> SEC EDGAR client</span>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <ul class="cv-footer__social" aria-label="Project pages">
+        <li>
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"
+            ><i class="fa-brands fa-github" aria-hidden="true"></i
+            ><span class="visually-hidden">GitHub</span></a
+          >
+        </li>
+        <li>
+          <a href="https://pypi.org/project/cultivars/" title="PyPI"
+            ><i class="fa-brands fa-python" aria-hidden="true"></i
+            ><span class="visually-hidden">PyPI</span></a
+          >
+        </li>
+        <li>
+          <a
+            href="https://app.codecov.io/gh/nikhilxsunder/cultivars"
+            title="Codecov"
+            ><i class="fa-solid fa-umbrella" aria-hidden="true"></i
+            ><span class="visually-hidden">Codecov</span></a
+          >
+        </li>
+        <li>
+          <a
+            href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff"
+            title="Cite"
+            ><i class="fa-solid fa-quote-left" aria-hidden="true"></i
+            ><span class="visually-hidden">Cite</span></a
+          >
+        </li>
+      </ul>
+
+      <div class="cv-footer__legal">
+        <p>
+          &copy; 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE"
+            >MIT License</a
+          >. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED&reg; is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+        <p class="cv-footer__build">
+          cultivars 1.0.0a3 &middot; built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/"
+            >PyData Sphinx Theme</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</div></div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

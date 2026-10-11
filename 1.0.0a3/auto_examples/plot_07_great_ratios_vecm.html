@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="The great ratios: cointegration and a vector error-correction model" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/auto_examples/plot_07_great_ratios_vecm.html" />
+<meta property="og:site_name" content="cultivars" />
+<meta property="og:description" content="Balanced growth implies that consumption, investment and output share one stochastic trend: the consumption-output and investment-output ratios are stationary while each series is integrated. King, Plosser, Stock and Watson (1991) made that the test of the real-business-cycle model’s long-run imp..." />
+<meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
+<meta property="og:image:alt" content="cultivars" />
+<meta name="description" content="Balanced growth implies that consumption, investment and output share one stochastic trend: the consumption-output and investment-output ratios are stationary while each series is integrated. King, Plosser, Stock and Watson (1991) made that the test of the real-business-cycle model’s long-run imp..." />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="cultivars Documentation" />
+<meta property="og:image:alt" content="cultivars Logo" />
+
+    <title>The great ratios: cointegration and a vector error-correction model &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=b2176991" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=7fc003df" />
+    <link rel="stylesheet" type="text/css" href="../_static/consent.css?v=8cbde1cf" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=3700ee43"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../_static/tippy/auto_examples/plot_07_great_ratios_vecm.e121ef73-9e84-4c23-8bd6-22d2dace9943.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_07_great_ratios_vecm';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0a3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/stable/auto_examples/plot_07_great_ratios_vecm.html" />
+    <link rel="icon" href="../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API reference" href="../api/index.html" />
+    <link rel="prev" title="Supply and demand shocks with long-run restrictions" href="plot_02_blanchard_quah.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/cultivars-logo.png" class="logo__image only-light" alt="cultivars - Home"/>
+    <img src="../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt="cultivars - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plot_10_inflation_forecast_evaluation.html">An inflation forecasting horse race, evaluated properly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_06_business_cycle_regimes.html">Business-cycle regimes: Markov switching against the NBER chronology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_09_volatility_models_var_backtest.html">Equity volatility: GARCH, asymmetric GARCH and stochastic volatility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_05_nelson_siegel_yield_curve.html">Forecasting the Treasury yield curve with dynamic Nelson-Siegel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_08_large_bvar_forecasting.html">Forecasting with a medium-sized Bayesian VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_01_monetary_policy_var.html">Monetary policy shocks in a recursive VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_04_heteroskedasticity_and_proxy.html">Monetary policy without recursiveness: heteroskedasticity and proxies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_03_oil_market_sign_restrictions.html">Oil supply and demand shocks: sign, narrative and set identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_02_blanchard_quah.html">Supply and demand shocks with long-run restrictions</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">The great ratios: cointegration and a vector error-correction model</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">The great ratios: cointegration and a vector error-correction model</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-07-great-ratios-vecm-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="the-great-ratios-cointegration-and-a-vector-error-correction-model">
+<span id="sphx-glr-auto-examples-plot-07-great-ratios-vecm-py"></span><h1>The great ratios: cointegration and a vector error-correction model<a class="headerlink" href="#the-great-ratios-cointegration-and-a-vector-error-correction-model" title="Link to this heading">#</a></h1>
+<p>Balanced growth implies that consumption, investment and output share
+one stochastic trend: the consumption-output and investment-output
+ratios are stationary while each series is integrated. King, Plosser,
+Stock and Watson (1991) made that the test of the real-business-cycle
+model’s long-run implications, with the Johansen procedure as the
+instrument. Three I(1) series with one common trend means a
+cointegrating rank of two.</p>
+<p>This example runs the full chain: integration tests on levels and
+differences, lag-order selection, the Johansen rank test with
+simulated p-values, estimation of the VECM at the selected rank, the
+normalized cointegrating vectors against their balanced-growth values,
+weak-exogeneity tests of the adjustment, and a forecast that respects
+the long-run restrictions.</p>
+<section id="data">
+<h2>Data<a class="headerlink" href="#data" title="Link to this heading">#</a></h2>
+<p>Real personal consumption expenditures, real gross private domestic
+investment and real GDP, quarterly 1948-2019, as 100 times their
+logs so that cointegrating residuals read in percent.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">diagnostics</span><span class="nn">.</span><span class="nn">unit_roots</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.adf.html#cultivars.diagnostics.unit_roots.adf" title="cultivars.diagnostics.unit_roots.adf"><span class="n">adf</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.kpss.html#cultivars.diagnostics.unit_roots.kpss" title="cultivars.diagnostics.unit_roots.kpss"><span class="n">kpss</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">multivariate</span><span class="nn">.</span><span class="nn">reduced_form</span><span class="nn">.</span><span class="nn">error_correction</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECM.html#cultivars.multivariate.reduced_form.error_correction.VECM" title="cultivars.multivariate.reduced_form.error_correction.VECM"><span class="n">VECM</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">_fred</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="w">
+</span>    <span class="p">{</span><span class="s2">&quot;</span><span class="s2">c</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">PCECC96</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">i</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">GPDIC1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">GDPC1</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">1948-01-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">2019-12-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">q</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">aggregation_method</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">avg</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">log</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a> <span class="o">*</span><span class="o">=</span> <span class="mf">100.0</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Index.html#pandas.Index" title="pandas.Index"><span class="n">levels</span><span class="o">.</span><span class="n">columns</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">endog</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_numpy.html#pandas.DataFrame.to_numpy" title="pandas.DataFrame.to_numpy"><span class="n">levels</span><span class="o">.</span><span class="n">to_numpy</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">levels</span><span class="o">.</span><span class="n">index</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">c</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">c - y</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">levels</span><span class="o">.</span><span class="n">index</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">i</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">i - y</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Log ratios to output (x100)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">levels</span><span class="o">.</span><span class="n">index</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Log levels (x100)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../_images/sphx_glr_plot_07_great_ratios_vecm_001.png" srcset="../_images/sphx_glr_plot_07_great_ratios_vecm_001.png" alt="Log ratios to output (x100), Log levels (x100)" class = "sphx-glr-single-img"/></section>
+<section id="orders-of-integration">
+<h2>Orders of integration<a class="headerlink" href="#orders-of-integration" title="Link to this heading">#</a></h2>
+<p>Each series should fail to reject a unit root in levels (ADF with a
+trend) and reject it in differences; KPSS from the other side. The
+two ratios should look stationary, which is the balanced-growth
+claim in its simplest form.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">header</span></a> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">ADF level</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ADF diff</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">KPSS level</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">KPSS diff</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">'</span><span class="s1">series</span><span class="s1">'</span><span class="si">:</span><span class="s2">8s</span><span class="si">}</span><span class="s2">  </span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">  </span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">h</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">header</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">series</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">cells</span></a> <span class="o">=</span> <span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.adf.html#cultivars.diagnostics.unit_roots.adf" title="cultivars.diagnostics.unit_roots.adf"><span class="n">adf</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">series</span></a><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ct</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.adf.html#cultivars.diagnostics.unit_roots.adf" title="cultivars.diagnostics.unit_roots.adf"><span class="n">adf</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diff.html#numpy.diff" title="numpy.diff"><span class="n">np</span><span class="o">.</span><span class="n">diff</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">series</span></a><span class="p">)</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">c</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.kpss.html#cultivars.diagnostics.unit_roots.kpss" title="cultivars.diagnostics.unit_roots.kpss"><span class="n">kpss</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">series</span></a><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ct</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.kpss.html#cultivars.diagnostics.unit_roots.kpss" title="cultivars.diagnostics.unit_roots.kpss"><span class="n">kpss</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diff.html#numpy.diff" title="numpy.diff"><span class="n">np</span><span class="o">.</span><span class="n">diff</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">series</span></a><span class="p">)</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">c</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="si">:</span><span class="s2">8s</span><span class="si">}</span><span class="s2">  </span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">  </span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cell</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">cells</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.Series"><span class="n">ratio</span></a> <span class="ow">in</span> <span class="p">(</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">c - y</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">c</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">i - y</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">i</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">levels</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="n">test</span> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.adf.html#cultivars.diagnostics.unit_roots.adf" title="cultivars.diagnostics.unit_roots.adf"><span class="n">adf</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.to_numpy.html#pandas.Series.to_numpy" title="pandas.Series.to_numpy"><span class="n">ratio</span><span class="o">.</span><span class="n">to_numpy</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">c</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="si">:</span><span class="s2">10s</span><span class="si">}</span><span class="s2">  ADF </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">statistic</span></a><span class="si">:</span><span class="s2">7.3f</span><span class="si">}</span><span class="s2">  p = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">pvalue</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>series     ADF level    ADF diff  KPSS level   KPSS diff
+c              0.972       0.015       0.856       0.496
+i              0.000       0.000       0.287       0.021
+y              0.938       0.000       0.890       0.430
+c - y       ADF  -0.922  p = 0.781
+i - y       ADF  -1.540  p = 0.514
+</pre></div>
+</div>
+</section>
+<section id="lag-order-and-the-rank-test">
+<h2>Lag order and the rank test<a class="headerlink" href="#lag-order-and-the-rank-test" title="Link to this heading">#</a></h2>
+<p>The lag order is that of the VAR in levels; the VECM uses one fewer
+lag in differences. The rank test is Johansen’s trace and maximum
+eigenvalue sequences, with p-values simulated for the deterministic
+case in hand. A constant restricted to the cointegrating space is the
+right case here: the ratios have non-zero means, the growth rates
+have drift.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECM.html#cultivars.multivariate.reduced_form.error_correction.VECM" title="cultivars.multivariate.reduced_form.error_correction.VECM"><span class="n">candidate</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECM.html#cultivars.multivariate.reduced_form.error_correction.VECM" title="cultivars.multivariate.reduced_form.error_correction.VECM"><span class="n">VECM</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">endog</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">rank</span></a><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECM.lag_order_selection.html#cultivars.multivariate.reduced_form.error_correction.VECM.lag_order_selection" title="cultivars.multivariate.reduced_form.error_correction.VECM.lag_order_selection"><span class="n">candidate</span><span class="o">.</span><span class="n">lag_order_selection</span></a><span class="p">(</span><span class="n">max_lags</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">to_table</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a> <span class="o">=</span> <span class="mi">2</span><span class="w">
+</span><span class="n">rank_test</span> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECM.html#cultivars.multivariate.reduced_form.error_correction.VECM" title="cultivars.multivariate.reduced_form.error_correction.VECM"><span class="n">VECM</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">endog</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">rank</span></a><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">)</span><span class="o">.</span><span class="n">rank_test</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="n">rank_test</span><span class="o">.</span><span class="n">to_table</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">rank</span></a> <span class="o">=</span> <span class="n">rank_test</span><span class="o">.</span><span class="n">selected_rank</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">alpha</span></a><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">by_max</span></a> <span class="o">=</span> <span class="n">rank_test</span><span class="o">.</span><span class="n">selected_rank</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">alpha</span></a><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">max_eigenvalue</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Selected rank at 5%: trace </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">rank</span></a><span class="si">}</span><span class="s2">, max-eigenvalue </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">by_max</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                              Lag order selection
+================================================================================
+Observations:                      280  Maximum lags:                        8
+Consensus:                        none
+--------------------------------------------------------------------------------
+p          AIC       BIC       HQIC           FPE
+0      13.5798   13.6188    13.5955   790044.5398
+1       0.3853    0.5411     0.4478        1.4701
+2      -0.1292   0.1434*   -0.0199*        0.8788
+3      -0.1756    0.2139    -0.0194        0.8390
+4      -0.1777    0.3286     0.0254        0.8374
+5     -0.1880*    0.4351     0.0619       0.8289*
+6      -0.1679    0.5720     0.1289        0.8459
+7      -0.1373    0.7195     0.2064        0.8726
+8      -0.1260    0.8477     0.2646        0.8829
+================================================================================
+An asterisk marks each criterion's minimum. Every order was scored on the same
+sample, so entries within a column are comparable; FPE is on a determinant
+scale, so entries across columns are not.
+                        Johansen cointegration rank test
+================================================================================
+Observations:                      286  Variables:                           3
+Deterministic:                constant  Exogenous I(1):                      0
+Selected rank:                       3
+--------------------------------------------------------------------------------
+H0         eigenvalue    trace   P&gt;trace   max-eig   P&gt;max-eig
+r &lt;= 0         0.1785   79.081    0.0000    56.242      0.0000
+r &lt;= 1         0.0476   22.839    0.0094    13.960      0.0704
+r &lt;= 2         0.0306    8.879    0.0352     8.879      0.0352
+================================================================================
+Read down from r = 0 and stop at the first row not rejected: trace selects r =
+3, max-eigenvalue selects r = 1.
+This is a sequential procedure, so the overall probability of an incorrect rank
+is not the 5% attached to any single row.
+P-values are empirical over 25,000 draws from the simulated asymptotic null for
+the 'constant' case, so the smallest resolvable value is 4e-05.
+Selected rank at 5%: trace 3, max-eigenvalue 1
+</pre></div>
+</div>
+</section>
+<section id="estimation-at-rank-two">
+<h2>Estimation at rank two<a class="headerlink" href="#estimation-at-rank-two" title="Link to this heading">#</a></h2>
+<p>Balanced growth predicts rank two whatever the test selects in a
+given sample, and the model below is estimated at that rank so the
+cointegrating vectors can be read against theory. Normalizing both
+vectors on output turns them into the two ratios; the balanced-growth
+values are (-1, 0, 1) and (0, -1, 1).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.html#cultivars.multivariate.reduced_form.error_correction.VECMResult" title="cultivars.multivariate.reduced_form.error_correction.VECMResult"><span class="n">vecm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECM.html#cultivars.multivariate.reduced_form.error_correction.VECM" title="cultivars.multivariate.reduced_form.error_correction.VECM"><span class="n">VECM</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">endog</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">rank</span></a><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.summary.html#cultivars.multivariate.reduced_form.error_correction.VECMResult.summary" title="cultivars.multivariate.reduced_form.error_correction.VECMResult.summary"><span class="n">vecm</span><span class="o">.</span><span class="n">summary</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.normalized_beta.html#cultivars.multivariate.reduced_form.error_correction.VECMResult.normalized_beta" title="cultivars.multivariate.reduced_form.error_correction.VECMResult.normalized_beta"><span class="n">vecm</span><span class="o">.</span><span class="n">normalized_beta</span></a><span class="p">(</span><span class="n">on</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">alpha</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.normalized_alpha.html#cultivars.multivariate.reduced_form.error_correction.VECMResult.normalized_alpha" title="cultivars.multivariate.reduced_form.error_correction.VECMResult.normalized_alpha"><span class="n">vecm</span><span class="o">.</span><span class="n">normalized_alpha</span></a><span class="p">(</span><span class="n">on</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Cointegrating vectors normalized on y (rows c, i, y):</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.round.html#numpy.round" title="numpy.round"><span class="n">np</span><span class="o">.</span><span class="n">round</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Adjustment coefficients on that basis:</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.round.html#numpy.round" title="numpy.round"><span class="n">np</span><span class="o">.</span><span class="n">round</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">alpha</span></a><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                                VECM(2) Results
+================================================================================
+Model:                    VECM(2, r=2)  Log-likelihood:              -1213.232
+Variables:                           3  AIC:                          2474.464
+Rank:                                2  BIC:                          2562.208
+Deterministic:                constant  HQIC:                         2509.635
+Observations:                      286  Common trends:                       1
+--------------------------------------------------------------------------------
+                   coef   std err        z   P&gt;|z|     [0.025    0.975]
+c: const         2.2928    3.1408    0.730   0.465    -3.8631    8.4486
+c: D.c.L1        0.0192    0.0833    0.231   0.817    -0.1440    0.1825
+c: D.i.L1        0.0536    0.0186    2.886   0.004     0.0172    0.0900
+c: D.y.L1       -0.0159    0.1173   -0.136   0.892    -0.2459    0.2141
+c: ec1           0.0216    0.0456    0.475   0.635    -0.0677    0.1110
+c: ec2          -0.0118    0.0456   -0.259   0.796    -0.1011    0.0775
+i: const       -16.6556   14.8633   -1.121   0.262   -45.7871   12.4758
+i: D.c.L1        3.4888    0.3941    8.852   0.000     2.7164    4.2613
+i: D.i.L1        0.3479    0.0878    3.960   0.000     0.1757    0.5201
+i: D.y.L1       -1.3675    0.5553   -2.463   0.014    -2.4558   -0.2792
+i: ec1          -1.1384    0.2157   -5.279   0.000    -1.5611   -0.7157
+i: ec2          -0.5694    0.2157   -2.640   0.008    -0.9920   -0.1467
+y: const         6.9038    3.3734    2.047   0.041     0.2920   13.5157
+y: D.c.L1        0.3601    0.0895    4.026   0.000     0.1848    0.5355
+y: D.i.L1        0.0353    0.0199    1.773   0.076    -0.0037    0.0744
+y: D.y.L1        0.0559    0.1260    0.444   0.657    -0.1911    0.3029
+y: ec1          -0.0441    0.0489   -0.901   0.367    -0.1401    0.0518
+y: ec2          -0.1511    0.0489   -3.087   0.002    -0.2470   -0.0552
+beta[1]: c       1.0000
+beta[1]: i      -0.9060
+beta[1]: y       0.1233
+beta[2]: c       1.0000
+beta[2]: i       0.0174
+beta[2]: y      -1.0939
+================================================================================
+Common trends: 1 of 3   max |companion root| = 1.0000
+Coefficients and their standard errors describe the short-run regression of
+differences on deterministic terms, lagged differences, and the error-correction
+terms; they are conditional on beta, which converges fast enough to be treated
+as known.
+Only the cointegrating space is identified without further restrictions, so read
+beta through normalized_beta() and treat any single vector as one basis among
+many.
+The ec rows are the loadings that pair with beta as the decomposition normalizes
+it, not with the basis printed below; rescaling beta rescales alpha inversely,
+so the product and every z-statistic are unchanged. normalized_alpha() returns
+the loadings on the printed basis.
+Orthogonalized impulse responses and the variance decomposition use a Cholesky
+factor, which imposes the recursive ordering of `names`; that is a structural
+assumption, not a reduced-form result.
+Cointegrating vectors normalized on y (rows c, i, y):
+[[ 8.107 -0.914]
+ [-7.346 -0.016]
+ [ 1.     1.   ]]
+Adjustment coefficients on that basis:
+[[-0.0003 -0.006 ]
+ [ 0.0174 -0.2907]
+ [ 0.0007 -0.0771]]
+</pre></div>
+</div>
+</section>
+<section id="who-adjusts">
+<h2>Who adjusts?<a class="headerlink" href="#who-adjusts" title="Link to this heading">#</a></h2>
+<p>Weak exogeneity of a variable means its equation carries no
+error-correction term: it drives the common trend without responding
+to disequilibrium. In the King-Plosser-Stock-Watson reading output is
+the candidate; the tests say which of the three, if any, the data
+allow to be treated that way.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">:</span><span class="w">
+</span>    <span class="n">test</span> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.weak_exogeneity.html#cultivars.multivariate.reduced_form.error_correction.VECMResult.weak_exogeneity" title="cultivars.multivariate.reduced_form.error_correction.VECMResult.weak_exogeneity"><span class="n">vecm</span><span class="o">.</span><span class="n">weak_exogeneity</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="si">}</span><span class="s2">: Wald </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">statistic</span></a><span class="si">:</span><span class="s2">7.3f</span><span class="si">}</span><span class="s2">  df </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">test</span><span class="o">.</span><span class="n">df</span></a><span class="si">}</span><span class="s2">  p = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">test</span><span class="o">.</span><span class="n">pvalue</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>c: Wald   0.293  df 2  p = 0.864
+i: Wald  34.834  df 2  p = 0.000
+y: Wald  10.340  df 2  p = 0.006
+</pre></div>
+</div>
+</section>
+<section id="the-error-correction-terms">
+<h2>The error-correction terms<a class="headerlink" href="#the-error-correction-terms" title="Link to this heading">#</a></h2>
+<p>The two terms are the deviations from the estimated long-run
+relations. Mean-reverting, persistent, and with recessions visible as
+investment falling below its long-run share.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">terms</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.error_correction_terms.html#cultivars.multivariate.reduced_form.error_correction.VECMResult.error_correction_terms" title="cultivars.multivariate.reduced_form.error_correction.VECMResult.error_correction_terms"><span class="n">vecm</span><span class="o">.</span><span class="n">error_correction_terms</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">dates</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">levels</span><span class="o">.</span><span class="n">index</span></a><span class="p">[</span><span class="p">:</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">terms</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">dates</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">terms</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">terms</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ec1</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">dates</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">terms</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">terms</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ec2</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="matplotlib.axes.Axes.axhline"><span class="n">ax</span><span class="o">.</span><span class="n">axhline</span></a><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">k</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Error-correction terms (demeaned)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../_images/sphx_glr_plot_07_great_ratios_vecm_002.png" srcset="../_images/sphx_glr_plot_07_great_ratios_vecm_002.png" alt="Error-correction terms (demeaned)" class = "sphx-glr-single-img"/></section>
+<section id="forecasts-that-respect-the-long-run">
+<h2>Forecasts that respect the long run<a class="headerlink" href="#forecasts-that-respect-the-long-run" title="Link to this heading">#</a></h2>
+<p>A VECM forecast keeps the ratios tied to their long-run values; a VAR
+in differences would let them wander. The eight-quarter forecast
+below is in levels, with the common trend extrapolated by its drift.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">steps</span></a> <span class="o">=</span> <span class="mi">8</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">forecast</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-error_correction sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.forecast.html#cultivars.multivariate.reduced_form.error_correction.VECMResult.forecast" title="cultivars.multivariate.reduced_form.error_correction.VECMResult.forecast"><span class="n">vecm</span><span class="o">.</span><span class="n">forecast</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">steps</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">horizon</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">steps</span></a> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a><span class="p">,</span> <span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">j</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">,</span> <span class="nb">enumerate</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">)</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="o">-</span><span class="mi">19</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">endog</span></a><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">j</span></a><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">k</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">observed</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">horizon</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">forecast</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">j</span></a><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C3</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">forecast</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">name</span></a><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">quarters from end of sample</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../_images/sphx_glr_plot_07_great_ratios_vecm_003.png" srcset="../_images/sphx_glr_plot_07_great_ratios_vecm_003.png" alt="c, i, y" class = "sphx-glr-single-img"/></section>
+<section id="what-to-take-away">
+<h2>What to take away<a class="headerlink" href="#what-to-take-away" title="Link to this heading">#</a></h2>
+<p>The sequential rank test is a procedure, not a test: its size is not
+the 5 percent of any row, and the economics should decide between
+adjacent ranks when the statistics are close. Reading the normalized
+vectors against (-1, 0, 1) and (0, -1, 1) is the substantive check;
+the gap between the estimated investment share and its theoretical
+value is a known finding from the post-1990 sample and a reason to
+re-run the exercise ending in 1988, as the original paper did.</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-07-great-ratios-vecm-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/588f7f2f4671b6386998d60b7aebb025/plot_07_great_ratios_vecm.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_07_great_ratios_vecm.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/dc6dc2d09166c5d9a72a9baeb5fee1e7/plot_07_great_ratios_vecm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_07_great_ratios_vecm.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/11bf1113c2fe03ab3dc4550222cdbf70/plot_07_great_ratios_vecm.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_07_great_ratios_vecm.zip</span></code></a></p>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_02_blanchard_quah.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Supply and demand shocks with long-run restrictions</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data">Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#orders-of-integration">Orders of integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lag-order-and-the-rank-test">Lag order and the rank test</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estimation-at-rank-two">Estimation at rank two</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#who-adjusts">Who adjusts?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-error-correction-terms">The error-correction terms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forecasts-that-respect-the-long-run">Forecasts that respect the long run</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-take-away">What to take away</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div class="cv-footer">
+  <section
+    class="cv-footer__band cv-footer__band--guide"
+    aria-label="Documentation sections"
+  >
+    <div class="cv-footer__inner cv-footer__columns">
+      <div class="cv-footer__column">
+        <h2>API reference</h2>
+        <p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+        <a class="cv-footer__cta" href="../api/index.html"
+          >View the API<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+      <div class="cv-footer__column">
+        <h2>Examples</h2>
+        <p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+        <a class="cv-footer__cta" href="index.html"
+          >View the examples<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+      <div class="cv-footer__column">
+        <h2>Engine</h2>
+        <p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+        <a class="cv-footer__cta" href="../engine/index.html"
+          >View the engine<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="cv-footer__band cv-footer__band--site"
+    aria-label="Project links"
+  >
+    <div class="cv-footer__inner">
+      <div class="cv-footer__grid">
+        <div class="cv-footer__install">
+          <h2>Get cultivars</h2>
+          <p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+          <pre
+            class="cv-footer__code"
+          ><code>pip install --pre cultivars==1.0.0a3</code></pre>
+        </div>
+
+        <nav class="cv-footer__links" aria-label="Resources">
+          <h2>Resources</h2>
+          <ul>
+            <li>
+              <a href="https://github.com/nikhilxsunder/cultivars/releases"
+                >Releases</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md"
+                >Changelog</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/nikhilxsunder/cultivars/issues"
+                >Issues</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md"
+                >Contributing</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md"
+                >Security</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md"
+                >Code of conduct</a
+              >
+            </li>
+          </ul>
+        </nav>
+
+        <nav class="cv-footer__links" aria-label="Related projects">
+          <h2>Related</h2>
+          <ul>
+            <li>
+              <a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a
+              ><span class="cv-footer__muted"> FRED client</span>
+            </li>
+            <li>
+              <a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a
+              ><span class="cv-footer__muted"> SEC EDGAR client</span>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <ul class="cv-footer__social" aria-label="Project pages">
+        <li>
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"
+            ><i class="fa-brands fa-github" aria-hidden="true"></i
+            ><span class="visually-hidden">GitHub</span></a
+          >
+        </li>
+        <li>
+          <a href="https://pypi.org/project/cultivars/" title="PyPI"
+            ><i class="fa-brands fa-python" aria-hidden="true"></i
+            ><span class="visually-hidden">PyPI</span></a
+          >
+        </li>
+        <li>
+          <a
+            href="https://app.codecov.io/gh/nikhilxsunder/cultivars"
+            title="Codecov"
+            ><i class="fa-solid fa-umbrella" aria-hidden="true"></i
+            ><span class="visually-hidden">Codecov</span></a
+          >
+        </li>
+        <li>
+          <a
+            href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff"
+            title="Cite"
+            ><i class="fa-solid fa-quote-left" aria-hidden="true"></i
+            ><span class="visually-hidden">Cite</span></a
+          >
+        </li>
+      </ul>
+
+      <div class="cv-footer__legal">
+        <p>
+          &copy; 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE"
+            >MIT License</a
+          >. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED&reg; is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+        <p class="cv-footer__build">
+          cultivars 1.0.0a3 &middot; built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/"
+            >PyData Sphinx Theme</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</div></div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>
