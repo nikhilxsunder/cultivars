@@ -6,19 +6,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="Data" />
+<meta property="og:title" content="Supply and demand shocks with long-run restrictions" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/auto_examples/plot_02_blanchard_quah.html" />
 <meta property="og:site_name" content="cultivars" />
-<meta property="og:description" content="Supply and demand shocks with long-run restrictions. Blanchard and Quah (1989) identify aggregate supply and demand shocks in a bivariate system of output growth and unemployment from one restriction at the infinite horizon: demand shocks have no permanent effect on the level of output. Nothing i..." />
+<meta property="og:description" content="Blanchard and Quah (1989) identify aggregate supply and demand shocks in a bivariate system of output growth and unemployment from one restriction at the infinite horizon: demand shocks have no permanent effect on the level of output. Nothing is assumed about impact timing, which is what makes th..." />
 <meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
 <meta property="og:image:alt" content="cultivars" />
-<meta name="description" content="Supply and demand shocks with long-run restrictions. Blanchard and Quah (1989) identify aggregate supply and demand shocks in a bivariate system of output growth and unemployment from one restriction at the infinite horizon: demand shocks have no permanent effect on the level of output. Nothing i..." />
+<meta name="description" content="Blanchard and Quah (1989) identify aggregate supply and demand shocks in a bivariate system of output growth and unemployment from one restriction at the infinite horizon: demand shocks have no permanent effect on the level of output. Nothing is assumed about impact timing, which is what makes th..." />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <title>Data &#8212; cultivars</title>
+    <title>Supply and demand shocks with long-run restrictions &#8212; cultivars</title>
   
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/auto_examples/plot_02_blanchard_quah.8f3fef88-5bb6-4ae6-9a98-3823e2bdc91d.js"></script>
+    <script defer="defer" src="../_static/tippy/auto_examples/plot_02_blanchard_quah.d317f54a-0ef1-428d-8a44-f6467c10ceba.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_02_blanchard_quah';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
@@ -522,15 +522,7 @@
 <li class="toctree-l1"><a class="reference internal" href="plot_01_monetary_policy_var.html">Monetary policy shocks in a recursive VAR</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_04_heteroskedasticity_and_proxy.html">Monetary policy without recursiveness: heteroskedasticity and proxies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_03_oil_market_sign_restrictions.html">Oil supply and demand shocks: sign, narrative and set identification</a></li>
-<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Data</a></li>
-
-
-
-
-
-
-
-
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Supply and demand shocks with long-run restrictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_07_great_ratios_vecm.html">The great ratios: cointegration and a vector error-correction model</a></li>
 </ul>
 </div>
@@ -575,7 +567,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Data</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Supply and demand shocks with long-run restrictions</span></li>
   </ul>
 </nav>
 </div>
@@ -597,8 +589,8 @@
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-02-blanchard-quah-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<p class="sphx-glr-example-title" id="sphx-glr-auto-examples-plot-02-blanchard-quah-py">Supply and demand shocks with long-run restrictions.</p>
-<hr class="docutils" />
+<section class="sphx-glr-example-title" id="supply-and-demand-shocks-with-long-run-restrictions">
+<span id="sphx-glr-auto-examples-plot-02-blanchard-quah-py"></span><h1>Supply and demand shocks with long-run restrictions<a class="headerlink" href="#supply-and-demand-shocks-with-long-run-restrictions" title="Link to this heading">#</a></h1>
 <p>Blanchard and Quah (1989) identify aggregate supply and demand shocks
 in a bivariate system of output growth and unemployment from one
 restriction at the infinite horizon: demand shocks have no permanent
@@ -612,18 +604,19 @@ pre-treatments – a break in mean growth in 1974 and a linear trend in
 unemployment – fits the system, identifies, and reads the cumulated
 responses and the variance shares.</p>
 <section id="data">
-<h1>Data<a class="headerlink" href="#data" title="Link to this heading">#</a></h1>
+<h2>Data<a class="headerlink" href="#data" title="Link to this heading">#</a></h2>
 <p>Real GDP (chained 2017 dollars) and the civilian unemployment rate,
 quarterly, 1948Q1 to 2019Q4. Growth is the continuously compounded
 quarterly percent change, <code class="docutils literal notranslate"><span class="pre">units=&quot;cch&quot;</span></code> on FRED’s side, so the level
 of output is the cumulated sum of the series.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">_fred</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch</span><span class="w">
 </span><span class="w">
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">diagnostics</span><span class="nn">.</span><span class="nn">unit_roots</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.adf.html#cultivars.diagnostics.unit_roots.adf" title="cultivars.diagnostics.unit_roots.adf"><span class="n">adf</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-diagnostics-unit_roots sphx-glr-backref-type-py-function reference internal" href="../api/generated/cultivars.diagnostics.unit_roots.kpss.html#cultivars.diagnostics.unit_roots.kpss" title="cultivars.diagnostics.unit_roots.kpss"><span class="n">kpss</span></a><span class="w">
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">multivariate</span><span class="nn">.</span><span class="nn">reduced_form</span><span class="nn">.</span><span class="nn">vector_autoregression</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-multivariate-reduced_form-vector_autoregression sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="w">
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">multivariate</span><span class="nn">.</span><span class="nn">structural</span><span class="nn">.</span><span class="nn">zero_restrictions</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-multivariate-structural-zero_restrictions sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.LongRunSVAR.html#cultivars.multivariate.structural.zero_restrictions.LongRunSVAR" title="cultivars.multivariate.structural.zero_restrictions.LongRunSVAR"><span class="n">LongRunSVAR</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">_fred</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch</span><span class="w">
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">raw</span></a> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="w">
 </span>    <span class="p">{</span><span class="s2">&quot;</span><span class="s2">gdp</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">GDPC1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">UNRATE</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
@@ -646,7 +639,7 @@ date
 </div>
 </section>
 <section id="integration-orders">
-<h1>Integration orders<a class="headerlink" href="#integration-orders" title="Link to this heading">#</a></h1>
+<h2>Integration orders<a class="headerlink" href="#integration-orders" title="Link to this heading">#</a></h2>
 <p>The long-run restriction needs output growth to be stationary (so the
 level has a unit root) and unemployment to be stationary in levels. ADF
 tests the unit-root null; KPSS tests the stationarity null. Reading
@@ -671,7 +664,7 @@ log GDP level   ADF  -1.046 (p=0.938) with trend
 </div>
 </section>
 <section id="the-paper-s-pre-treatment">
-<h1>The paper’s pre-treatment<a class="headerlink" href="#the-paper-s-pre-treatment" title="Link to this heading">#</a></h1>
+<h2>The paper’s pre-treatment<a class="headerlink" href="#the-paper-s-pre-treatment" title="Link to this heading">#</a></h2>
 <p>Blanchard and Quah demean growth separately before and after 1974Q1,
 where mean growth fell, and remove a linear trend from unemployment.
 Both adjustments are deterministic and leave the shocks untouched; they
@@ -688,7 +681,7 @@ keep the VAR from spending its lags on a mean shift.</p>
 </span></pre></div></div>
 </section>
 <section id="reduced-form">
-<h1>Reduced form<a class="headerlink" href="#reduced-form" title="Link to this heading">#</a></h1>
+<h2>Reduced form<a class="headerlink" href="#reduced-form" title="Link to this heading">#</a></h2>
 <p>The paper uses eight lags; the criteria below say how much of that the
 data support. The long-run factorization requires a stationary system,
 so the stability check is not optional here: a root near one would make
@@ -725,7 +718,7 @@ Largest companion root 0.877; stable: True
 </div>
 </section>
 <section id="long-run-identification">
-<h1>Long-run identification<a class="headerlink" href="#long-run-identification" title="Link to this heading">#</a></h1>
+<h2>Long-run identification<a class="headerlink" href="#long-run-identification" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">order=(&quot;dy&quot;,</span> <span class="pre">&quot;u&quot;)</span></code> declares output growth as the variable whose level
 only the first shock moves permanently. The first shock is therefore
 supply; the second, which has no long-run effect on output, is demand.
@@ -767,7 +760,7 @@ Long-run impact (rows: dy, u; columns: supply, demand):
 </div>
 </section>
 <section id="cumulated-responses">
-<h1>Cumulated responses<a class="headerlink" href="#cumulated-responses" title="Link to this heading">#</a></h1>
+<h2>Cumulated responses<a class="headerlink" href="#cumulated-responses" title="Link to this heading">#</a></h2>
 <p>The output panel plots the cumulated response of growth, which is the
 response of the level. The demand response must return to zero; that is
 the restriction, not a finding. The supply response settles at the
@@ -790,7 +783,7 @@ directly.</p>
 </span></pre></div></div>
 <img src="../_images/sphx_glr_plot_02_blanchard_quah_001.png" srcset="../_images/sphx_glr_plot_02_blanchard_quah_001.png" alt="Responses to one-standard-deviation shocks, Level of output (%), Unemployment rate (pp)" class = "sphx-glr-single-img"/></section>
 <section id="variance-shares">
-<h1>Variance shares<a class="headerlink" href="#variance-shares" title="Link to this heading">#</a></h1>
+<h2>Variance shares<a class="headerlink" href="#variance-shares" title="Link to this heading">#</a></h2>
 <p>Blanchard and Quah’s headline result is that demand shocks account for
 most of the forecast error variance of output at short horizons and a
 declining share as the horizon grows, by construction reaching zero in
@@ -812,7 +805,7 @@ the level at infinity. For unemployment the demand share stays high.</p>
 </div>
 </section>
 <section id="historical-decomposition">
-<h1>Historical decomposition<a class="headerlink" href="#historical-decomposition" title="Link to this heading">#</a></h1>
+<h2>Historical decomposition<a class="headerlink" href="#historical-decomposition" title="Link to this heading">#</a></h2>
 <p>The decomposition attributes the deviation of unemployment from its
 deterministic path to the two shocks. The paper’s reading is that
 recessions are predominantly demand events, with the 1974-75 episode
@@ -830,7 +823,7 @@ the one where supply plays a visible role.</p>
 </span></pre></div></div>
 <img src="../_images/sphx_glr_plot_02_blanchard_quah_002.png" srcset="../_images/sphx_glr_plot_02_blanchard_quah_002.png" alt="Historical decomposition of unemployment" class = "sphx-glr-single-img"/></section>
 <section id="what-to-take-away">
-<h1>What to take away<a class="headerlink" href="#what-to-take-away" title="Link to this heading">#</a></h1>
+<h2>What to take away<a class="headerlink" href="#what-to-take-away" title="Link to this heading">#</a></h2>
 <p>Long-run restrictions buy identification without timing assumptions, at
 the price of estimating an infinite-horizon object from a finite
 sample: the long-run multiplier is a ratio of sums of VAR coefficients,
@@ -849,6 +842,7 @@ result.</p>
 <p><a class="reference download internal" download="" href="../_downloads/ea408f95beb56df3e50410fa5584194b/plot_02_blanchard_quah.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_02_blanchard_quah.zip</span></code></a></p>
 </div>
 </div>
+</section>
 </section>
 
 
@@ -898,17 +892,16 @@ result.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Data</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-orders">Integration orders</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#the-paper-s-pre-treatment">The paper’s pre-treatment</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reduced-form">Reduced form</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#long-run-identification">Long-run identification</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#cumulated-responses">Cumulated responses</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-shares">Variance shares</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#historical-decomposition">Historical decomposition</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-take-away">What to take away</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data">Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-orders">Integration orders</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-paper-s-pre-treatment">The paper’s pre-treatment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduced-form">Reduced form</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#long-run-identification">Long-run identification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cumulated-responses">Cumulated responses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-shares">Variance shares</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#historical-decomposition">Historical decomposition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-take-away">What to take away</a></li>
 </ul>
-
   </nav></div>
 
 </div></div>

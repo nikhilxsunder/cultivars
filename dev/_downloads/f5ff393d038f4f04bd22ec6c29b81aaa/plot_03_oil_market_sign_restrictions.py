@@ -70,7 +70,7 @@ from cultivars.multivariate.structural.sign_restrictions import (
 from _fred import fetch
 
 raw = fetch(
-    {"prod": "MCRFPUS2", "ip": "INDPRO", "wti": "WTISPLC", "cpi": "CPIAUCSL"},
+    {"prod": "IPG211111CS", "ip": "INDPRO", "wti": "WTISPLC", "cpi": "CPIAUCSL"},
     start="1972-12-01",
     end="2019-12-01",
 )
@@ -107,7 +107,7 @@ signs = {
     "agg_demand": {"prod": "+", "act": "+", "rpo": "+"},
     "oil_demand": {"prod": "+", "act": "-", "rpo": "+"},
 }
-sign_set = SignRestrictedSVAR(var, signs, horizons=(0, 1), draws=500, seed=3).identify()
+sign_set = SignRestrictedSVAR(var, signs, horizons=(0,), draws=500, seed=3).identify()
 print(sign_set.summary())
 print(f"Acceptance rate {100 * sign_set.acceptance_rate:.2f}% over {sign_set.attempts} rotations")
 
@@ -139,7 +139,7 @@ try:
         signs,
         shock_signs=[("supply", event, "+")],
         contributions=[("supply", "prod", event, "most")],
-        horizons=(0, 1),
+        horizons=(0,),
         draws=300,
         max_attempts=150_000,
         seed=3,
@@ -166,7 +166,7 @@ else:
 # distance between them and the sign-restricted quantile bands is the
 # contribution of the uniform prior over rotations.
 
-bounds = SetIdentifiedSVAR(var, signs["supply"], shock="supply", horizons=(0, 1)).identify()
+bounds = SetIdentifiedSVAR(var, signs["supply"], shock="supply", horizons=(0,)).identify()
 print(bounds.summary())
 exact = bounds.irf(horizon)
 

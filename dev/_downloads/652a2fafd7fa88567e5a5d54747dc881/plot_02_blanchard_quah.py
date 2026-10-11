@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-r"""Supply and demand shocks with long-run restrictions.
-
+r"""
+Supply and demand shocks with long-run restrictions
 ===================================================
 
 Blanchard and Quah (1989) identify aggregate supply and demand shocks
@@ -48,11 +48,12 @@ responses and the variance shares.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from _fred import fetch
 
 from cultivars.diagnostics.unit_roots import adf, kpss
 from cultivars.multivariate.reduced_form.vector_autoregression import VAR
 from cultivars.multivariate.structural.zero_restrictions import LongRunSVAR
+
+from _fred import fetch
 
 raw = fetch(
     {"gdp": "GDPC1", "u": "UNRATE"},
