@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Kalman, Durbin-Koopman, extended, unscented, particle, Hamilton and Kim filters in cultivars: system conventions, likelihoods, and use." name="description"/>
+<meta content="State-space models and filtering" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/user_guide/state_space.html" property="og:url"/>
+<meta content="cultivars" property="og:site_name"/>
+<meta content="The cultivars.state_space package holds the four filtering engines that every latent-state model in the library runs on: a linear-Gaussian system, a nonlinear system, a discrete Markov chain over an autoregression, and a linear system whose matrices switch with such a chain. An engine is a fully ..." property="og:description"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" property="og:image"/>
+<meta content="cultivars" property="og:image:alt"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="cultivars Documentation" property="og:site_name"/>
+<meta content="cultivars Logo" property="og:image:alt"/>
+<meta content="2026-10-12T19:40:35+00:00" property="article:modified_time"/>
+<title>State-space models and filtering — cultivars</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/plot_directive.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=c83e6b79" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=7fc003df" rel="stylesheet" type="text/css"/>
+<link href="../_static/consent.css?v=8cbde1cf" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script defer="" src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<script src="../_static/documentation_options.js?v=3700ee43"></script>
+<script src="../_static/doctools.js?v=fd6eb6e6"></script>
+<script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+<script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+<script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+<script defer="defer" src="../_static/tippy/user_guide/state_space.667886c2-fb56-46cb-a9de-7a801a6c2ca6.js"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/state_space';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+<script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+<link href="https://nikhilxsunder.github.io/cultivars/stable/user_guide/state_space.html" rel="canonical"/>
+<link href="../_static/cultivars-favicon.ico" rel="icon"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="spectral.html" rel="next" title="Spectral analysis and filtering"/>
+<link href="nonlinear_multivariate.html" rel="prev" title="Nonlinear, time-varying and regime-switching VARs"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="1.0" name="docsearch:version"/>
+<meta content="2026-10-12" name="docbuild:last-update"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
+</head>
+<body data-default-mode="">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle" type="button">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="cultivars - Home" class="logo__image only-light" src="../_static/cultivars-logo.png"/>
+<img alt="cultivars - Home" class="logo__image only-dark pst-js-only" src="../_static/cultivars-logo.png"/>
+</a></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle" type="button">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button" type="button">
+<svg aria-hidden="true" class="pst-icon" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing_a_model.html">Choosing a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nuances.html">Nuances and known issues</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Before estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.html">Diagnostics and specification testing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Univariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="univariate_linear.html">Univariate linear models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility.html">Volatility models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="univariate_nonlinear.html">Nonlinear and regime-switching univariate models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multivariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="var.html">Vector autoregressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="var_extensions.html">Beyond the basic VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_identification.html">Structural identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_vars.html">Bayesian VARs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="large_dimensional.html">Large and high-dimensional systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nonlinear_multivariate.html">Nonlinear, time-varying and regime-switching VARs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Engines and frequency-domain views</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">State-space models and filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral analysis and filtering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">After estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="forecasting.html">Forecasting and forecast evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_workflow.html">The Bayesian workflow</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="index.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">State-space models and filtering</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section id="state-space-models-and-filtering">
+<h1>State-space models and filtering<a class="headerlink" href="#state-space-models-and-filtering" title="Link to this heading">#</a></h1>
+<p>The <a class="reference internal" href="../api/generated/cultivars.state_space.html#module-cultivars.state_space" title="cultivars.state_space"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.state_space</span></code></a> package holds the four filtering engines
+that every latent-state model in the library runs on: a linear-Gaussian
+system, a nonlinear system, a discrete Markov chain over an
+autoregression, and a linear system whose matrices switch with such a
+chain. An engine is a fully specified system that filters, smooths and
+evaluates a likelihood; it has no parameters, no <code class="docutils literal notranslate"><span class="pre">fit</span></code> and no
+estimator. Use this page to write a system down directly, or to
+understand and re-use the engine behind a fitted unobserved-components,
+term-structure, volatility or regime-switching model. Estimating those
+models is covered on their own pages (<a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a>,
+<a class="reference internal" href="volatility.html"><span class="doc">Volatility models</span></a>, <a class="reference internal" href="univariate_nonlinear.html"><span class="doc">Nonlinear and regime-switching univariate models</span></a>, <a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a>,
+<a class="reference internal" href="nonlinear_multivariate.html"><span class="doc">Nonlinear, time-varying and regime-switching VARs</span></a>).</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-family-at-a-glance" id="id3">The family at a glance</a></p></li>
+<li><p><a class="reference internal" href="#one-grammar-for-four-engines" id="id4">One grammar for four engines</a></p></li>
+<li><p><a class="reference internal" href="#linear-gaussian-systems" id="id5">Linear-Gaussian systems</a></p></li>
+<li><p><a class="reference internal" href="#nonlinear-and-non-gaussian-systems" id="id6">Nonlinear and non-Gaussian systems</a></p></li>
+<li><p><a class="reference internal" href="#discrete-regimes-the-hamilton-filter" id="id7">Discrete regimes: the Hamilton filter</a></p></li>
+<li><p><a class="reference internal" href="#switching-linear-systems-kim-s-collapse" id="id8">Switching linear systems: Kim’s collapse</a></p></li>
+<li><p><a class="reference internal" href="#how-the-pieces-connect" id="id9">How the pieces connect</a></p></li>
+<li><p><a class="reference internal" href="#nuances-and-gotchas" id="id10">Nuances and gotchas</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id11">See also</a></p></li>
+</ul>
+</nav>
+<section id="the-family-at-a-glance">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">The family at a glance</a><a class="headerlink" href="#the-family-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 22.0%"/>
+<col style="width: 32.0%"/>
+<col style="width: 24.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Module</p></th>
+<th class="head"><p>System in one line</p></th>
+<th class="head"><p>Use when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.LinearGaussianSSM.html#cultivars.state_space.linear_gaussian.LinearGaussianSSM" title="cultivars.state_space.linear_gaussian.LinearGaussianSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.html#module-cultivars.state_space.linear_gaussian" title="cultivars.state_space.linear_gaussian"><code class="xref py py-mod docutils literal notranslate"><span class="pre">linear_gaussian</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(y_t = Z\alpha_t + d + \varepsilon_t\)</span>,
+<span class="math notranslate nohighlight">\(\alpha_{t+1} = T\alpha_t + c + R\eta_t\)</span>, Gaussian noise</p></td>
+<td><p>The system is linear and Gaussian; you want the exact likelihood,
+smoothed states, or conditional state draws.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.html#cultivars.state_space.nonlinear.NonlinearSSM" title="cultivars.state_space.nonlinear.NonlinearSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonlinearSSM</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.html#module-cultivars.state_space.nonlinear" title="cultivars.state_space.nonlinear"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nonlinear</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(y_t = g(\alpha_t) + \varepsilon_t\)</span>,
+<span class="math notranslate nohighlight">\(\alpha_{t+1} = f(\alpha_t) + \eta_t\)</span>, or non-Gaussian
+through hooks</p></td>
+<td><p>The maps are nonlinear (extended, unscented filters) or the noise
+is non-Gaussian (particle filter).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.MarkovSwitchingSSM.html#cultivars.state_space.regime_switching.MarkovSwitchingSSM" title="cultivars.state_space.regime_switching.MarkovSwitchingSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.html#module-cultivars.state_space.regime_switching" title="cultivars.state_space.regime_switching"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regime_switching</span></code></a></p></td>
+<td><p>Intercept- and variance-switching AR(<span class="math notranslate nohighlight">\(p\)</span>) driven by a
+<span class="math notranslate nohighlight">\(K\)</span>-state chain</p></td>
+<td><p>You need exact regime probabilities and likelihood (Hamilton
+filter, Kim smoother).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.html#cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM" title="cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.html#module-cultivars.state_space.regime_switching" title="cultivars.state_space.regime_switching"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regime_switching</span></code></a></p></td>
+<td><p>One linear-Gaussian system per regime, chain on top</p></td>
+<td><p>A continuous state and a regime chain together (Kim’s 1994
+collapse; approximate likelihood).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Every engine reports its output in a frozen result record:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 40.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Record</p></th>
+<th class="head"><p>Produced by</p></th>
+<th class="head"><p>Fields</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.html#cultivars.state_space.linear_gaussian.KalmanFilterResult" title="cultivars.state_space.linear_gaussian.KalmanFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">KalmanFilterResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM.filter</span></code>, <code class="docutils literal notranslate"><span class="pre">NonlinearSSM.extended_filter</span></code>,
+<code class="docutils literal notranslate"><span class="pre">NonlinearSSM.unscented_filter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">loglikelihood</span></code>, <code class="docutils literal notranslate"><span class="pre">loglikelihood_contributions</span></code>,
+<code class="docutils literal notranslate"><span class="pre">predicted_state</span></code>, <code class="docutils literal notranslate"><span class="pre">predicted_state_cov</span></code>, <code class="docutils literal notranslate"><span class="pre">filtered_state</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filtered_state_cov</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.DurbinKoopmanSmootherResult.html#cultivars.state_space.linear_gaussian.DurbinKoopmanSmootherResult" title="cultivars.state_space.linear_gaussian.DurbinKoopmanSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DurbinKoopmanSmootherResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM.smooth</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">smoothed_state</span></code>, <code class="docutils literal notranslate"><span class="pre">smoothed_state_cov</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.RtsSmootherResult.html#cultivars.state_space.nonlinear.RtsSmootherResult" title="cultivars.state_space.nonlinear.RtsSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RtsSmootherResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">extended_smoother</span></code>, <code class="docutils literal notranslate"><span class="pre">unscented_smoother</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">smoothed_state</span></code>, <code class="docutils literal notranslate"><span class="pre">smoothed_state_cov</span></code>, <code class="docutils literal notranslate"><span class="pre">method</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.ParticleFilterResult.html#cultivars.state_space.nonlinear.ParticleFilterResult" title="cultivars.state_space.nonlinear.ParticleFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleFilterResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">particle_filter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">loglikelihood</span></code>, <code class="docutils literal notranslate"><span class="pre">loglikelihood_contributions</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filtered_state</span></code>, <code class="docutils literal notranslate"><span class="pre">filtered_state_std</span></code>,
+<code class="docutils literal notranslate"><span class="pre">effective_sample_size</span></code>, <code class="docutils literal notranslate"><span class="pre">n_particles</span></code>, <code class="docutils literal notranslate"><span class="pre">method</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.ParticleSmootherResult.html#cultivars.state_space.nonlinear.ParticleSmootherResult" title="cultivars.state_space.nonlinear.ParticleSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleSmootherResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">particle_smoother</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">smoothed_state</span></code>, <code class="docutils literal notranslate"><span class="pre">smoothed_state_std</span></code>, <code class="docutils literal notranslate"><span class="pre">n_particles</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.HamiltonFilterResult.html#cultivars.state_space.regime_switching.HamiltonFilterResult" title="cultivars.state_space.regime_switching.HamiltonFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">HamiltonFilterResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM.filter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">loglikelihood</span></code>, <code class="docutils literal notranslate"><span class="pre">loglikelihood_contributions</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filtered_prob</span></code>, <code class="docutils literal notranslate"><span class="pre">predicted_prob</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.KimFilterResult.html#cultivars.state_space.regime_switching.KimFilterResult" title="cultivars.state_space.regime_switching.KimFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">KimFilterResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM.filter</span></code></p></td>
+<td><p>the Hamilton fields plus <code class="docutils literal notranslate"><span class="pre">filtered_state</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filtered_state_cov</span></code>, <code class="docutils literal notranslate"><span class="pre">regime_state</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.KimSmootherResult.html#cultivars.state_space.regime_switching.KimSmootherResult" title="cultivars.state_space.regime_switching.KimSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">KimSmootherResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">smooth</span></code> of either switching engine</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">smoothed_prob</span></code>, <code class="docutils literal notranslate"><span class="pre">smoothed_joint_prob</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="one-grammar-for-four-engines">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">One grammar for four engines</a><a class="headerlink" href="#one-grammar-for-four-engines" title="Link to this heading">#</a></h2>
+<p>The engines share one workflow: construct a fully specified system, hand
+it data, and read a record. <code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code> and <code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code> expose the same
+five members: <code class="docutils literal notranslate"><span class="pre">k_endog</span></code> (observed dimension), <code class="docutils literal notranslate"><span class="pre">k_states</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filter(y)</span></code>, <code class="docutils literal notranslate"><span class="pre">smooth(y)</span></code> and <code class="docutils literal notranslate"><span class="pre">loglikelihood(y)</span></code>.
+<code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> has <code class="docutils literal notranslate"><span class="pre">k_endog</span></code> and <code class="docutils literal notranslate"><span class="pre">k_states</span></code> but no single
+<code class="docutils literal notranslate"><span class="pre">filter</span></code>: its three filters return different kinds of likelihood, so
+you choose one by name (<code class="docutils literal notranslate"><span class="pre">extended_filter</span></code>, <code class="docutils literal notranslate"><span class="pre">unscented_filter</span></code>,
+<code class="docutils literal notranslate"><span class="pre">particle_filter</span></code>).</p>
+<p>Three rules hold across the package:</p>
+<ul class="simple">
+<li><p><strong>Data layout.</strong> Observations are <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">p)</span></code> with time down the rows;
+a 1-D array is accepted when <code class="docutils literal notranslate"><span class="pre">p</span></code> is one. Every state array in a
+result has time on the first axis: states are <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>, covariances
+<code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">m)</span></code>, regime probabilities <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">K)</span></code>.</p></li>
+<li><p><strong>Missing data are</strong> <code class="docutils literal notranslate"><span class="pre">numpy.nan</span></code>. A missing period contributes
+exactly zero to the log-likelihood and the filter carries its
+prediction forward. The linear engine handles element-wise gaps; the
+nonlinear and Kim engines accept only whole missing rows; the Hamilton
+engine accepts none (see <a class="reference internal" href="#nuances-and-gotchas">Nuances and gotchas</a>).</p></li>
+<li><p><strong>Every likelihood says what it is.</strong> The Kalman and Hamilton
+likelihoods are exact; the extended and unscented ones are exact
+likelihoods of an approximating model; the particle likelihood is an
+unbiased Monte Carlo estimate; the Kim likelihood is an approximation.
+<code class="docutils literal notranslate"><span class="pre">loglikelihood</span></code> is the sum of <code class="docutils literal notranslate"><span class="pre">loglikelihood_contributions</span></code>, the
+per-period prediction-error terms <span class="math notranslate nohighlight">\(\log p(y_t \mid y_{1:t-1})\)</span>.</p></li>
+</ul>
+</section>
+<section id="linear-gaussian-systems">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Linear-Gaussian systems</a><a class="headerlink" href="#linear-gaussian-systems" title="Link to this heading">#</a></h2>
+<section id="the-model">
+<h3>The model<a class="headerlink" href="#the-model" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.LinearGaussianSSM.html#cultivars.state_space.linear_gaussian.LinearGaussianSSM" title="cultivars.state_space.linear_gaussian.LinearGaussianSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code></a> uses
+the notation of Durbin and Koopman (2012):</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}y_t = Z_t \alpha_t + d_t + \varepsilon_t,
+\qquad \varepsilon_t \sim N(0, H_t),\\\alpha_{t+1} = T_t \alpha_t + c_t + R_t \eta_t,
+\qquad \eta_t \sim N(0, Q_t),
+\qquad \alpha_1 \sim N(a_1, P_1).\end{aligned}\end{align} \]</div>
+<p>The Kalman filter returns the prediction-error decomposition</p>
+<div class="math notranslate nohighlight">
+\[\log L = -\tfrac12 \sum_{t=1}^{n}
+\bigl(p_t \log 2\pi + \log|F_t| + v_t' F_t^{-1} v_t\bigr),
+\qquad v_t = y_t - Z_t a_t - d_t,\quad F_t = Z_t P_t Z_t' + H_t,\]</div>
+<p>with <span class="math notranslate nohighlight">\(p_t\)</span> the number of elements observed at <span class="math notranslate nohighlight">\(t\)</span>. The
+smoother is the Durbin-Koopman backward recursion, and the simulation
+smoother draws <span class="math notranslate nohighlight">\(\alpha \mid y\)</span> by the mean-correction device of
+Durbin and Koopman (2002).</p>
+</section>
+<section id="system-matrices-and-shapes">
+<h3>System matrices and shapes<a class="headerlink" href="#system-matrices-and-shapes" title="Link to this heading">#</a></h3>
+<p>With <span class="math notranslate nohighlight">\(p\)</span> observed series (<code class="docutils literal notranslate"><span class="pre">k_endog</span></code>), <span class="math notranslate nohighlight">\(m\)</span> states
+(<code class="docutils literal notranslate"><span class="pre">k_states</span></code>) and <span class="math notranslate nohighlight">\(r\)</span> state disturbances (<code class="docutils literal notranslate"><span class="pre">k_posdef</span></code>):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 10.0%"/>
+<col style="width: 24.0%"/>
+<col style="width: 22.0%"/>
+<col style="width: 22.0%"/>
+<col style="width: 22.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Argument</p></th>
+<th class="head"><p>Time-invariant</p></th>
+<th class="head"><p>Time-varying</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Z\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">design</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">m)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">p,</span> <span class="pre">m)</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(H\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">obs_cov</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">p)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">p,</span> <span class="pre">p)</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(T\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">transition</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">m)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">m)</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(R\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">selection</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">r)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">r)</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_cov</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(r,</span> <span class="pre">r)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">r,</span> <span class="pre">r)</span></code></p></td>
+<td><p>required</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(d\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">obs_intercept</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(p,)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">p)</span></code></p></td>
+<td><p>zero</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(c\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_intercept</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(m,)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code></p></td>
+<td><p>zero</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(a_1\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">initial_state</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(m,)</span></code></p></td>
+<td><p>n/a</p></td>
+<td><p>zero</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_1\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">initial_state_cov</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">m)</span></code></p></td>
+<td><p>n/a</p></td>
+<td><p>stationary or <span class="math notranslate nohighlight">\(10^6 I\)</span> (below)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The five system matrices are positional, in the order <code class="docutils literal notranslate"><span class="pre">design,</span>
+<span class="pre">obs_cov,</span> <span class="pre">transition,</span> <span class="pre">selection,</span> <span class="pre">state_cov</span></code>; the rest are keyword-only.
+A 3-D matrix is time-varying with time on the leading axis, and each
+matrix may be static or time-varying independently of the others.
+Inconsistent trailing shapes raise
+<a class="reference internal" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a>; non-finite entries raise
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>.</p>
+</section>
+<section id="a-local-level-end-to-end">
+<h3>A local level, end to end<a class="headerlink" href="#a-local-level-end-to-end" title="Link to this heading">#</a></h3>
+<p>A random-walk level observed with noise, signal-to-noise ratio
+<span class="math notranslate nohighlight">\(q = 0.1\)</span>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.state_space.linear_gaussian.html#module-cultivars.state_space.linear_gaussian"><span class="nn">cultivars.state_space.linear_gaussian</span></a><span class="w"> </span><span class="kn">import</span> <span class="n">LinearGaussianSSM</span>
+
+<span class="n">rng</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">level</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html#numpy.cumsum" title="numpy.cumsum"><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sqrt.html#numpy.sqrt" title="numpy.sqrt"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">level</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">LinearGaussianSSM</span><span class="p">(</span>
+    <span class="n">design</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="n">obs_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="n">transition</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span>
+    <span class="n">selection</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="n">state_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.1</span><span class="p">]],</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">k_states</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">k_posdef</span><span class="p">)</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">filtered_state</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">filtered</span><span class="o">.</span><span class="n">filtered_state_cov</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">loglikelihood_contributions</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1 1 1
+-314.652
+(200, 1) (200, 1, 1)
+(200,)
+</pre></div>
+</div>
+<p>The predicted variance converges to the steady state
+<span class="math notranslate nohighlight">\(\bar P = (q + \sqrt{q^2 + 4q})/2 = 0.3702\)</span>, and the smoother,
+which conditions on the whole sample, cuts the mid-sample variance
+from 0.27 to 0.156:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">predicted_state_cov</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">smoothed</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">smoothed</span><span class="o">.</span><span class="n">smoothed_state</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">smoothed</span><span class="o">.</span><span class="n">smoothed_state_cov</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">mid</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">smoothed</span><span class="o">.</span><span class="n">smoothed_state_cov</span><span class="p">[</span><span class="n">mid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">filtered_state_cov</span><span class="p">[</span><span class="n">mid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.3702
+(200, 1) (200, 1, 1)
+0.156 0.27
+</pre></div>
+</div>
+<p>A gap is <code class="docutils literal notranslate"><span class="pre">nan</span></code>. The gap’s periods contribute exactly zero to the
+likelihood and the filtered variance grows by <span class="math notranslate nohighlight">\(q\)</span> per missing
+period:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gappy</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">gappy</span><span class="p">[</span><span class="mi">80</span><span class="p">:</span><span class="mi">90</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">holes</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">gappy</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">holes</span><span class="o">.</span><span class="n">loglikelihood_contributions</span><span class="p">[</span><span class="mi">80</span><span class="p">:</span><span class="mi">90</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">holes</span><span class="o">.</span><span class="n">filtered_state_cov</span><span class="p">[</span><span class="mi">80</span><span class="p">:</span><span class="mi">83</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.0
+[0.37, 0.47, 0.57]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">simulation_smoother</span></code> returns <code class="docutils literal notranslate"><span class="pre">n_sims</span></code> draws of the whole state path
+from <span class="math notranslate nohighlight">\(p(\alpha \mid y)\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(n_sims,</span> <span class="pre">n,</span> <span class="pre">m)</span></code>; <code class="docutils literal notranslate"><span class="pre">simulate</span></code>
+draws a fresh observation path, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">p)</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">draws</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">simulation_smoother</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n_sims</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">draws</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(20, 200, 1) (50, 1)
+</pre></div>
+</div>
+</section>
+<section id="initialization">
+<h3>Initialization<a class="headerlink" href="#initialization" title="Link to this heading">#</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">initial_state_cov</span></code> is omitted the engine picks <span class="math notranslate nohighlight">\(P_1\)</span> by a
+stated rule:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">transition</span></code>, <code class="docutils literal notranslate"><span class="pre">selection</span></code> and <code class="docutils literal notranslate"><span class="pre">state_cov</span></code> are all
+time-invariant and every eigenvalue of <span class="math notranslate nohighlight">\(T\)</span> is inside the unit
+circle, <span class="math notranslate nohighlight">\(P_1\)</span> is the stationary covariance solving
+<span class="math notranslate nohighlight">\(P = TPT' + RQR'\)</span>. The classmethod
+<a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.LinearGaussianSSM.stationary_covariance.html#cultivars.state_space.linear_gaussian.LinearGaussianSSM.stationary_covariance" title="cultivars.state_space.linear_gaussian.LinearGaussianSSM.stationary_covariance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stationary_covariance()</span></code></a>
+solves the same Lyapunov equation on its own and raises
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a> for an unstable
+<span class="math notranslate nohighlight">\(T\)</span>.</p></li>
+<li><p>Otherwise <span class="math notranslate nohighlight">\(P_1 = 10^6 I\)</span>: the <em>approximate</em> diffuse prior, not
+the exact diffuse initialization of Durbin and Koopman (2012, ch. 5).</p></li>
+</ul>
+<p>Above, the random-walk level got the diffuse prior; its first
+contribution is about <span class="math notranslate nohighlight">\(-\tfrac12(\log 2\pi + \log 10^6)\)</span>. An
+AR(1) state gets the stationary variance
+<span class="math notranslate nohighlight">\(0.5 / (1 - 0.8^2) = 1.3889\)</span>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">predicted_state_cov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">loglikelihood_contributions</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ar1</span> <span class="o">=</span> <span class="n">LinearGaussianSSM</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.8</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">]])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ar1</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">predicted_state_cov</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">LinearGaussianSSM</span><span class="o">.</span><span class="n">stationary_covariance</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mf">0.8</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">]])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1000000.0 -7.827
+[[1.3889]]
+[[1.3889]]
+</pre></div>
+</div>
+<p>The initial <em>mean</em> has no such rule: <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> defaults to zero
+even when a <code class="docutils literal notranslate"><span class="pre">state_intercept</span></code> moves the stationary mean to
+<span class="math notranslate nohighlight">\((I - T)^{-1} c\)</span>. Pass it yourself:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shifted</span> <span class="o">=</span> <span class="n">LinearGaussianSSM</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.8</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">]],</span> <span class="n">state_intercept</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">shifted</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">predicted_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">centred</span> <span class="o">=</span> <span class="n">LinearGaussianSSM</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.8</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">]],</span> <span class="n">state_intercept</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+    <span class="n">initial_state</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">],</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">centred</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">predicted_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[0.0]
+[5.0]
+</pre></div>
+</div>
+</section>
+<section id="what-the-records-give-you">
+<h3>What the records give you<a class="headerlink" href="#what-the-records-give-you" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">filter</span></code> returns
+<a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.html#cultivars.state_space.linear_gaussian.KalmanFilterResult" title="cultivars.state_space.linear_gaussian.KalmanFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">KalmanFilterResult</span></code></a>.
+Row <code class="docutils literal notranslate"><span class="pre">t</span></code> of <code class="docutils literal notranslate"><span class="pre">predicted_state</span></code> is <span class="math notranslate nohighlight">\(a_{t \mid t-1}\)</span> (row 0 is
+<span class="math notranslate nohighlight">\(a_1\)</span>), row <code class="docutils literal notranslate"><span class="pre">t</span></code> of <code class="docutils literal notranslate"><span class="pre">filtered_state</span></code> is
+<span class="math notranslate nohighlight">\(a_{t \mid t}\)</span>, and the covariances follow the same indexing.
+<code class="docutils literal notranslate"><span class="pre">smooth</span></code> returns
+<a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.DurbinKoopmanSmootherResult.html#cultivars.state_space.linear_gaussian.DurbinKoopmanSmootherResult" title="cultivars.state_space.linear_gaussian.DurbinKoopmanSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DurbinKoopmanSmootherResult</span></code></a>
+with <span class="math notranslate nohighlight">\(\hat\alpha_{t \mid n}\)</span> and its variance. <code class="docutils literal notranslate"><span class="pre">loglikelihood(y)</span></code>
+is the likelihood-only path, the call an optimizer should make.</p>
+</section>
+</section>
+<section id="nonlinear-and-non-gaussian-systems">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Nonlinear and non-Gaussian systems</a><a class="headerlink" href="#nonlinear-and-non-gaussian-systems" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3>The model<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.html#cultivars.state_space.nonlinear.NonlinearSSM" title="cultivars.state_space.nonlinear.NonlinearSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonlinearSSM</span></code></a> holds the
+additive-Gaussian system</p>
+<div class="math notranslate nohighlight">
+\[y_t = g(\alpha_t) + \varepsilon_t,\qquad \varepsilon_t \sim N(0, H),
+\qquad
+\alpha_{t+1} = f(\alpha_t) + \eta_t,\qquad \eta_t \sim N(0, Q),
+\qquad \alpha_1 \sim N(a_1, P_1).\]</div>
+<p>There is no selection matrix: <code class="docutils literal notranslate"><span class="pre">state_cov</span></code> is the <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">m)</span></code> covariance
+of the full state disturbance. The two maps are positional and
+<em>batched</em>: <code class="docutils literal notranslate"><span class="pre">transition</span></code> maps an <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">m)</span></code> block of states to
+<code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">m)</span></code> and <code class="docutils literal notranslate"><span class="pre">observation</span></code> maps it to <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">p)</span></code>, so sigma points
+and particle clouds pass through them in one call. The constructor
+probes both maps with a two-row batch and raises
+<a class="reference internal" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a> if the shapes are wrong;
+<code class="docutils literal notranslate"><span class="pre">p</span></code> is read from <code class="docutils literal notranslate"><span class="pre">obs_cov</span></code>. <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> and
+<code class="docutils literal notranslate"><span class="pre">initial_state_cov</span></code> are required: there is no default initialization.</p>
+</section>
+<section id="three-filters-and-their-smoothers">
+<h3>Three filters and their smoothers<a class="headerlink" href="#three-filters-and-their-smoothers" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 24.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 22.0%"/>
+<col style="width: 24.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Filter</p></th>
+<th class="head"><p>Method</p></th>
+<th class="head"><p>Likelihood is</p></th>
+<th class="head"><p>Smoother</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extended_filter(y)</span></code></p></td>
+<td><p>Central-difference Jacobians, then the Kalman recursions</p></td>
+<td><p>exact for the linearized model</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">extended_smoother(y)</span></code>, RTS</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unscented_filter(y,</span> <span class="pre">alpha=0.1,</span> <span class="pre">beta=2.0,</span> <span class="pre">kappa=0.0)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(2m+1\)</span> sigma points, Julier and Uhlmann (1997) weights</p></td>
+<td><p>exact for the sigma-point approximation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">unscented_smoother(y,</span> <span class="pre">...)</span></code>, RTS</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">particle_filter(y,</span> <span class="pre">n_particles=2000,</span> <span class="pre">method="bootstrap",</span>
+<span class="pre">ess_threshold=0.5,</span> <span class="pre">seed=None)</span></code></p></td>
+<td><p>Bootstrap (Gordon, Salmond and Smith 1993) or <code class="docutils literal notranslate"><span class="pre">"auxiliary"</span></code>
+(Pitt and Shephard 1999), systematic resampling</p></td>
+<td><p>an unbiased Monte Carlo estimate</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">particle_smoother(y,</span> <span class="pre">n_particles=500,</span> <span class="pre">...)</span></code>, forward
+filtering backward smoothing (Doucet, Godsill and Andrieu 2000)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>An AR(1) state seen through an exponential measurement:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.state_space.nonlinear.html#module-cultivars.state_space.nonlinear"><span class="nn">cultivars.state_space.nonlinear</span></a><span class="w"> </span><span class="kn">import</span> <span class="n">NonlinearSSM</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">150</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">state</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+<span class="n">y_nl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">curved</span> <span class="o">=</span> <span class="n">NonlinearSSM</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">s</span><span class="p">,</span>
+    <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">s</span><span class="p">),</span>
+    <span class="n">state_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.25</span><span class="p">]],</span> <span class="n">obs_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.25</span><span class="p">]],</span>
+    <span class="n">initial_state</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">],</span> <span class="n">initial_state_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.25</span> <span class="o">/</span> <span class="mf">0.19</span><span class="p">]],</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">curved</span><span class="o">.</span><span class="n">k_states</span><span class="p">,</span> <span class="n">curved</span><span class="o">.</span><span class="n">k_endog</span><span class="p">,</span> <span class="n">curved</span><span class="o">.</span><span class="n">is_additive_gaussian</span><span class="p">)</span>
+<span class="n">ekf</span> <span class="o">=</span> <span class="n">curved</span><span class="o">.</span><span class="n">extended_filter</span><span class="p">(</span><span class="n">y_nl</span><span class="p">)</span>
+<span class="n">ukf</span> <span class="o">=</span> <span class="n">curved</span><span class="o">.</span><span class="n">unscented_filter</span><span class="p">(</span><span class="n">y_nl</span><span class="p">)</span>
+<span class="n">pf</span> <span class="o">=</span> <span class="n">curved</span><span class="o">.</span><span class="n">particle_filter</span><span class="p">(</span><span class="n">y_nl</span><span class="p">,</span> <span class="n">n_particles</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#type"><span class="nb">type</span></a><span class="p">(</span><span class="n">ekf</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#type"><span class="nb">type</span></a><span class="p">(</span><span class="n">ukf</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ekf</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ukf</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">pf</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1 1 True
+True
+-137.52 -137.41 -135.97
+</pre></div>
+</div>
+<p>The particle estimate is noisy, and its seed-to-seed spread is the error
+bar. Here the spread is 0.25 log points, so the 1.5-point gap to the
+extended and unscented likelihoods is linearization error, not Monte
+Carlo noise:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spread</span> <span class="o">=</span> <span class="p">[</span><span class="n">curved</span><span class="o">.</span><span class="n">particle_filter</span><span class="p">(</span><span class="n">y_nl</span><span class="p">,</span> <span class="n">n_particles</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">loglikelihood</span>
+          <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">spread</span><span class="p">)),</span> <span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">pf</span><span class="o">.</span><span class="n">n_particles</span><span class="p">,</span> <span class="n">pf</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">pf</span><span class="o">.</span><span class="n">filtered_state_std</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">pf</span><span class="o">.</span><span class="n">effective_sample_size</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.25
+500 bootstrap (150, 1)
+20.6
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">effective_sample_size</span></code> is <span class="math notranslate nohighlight">\((\sum_i w_i^2)^{-1}\)</span> per period, in
+<code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">n_particles]</span></code>. A minimum near one means the cloud collapsed at
+that period and its contribution is unreliable.</p>
+<p>The smoothers record which approximation they used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">eks</span> <span class="o">=</span> <span class="n">curved</span><span class="o">.</span><span class="n">extended_smoother</span><span class="p">(</span><span class="n">y_nl</span><span class="p">)</span>
+<span class="n">uks</span> <span class="o">=</span> <span class="n">curved</span><span class="o">.</span><span class="n">unscented_smoother</span><span class="p">(</span><span class="n">y_nl</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">return</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">path</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">state</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))),</span> <span class="mi">3</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">eks</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">uks</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">rmse</span><span class="p">(</span><span class="n">ukf</span><span class="o">.</span><span class="n">filtered_state</span><span class="p">),</span> <span class="n">rmse</span><span class="p">(</span><span class="n">uks</span><span class="o">.</span><span class="n">smoothed_state</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>extended unscented
+0.524 0.457
+</pre></div>
+</div>
+</section>
+<section id="non-gaussian-models-through-hooks">
+<h3>Non-Gaussian models through hooks<a class="headerlink" href="#non-gaussian-models-through-hooks" title="Link to this heading">#</a></h3>
+<p>Three keyword hooks take a model outside the additive-Gaussian form:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">observation_loglik(obs,</span> <span class="pre">particles)</span></code></dt><dd><p>Replaces the Gaussian measurement density: <code class="docutils literal notranslate"><span class="pre">obs</span></code> is one <code class="docutils literal notranslate"><span class="pre">(p,)</span></code>
+row, <code class="docutils literal notranslate"><span class="pre">particles</span></code> is <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">m)</span></code>, and it returns <code class="docutils literal notranslate"><span class="pre">(N,)</span></code>
+log-densities. <code class="docutils literal notranslate"><span class="pre">obs_cov</span></code> is then ignored by the particle filter.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">transition_sampler(particles,</span> <span class="pre">rng)</span></code></dt><dd><p>Replaces the additive state draw; returns <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">m)</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">observed_transition(particles,</span> <span class="pre">y_prev)</span></code></dt><dd><p>A state mean that conditions on the previous observation; noise stays
+<span class="math notranslate nohighlight">\(N(0, Q)\)</span>.</p>
+</dd>
+</dl>
+<p>With any hook set, <code class="docutils literal notranslate"><span class="pre">is_additive_gaussian</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> and the
+extended and unscented filters and smoothers raise
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> instead of
+linearizing. The particle filter accepts all three hooks. The particle
+smoother accepts <code class="docutils literal notranslate"><span class="pre">observation_loglik</span></code> but refuses
+<code class="docutils literal notranslate"><span class="pre">transition_sampler</span></code>, because the backward pass needs the transition
+<em>density</em>, and refuses a singular <code class="docutils literal notranslate"><span class="pre">state_cov</span></code> for the same reason. A
+stochastic-volatility measurement, <span class="math notranslate nohighlight">\(y_t \mid h_t \sim N(0,
+e^{h_t})\)</span>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">measure</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">particles</span><span class="p">):</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">particles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="n">h</span> <span class="o">+</span> <span class="n">obs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">h</span><span class="p">))</span>
+
+<span class="n">returns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">state</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">sv</span> <span class="o">=</span> <span class="n">NonlinearSSM</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">s</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">,</span>
+    <span class="n">state_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.25</span><span class="p">]],</span> <span class="n">obs_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span>
+    <span class="n">initial_state</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">],</span> <span class="n">initial_state_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.25</span> <span class="o">/</span> <span class="mf">0.19</span><span class="p">]],</span>
+    <span class="n">observation_loglik</span><span class="o">=</span><span class="n">measure</span><span class="p">,</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">is_additive_gaussian</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">sv</span><span class="o">.</span><span class="n">unscented_filter</span><span class="p">(</span><span class="n">returns</span><span class="p">)</span>
+<span class="k">except</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/exceptions.html#Exception"><span class="ne">Exception</span></a> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#type"><span class="nb">type</span></a><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">track</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">particle_filter</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">n_particles</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">filtered_state</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>False
+SpecificationError
+0.52
+</pre></div>
+</div>
+</section>
+</section>
+<section id="discrete-regimes-the-hamilton-filter">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Discrete regimes: the Hamilton filter</a><a class="headerlink" href="#discrete-regimes-the-hamilton-filter" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h3>The model<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.MarkovSwitchingSSM.html#cultivars.state_space.regime_switching.MarkovSwitchingSSM" title="cultivars.state_space.regime_switching.MarkovSwitchingSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code></a> is an
+autoregression whose intercept and variance switch with a <span class="math notranslate nohighlight">\(K\)</span>-state
+chain <span class="math notranslate nohighlight">\(S_t\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[y_t = \mu_{S_t} + \sum_{i=1}^{p} \phi_{i,S_t}\, y_{t-i}
++ \sigma_{S_t} e_t,
+\qquad
+P_{ij} = \Pr(S_t = j \mid S_{t-1} = i).\]</div>
+<p>Because the regime enters only through the current intercept and
+variance, the per-regime density <span class="math notranslate nohighlight">\(\eta_{t,j}\)</span> depends on
+<span class="math notranslate nohighlight">\(S_t\)</span> alone and the Hamilton (1989) filter</p>
+<div class="math notranslate nohighlight">
+\[\xi_{t \mid t-1} = P'\,\xi_{t-1 \mid t-1},\qquad
+\xi_{t \mid t} = \frac{\xi_{t \mid t-1} \odot \eta_t}
+                      {\mathbf 1'(\xi_{t \mid t-1} \odot \eta_t)},\qquad
+\log L = \sum_t \log \mathbf 1'(\xi_{t \mid t-1} \odot \eta_t)\]</div>
+<p>is exact. The Kim smoother returns full-sample probabilities and the
+consecutive-pair probabilities an EM step needs.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 24.0%"/>
+<col style="width: 26.0%"/>
+<col style="width: 50.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">transition</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">K)</span></code></p></td>
+<td><p>Row-stochastic: row <code class="docutils literal notranslate"><span class="pre">i</span></code> is the distribution of <span class="math notranslate nohighlight">\(S_t\)</span>
+given <span class="math notranslate nohighlight">\(S_{t-1} = i\)</span>. Validated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">intercepts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(K,)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu_j\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ar_params</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">p)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\phi_{\cdot, j}\)</span>; width zero is a switching mean with no
+dynamics.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">variances</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(K,)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma^2_j\)</span>, strictly positive</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">initial_prob</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(K,)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\Pr(S_1)\)</span>; defaults to the ergodic distribution</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.state_space.regime_switching.html#module-cultivars.state_space.regime_switching"><span class="nn">cultivars.state_space.regime_switching</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MarkovSwitchingSSM</span><span class="p">,</span> <span class="n">RegimeSwitchingLinearSSM</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.90</span><span class="p">]])</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">regime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">regime</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">chain</span><span class="p">[</span><span class="n">regime</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]])</span>
+    <span class="n">z</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">][</span><span class="n">regime</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span> <span class="o">+</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">z</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<span class="n">ms</span> <span class="o">=</span> <span class="n">MarkovSwitchingSSM</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[[</span><span class="mf">0.4</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">]],</span> <span class="p">[</span><span class="mf">0.36</span><span class="p">,</span> <span class="mf">0.36</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">n_regimes</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">ms</span><span class="o">.</span><span class="n">initial_prob</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">hamilton</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<span class="n">kim</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">hamilton</span><span class="o">.</span><span class="n">filtered_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">hamilton</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">kim</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">kim</span><span class="o">.</span><span class="n">smoothed_joint_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="n">regime</span><span class="p">[</span><span class="n">ms</span><span class="o">.</span><span class="n">order</span><span class="p">:]</span> <span class="o">==</span> <span class="mi">1</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">hamilton</span><span class="o">.</span><span class="n">filtered_prob</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <span class="n">truth</span><span class="p">)),</span> <span class="mi">2</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">kim</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <span class="n">truth</span><span class="p">)),</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2 1 [0.667, 0.333]
+(299, 2) -341.35
+(299, 2) (298, 2, 2)
+0.97 0.99
+</pre></div>
+</div>
+<p>The probability arrays have <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">-</span> <span class="pre">order</span></code> rows: the first <code class="docutils literal notranslate"><span class="pre">order</span></code>
+observations are conditioned on, not modelled. Row <code class="docutils literal notranslate"><span class="pre">t</span></code> of
+<code class="docutils literal notranslate"><span class="pre">filtered_prob</span></code> belongs to observation <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">+</span> <span class="pre">order</span></code>.</p>
+<p>The recursions never see the data, only an <code class="docutils literal notranslate"><span class="pre">(n</span> <span class="pre">-</span> <span class="pre">order,</span> <span class="pre">K)</span></code> matrix of
+log densities. <code class="docutils literal notranslate"><span class="pre">effective_sample</span></code>, <code class="docutils literal notranslate"><span class="pre">density_matrix</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filter_densities</span></code> and <code class="docutils literal notranslate"><span class="pre">smooth_densities</span></code> expose that split, so an
+EM loop can build the lag block once, and a switching model of another
+form can supply its own log densities:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">target</span><span class="p">,</span> <span class="n">lags</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">effective_sample</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<span class="n">logd</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">density_matrix</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">lags</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">logd</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">filter_densities</span><span class="p">(</span><span class="n">logd</span><span class="p">)</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">,</span>
+                      <span class="n">hamilton</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(299, 2) True
+</pre></div>
+</div>
+</section>
+</section>
+<section id="switching-linear-systems-kim-s-collapse">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Switching linear systems: Kim’s collapse</a><a class="headerlink" href="#switching-linear-systems-kim-s-collapse" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.html#cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM" title="cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code></a>
+gives each regime its own linear-Gaussian system,</p>
+<div class="math notranslate nohighlight">
+\[y_t = Z_j \alpha_t + d_j + \varepsilon_t,\quad
+\varepsilon_t \sim N(0, H_j),
+\qquad
+\alpha_{t+1} = T_j \alpha_t + c_j + \eta_t,\quad
+\eta_t \sim N(0, Q_j),
+\qquad j = S_t.\]</div>
+<p>Exact filtering would need one Kalman filter per regime path, so the
+engine applies Kim’s (1994) collapse: <span class="math notranslate nohighlight">\(K \times K\)</span> pairwise
+updates, weighted by the Hamilton probabilities and moment-matched back
+to one mean and covariance per regime. The likelihood is therefore an
+approximation (Kim and Nelson 1999). All arguments are keyword-only and
+stacked on a leading regime axis: <code class="docutils literal notranslate"><span class="pre">design</span></code> <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">p,</span> <span class="pre">m)</span></code>, <code class="docutils literal notranslate"><span class="pre">obs_cov</span></code>
+<code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">p,</span> <span class="pre">p)</span></code>, <code class="docutils literal notranslate"><span class="pre">transition</span></code> <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">m,</span> <span class="pre">m)</span></code>, <code class="docutils literal notranslate"><span class="pre">state_cov</span></code> <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">m,</span> <span class="pre">m)</span></code>
+(no selection matrix), <code class="docutils literal notranslate"><span class="pre">regime_transition</span></code> <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">K)</span></code>, and optional
+<code class="docutils literal notranslate"><span class="pre">obs_intercept</span></code> <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">p)</span></code>, <code class="docutils literal notranslate"><span class="pre">state_intercept</span></code> <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">m)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">initial_state</span></code> <code class="docutils literal notranslate"><span class="pre">(m,)</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_state_cov</span></code> <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">m)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">initial_regime_prob</span></code> <code class="docutils literal notranslate"><span class="pre">(K,)</span></code>.</p>
+<p>A state whose innovation variance switches between a calm and a
+volatile regime:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">calm_or_not</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">calm_or_not</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">chain</span><span class="p">[</span><span class="n">calm_or_not</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]])</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">([</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][</span><span class="n">calm_or_not</span><span class="p">[</span><span class="n">t</span><span class="p">]])</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+<span class="n">obs</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">switching</span> <span class="o">=</span> <span class="n">RegimeSwitchingLinearSSM</span><span class="p">(</span>
+    <span class="n">design</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">obs_cov</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="n">transition</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mf">0.9</span><span class="p">),</span>
+    <span class="n">state_cov</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mf">0.05</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]]]),</span>
+    <span class="n">regime_transition</span><span class="o">=</span><span class="n">chain</span><span class="p">,</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">switching</span><span class="o">.</span><span class="n">k_regimes</span><span class="p">,</span> <span class="n">switching</span><span class="o">.</span><span class="n">k_states</span><span class="p">,</span> <span class="n">switching</span><span class="o">.</span><span class="n">k_endog</span><span class="p">)</span>
+<span class="n">collapsed</span> <span class="o">=</span> <span class="n">switching</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">collapsed</span><span class="o">.</span><span class="n">filtered_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">collapsed</span><span class="o">.</span><span class="n">filtered_state</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+      <span class="n">collapsed</span><span class="o">.</span><span class="n">regime_state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">collapsed</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">switching</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span><span class="o">.</span><span class="n">smoothed_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2 1 1
+(300, 2) (300, 1) (300, 2, 1)
+-374.8
+(300, 2)
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">filtered_state</span></code> and <code class="docutils literal notranslate"><span class="pre">filtered_state_cov</span></code> are regime-marginal (the
+covariance includes the between-regime spread); <code class="docutils literal notranslate"><span class="pre">regime_state</span></code> holds
+each regime’s collapsed mean. Unlike the Hamilton engine, the Kim
+filter keeps all <code class="docutils literal notranslate"><span class="pre">n</span></code> rows. <code class="docutils literal notranslate"><span class="pre">smooth</span></code> smooths the regime
+probabilities only: a smoothed continuous state would need a second
+collapse and is not offered.</p>
+</section>
+<section id="how-the-pieces-connect">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">How the pieces connect</a><a class="headerlink" href="#how-the-pieces-connect" title="Link to this heading">#</a></h2>
+<p>Most users meet these engines through a fitted model. The model owns
+the parameterization and the estimator; the engine owns the recursions.
+Results that expose their engine let you re-filter new data with the
+fitted parameters, which is the out-of-sample check the fitted arrays
+alone cannot give.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 40.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 30.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Fitted object</p></th>
+<th class="head"><p>Accessor</p></th>
+<th class="head"><p>Engine returned</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponentsResult.html#cultivars.univariate.unobserved_components.UnobservedComponentsResult" title="cultivars.univariate.unobserved_components.UnobservedComponentsResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnobservedComponentsResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_space</span></code> (property)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.term_structure.DynamicNelsonSiegelResult.html#cultivars.multivariate.reduced_form.term_structure.DynamicNelsonSiegelResult" title="cultivars.multivariate.reduced_form.term_structure.DynamicNelsonSiegelResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DynamicNelsonSiegelResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_space</span></code> (property)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.term_structure.TimeVaryingNelsonSiegelResult.html#cultivars.multivariate.reduced_form.term_structure.TimeVaryingNelsonSiegelResult" title="cultivars.multivariate.reduced_form.term_structure.TimeVaryingNelsonSiegelResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeVaryingNelsonSiegelResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_space</span></code> (property)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.html#cultivars.univariate.stochastic_volatility.SVResult" title="cultivars.univariate.stochastic_volatility.SVResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_space</span></code>; <code class="docutils literal notranslate"><span class="pre">quasi_state_space</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> (particle filter only); <code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code>
+on <span class="math notranslate nohighlight">\(\log y_t^2\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.SVPosterior.html#cultivars.univariate.stochastic_volatility.SVPosterior" title="cultivars.univariate.stochastic_volatility.SVPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVPosterior</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSVPosterior.html#cultivars.univariate.stochastic_volatility.UCSVPosterior" title="cultivars.univariate.stochastic_volatility.UCSVPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">UCSVPosterior</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_space</span></code> (property)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.structural.stochastic_volatility.LongMemorySVResult.html#cultivars.multivariate.structural.stochastic_volatility.LongMemorySVResult" title="cultivars.multivariate.structural.stochastic_volatility.LongMemorySVResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">LongMemorySVResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">quasi_state_space(truncation=100)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingARResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_space</span></code> (property)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.threshold.SETARResult.html#cultivars.univariate.threshold.SETARResult" title="cultivars.univariate.threshold.SETARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">SETARResult</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.html#cultivars.univariate.smooth_transition.STARResult" title="cultivars.univariate.smooth_transition.STARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">STARResult</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.html#cultivars.univariate.mean_function.ARNNResult" title="cultivars.univariate.mean_function.ARNNResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARNNResult</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.TARNNResult.html#cultivars.univariate.mean_function.TARNNResult" title="cultivars.univariate.mean_function.TARNNResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TARNNResult</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nonlinear_state_space(measurement_variance)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> (errors-in-variables reading of the fit)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGEResult.html#cultivars.multivariate.structural.perturbation.PerturbationDSGEResult" title="cultivars.multivariate.structural.perturbation.PerturbationDSGEResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">PerturbationDSGEResult</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.html#cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior" title="cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">PerturbationDSGEPosterior</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">state_space</span></code> (property)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code> at first order, <code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> at second</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.mixed_frequency.MFVAR.html#cultivars.multivariate.reduced_form.mixed_frequency.MFVAR" title="cultivars.multivariate.reduced_form.mixed_frequency.MFVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">MFVAR</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filter(endog)</span></code>, <code class="docutils literal notranslate"><span class="pre">smooth(endog)</span></code></p></td>
+<td><p>runs <code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code> internally; <code class="docutils literal notranslate"><span class="pre">filter</span></code> returns its
+<code class="docutils literal notranslate"><span class="pre">KalmanFilterResult</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Other models use an engine without exposing it:
+<a class="reference internal" href="../api/generated/cultivars.univariate.box_jenkins.ARIMA.html#cultivars.univariate.box_jenkins.ARIMA" title="cultivars.univariate.box_jenkins.ARIMA"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARIMA</span></code></a> evaluates its exact
+likelihood through the linear engine’s ARMA form,
+<a class="reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingVAR</span></code></a>
+runs the Hamilton filter and Kim smoother inside its EM loop, and
+<a class="reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingDFM.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingDFM" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingDFM"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingDFM</span></code></a>
+is maximized through <code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code>.
+<a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.LinearGaussianSSM.mixed_frequency_state_space.html#cultivars.state_space.linear_gaussian.LinearGaussianSSM.mixed_frequency_state_space" title="cultivars.state_space.linear_gaussian.LinearGaussianSSM.mixed_frequency_state_space"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mixed_frequency_state_space()</span></code></a>
+builds the mixed-frequency system from a coefficient stack, for use
+outside <code class="docutils literal notranslate"><span class="pre">MFVAR</span></code>.</p>
+<p>The emitted system reproduces the fitted likelihood. For an
+unobserved-components local level:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.html#module-cultivars.univariate.unobserved_components"><span class="nn">cultivars.univariate.unobserved_components</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponents.html#cultivars.univariate.unobserved_components.UnobservedComponents" title="cultivars.univariate.unobserved_components.UnobservedComponents"><span class="n">UnobservedComponents</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">series</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponentsResult.html#cultivars.univariate.unobserved_components.UnobservedComponentsResult" title="cultivars.univariate.unobserved_components.UnobservedComponentsResult"><span class="n">uc</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponents.html#cultivars.univariate.unobserved_components.UnobservedComponents" title="cultivars.univariate.unobserved_components.UnobservedComponents"><span class="n">UnobservedComponents</span></a><span class="p">(</span><span class="n">series</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponents.fit.html#cultivars.univariate.unobserved_components.UnobservedComponents.fit" title="cultivars.univariate.unobserved_components.UnobservedComponents.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponentsResult.state_space.html#cultivars.univariate.unobserved_components.UnobservedComponentsResult.state_space" title="cultivars.univariate.unobserved_components.UnobservedComponentsResult.state_space"><span class="n">system</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponentsResult.state_space.html#cultivars.univariate.unobserved_components.UnobservedComponentsResult.state_space" title="cultivars.univariate.unobserved_components.UnobservedComponentsResult.state_space"><span class="n">uc</span><span class="o">.</span><span class="n">state_space</span></a>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">k_states</span><span class="p">,</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#abs"><span class="nb">abs</span></a><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">-</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponentsResult.llf.html#cultivars.univariate.unobserved_components.UnobservedComponentsResult.llf" title="cultivars.univariate.unobserved_components.UnobservedComponentsResult.llf"><span class="n">uc</span><span class="o">.</span><span class="n">llf</span></a><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">series</span><span class="p">)</span><span class="o">.</span><span class="n">smoothed_state</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponentsResult.level.html#cultivars.univariate.unobserved_components.UnobservedComponentsResult.level" title="cultivars.univariate.unobserved_components.UnobservedComponentsResult.level"><span class="n">uc</span><span class="o">.</span><span class="n">level</span></a><span class="p">)))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">series</span><span class="p">[:</span><span class="mi">50</span><span class="p">])</span><span class="o">.</span><span class="n">filtered_state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1 True
+True
+(50, 1)
+</pre></div>
+</div>
+<p>Call an engine directly when the system is yours: a model the library
+does not estimate, a likelihood you will maximize with your own
+optimizer or sampler (build the engine inside the objective and call
+<code class="docutils literal notranslate"><span class="pre">loglikelihood</span></code>), a fitted system evaluated on a new sample, or a
+stress test of a fitted system under modified matrices.</p>
+</section>
+<section id="nuances-and-gotchas">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Nuances and gotchas</a><a class="headerlink" href="#nuances-and-gotchas" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><strong>Result records are plain dataclasses.</strong> None of the eight records
+has <code class="docutils literal notranslate"><span class="pre">summary()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> or the comparison methods of
+fitted results; their repr is the default dataclass repr, which prints
+every array in full (over 20,000 characters for the 200-period local
+level) under the private class name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#hasattr"><span class="nb">hasattr</span></a><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="s2">"summary"</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#len"><span class="nb">len</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#repr"><span class="nb">repr</span></a><span class="p">(</span><span class="n">filtered</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">20000</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#type"><span class="nb">type</span></a><span class="p">(</span><span class="n">filtered</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>False True
+_KalmanFilterResult
+</pre></div>
+</div>
+<p>Read the fields by name instead of printing the record.</p>
+</li>
+<li><p><strong>The diffuse prior is approximate.</strong> <span class="math notranslate nohighlight">\(P_1 = 10^6 I\)</span> puts about
+<span class="math notranslate nohighlight">\(-\tfrac12\log 10^6 \approx -6.9\)</span> into the first contributions
+for each nonstationary state. Likelihoods are comparable across
+specifications with the same number of diffuse states on the same
+sample, not across different numbers of them. A time-varying
+<code class="docutils literal notranslate"><span class="pre">transition</span></code>, <code class="docutils literal notranslate"><span class="pre">selection</span></code> or <code class="docutils literal notranslate"><span class="pre">state_cov</span></code> also triggers the
+diffuse default even when every <span class="math notranslate nohighlight">\(T_t\)</span> is stable; pass
+<code class="docutils literal notranslate"><span class="pre">initial_state_cov</span></code> explicitly in that case.</p></li>
+<li><p><strong>The default initial mean is zero.</strong> See <a class="reference internal" href="#initialization">Initialization</a>: with a
+<code class="docutils literal notranslate"><span class="pre">state_intercept</span></code>, set <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> to the stationary mean.</p></li>
+<li><p><strong>Missing-data rules differ by engine.</strong> <code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code>
+accepts <code class="docutils literal notranslate"><span class="pre">nan</span></code> in any element. <code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> and
+<code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code> accept only whole missing rows and raise
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> on a partially
+observed row. <code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM.filter</span></code> raises on any non-finite
+value, because the lags of a missing value poison later densities;
+interpolate first or use <code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code>.</p></li>
+<li><p><strong>Row counts differ.</strong> Hamilton-filter arrays have <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">-</span> <span class="pre">order</span></code>
+rows; Kalman, Kim and particle arrays have <code class="docutils literal notranslate"><span class="pre">n</span></code>. Align by index
+before comparing a regime path with anything dated on the full
+sample, such as a <a class="reference internal" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.html#cultivars.spectral.cycles.TurningPointsResult" title="cultivars.spectral.cycles.TurningPointsResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TurningPointsResult</span></code></a>
+contraction indicator.</p></li>
+<li><p><strong>Default initializations differ between the linear engines.</strong>
+<code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code> defaults to <span class="math notranslate nohighlight">\(P_1 = 100\, I\)</span>, not
+the stationary covariance, so two identical regimes do not reproduce
+<code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code> until you pass the same <code class="docutils literal notranslate"><span class="pre">initial_state_cov</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">same</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#dict"><span class="nb">dict</span></a><span class="p">(</span>
+    <span class="n">design</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">obs_cov</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="n">transition</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mf">0.8</span><span class="p">),</span> <span class="n">state_cov</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="n">regime_transition</span><span class="o">=</span><span class="n">chain</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">kalman</span> <span class="o">=</span> <span class="n">LinearGaussianSSM</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.8</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">]])</span>
+<span class="n">exact</span> <span class="o">=</span> <span class="n">kalman</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">RegimeSwitchingLinearSSM</span><span class="p">(</span><span class="o">**</span><span class="n">same</span><span class="p">)</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span> <span class="o">-</span> <span class="n">exact</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">matched</span> <span class="o">=</span> <span class="n">RegimeSwitchingLinearSSM</span><span class="p">(</span><span class="o">**</span><span class="n">same</span><span class="p">,</span> <span class="n">initial_state_cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.5</span> <span class="o">/</span> <span class="mf">0.36</span><span class="p">]])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#abs"><span class="nb">abs</span></a><span class="p">(</span><span class="n">matched</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span> <span class="o">-</span> <span class="n">exact</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-1.919
+True
+</pre></div>
+</div>
+</li>
+<li><p><strong>A bad chain raises different exceptions.</strong> A transition matrix that
+is not row-stochastic raises
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> in
+<code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code> and <a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>
+in <code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code>. Catch both if you validate user input.</p></li>
+<li><p><strong>The two nonlinear notations.</strong> The <code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> docstrings call
+the measurement covariance <span class="math notranslate nohighlight">\(R\)</span>; on this page it is <span class="math notranslate nohighlight">\(H\)</span>, to
+match the linear engine, where <span class="math notranslate nohighlight">\(R\)</span> is the selection matrix. The
+argument names (<code class="docutils literal notranslate"><span class="pre">obs_cov</span></code>, <code class="docutils literal notranslate"><span class="pre">state_cov</span></code>) are the same in both
+engines.</p></li>
+<li><p><strong>Unscented tuning must match.</strong> <code class="docutils literal notranslate"><span class="pre">unscented_smoother</span></code> reruns the
+filter with its own <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code> and <code class="docutils literal notranslate"><span class="pre">kappa</span></code>; pass the same
+values you gave <code class="docutils literal notranslate"><span class="pre">unscented_filter</span></code> or the two will not correspond.</p></li>
+<li><p><strong>Particle results do not keep the cloud.</strong> <code class="docutils literal notranslate"><span class="pre">ParticleFilterResult</span></code>
+carries cloud means and standard deviations, not particles or
+weights. <code class="docutils literal notranslate"><span class="pre">particle_smoother</span></code> costs <span class="math notranslate nohighlight">\(O(N^2)\)</span> per period and
+stores every forward cloud, which is why its default <code class="docutils literal notranslate"><span class="pre">n_particles</span></code> is
+500 rather than 2000.</p></li>
+<li><p><strong>Seeds.</strong> <code class="docutils literal notranslate"><span class="pre">particle_filter</span></code>, <code class="docutils literal notranslate"><span class="pre">particle_smoother</span></code>, <code class="docutils literal notranslate"><span class="pre">simulate</span></code>
+and <code class="docutils literal notranslate"><span class="pre">simulation_smoother</span></code> take <code class="docutils literal notranslate"><span class="pre">seed</span></code> (an int or a
+<code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code>); with <code class="docutils literal notranslate"><span class="pre">seed=None</span></code> every call differs.</p></li>
+<li><p><strong>No forecasting method.</strong> The engines have no <code class="docutils literal notranslate"><span class="pre">forecast</span></code>. Append
+<code class="docutils literal notranslate"><span class="pre">nan</span></code> rows to the data and read <code class="docutils literal notranslate"><span class="pre">predicted_state</span></code> from the filter,
+or use the <code class="docutils literal notranslate"><span class="pre">forecast</span></code> of the fitted model that emitted the engine.</p></li>
+<li><p><strong>The engines do not estimate.</strong> There is no <code class="docutils literal notranslate"><span class="pre">fit</span></code> and no parameter
+vector. To estimate a custom system, build the engine inside your
+objective function and maximize <code class="docutils literal notranslate"><span class="pre">loglikelihood</span></code>.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a>: unobserved components and ARIMA, whose
+likelihoods run on the linear engine.</p></li>
+<li><p><a class="reference internal" href="volatility.html"><span class="doc">Volatility models</span></a>: stochastic-volatility models on the nonlinear
+engine.</p></li>
+<li><p><a class="reference internal" href="univariate_nonlinear.html"><span class="doc">Nonlinear and regime-switching univariate models</span></a> and <a class="reference internal" href="nonlinear_multivariate.html"><span class="doc">Nonlinear, time-varying and regime-switching VARs</span></a>:
+Markov-switching, threshold and smooth-transition models.</p></li>
+<li><p><a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a>: mixed-frequency VARs and the dynamic
+Nelson-Siegel model.</p></li>
+<li><p><a class="reference internal" href="spectral.html"><span class="doc">Spectral analysis and filtering</span></a>: the frequency-domain views of fitted systems.</p></li>
+<li><p><a class="reference internal" href="conventions.html"><span class="doc">Conventions</span></a> and <a class="reference internal" href="nuances.html"><span class="doc">Nuances and known issues</span></a>: package-wide conventions.</p></li>
+<li><p>API: <a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.html#module-cultivars.state_space.linear_gaussian" title="cultivars.state_space.linear_gaussian"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.state_space.linear_gaussian</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.html#module-cultivars.state_space.nonlinear" title="cultivars.state_space.nonlinear"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.state_space.nonlinear</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.html#module-cultivars.state_space.regime_switching" title="cultivars.state_space.regime_switching"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.state_space.regime_switching</span></code></a>.</p></li>
+</ul>
+<p>References: Durbin and Koopman (2002, 2012); Harvey (1989); Hamilton
+(1989, 1994); Kim (1994); Kim and Nelson (1999); Julier and Uhlmann
+(1997); Gordon, Salmond and Smith (1993); Pitt and Shephard (1999);
+Doucet, Godsill and Andrieu (2000); Särkkä (2013).</p>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="nonlinear_multivariate.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Nonlinear, time-varying and regime-switching VARs</p>
+</div>
+</a>
+<a class="right-next" href="spectral.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Spectral analysis and filtering</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-family-at-a-glance">The family at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-grammar-for-four-engines">One grammar for four engines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-gaussian-systems">Linear-Gaussian systems</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-model">The model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#system-matrices-and-shapes">System matrices and shapes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-local-level-end-to-end">A local level, end to end</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initialization">Initialization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-records-give-you">What the records give you</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-and-non-gaussian-systems">Nonlinear and non-Gaussian systems</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">The model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#three-filters-and-their-smoothers">Three filters and their smoothers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-gaussian-models-through-hooks">Non-Gaussian models through hooks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-regimes-the-hamilton-filter">Discrete regimes: the Hamilton filter</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">The model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-linear-systems-kim-s-collapse">Switching linear systems: Kim’s collapse</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-pieces-connect">How the pieces connect</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nuances-and-gotchas">Nuances and gotchas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="tocsection editthispage">
+<a href="https://github.com/nikhilxsunder/cultivars/edit/dev/docs/source/user_guide/state_space.rst">
+<i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+</div>
+</div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item"><div class="cv-footer">
+<section aria-label="Documentation sections" class="cv-footer__band cv-footer__band--guide">
+<div class="cv-footer__inner cv-footer__columns">
+<div class="cv-footer__column">
+<h2>API reference</h2>
+<p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+<a class="cv-footer__cta" href="../api/index.html">View the API<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Examples</h2>
+<p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+<a class="cv-footer__cta" href="../auto_examples/index.html">View the examples<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Engine</h2>
+<p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+<a class="cv-footer__cta" href="../engine/index.html">View the engine<span aria-hidden="true"> ›</span></a>
+</div>
+</div>
+</section>
+<section aria-label="Project links" class="cv-footer__band cv-footer__band--site">
+<div class="cv-footer__inner">
+<div class="cv-footer__grid">
+<div class="cv-footer__install">
+<h2>Get cultivars</h2>
+<p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a3</code></pre>
+</div>
+<nav aria-label="Resources" class="cv-footer__links">
+<h2>Resources</h2>
+<ul>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/releases">Releases</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md">Changelog</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/issues">Issues</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md">Contributing</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md">Security</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md">Code of conduct</a>
+</li>
+</ul>
+</nav>
+<nav aria-label="Related projects" class="cv-footer__links">
+<h2>Related</h2>
+<ul>
+<li>
+<a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a><span class="cv-footer__muted"> FRED client</span>
+</li>
+<li>
+<a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a><span class="cv-footer__muted"> SEC EDGAR client</span>
+</li>
+</ul>
+</nav>
+</div>
+<ul aria-label="Project pages" class="cv-footer__social">
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li>
+<a href="https://pypi.org/project/cultivars/" title="PyPI"><i aria-hidden="true" class="fa-brands fa-python"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li>
+<a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov"><i aria-hidden="true" class="fa-solid fa-umbrella"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff" title="Cite"><i aria-hidden="true" class="fa-solid fa-quote-left"></i><span class="visually-hidden">Cite</span></a>
+</li>
+</ul>
+<div class="cv-footer__legal">
+<p>
+          © 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE">MIT License</a>. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED® is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+<p class="cv-footer__build">
+          cultivars 1.0.0a3 · updated 2026-10-12 · built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
+</p>
+</div>
+</div>
+</section>
+</div></div>
+</div>
+</div>
+</footer>
+</body>
+</html>

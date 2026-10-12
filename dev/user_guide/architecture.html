@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="How cultivars is organized: specifications, frozen result records, the schemes and views that consume them, and the attribute contracts that connect the families." name="description"/>
+<meta content="Architecture" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/user_guide/architecture.html" property="og:url"/>
+<meta content="cultivars" property="og:site_name"/>
+<meta content="cultivars has roughly sixty estimators, and they all fit one small design. Once you know what kind of object you are holding and which verb it answers to, you can work out what it connects to without reading its reference page. This page describes that design: the kinds of objects, the verbs, the..." property="og:description"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" property="og:image"/>
+<meta content="cultivars" property="og:image:alt"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="cultivars Documentation" property="og:site_name"/>
+<meta content="cultivars Logo" property="og:image:alt"/>
+<meta content="2026-10-12T19:40:35+00:00" property="article:modified_time"/>
+<title>Architecture — cultivars</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/plot_directive.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=c83e6b79" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=7fc003df" rel="stylesheet" type="text/css"/>
+<link href="../_static/consent.css?v=8cbde1cf" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script defer="" src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<script src="../_static/documentation_options.js?v=3700ee43"></script>
+<script src="../_static/doctools.js?v=fd6eb6e6"></script>
+<script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+<script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+<script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+<script defer="defer" src="../_static/tippy/user_guide/architecture.f8101723-c6fe-4013-a286-4e57d8911ed8.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/architecture';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+<script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+<link href="https://nikhilxsunder.github.io/cultivars/stable/user_guide/architecture.html" rel="canonical"/>
+<link href="../_static/cultivars-favicon.ico" rel="icon"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="conventions.html" rel="next" title="Conventions"/>
+<link href="index.html" rel="prev" title="User guide"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="1.0" name="docsearch:version"/>
+<meta content="2026-10-12" name="docbuild:last-update"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
+</head>
+<body data-default-mode="">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle" type="button">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="cultivars - Home" class="logo__image only-light" src="../_static/cultivars-logo.png"/>
+<img alt="cultivars - Home" class="logo__image only-dark pst-js-only" src="../_static/cultivars-logo.png"/>
+</a></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle" type="button">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button" type="button">
+<svg aria-hidden="true" class="pst-icon" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Foundations</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing_a_model.html">Choosing a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nuances.html">Nuances and known issues</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Before estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.html">Diagnostics and specification testing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Univariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="univariate_linear.html">Univariate linear models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility.html">Volatility models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="univariate_nonlinear.html">Nonlinear and regime-switching univariate models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multivariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="var.html">Vector autoregressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="var_extensions.html">Beyond the basic VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_identification.html">Structural identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_vars.html">Bayesian VARs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="large_dimensional.html">Large and high-dimensional systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nonlinear_multivariate.html">Nonlinear, time-varying and regime-switching VARs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Engines and frequency-domain views</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="state_space.html">State-space models and filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral analysis and filtering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">After estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="forecasting.html">Forecasting and forecast evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_workflow.html">The Bayesian workflow</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="index.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">Architecture</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h1>
+<p>cultivars has roughly sixty estimators, and they all fit one small
+design. Once you know what kind of object you are holding and which verb
+it answers to, you can work out what it connects to without reading its
+reference page. This page describes that design: the kinds of objects,
+the verbs, the contracts that let one result feed many consumers, and
+which result families support which capabilities.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-layout-follows-the-analysis" id="id1">The layout follows the analysis</a></p></li>
+<li><p><a class="reference internal" href="#five-kinds-of-objects" id="id2">Five kinds of objects</a></p></li>
+<li><p><a class="reference internal" href="#the-verbs" id="id3">The verbs</a></p></li>
+<li><p><a class="reference internal" href="#one-result-many-consumers" id="id4">One result, many consumers</a></p></li>
+<li><p><a class="reference internal" href="#the-contracts" id="id5">The contracts</a></p></li>
+<li><p><a class="reference internal" href="#shared-capabilities" id="id6">Shared capabilities</a></p></li>
+<li><p><a class="reference internal" href="#what-each-family-supports" id="id7">What each family supports</a></p></li>
+<li><p><a class="reference internal" href="#how-the-families-are-built" id="id8">How the families are built</a></p></li>
+<li><p><a class="reference internal" href="#extending-the-library" id="id9">Extending the library</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id10">See also</a></p></li>
+</ul>
+</nav>
+<section id="the-layout-follows-the-analysis">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">The layout follows the analysis</a><a class="headerlink" href="#the-layout-follows-the-analysis" title="Link to this heading">#</a></h2>
+<p>The subpackages are ordered the way an empirical project runs:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>diagnostics            is the series stationary, cointegrated, nonlinear, broken?
+     |
+     v
+univariate             one series: ARIMA, GARCH, SV, threshold, switching ...
+multivariate           a system: reduced_form, structural, large_dim,
+     |                 nonlinear, regime_switching
+     |                 (state_space: the filtering engines several of them use)
+     v
+multivariate.structural   what are the shocks?   (identification)
+spectral                  at which frequencies?  (frequency-domain views)
+forecast                  how good are the forecasts?   (evaluation)
+bayes                     is the posterior trustworthy, which model?
+</pre></div>
+</div>
+<p>Two supporting modules sit beside them. <a class="reference internal" href="../api/generated/cultivars.typing.html#module-cultivars.typing" title="cultivars.typing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.typing</span></code></a> holds the
+literal option sets (<code class="docutils literal notranslate"><span class="pre">Trend</span> <span class="pre">=</span> <span class="pre">"n"</span> <span class="pre">|</span> <span class="pre">"c"</span> <span class="pre">|</span> <span class="pre">"ct"</span></code> and so on), and
+<a class="reference internal" href="../api/generated/cultivars.exceptions.html#module-cultivars.exceptions" title="cultivars.exceptions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.exceptions</span></code></a> holds the error hierarchy. A third,
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.summary</span></code>, holds the two records every result renders
+through. <code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.engine</span></code> contains the private numerical layers;
+nothing in it is public API.</p>
+</section>
+<section id="five-kinds-of-objects">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Five kinds of objects</a><a class="headerlink" href="#five-kinds-of-objects" title="Link to this heading">#</a></h2>
+<p>Every public name is one of five kinds. The kind tells you how to use
+the object.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 18.0%"/>
+<col style="width: 32.0%"/>
+<col style="width: 50.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Kind</p></th>
+<th class="head"><p>How to recognize it</p></th>
+<th class="head"><p>Examples</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Specification</strong> (a model)</p></td>
+<td><p>Constructed with data and options; has <code class="docutils literal notranslate"><span class="pre">fit()</span></code></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.box_jenkins.ARIMA.html#cultivars.univariate.box_jenkins.ARIMA" title="cultivars.univariate.box_jenkins.ARIMA"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARIMA</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">VAR</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">BVAR</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.GARCH.html#cultivars.univariate.conditional_variance.GARCH" title="cultivars.univariate.conditional_variance.GARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">GARCH</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Result</strong></p></td>
+<td><p>Returned by <code class="docutils literal notranslate"><span class="pre">fit()</span></code>; a frozen dataclass named <code class="docutils literal notranslate"><span class="pre">...Result</span></code>
+(<code class="docutils literal notranslate"><span class="pre">...Posterior</span></code> for some samplers)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ARMAResult</span></code>, <code class="docutils literal notranslate"><span class="pre">VARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">BVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Consumer</strong></p></td>
+<td><p>Constructed with a <em>result</em> and options; has one action verb</p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecursiveSVAR</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralDensity</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backtest</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Test or record</strong></p></td>
+<td><p>Returned by a function such as <code class="docutils literal notranslate"><span class="pre">adf()</span></code> or a result method such
+as <code class="docutils literal notranslate"><span class="pre">granger_causality()</span></code>; has <code class="docutils literal notranslate"><span class="pre">statistic</span></code>, <code class="docutils literal notranslate"><span class="pre">pvalue</span></code>,
+<code class="docutils literal notranslate"><span class="pre">reject()</span></code>, <code class="docutils literal notranslate"><span class="pre">summary()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">UnitRootTest</span></code>, <code class="docutils literal notranslate"><span class="pre">WaldTest</span></code>, <code class="docutils literal notranslate"><span class="pre">LinearityTest</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Option object</strong></p></td>
+<td><p>Passed <em>into</em> a specification to configure it; has no verb of its
+own</p></td>
+<td><p>the priors in <a class="reference internal" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors" title="cultivars.bayes.priors"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.priors</span></code></a>
+(<a class="reference internal" href="../api/generated/cultivars.bayes.priors.MinnesotaPrior.html#cultivars.bayes.priors.MinnesotaPrior" title="cultivars.bayes.priors.MinnesotaPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">MinnesotaPrior</span></code></a>, …)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="the-verbs">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">The verbs</a><a class="headerlink" href="#the-verbs" title="Link to this heading">#</a></h2>
+<p>Each kind answers to a fixed verb, and the verb is always a method on
+an object constructed with everything it needs. Arguments that change
+<em>what</em> is computed go to the constructor. Arguments that change <em>how</em>
+it is computed (number of draws, random seed) go to the verb.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 16.0%"/>
+<col style="width: 34.0%"/>
+<col style="width: 50.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Verb</p></th>
+<th class="head"><p>Called on</p></th>
+<th class="head"><p>Returns</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fit()</span></code></p></td>
+<td><p>every specification (56 classes)</p></td>
+<td><p>a result record</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">identify()</span></code></p></td>
+<td><p>every identification scheme in
+<a class="reference internal" href="../api/generated/cultivars.multivariate.structural.html#module-cultivars.multivariate.structural" title="cultivars.multivariate.structural"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.multivariate.structural</span></code></a>, plus <code class="docutils literal notranslate"><span class="pre">TVPSVAR</span></code></p></td>
+<td><p>a structural result, or the accepted set for set-identified
+schemes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compute()</span></code></p></td>
+<td><p>views and evaluators: spectral density and causality, spillover
+tables, spectral estimators, calibration, forecast comparison,
+density scores, Beveridge-Nelson</p></td>
+<td><p>a result record for that view</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">run()</span></code></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backtest</span></code></a></p></td>
+<td><p>a <code class="docutils literal notranslate"><span class="pre">BacktestResult</span></code> of aligned forecasts and outcomes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">filter()</span></code> / <code class="docutils literal notranslate"><span class="pre">smooth()</span></code></p></td>
+<td><p>state-space engines, trend and band-pass filters</p></td>
+<td><p>filtered or smoothed states, or the filtered series</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">solve()</span></code>, <code class="docutils literal notranslate"><span class="pre">transform()</span></code></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.closed_global.GVAR.html#cultivars.multivariate.reduced_form.closed_global.GVAR" title="cultivars.multivariate.reduced_form.closed_global.GVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">GVAR</span></code></a>,
+the DSGE perturbation model; <a class="reference internal" href="../api/generated/cultivars.spectral.wavelets.MODWT.html#cultivars.spectral.wavelets.MODWT" title="cultivars.spectral.wavelets.MODWT"><code class="xref py py-class docutils literal notranslate"><span class="pre">MODWT</span></code></a></p></td>
+<td><p>the solved system; the wavelet transform</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Two families of plain functions sit outside this pattern. Hypothesis
+tests (<code class="docutils literal notranslate"><span class="pre">adf</span></code>, <code class="docutils literal notranslate"><span class="pre">kpss</span></code>, <code class="docutils literal notranslate"><span class="pre">terasvirta</span></code>, <code class="docutils literal notranslate"><span class="pre">bds</span></code> and the rest) take
+data and return a test record. Scoring and chain diagnostics
+(<code class="docutils literal notranslate"><span class="pre">pinball_loss</span></code>, <code class="docutils literal notranslate"><span class="pre">rhat</span></code>, <code class="docutils literal notranslate"><span class="pre">ess_bulk</span></code>) take arrays and return
+numbers.</p>
+</section>
+<section id="one-result-many-consumers">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">One result, many consumers</a><a class="headerlink" href="#one-result-many-consumers" title="Link to this heading">#</a></h2>
+<p>A consumer never asks <em>which</em> estimator produced its input. It reads a
+fixed set of attributes, and any result that has them is accepted.
+This duck-typed contract is what lets one fitted VAR be identified,
+viewed in the frequency domain, decomposed into spillovers and
+backtested, with no adapter code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.html#module-cultivars.multivariate.reduced_form.vector_autoregression"><span class="nn">cultivars.multivariate.reduced_form.vector_autoregression</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.html#module-cultivars.multivariate.structural.zero_restrictions"><span class="nn">cultivars.multivariate.structural.zero_restrictions</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR"><span class="n">RecursiveSVAR</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.html#module-cultivars.spectral.density"><span class="nn">cultivars.spectral.density</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><span class="n">SpectralDensity</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.spillover.html#module-cultivars.multivariate.large_dim.spillover"><span class="nn">cultivars.multivariate.large_dim.spillover</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.spillover.Spillover.html#cultivars.multivariate.large_dim.spillover.Spillover" title="cultivars.multivariate.large_dim.spillover.Spillover"><span class="n">Spillover</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.html#module-cultivars.forecast.backtest"><span class="nn">cultivars.forecast.backtest</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+<span class="n">y</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="mi">300</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">300</span><span class="p">):</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span> <span class="o">@</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"output"</span><span class="p">,</span> <span class="s2">"prices"</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><span class="n">var</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit"><span class="n">fit</span></a><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.SVARResult.html#cultivars.multivariate.structural.zero_restrictions.SVARResult" title="cultivars.multivariate.structural.zero_restrictions.SVARResult"><span class="n">svar</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR"><span class="n">RecursiveSVAR</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><span class="n">var</span></a><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify"><span class="n">identify</span></a><span class="p">()</span>           <span class="c1"># structural view</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensityResult.html#cultivars.spectral.density.SpectralDensityResult" title="cultivars.spectral.density.SpectralDensityResult"><span class="n">density</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><span class="n">SpectralDensity</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><span class="n">var</span></a><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensity.compute.html#cultivars.spectral.density.SpectralDensity.compute" title="cultivars.spectral.density.SpectralDensity.compute"><span class="n">compute</span></a><span class="p">()</span>       <span class="c1"># frequency-domain view</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.spillover.SpilloverResult.html#cultivars.multivariate.large_dim.spillover.SpilloverResult" title="cultivars.multivariate.large_dim.spillover.SpilloverResult"><span class="n">spill</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.spillover.Spillover.html#cultivars.multivariate.large_dim.spillover.Spillover" title="cultivars.multivariate.large_dim.spillover.Spillover"><span class="n">Spillover</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><span class="n">var</span></a><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.spillover.Spillover.compute.html#cultivars.multivariate.large_dim.spillover.Spillover.compute" title="cultivars.multivariate.large_dim.spillover.Spillover.compute"><span class="n">compute</span></a><span class="p">()</span>   <span class="c1"># connectedness view</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><span class="n">backtest</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="p">(</span>                           <span class="c1"># evaluation</span>
+    <span class="n">y</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit"><span class="n">fit</span></a><span class="p">(),</span>
+    <span class="n">horizons</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.Backtest.run.html#cultivars.forecast.backtest.Backtest.run" title="cultivars.forecast.backtest.Backtest.run"><span class="n">run</span></a><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.SVARResult.irf.html#cultivars.multivariate.structural.zero_restrictions.SVARResult.irf" title="cultivars.multivariate.structural.zero_restrictions.SVARResult.irf"><span class="n">svar</span><span class="o">.</span><span class="n">irf</span></a><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">density</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.spillover.SpilloverResult.total.html#cultivars.multivariate.large_dim.spillover.SpilloverResult.total" title="cultivars.multivariate.large_dim.spillover.SpilloverResult.total"><span class="n">spill</span><span class="o">.</span><span class="n">total</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.BacktestResult.n_origins.html#cultivars.forecast.backtest.BacktestResult.n_origins" title="cultivars.forecast.backtest.BacktestResult.n_origins"><span class="n">backtest</span><span class="o">.</span><span class="n">n_origins</span></a><span class="p">,</span> <span class="n">backtest</span><span class="o">.</span><span class="n">rmse</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(9, 2, 2) (256,) 3.7
+97 [0.98  0.954]
+</pre></div>
+</div>
+<p>A result that lacks an attribute a consumer needs is refused at
+construction. The message names the missing attribute, so you know
+which capability is absent rather than getting a traceback deep inside
+the computation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.html#module-cultivars.multivariate.large_dim.bayesian"><span class="nn">cultivars.multivariate.large_dim.bayesian</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><span class="n">BVAR</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.html#module-cultivars.exceptions"><span class="nn">cultivars.exceptions</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><span class="n">SpecificationError</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVARResult.html#cultivars.multivariate.large_dim.bayesian.BVARResult" title="cultivars.multivariate.large_dim.bayesian.BVARResult"><span class="n">bvar</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><span class="n">BVAR</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.fit.html#cultivars.multivariate.large_dim.bayesian.BVAR.fit" title="cultivars.multivariate.large_dim.bayesian.BVAR.fit"><span class="n">fit</span></a><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">RecursiveSVAR</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVARResult.html#cultivars.multivariate.large_dim.bayesian.BVARResult" title="cultivars.multivariate.large_dim.bayesian.BVARResult"><span class="n">bvar</span></a><span class="p">)</span>
+<span class="k">except</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><span class="n">SpecificationError</span></a> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#str"><span class="nb">str</span></a><span class="p">(</span><span class="n">error</span><span class="p">)[:</span><span class="mi">111</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>identification needs a closed reduced-form result exposing ('names', 'nobs', 'sigma_u', 'resid', 'coefficients'
+</pre></div>
+</div>
+<p>Here the Bayesian VAR result has no <code class="docutils literal notranslate"><span class="pre">ma_representation</span></code>, so it is
+not a closed system in the sense the identification schemes require.
+It does satisfy the <em>predictive</em> contract, so the same backtest harness
+records it as a density forecaster.</p>
+</section>
+<section id="the-contracts">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">The contracts</a><a class="headerlink" href="#the-contracts" title="Link to this heading">#</a></h2>
+<p>These are the attribute sets the consumers check. They are structural
+(duck-typed) protocols. Any object with the attributes qualifies,
+including a class you write yourself. Only <code class="docutils literal notranslate"><span class="pre">Identification</span></code> is
+importable from the public <a class="reference internal" href="../api/generated/cultivars.typing.html#module-cultivars.typing" title="cultivars.typing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.typing</span></code></a>; the others live in
+the private engine today.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%"/>
+<col style="width: 38.0%"/>
+<col style="width: 42.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Contract</p></th>
+<th class="head"><p>Requires</p></th>
+<th class="head"><p>Accepted by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Closed system</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">names</span></code>, <code class="docutils literal notranslate"><span class="pre">nobs</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>, <code class="docutils literal notranslate"><span class="pre">resid</span></code>, <code class="docutils literal notranslate"><span class="pre">coefficients</span></code>,
+<code class="docutils literal notranslate"><span class="pre">k_endog</span></code>, <code class="docutils literal notranslate"><span class="pre">ma_representation(horizon)</span></code></p></td>
+<td><p>every identification scheme;
+<a class="reference internal" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralDensity</span></code></a>;
+<a class="reference internal" href="../api/generated/cultivars.spectral.causality.SpectralCausality.html#cultivars.spectral.causality.SpectralCausality" title="cultivars.spectral.causality.SpectralCausality"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralCausality</span></code></a>;
+<a class="reference internal" href="../api/generated/cultivars.multivariate.large_dim.spillover.Spillover.html#cultivars.multivariate.large_dim.spillover.Spillover" title="cultivars.multivariate.large_dim.spillover.Spillover"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spillover</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Structural result</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">source</span></code> (the closed system it came from), <code class="docutils literal notranslate"><span class="pre">irf(horizon)</span></code></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.structural.factor_augmented.FactorAugmentedSVAR.html#cultivars.multivariate.structural.factor_augmented.FactorAugmentedSVAR" title="cultivars.multivariate.structural.factor_augmented.FactorAugmentedSVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">FactorAugmentedSVAR</span></code></a>,
+Markov-switching structural models</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Predictive result</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">forecast_paths(steps,</span> <span class="pre">seed=...)</span></code> returning simulated paths</p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backtest</span></code></a> (as a density
+forecaster), conditional forecasts, model combination in
+<a class="reference internal" href="../api/generated/cultivars.bayes.combination.html#module-cultivars.bayes.combination" title="cultivars.bayes.combination"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.combination</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Replicating result / model</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">observed</span></code> plus <code class="docutils literal notranslate"><span class="pre">posterior_replications(...)</span></code> (result) or
+<code class="docutils literal notranslate"><span class="pre">prior_replications(...)</span></code> (model)</p></td>
+<td><p>posterior and prior predictive checks in
+<a class="reference internal" href="../api/generated/cultivars.bayes.checks.html#module-cultivars.bayes.checks" title="cultivars.bayes.checks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.checks</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Point forecaster</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">forecast(steps)</span></code></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backtest</span></code></a> (as a point
+forecaster); anything else can be backtested through its
+<code class="docutils literal notranslate"><span class="pre">predict=</span></code> hook</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="shared-capabilities">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Shared capabilities</a><a class="headerlink" href="#shared-capabilities" title="Link to this heading">#</a></h2>
+<p>Results share behaviour through a small set of capabilities. If a result
+has one of these methods, the method means the same thing wherever it
+appears:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 70.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Capability</p></th>
+<th class="head"><p>Members</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Summary</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">summary()</span></code>, <code class="docutils literal notranslate"><span class="pre">print(result)</span></code>, notebook HTML. On every model
+result and most test records; the Johansen rank test and lag
+selection records use <code class="docutils literal notranslate"><span class="pre">to_table()</span></code> instead, and the state-space
+filter records have neither yet.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Comparison</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">information_criteria</span></code>, <code class="docutils literal notranslate"><span class="pre">compare(*others,</span> <span class="pre">criterion=...)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test(unrestricted)</span></code>. On likelihood-based fits
+to the same sample.</p></td>
+</tr>
+<tr class="row-even"><td><p>Stability</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">stability</span></code> / <code class="docutils literal notranslate"><span class="pre">stability_check()</span></code>, <code class="docutils literal notranslate"><span class="pre">is_stationary</span></code> /
+<code class="docutils literal notranslate"><span class="pre">is_stable</span></code>, <code class="docutils literal notranslate"><span class="pre">invertibility</span></code> / <code class="docutils literal notranslate"><span class="pre">is_invertible</span></code>. Each returns a
+record with the roots and their moduli.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Series export</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pandas(index=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars()</span></code>. On
+univariate results with per-observation output.</p></td>
+</tr>
+<tr class="row-even"><td><p>Propagation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">irf</span></code>, <code class="docutils literal notranslate"><span class="pre">fevd</span></code>, <code class="docutils literal notranslate"><span class="pre">ma_representation</span></code>, <code class="docutils literal notranslate"><span class="pre">forecast</span></code>,
+<code class="docutils literal notranslate"><span class="pre">simulate</span></code>, <code class="docutils literal notranslate"><span class="pre">historical_decomposition</span></code>. On closed linear
+systems.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Convergence</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">convergence()</span></code>, returning chain diagnostics. On sampled
+posteriors.</p></td>
+</tr>
+<tr class="row-even"><td><p>Replication</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">posterior_replications()</span></code>, <code class="docutils literal notranslate"><span class="pre">simulate()</span></code>. On sampled
+posteriors, for predictive checks.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="what-each-family-supports">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">What each family supports</a><a class="headerlink" href="#what-each-family-supports" title="Link to this heading">#</a></h2>
+<p>The matrix below is the practical consequence of the contracts. A dot
+means the capability is absent. Several of these gaps are on the
+roadmap; <a class="reference internal" href="nuances.html"><span class="doc">Nuances and known issues</span></a> lists the ones that most often surprise users.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 9.0%"/>
+<col style="width: 9.0%"/>
+<col style="width: 9.0%"/>
+<col style="width: 9.0%"/>
+<col style="width: 10.0%"/>
+<col style="width: 10.0%"/>
+<col style="width: 10.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Result family</p></th>
+<th class="head"><p>forecast</p></th>
+<th class="head"><p>paths</p></th>
+<th class="head"><p>simulate</p></th>
+<th class="head"><p>irf</p></th>
+<th class="head"><p>compare</p></th>
+<th class="head"><p>closed</p></th>
+<th class="head"><p>export</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>AR, ARMA/ARIMA/SARIMA</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>GARCH family</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>SV (QML)</p></td>
+<td><p>variance</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>SETAR, STAR, Markov-switching AR</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Unobserved components</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>VAR, VARX, VARMA, VECM</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Panel VAR, GVAR, MF-VAR, MIDAS-VAR</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>some</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>BVAR, Gibbs, Student-t, BVAR-SV</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+</tr>
+<tr class="row-even"><td><p>TVAR, STVAR</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Time-varying VARs</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Structural results (any scheme)</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>yes</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>“paths” is <code class="docutils literal notranslate"><span class="pre">forecast_paths</span></code> (a predictive sample); “closed” is the
+closed-system contract above; “export” is <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>. Bayesian
+results are compared by marginal likelihood through
+<a class="reference internal" href="../api/generated/cultivars.bayes.evidence.html#module-cultivars.bayes.evidence" title="cultivars.bayes.evidence"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.evidence</span></code></a> rather than <code class="docutils literal notranslate"><span class="pre">compare</span></code>; see
+<a class="reference internal" href="bayesian_workflow.html"><span class="doc">The Bayesian workflow</span></a>.</p>
+</section>
+<section id="how-the-families-are-built">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">How the families are built</a><a class="headerlink" href="#how-the-families-are-built" title="Link to this heading">#</a></h2>
+<p>The families share engines, which explains why they behave alike:</p>
+<ul class="simple">
+<li><p><strong>Univariate models</strong> share one likelihood and optimizer layer, so
+every result has <code class="docutils literal notranslate"><span class="pre">llf</span></code>, <code class="docutils literal notranslate"><span class="pre">information_criteria</span></code> and <code class="docutils literal notranslate"><span class="pre">compare</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">params</span></code> is always a dictionary keyed by parameter name. The
+key style follows each family’s literature: <code class="docutils literal notranslate"><span class="pre">ar.L1</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma2</span></code>
+for Box-Jenkins models, <code class="docutils literal notranslate"><span class="pre">omega</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha[1]</span></code> and <code class="docutils literal notranslate"><span class="pre">beta[1]</span></code> for
+GARCH.</p></li>
+<li><p><strong>Closed linear systems</strong> (VAR, VARX, VARMA, VECM, panel, global and
+mixed-frequency VARs) share one propagation layer, built on the
+moving-average representation. That is why their IRF, FEVD, forecast
+and simulation methods have identical signatures and index
+conventions, and why every identification scheme accepts all of them.</p></li>
+<li><p><strong>Bayesian VARs</strong> share one posterior-draws layer: credible
+intervals, IRF bands, <code class="docutils literal notranslate"><span class="pre">forecast_paths</span></code>, <code class="docutils literal notranslate"><span class="pre">convergence()</span></code> and
+predictive replications behave the same across the conjugate, Gibbs,
+Student-t and stochastic-volatility samplers.</p></li>
+<li><p><strong>State-space engines</strong> in <a class="reference internal" href="../api/generated/cultivars.state_space.html#module-cultivars.state_space" title="cultivars.state_space"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.state_space</span></code></a> sit
+underneath several families: unobserved components and dynamic
+Nelson-Siegel use the Kalman filter, Markov-switching models use the
+Hamilton and Kim filters, and DSGE perturbation uses the nonlinear
+filters. You can call the engines directly; see <a class="reference internal" href="state_space.html"><span class="doc">State-space models and filtering</span></a>.</p></li>
+</ul>
+</section>
+<section id="extending-the-library">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Extending the library</a><a class="headerlink" href="#extending-the-library" title="Link to this heading">#</a></h2>
+<p>Because consumers check attributes rather than classes, your own code
+plugs in at the same points:</p>
+<ul class="simple">
+<li><p><strong>A forecaster from outside the package</strong> can be backtested by
+passing <code class="docutils literal notranslate"><span class="pre">predict=</span></code> to <a class="reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backtest</span></code></a>
+(see <a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>).</p></li>
+<li><p><strong>A reduced form of your own</strong> can be identified, viewed spectrally
+or decomposed into spillovers if it exposes the closed-system
+attributes.</p></li>
+<li><p><strong>A sampler of your own</strong> can be checked with
+<a class="reference internal" href="../api/generated/cultivars.bayes.checks.replication_check.html#cultivars.bayes.checks.replication_check" title="cultivars.bayes.checks.replication_check"><code class="xref py py-func docutils literal notranslate"><span class="pre">replication_check()</span></code></a> and the chain
+functions in <a class="reference internal" href="../api/generated/cultivars.bayes.chains.html#module-cultivars.bayes.chains" title="cultivars.bayes.chains"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.chains</span></code></a>, which take plain arrays.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="conventions.html"><span class="doc">Conventions</span></a> for shapes, names and index order.</p></li>
+<li><p><a class="reference internal" href="nuances.html"><span class="doc">Nuances and known issues</span></a> for the places where families still differ.</p></li>
+<li><p><a class="reference internal" href="../getting_started/concepts.html"><span class="doc">Core concepts</span></a> for the result-record design in
+brief.</p></li>
+</ul>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="index.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">User guide</p>
+</div>
+</a>
+<a class="right-next" href="conventions.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Conventions</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-layout-follows-the-analysis">The layout follows the analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#five-kinds-of-objects">Five kinds of objects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-verbs">The verbs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-result-many-consumers">One result, many consumers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-contracts">The contracts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-capabilities">Shared capabilities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-each-family-supports">What each family supports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-families-are-built">How the families are built</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extending-the-library">Extending the library</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="tocsection editthispage">
+<a href="https://github.com/nikhilxsunder/cultivars/edit/dev/docs/source/user_guide/architecture.rst">
+<i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+</div>
+</div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item"><div class="cv-footer">
+<section aria-label="Documentation sections" class="cv-footer__band cv-footer__band--guide">
+<div class="cv-footer__inner cv-footer__columns">
+<div class="cv-footer__column">
+<h2>API reference</h2>
+<p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+<a class="cv-footer__cta" href="../api/index.html">View the API<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Examples</h2>
+<p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+<a class="cv-footer__cta" href="../auto_examples/index.html">View the examples<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Engine</h2>
+<p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+<a class="cv-footer__cta" href="../engine/index.html">View the engine<span aria-hidden="true"> ›</span></a>
+</div>
+</div>
+</section>
+<section aria-label="Project links" class="cv-footer__band cv-footer__band--site">
+<div class="cv-footer__inner">
+<div class="cv-footer__grid">
+<div class="cv-footer__install">
+<h2>Get cultivars</h2>
+<p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a3</code></pre>
+</div>
+<nav aria-label="Resources" class="cv-footer__links">
+<h2>Resources</h2>
+<ul>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/releases">Releases</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md">Changelog</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/issues">Issues</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md">Contributing</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md">Security</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md">Code of conduct</a>
+</li>
+</ul>
+</nav>
+<nav aria-label="Related projects" class="cv-footer__links">
+<h2>Related</h2>
+<ul>
+<li>
+<a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a><span class="cv-footer__muted"> FRED client</span>
+</li>
+<li>
+<a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a><span class="cv-footer__muted"> SEC EDGAR client</span>
+</li>
+</ul>
+</nav>
+</div>
+<ul aria-label="Project pages" class="cv-footer__social">
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li>
+<a href="https://pypi.org/project/cultivars/" title="PyPI"><i aria-hidden="true" class="fa-brands fa-python"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li>
+<a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov"><i aria-hidden="true" class="fa-solid fa-umbrella"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff" title="Cite"><i aria-hidden="true" class="fa-solid fa-quote-left"></i><span class="visually-hidden">Cite</span></a>
+</li>
+</ul>
+<div class="cv-footer__legal">
+<p>
+          © 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE">MIT License</a>. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED® is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+<p class="cv-footer__build">
+          cultivars 1.0.0a3 · updated 2026-10-12 · built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
+</p>
+</div>
+</div>
+</section>
+</div></div>
+</div>
+</div>
+</footer>
+</body>
+</html>
