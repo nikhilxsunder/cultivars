@@ -139,6 +139,7 @@ from ..engine._core._polynomials import (
     _expand_ar,
     _expand_ma,
 )
+from ..engine._core._validators import _validate_order_tuple
 from ..engine._internals._fits import _BoxJenkinsFit
 from ..engine._internals._mixins import (
     _ComparisonMixin,
@@ -1026,8 +1027,8 @@ class ARMA(SARIMAX):
         trend: Deterministic specification.
 
     Raises:
-        SpecificationError: If either order is negative or the trend is
-            unrecognized.
+        SpecificationError: If ``order`` is not two non-negative integers
+            or the trend is unrecognized.
         DimensionError: If the series is too short for the
             specification.
 
@@ -1069,8 +1070,8 @@ class ARMA(SARIMAX):
             trend: Deterministic specification.
 
         Raises:
-            SpecificationError: If either order is negative or the trend
-                is invalid.
+            SpecificationError: If ``order`` is not two non-negative
+                integers or the trend is invalid.
             DimensionError: If the series is too short.
 
         Example:
@@ -1081,6 +1082,10 @@ class ARMA(SARIMAX):
             Traceback (most recent call last):
                 ...
             cultivars.exceptions.SpecificationError: q must be >= 0; got -1.
+            >>> ARMA(np.arange(50.0), order=(1, 0, 1))  # doctest: +ELLIPSIS
+            Traceback (most recent call last):
+                ...
+            cultivars.exceptions.SpecificationError: order must have 2 elements ('p', 'q'); got ...
         """
-        p, q = order
+        p, q = _validate_order_tuple(order, ("p", "q"))
         super().__init__(endog, order=(p, 0, q), trend=trend)
