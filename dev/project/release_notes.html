@@ -10,15 +10,15 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/project/release_notes.html" />
 <meta property="og:site_name" content="cultivars" />
-<meta property="og:description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: 1.0.0a4- 2026-10-..." />
+<meta property="og:description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: Fixed: VECMResult..." />
 <meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
 <meta property="og:image:alt" content="cultivars" />
-<meta name="description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: 1.0.0a4- 2026-10-..." />
+<meta name="description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: Fixed: VECMResult..." />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T19:06:33+00:00" />
+    <meta property="article:modified_time" content="2026-10-13T21:57:11+00:00" />
     <title>Release notes &#8212; cultivars</title>
   
   
@@ -86,7 +86,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/project/release_notes.c7b39ffb-9ec4-42db-936f-5341a590cd61.js"></script>
+    <script defer="defer" src="../_static/tippy/project/release_notes.391bc57d-d5c9-4161-b66b-c7236eb0eb84.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'project/release_notes';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
@@ -589,6 +589,14 @@ Until 1.0.0, pre-releases may move public names between alphas; such moves are
 listed under Changed.</p>
 <section id="unreleased">
 <h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VECMResult.normalized_alpha</span></code> raises <code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code> for an
+out-of-range or zero-loading <code class="docutils literal notranslate"><span class="pre">on</span></code>, matching <code class="docutils literal notranslate"><span class="pre">normalized_beta</span></code>; both
+methods validate through one shared helper (#286).</p></li>
+</ul>
+</section>
 </section>
 <section id="a4-2026-10-13">
 <h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a3...v1.0.0a4">1.0.0a4</a> - 2026-10-13<a class="headerlink" href="#a4-2026-10-13" title="Link to this heading">#</a></h2>
@@ -680,8 +688,8 @@ the class, <code class="docutils literal notranslate"><span class="pre">TVPSVAR<
 review, GPG import); prerelease publishing checks PyPI before upload.</p></li>
 </ul>
 </section>
-<section id="fixed">
-<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
+<section id="id3">
+<h3>Fixed<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">pre-commit</span> <span class="pre">install</span></code> from a clean <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> (#495).</p></li>
 <li><p>Doctests that called renamed engine functions or used pre-move import
@@ -695,8 +703,8 @@ paths.</p></li>
 now carries a Google-style docstring with a runnable, deterministic example;
 the examples are the doctest suite. The pass also surfaced several hundred
 findings, which are tracked as GitHub issues against the 1.0.0 milestone.</p>
-<section id="id3">
-<h3>Added<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<section id="id4">
+<h3>Added<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>API reference generated from the docstrings, with a sphinx-gallery examples
 section, source links, and a version switcher that works on the published
@@ -708,8 +716,8 @@ family of models commits to and where its helpers live.</p></li>
 patterns each class supports.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h3>Changed<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<section id="id5">
+<h3>Changed<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Documentation builds no longer fail on warnings or on a failing gallery
 example; <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-C</span> <span class="pre">docs</span> <span class="pre">strict</span></code> (and the workflow’s <code class="docutils literal notranslate"><span class="pre">strict</span></code> input) restore
@@ -719,8 +727,8 @@ warnings-as-errors.</p></li>
 subpackage <code class="docutils literal notranslate"><span class="pre">__init__</span></code> modules re-export modules only, not classes.</p></li>
 </ul>
 </section>
-<section id="id5">
-<h3>Fixed<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<section id="id6">
+<h3>Fixed<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">VARResult._from_fit</span></code> dropped the <code class="docutils literal notranslate"><span class="pre">posterior</span></code> and <code class="docutils literal notranslate"><span class="pre">prior_label</span></code> fields when
 building a result from a Bayesian (Minnesota-prior) fit, so a shrinkage
@@ -738,8 +746,8 @@ paths, across the multivariate packages.</p></li>
 <h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v0.0.1...v1.0.0a1">1.0.0a1</a> - 2026-09-22<a class="headerlink" href="#a1-2026-09-22" title="Link to this heading">#</a></h2>
 <p>First public pre-release of the rebuilt package. The 0.0.x line was a
 placeholder.</p>
-<section id="id6">
-<h3>Added<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<section id="id7">
+<h3>Added<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Univariate: ARIMA family, GARCH family, stochastic volatility, unobserved
 components, fractional integration, Markov-switching, threshold and
@@ -778,8 +786,8 @@ causality, MODWT and wavelet coherence.</p></li>
 uniform <code class="docutils literal notranslate"><span class="pre">summary()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_polars()</span></code> conveniences.</p></li>
 </ul>
 </section>
-<section id="id7">
-<h3>Changed<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<section id="id8">
+<h3>Changed<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Requires Python 3.12 or later (PEP 695 type syntax).</p></li>
 <li><p>Runtime dependencies are <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">scipy</span></code> and <code class="docutils literal notranslate"><span class="pre">fedfred</span></code>; <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and
@@ -787,10 +795,10 @@ uniform <code class="docutils literal notranslate"><span class="pre">summary()</
 </ul>
 </section>
 </section>
-<section id="id8">
-<h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/releases/tag/v0.0.1">0.0.1</a> - 2026-05-08<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <section id="id9">
-<h3>Added<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/releases/tag/v0.0.1">0.0.1</a> - 2026-05-08<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h3>Added<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Initial file dump.</p></li>
 </ul>
@@ -838,7 +846,10 @@ uniform <code class="docutils literal notranslate"><span class="pre">summary()</
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Release notes</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#changelog">Changelog</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a4-2026-10-13">1.0.0a4 - 2026-10-13</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
@@ -848,22 +859,22 @@ uniform <code class="docutils literal notranslate"><span class="pre">summary()</
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a3-2026-10-11">1.0.0a3 - 2026-10-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Fixed</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a2-2026-10-08">1.0.0a2 - 2026-10-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Fixed</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a1-2026-09-22">1.0.0a1 - 2026-09-22</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">0.0.1 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Added</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">0.0.1 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Added</a></li>
 </ul>
 </li>
 </ul>
