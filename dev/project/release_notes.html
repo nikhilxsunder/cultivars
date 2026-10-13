@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:57:11+00:00" />
+    <meta property="article:modified_time" content="2026-10-13T23:02:24+00:00" />
     <title>Release notes &#8212; cultivars</title>
   
   
@@ -86,7 +86,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/project/release_notes.391bc57d-d5c9-4161-b66b-c7236eb0eb84.js"></script>
+    <script defer="defer" src="../_static/tippy/project/release_notes.f7abbf8a-a4a3-4e67-b95e-f8275c21470e.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'project/release_notes';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
@@ -595,6 +595,15 @@ listed under Changed.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">VECMResult.normalized_alpha</span></code> raises <code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code> for an
 out-of-range or zero-loading <code class="docutils literal notranslate"><span class="pre">on</span></code>, matching <code class="docutils literal notranslate"><span class="pre">normalized_beta</span></code>; both
 methods validate through one shared helper (#286).</p></li>
+<li><p>The “declare at least one narrative event” error from
+<code class="docutils literal notranslate"><span class="pre">NarrativeSignRestrictedSVAR</span></code> names <code class="docutils literal notranslate"><span class="pre">SignRestrictedSVAR</span></code> instead of the
+pre-a2 <code class="docutils literal notranslate"><span class="pre">SignSVAR</span></code> (#497).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cultivars.multivariate.structural.sign_restrictions.__all__</span></code> lists
+<code class="docutils literal notranslate"><span class="pre">NarrativeSignRestrictedSVAR</span></code>, so star imports and the API reference
+see it (#452, #496).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ARMA</span></code> validates <code class="docutils literal notranslate"><span class="pre">order</span></code> before unpacking it, so a wrong-length or
+non-integer order raises <code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code> naming <code class="docutils literal notranslate"><span class="pre">p</span></code> and <code class="docutils literal notranslate"><span class="pre">q</span></code>
+instead of a bare <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (#81, #494).</p></li>
 </ul>
 </section>
 </section>
