@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="The Bayesian workflow in cultivars: priors, MCMC convergence, predictive checks, marginal likelihoods, Bayes factors, model averaging and stacking." name="description"/>
+<meta content="The Bayesian workflow" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/user_guide/bayesian_workflow.html" property="og:url"/>
+<meta content="cultivars" property="og:site_name"/>
+<meta content="cultivars.bayes holds what surrounds a Bayesian fit, in the order an analysis runs (Gelman et al. 2020): state a prior, check what it implies for the data, fit, check the sampler converged, check the fit reproduces the data, weigh competing models by their evidence, and combine them when no model..." property="og:description"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" property="og:image"/>
+<meta content="cultivars" property="og:image:alt"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="cultivars Documentation" property="og:site_name"/>
+<meta content="cultivars Logo" property="og:image:alt"/>
+<meta content="2026-10-12T19:40:35+00:00" property="article:modified_time"/>
+<title>The Bayesian workflow — cultivars</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/plot_directive.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=c83e6b79" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=7fc003df" rel="stylesheet" type="text/css"/>
+<link href="../_static/consent.css?v=8cbde1cf" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script defer="" src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<script src="../_static/documentation_options.js?v=fc897e8e"></script>
+<script src="../_static/doctools.js?v=fd6eb6e6"></script>
+<script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+<script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+<script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+<script defer="defer" src="../_static/tippy/user_guide/bayesian_workflow.13a312f8-727a-466c-8e36-9cf89cb43188.js"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/bayesian_workflow';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0a4';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+<script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+<link href="https://nikhilxsunder.github.io/cultivars/stable/user_guide/bayesian_workflow.html" rel="canonical"/>
+<link href="../_static/cultivars-favicon.ico" rel="icon"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="../auto_examples/index.html" rel="next" title="Examples"/>
+<link href="forecasting.html" rel="prev" title="Forecasting and forecast evaluation"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="1.0" name="docsearch:version"/>
+<meta content="2026-10-12" name="docbuild:last-update"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
+</head>
+<body data-default-mode="">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle" type="button">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="cultivars - Home" class="logo__image only-light" src="../_static/cultivars-logo.png"/>
+<img alt="cultivars - Home" class="logo__image only-dark pst-js-only" src="../_static/cultivars-logo.png"/>
+</a></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle" type="button">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button" type="button">
+<svg aria-hidden="true" class="pst-icon" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing_a_model.html">Choosing a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nuances.html">Nuances and known issues</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Before estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.html">Diagnostics and specification testing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Univariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="univariate_linear.html">Univariate linear models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility.html">Volatility models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="univariate_nonlinear.html">Nonlinear and regime-switching univariate models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multivariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="var.html">Vector autoregressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="var_extensions.html">Beyond the basic VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_identification.html">Structural identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_vars.html">Bayesian VARs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="large_dimensional.html">Large and high-dimensional systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nonlinear_multivariate.html">Nonlinear, time-varying and regime-switching VARs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Engines and frequency-domain views</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="state_space.html">State-space models and filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral analysis and filtering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">After estimation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="forecasting.html">Forecasting and forecast evaluation</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">The Bayesian workflow</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="index.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">The Bayesian workflow</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section id="the-bayesian-workflow">
+<h1>The Bayesian workflow<a class="headerlink" href="#the-bayesian-workflow" title="Link to this heading">#</a></h1>
+<p><a class="reference internal" href="../api/generated/cultivars.bayes.html#module-cultivars.bayes" title="cultivars.bayes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes</span></code></a> holds what surrounds a Bayesian fit, in the order
+an analysis runs (Gelman et al. 2020): state a prior, check what it
+implies for the data, fit, check the sampler converged, check the fit
+reproduces the data, weigh competing models by their evidence, and combine
+them when no model deserves the whole verdict. The models themselves live
+with their frequentist counterparts; the Bayesian VARs are described in
+<a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a>. Out-of-sample scoring of density forecasts is in
+<a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-family-at-a-glance" id="id1">The family at a glance</a></p></li>
+<li><p><a class="reference internal" href="#which-results-qualify" id="id2">Which results qualify</a></p></li>
+<li><p><a class="reference internal" href="#priors" id="id3">Priors</a></p></li>
+<li><p><a class="reference internal" href="#prior-predictive-checks" id="id4">Prior predictive checks</a></p></li>
+<li><p><a class="reference internal" href="#two-models-on-a-common-sample" id="id5">Two models on a common sample</a></p></li>
+<li><p><a class="reference internal" href="#convergence" id="id6">Convergence</a></p></li>
+<li><p><a class="reference internal" href="#posterior-predictive-checks" id="id7">Posterior predictive checks</a></p></li>
+<li><p><a class="reference internal" href="#marginal-likelihood-and-bayes-factors" id="id8">Marginal likelihood and Bayes factors</a></p></li>
+<li><p><a class="reference internal" href="#model-combination" id="id9">Model combination</a></p></li>
+<li><p><a class="reference internal" href="#how-the-pieces-connect" id="id10">How the pieces connect</a></p></li>
+<li><p><a class="reference internal" href="#nuances-and-gotchas" id="id11">Nuances and gotchas</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id12">See also</a></p></li>
+</ul>
+</nav>
+<section id="the-family-at-a-glance">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">The family at a glance</a><a class="headerlink" href="#the-family-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 20.0%"/>
+<col style="width: 28.0%"/>
+<col style="width: 22.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool</p></th>
+<th class="head"><p>Module</p></th>
+<th class="head"><p>What it does</p></th>
+<th class="head"><p>Use when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Prior classes (<code class="docutils literal notranslate"><span class="pre">NormalInverseWishartPrior</span></code>, <code class="docutils literal notranslate"><span class="pre">HorseshoePrior</span></code>, …)</p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors" title="cultivars.bayes.priors"><code class="xref py py-mod docutils literal notranslate"><span class="pre">priors</span></code></a></p></td>
+<td><p>State a prior as a record, composable with <code class="docutils literal notranslate"><span class="pre">+</span></code></p></td>
+<td><p>Fitting any Bayesian VAR</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.chains.rhat.html#cultivars.bayes.chains.rhat" title="cultivars.bayes.chains.rhat"><code class="xref py py-func docutils literal notranslate"><span class="pre">rhat()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.chains.ess_bulk.html#cultivars.bayes.chains.ess_bulk" title="cultivars.bayes.chains.ess_bulk"><code class="xref py py-func docutils literal notranslate"><span class="pre">ess_bulk()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.chains.ess_tail.html#cultivars.bayes.chains.ess_tail" title="cultivars.bayes.chains.ess_tail"><code class="xref py py-func docutils literal notranslate"><span class="pre">ess_tail()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.chains.mcse.html#cultivars.bayes.chains.mcse" title="cultivars.bayes.chains.mcse"><code class="xref py py-func docutils literal notranslate"><span class="pre">mcse()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.chains.geweke.html#cultivars.bayes.chains.geweke" title="cultivars.bayes.chains.geweke"><code class="xref py py-func docutils literal notranslate"><span class="pre">geweke()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.chains.convergence.html#cultivars.bayes.chains.convergence" title="cultivars.bayes.chains.convergence"><code class="xref py py-func docutils literal notranslate"><span class="pre">convergence()</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.bayes.chains.html#module-cultivars.bayes.chains" title="cultivars.bayes.chains"><code class="xref py py-mod docutils literal notranslate"><span class="pre">chains</span></code></a></p></td>
+<td><p>Split-<span class="math notranslate nohighlight">\(\widehat R\)</span>, effective sample sizes, Monte Carlo error,
+Geweke z, and a report bundling them</p></td>
+<td><p>Before reading any MCMC output as a posterior</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.checks.prior_predictive_check.html#cultivars.bayes.checks.prior_predictive_check" title="cultivars.bayes.checks.prior_predictive_check"><code class="xref py py-func docutils literal notranslate"><span class="pre">prior_predictive_check()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.checks.posterior_predictive_check.html#cultivars.bayes.checks.posterior_predictive_check" title="cultivars.bayes.checks.posterior_predictive_check"><code class="xref py py-func docutils literal notranslate"><span class="pre">posterior_predictive_check()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.checks.replication_check.html#cultivars.bayes.checks.replication_check" title="cultivars.bayes.checks.replication_check"><code class="xref py py-func docutils literal notranslate"><span class="pre">replication_check()</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.bayes.checks.html#module-cultivars.bayes.checks" title="cultivars.bayes.checks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">checks</span></code></a></p></td>
+<td><p>Locate the data among data sets simulated from the prior or
+posterior</p></td>
+<td><p>Choosing a prior; checking a fit</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.evidence.marginal_likelihood.html#cultivars.bayes.evidence.marginal_likelihood" title="cultivars.bayes.evidence.marginal_likelihood"><code class="xref py py-func docutils literal notranslate"><span class="pre">marginal_likelihood()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.evidence.compare.html#cultivars.bayes.evidence.compare" title="cultivars.bayes.evidence.compare"><code class="xref py py-func docutils literal notranslate"><span class="pre">compare()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.evidence.modified_harmonic_mean.html#cultivars.bayes.evidence.modified_harmonic_mean" title="cultivars.bayes.evidence.modified_harmonic_mean"><code class="xref py py-func docutils literal notranslate"><span class="pre">modified_harmonic_mean()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.evidence.bridge_sampling.html#cultivars.bayes.evidence.bridge_sampling" title="cultivars.bayes.evidence.bridge_sampling"><code class="xref py py-func docutils literal notranslate"><span class="pre">bridge_sampling()</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.bayes.evidence.html#module-cultivars.bayes.evidence" title="cultivars.bayes.evidence"><code class="xref py py-mod docutils literal notranslate"><span class="pre">evidence</span></code></a></p></td>
+<td><p>Log marginal likelihood records, Bayes factors, posterior model
+probabilities</p></td>
+<td><p>Ranking models fitted to the same sample</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.combination.bayesian_model_average.html#cultivars.bayes.combination.bayesian_model_average" title="cultivars.bayes.combination.bayesian_model_average"><code class="xref py py-func docutils literal notranslate"><span class="pre">bayesian_model_average()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.combination.stacking.html#cultivars.bayes.combination.stacking" title="cultivars.bayes.combination.stacking"><code class="xref py py-func docutils literal notranslate"><span class="pre">stacking()</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.bayes.combination.html#module-cultivars.bayes.combination" title="cultivars.bayes.combination"><code class="xref py py-mod docutils literal notranslate"><span class="pre">combination</span></code></a></p></td>
+<td><p>Mixture predictive weighted by posterior probability or by held-out
+log score</p></td>
+<td><p>Forecasting from several models at once</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="which-results-qualify">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Which results qualify</a><a class="headerlink" href="#which-results-qualify" title="Link to this heading">#</a></h2>
+<p>Every tool reads its input by duck typing against a protocol in
+<code class="docutils literal notranslate"><span class="pre">cultivars.engine._core._protocols</span></code>. A result of your own that exposes
+the same members is accepted.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 26.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 44.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool</p></th>
+<th class="head"><p>Requires</p></th>
+<th class="head"><p>Satisfied by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">result.convergence()</span></code></p></td>
+<td><p>a method on the result (<code class="docutils literal notranslate"><span class="pre">_ConvergenceMixin</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">GibbsBVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">StudentBVARResult</span></code>,
+<code class="docutils literal notranslate"><span class="pre">BVARSVResult</span></code>, <code class="docutils literal notranslate"><span class="pre">HierarchicalBVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">FactorSVResult</span></code>,
+<code class="docutils literal notranslate"><span class="pre">TVPVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">TVPVARSVResult</span></code>, <code class="docutils literal notranslate"><span class="pre">TVPSVARResult</span></code>,
+<code class="docutils literal notranslate"><span class="pre">StochasticVolatilitySVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code>,
+<code class="docutils literal notranslate"><span class="pre">UCSVPosterior</span></code>, <code class="docutils literal notranslate"><span class="pre">PerturbationDSGEPosterior</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.checks.prior_predictive_check.html#cultivars.bayes.checks.prior_predictive_check" title="cultivars.bayes.checks.prior_predictive_check"><code class="xref py py-func docutils literal notranslate"><span class="pre">prior_predictive_check()</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ReplicatingModel</span></code>: <code class="docutils literal notranslate"><span class="pre">observed</span></code> and <code class="docutils literal notranslate"><span class="pre">prior_replications()</span></code> on
+the unfitted model</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BVAR</span></code>, <code class="docutils literal notranslate"><span class="pre">StudentBVAR</span></code>, <code class="docutils literal notranslate"><span class="pre">HierarchicalBVAR</span></code>, <code class="docutils literal notranslate"><span class="pre">SV</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">GibbsBVAR</span></code> under a static prior without dummy observations</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.checks.posterior_predictive_check.html#cultivars.bayes.checks.posterior_predictive_check" title="cultivars.bayes.checks.posterior_predictive_check"><code class="xref py py-func docutils literal notranslate"><span class="pre">posterior_predictive_check()</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ReplicatingResult</span></code>: <code class="docutils literal notranslate"><span class="pre">observed</span></code> and <code class="docutils literal notranslate"><span class="pre">posterior_replications()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">GibbsBVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">StudentBVARResult</span></code>,
+<code class="docutils literal notranslate"><span class="pre">BVARSVResult</span></code>, <code class="docutils literal notranslate"><span class="pre">HierarchicalBVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.evidence.marginal_likelihood.html#cultivars.bayes.evidence.marginal_likelihood" title="cultivars.bayes.evidence.marginal_likelihood"><code class="xref py py-func docutils literal notranslate"><span class="pre">marginal_likelihood()</span></code></a></p></td>
+<td><p>a <code class="docutils literal notranslate"><span class="pre">marginal_likelihood()</span></code> method returning the record</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BVARResult</span></code> (analytic), <code class="docutils literal notranslate"><span class="pre">HierarchicalBVARResult</span></code> (analytic, at
+the hyperparameter mode), <code class="docutils literal notranslate"><span class="pre">GibbsBVARResult</span></code> under a static prior
+(Chib), <code class="docutils literal notranslate"><span class="pre">PerturbationDSGEPosterior</span></code> (modified harmonic mean)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.bayes.combination.bayesian_model_average.html#cultivars.bayes.combination.bayesian_model_average" title="cultivars.bayes.combination.bayesian_model_average"><code class="xref py py-func docutils literal notranslate"><span class="pre">bayesian_model_average()</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.combination.stacking.html#cultivars.bayes.combination.stacking" title="cultivars.bayes.combination.stacking"><code class="xref py py-func docutils literal notranslate"><span class="pre">stacking()</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PredictiveResult</span></code>: <code class="docutils literal notranslate"><span class="pre">forecast_paths(steps,</span> <span class="pre">*,</span> <span class="pre">seed)</span></code></p></td>
+<td><p>the five Bayesian VAR results,
+<code class="docutils literal notranslate"><span class="pre">ConditionalForecastResult</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelCombinationSelection</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The running example is a bivariate VAR(1):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">rng</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]])</span>
+<span class="n">y</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="mi">160</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">160</span><span class="p">):</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span> <span class="o">@</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"gdp"</span><span class="p">,</span> <span class="s2">"infl"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="priors">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Priors</a><a class="headerlink" href="#priors" title="Link to this heading">#</a></h2>
+<p>A prior is a frozen record passed as <code class="docutils literal notranslate"><span class="pre">prior=</span></code>. It states the coefficient
+mean, the coefficient variance, and any dummy observations; the model reads
+nothing else. <a class="reference internal" href="../api/generated/cultivars.bayes.priors.NormalInverseWishartPrior.html#cultivars.bayes.priors.NormalInverseWishartPrior" title="cultivars.bayes.priors.NormalInverseWishartPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalInverseWishartPrior</span></code></a>
+is the conjugate Minnesota prior with an exact posterior and marginal
+likelihood (Kadiyala and Karlsson 1997);
+<a class="reference internal" href="../api/generated/cultivars.bayes.priors.IndependentNormalWishartPrior.html#cultivars.bayes.priors.IndependentNormalWishartPrior" title="cultivars.bayes.priors.IndependentNormalWishartPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndependentNormalWishartPrior</span></code></a> frees the
+cross-equation weight and needs the Gibbs sampler;
+<a class="reference internal" href="../api/generated/cultivars.bayes.priors.SumOfCoefficientsPrior.html#cultivars.bayes.priors.SumOfCoefficientsPrior" title="cultivars.bayes.priors.SumOfCoefficientsPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">SumOfCoefficientsPrior</span></code></a> and
+<a class="reference internal" href="../api/generated/cultivars.bayes.priors.DummyInitialObservationPrior.html#cultivars.bayes.priors.DummyInitialObservationPrior" title="cultivars.bayes.priors.DummyInitialObservationPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">DummyInitialObservationPrior</span></code></a> add
+pseudo-observations (Sims and Zha 1998); the horseshoe, spike-and-slab,
+Dirichlet-Laplace and Normal-Gamma priors are adaptive hierarchies for
+<a class="reference internal" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVAR.html#cultivars.multivariate.large_dim.gibbs.GibbsBVAR" title="cultivars.multivariate.large_dim.gibbs.GibbsBVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">GibbsBVAR</span></code></a>. Priors compose
+with <code class="docutils literal notranslate"><span class="pre">+</span></code>, and the result records the composition in <code class="docutils literal notranslate"><span class="pre">prior_label</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors"><span class="nn">cultivars.bayes.priors</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.NormalInverseWishartPrior.html#cultivars.bayes.priors.NormalInverseWishartPrior" title="cultivars.bayes.priors.NormalInverseWishartPrior"><span class="n">NormalInverseWishartPrior</span></a><span class="p">,</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.SumOfCoefficientsPrior.html#cultivars.bayes.priors.SumOfCoefficientsPrior" title="cultivars.bayes.priors.SumOfCoefficientsPrior"><span class="n">SumOfCoefficientsPrior</span></a><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.html#module-cultivars.multivariate.large_dim.bayesian"><span class="nn">cultivars.multivariate.large_dim.bayesian</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><span class="n">BVAR</span></a>
+
+<span class="n">prior</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.NormalInverseWishartPrior.html#cultivars.bayes.priors.NormalInverseWishartPrior" title="cultivars.bayes.priors.NormalInverseWishartPrior"><span class="n">NormalInverseWishartPrior</span></a><span class="p">(</span><span class="n">tightness</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">+</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.SumOfCoefficientsPrior.html#cultivars.bayes.priors.SumOfCoefficientsPrior" title="cultivars.bayes.priors.SumOfCoefficientsPrior"><span class="n">SumOfCoefficientsPrior</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVARResult.html#cultivars.multivariate.large_dim.bayesian.BVARResult" title="cultivars.multivariate.large_dim.bayesian.BVARResult"><span class="n">res</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><span class="n">BVAR</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.fit.html#cultivars.multivariate.large_dim.bayesian.BVAR.fit" title="cultivars.multivariate.large_dim.bayesian.BVAR.fit"><span class="n">fit</span></a><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVARResult.prior_label.html#cultivars.multivariate.large_dim.bayesian.BVARResult.prior_label" title="cultivars.multivariate.large_dim.bayesian.BVARResult.prior_label"><span class="n">res</span><span class="o">.</span><span class="n">prior_label</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVARResult.n_dummy.html#cultivars.multivariate.large_dim.bayesian.BVARResult.n_dummy" title="cultivars.multivariate.large_dim.bayesian.BVARResult.n_dummy"><span class="n">res</span><span class="o">.</span><span class="n">n_dummy</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>niw(l1=0.1, l3=1, l4=100) + soc(1) 2
+</pre></div>
+</div>
+<p>Hyperparameters are validated at <code class="docutils literal notranslate"><span class="pre">fit</span></code>, not at construction. The full
+catalogue, with the Minnesota variance formula and the pairing rules, is in
+<a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a>.</p>
+</section>
+<section id="prior-predictive-checks">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Prior predictive checks</a><a class="headerlink" href="#prior-predictive-checks" title="Link to this heading">#</a></h2>
+<p>Before fitting, simulate data sets from the prior and see whether the
+data’s features are plausible under it (Gabry et al. 2019). For each of
+<code class="docutils literal notranslate"><span class="pre">n_replications</span></code> prior draws a sample of the shape of the effective
+sample is simulated, and each discrepancy statistic <span class="math notranslate nohighlight">\(T\)</span> is located
+by the tail probability <span class="math notranslate nohighlight">\(p_T = \Pr(T(y^{rep}) \ge T(y))\)</span> with ties
+counted as one half. The statistics are <code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">sd</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>,
+<code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">skewness</span></code>, <code class="docutils literal notranslate"><span class="pre">kurtosis</span></code> (excess), <code class="docutils literal notranslate"><span class="pre">acf1</span></code> and <code class="docutils literal notranslate"><span class="pre">arch1</span></code>; the
+default set is <code class="docutils literal notranslate"><span class="pre">("mean",</span> <span class="pre">"sd",</span> <span class="pre">"acf1",</span> <span class="pre">"kurtosis",</span> <span class="pre">"arch1")</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.html#module-cultivars.bayes.checks"><span class="nn">cultivars.bayes.checks</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.prior_predictive_check.html#cultivars.bayes.checks.prior_predictive_check" title="cultivars.bayes.checks.prior_predictive_check"><span class="n">prior_predictive_check</span></a>
+
+<span class="n">candidates</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"random walk"</span><span class="p">:</span> <span class="n">NormalInverseWishartPrior</span><span class="p">(),</span>
+    <span class="s2">"persistence 0.5"</span><span class="p">:</span> <span class="n">NormalInverseWishartPrior</span><span class="p">(</span><span class="n">persistence</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.html#cultivars.bayes.checks.PredictiveCheckTest" title="cultivars.bayes.checks.PredictiveCheckTest"><span class="n">check</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.prior_predictive_check.html#cultivars.bayes.checks.prior_predictive_check" title="cultivars.bayes.checks.prior_predictive_check"><span class="n">prior_predictive_check</span></a><span class="p">(</span>
+        <span class="n">BVAR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">),</span>
+        <span class="n">statistics</span><span class="o">=</span><span class="p">[</span><span class="s2">"sd"</span><span class="p">,</span> <span class="s2">"acf1"</span><span class="p">],</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">bands</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.replicated_quantiles.html#cultivars.bayes.checks.PredictiveCheckTest.replicated_quantiles" title="cultivars.bayes.checks.PredictiveCheckTest.replicated_quantiles"><span class="n">check</span><span class="o">.</span><span class="n">replicated_quantiles</span></a><span class="p">()</span>  <span class="c1"># (levels, statistics, series)</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">bands</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">bands</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.observed.html#cultivars.bayes.checks.PredictiveCheckTest.observed" title="cultivars.bayes.checks.PredictiveCheckTest.observed"><span class="n">check</span><span class="o">.</span><span class="n">observed</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>random walk [ 0.6  5.6 22.7] [0.68 0.91 0.98]
+persistence 0.5 [-0.2  0.1  1.2] [0.1  0.52 0.89]
+[1.23 0.57]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">replicated_quantiles(levels=(0.05,</span> <span class="pre">0.5,</span> <span class="pre">0.95))</span></code> is
+<code class="docutils literal notranslate"><span class="pre">(len(levels),</span> <span class="pre">m,</span> <span class="pre">k)</span></code>, rows following <code class="docutils literal notranslate"><span class="pre">statistics</span></code>. For a prior check
+read these bands, not the p-values. Under the default prior, centred on a
+random walk with <code class="docutils literal notranslate"><span class="pre">tightness=0.2</span></code>, the median replicated standard
+deviation of <code class="docutils literal notranslate"><span class="pre">gdp</span></code> is <span class="math notranslate nohighlight">\(10^{5.6}\)</span> against an observed 1.23: the
+prior centres the own lags on one, so many of its draws are explosive and
+the replications diverge over 159 periods. The check’s <code class="docutils literal notranslate"><span class="pre">notes</span></code> report that share (68% of
+replications here). Centring the own lags on 0.5 brings the bands around
+the data. Model-specific prior settings pass through as keywords
+(<code class="docutils literal notranslate"><span class="pre">df</span></code> for <code class="docutils literal notranslate"><span class="pre">StudentBVAR</span></code>; <code class="docutils literal notranslate"><span class="pre">prior_mu</span></code>, <code class="docutils literal notranslate"><span class="pre">prior_phi</span></code>,
+<code class="docutils literal notranslate"><span class="pre">prior_sigma2</span></code> for <code class="docutils literal notranslate"><span class="pre">SV</span></code>), and an unknown keyword is refused by name.</p>
+</section>
+<section id="two-models-on-a-common-sample">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Two models on a common sample</a><a class="headerlink" href="#two-models-on-a-common-sample" title="Link to this heading">#</a></h2>
+<p>The marginal likelihood scores the observations after the presample, so a
+VAR(1) and a VAR(2) fitted to the same array score different data. To
+compare them, drop leading rows from the shorter-lag model so both score
+the same 158 observations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">p1</span> <span class="o">=</span> <span class="n">BVAR</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">BVAR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">n_kept</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>158 158 200
+</pre></div>
+</div>
+</section>
+<section id="convergence">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Convergence</a><a class="headerlink" href="#convergence" title="Link to this heading">#</a></h2>
+<p>MCMC draws are a posterior only once the chain has forgotten its start and
+explores the distribution in proportion. <a class="reference internal" href="../api/generated/cultivars.bayes.chains.html#module-cultivars.bayes.chains" title="cultivars.bayes.chains"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.chains</span></code></a>
+follows Vehtari et al. (2021): rank-normalized split-<span class="math notranslate nohighlight">\(\widehat R\)</span>
+with folding, bulk and tail effective sample sizes by Geyer’s (1992)
+initial monotone sequence, the Monte Carlo standard error of the mean, and
+the Geweke (1992) z-score of the first 10% against the last 50% of a
+chain. A quantity is flagged when</p>
+<div class="math notranslate nohighlight">
+\[\widehat R &gt; \texttt{rhat\_tol} = 1.01
+\quad\text{or}\quad
+\min(\widehat S_{\text{bulk}}, \widehat S_{\text{tail}})
+&lt; \texttt{min\_ess} \cdot C, \qquad \texttt{min\_ess} = 100,\]</div>
+<p>for <span class="math notranslate nohighlight">\(C\)</span> chains.</p>
+<section id="on-a-result">
+<h3>On a result<a class="headerlink" href="#on-a-result" title="Link to this heading">#</a></h3>
+<p>Every sampled result has <code class="docutils literal notranslate"><span class="pre">convergence(*chains,</span> <span class="pre">include=None,</span> <span class="pre">exclude=(),</span>
+<span class="pre">rhat_tol=1.01,</span> <span class="pre">min_ess=100.0)</span></code>. Further results of the same class from
+other seeds are pooled as extra chains, which is what lets
+<span class="math notranslate nohighlight">\(\widehat R\)</span> detect a chain stuck in one mode; a single run is
+assessed by its two halves. The Gibbs sampler under an independent
+Normal-Wishart prior is a real Markov chain. For the Gibbs samplers
+<code class="docutils literal notranslate"><span class="pre">n_draws</span></code> counts all iterations including <code class="docutils literal notranslate"><span class="pre">n_burn</span></code>, so
+<code class="docutils literal notranslate"><span class="pre">n_draws=600,</span> <span class="pre">n_burn=200</span></code> keeps 400 draws:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors"><span class="nn">cultivars.bayes.priors</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.IndependentNormalWishartPrior.html#cultivars.bayes.priors.IndependentNormalWishartPrior" title="cultivars.bayes.priors.IndependentNormalWishartPrior"><span class="n">IndependentNormalWishartPrior</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.html#module-cultivars.multivariate.large_dim.gibbs"><span class="nn">cultivars.multivariate.large_dim.gibbs</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVAR.html#cultivars.multivariate.large_dim.gibbs.GibbsBVAR" title="cultivars.multivariate.large_dim.gibbs.GibbsBVAR"><span class="n">GibbsBVAR</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVAR.html#cultivars.multivariate.large_dim.gibbs.GibbsBVAR" title="cultivars.multivariate.large_dim.gibbs.GibbsBVAR"><span class="n">gibbs</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVAR.html#cultivars.multivariate.large_dim.gibbs.GibbsBVAR" title="cultivars.multivariate.large_dim.gibbs.GibbsBVAR"><span class="n">GibbsBVAR</span></a><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.IndependentNormalWishartPrior.html#cultivars.bayes.priors.IndependentNormalWishartPrior" title="cultivars.bayes.priors.IndependentNormalWishartPrior"><span class="n">IndependentNormalWishartPrior</span></a><span class="p">(),</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVARResult.html#cultivars.multivariate.large_dim.gibbs.GibbsBVARResult" title="cultivars.multivariate.large_dim.gibbs.GibbsBVARResult"><span class="n">run_a</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVAR.fit.html#cultivars.multivariate.large_dim.gibbs.GibbsBVAR.fit" title="cultivars.multivariate.large_dim.gibbs.GibbsBVAR.fit"><span class="n">gibbs</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">n_burn</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVARResult.html#cultivars.multivariate.large_dim.gibbs.GibbsBVARResult" title="cultivars.multivariate.large_dim.gibbs.GibbsBVARResult"><span class="n">run_b</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVAR.fit.html#cultivars.multivariate.large_dim.gibbs.GibbsBVAR.fit" title="cultivars.multivariate.large_dim.gibbs.GibbsBVAR.fit"><span class="n">gibbs</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">n_burn</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">report</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVARResult.convergence.html#cultivars.multivariate.large_dim.gibbs.GibbsBVARResult.convergence" title="cultivars.multivariate.large_dim.gibbs.GibbsBVARResult.convergence"><span class="n">run_a</span><span class="o">.</span><span class="n">convergence</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVARResult.html#cultivars.multivariate.large_dim.gibbs.GibbsBVARResult" title="cultivars.multivariate.large_dim.gibbs.GibbsBVARResult"><span class="n">run_b</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">n_chains</span><span class="p">,</span> <span class="n">report</span><span class="o">.</span><span class="n">n_draws</span><span class="p">,</span> <span class="n">report</span><span class="o">.</span><span class="n">converged</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">worst</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">rhat</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">report</span><span class="o">.</span><span class="n">ess_bulk</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2 400 True
+('beta[1,1]', 'beta[0,0]', 'beta[2,1]')
+1.004 618.0
+</pre></div>
+</div>
+<p>The report is a <a class="reference internal" href="../api/generated/cultivars.bayes.chains.ConvergenceTest.html#cultivars.bayes.chains.ConvergenceTest" title="cultivars.bayes.chains.ConvergenceTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConvergenceTest</span></code></a>. Its
+arrays <code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">sd</span></code>, <code class="docutils literal notranslate"><span class="pre">mcse</span></code>, <code class="docutils literal notranslate"><span class="pre">ess_bulk</span></code>, <code class="docutils literal notranslate"><span class="pre">ess_tail</span></code>, <code class="docutils literal notranslate"><span class="pre">rhat</span></code>
+and <code class="docutils literal notranslate"><span class="pre">geweke</span></code> follow <code class="docutils literal notranslate"><span class="pre">names</span></code> (<code class="docutils literal notranslate"><span class="pre">beta[i,j]</span></code> is regressor <code class="docutils literal notranslate"><span class="pre">i</span></code> in
+equation <code class="docutils literal notranslate"><span class="pre">j</span></code>; <code class="docutils literal notranslate"><span class="pre">sigma[i,j]</span></code> the innovation covariance). <code class="docutils literal notranslate"><span class="pre">flagged</span></code>
+lists failing quantities, <code class="docutils literal notranslate"><span class="pre">degenerate</span></code> those whose draws never moved and
+that are therefore not judged, <code class="docutils literal notranslate"><span class="pre">worst(n)</span></code> the largest
+<span class="math notranslate nohighlight">\(\widehat R\)</span>, and <code class="docutils literal notranslate"><span class="pre">summary()</span></code> the table. <code class="docutils literal notranslate"><span class="pre">include</span></code> and
+<code class="docutils literal notranslate"><span class="pre">exclude</span></code> select draw arrays by name (<code class="docutils literal notranslate"><span class="pre">"beta"</span></code>, <code class="docutils literal notranslate"><span class="pre">"sigma"</span></code>, …).</p>
+</section>
+<section id="on-draws-of-your-own">
+<h3>On draws of your own<a class="headerlink" href="#on-draws-of-your-own" title="Link to this heading">#</a></h3>
+<p>The functions take one or more chains, each <code class="docutils literal notranslate"><span class="pre">(S,)</span></code> for a scalar or
+<code class="docutils literal notranslate"><span class="pre">(S,</span> <span class="pre">d)</span></code> for <code class="docutils literal notranslate"><span class="pre">d</span></code> quantities, as positional arguments. Use them for a
+function of the draws or a single coefficient pooled across runs, here
+the own-lag coefficient of inflation (row 2 is <code class="docutils literal notranslate"><span class="pre">infl</span></code> at lag one, column
+1 the <code class="docutils literal notranslate"><span class="pre">infl</span></code> equation):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.html#module-cultivars.bayes.chains"><span class="nn">cultivars.bayes.chains</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.convergence.html#cultivars.bayes.chains.convergence" title="cultivars.bayes.chains.convergence"><span class="n">convergence</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.ess_bulk.html#cultivars.bayes.chains.ess_bulk" title="cultivars.bayes.chains.ess_bulk"><span class="n">ess_bulk</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.geweke.html#cultivars.bayes.chains.geweke" title="cultivars.bayes.chains.geweke"><span class="n">geweke</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.mcse.html#cultivars.bayes.chains.mcse" title="cultivars.bayes.chains.mcse"><span class="n">mcse</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.rhat.html#cultivars.bayes.chains.rhat" title="cultivars.bayes.chains.rhat"><span class="n">rhat</span></a>
+
+<span class="n">persistence_a</span> <span class="o">=</span> <span class="n">run_a</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">persistence_b</span> <span class="o">=</span> <span class="n">run_b</span><span class="o">.</span><span class="n">beta_draws</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.rhat.html#cultivars.bayes.chains.rhat" title="cultivars.bayes.chains.rhat"><span class="n">rhat</span></a><span class="p">(</span><span class="n">persistence_a</span><span class="p">,</span> <span class="n">persistence_b</span><span class="p">)),</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.ess_bulk.html#cultivars.bayes.chains.ess_bulk" title="cultivars.bayes.chains.ess_bulk"><span class="n">ess_bulk</span></a><span class="p">(</span><span class="n">persistence_a</span><span class="p">,</span> <span class="n">persistence_b</span><span class="p">)),</span> <span class="mi">1</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.mcse.html#cultivars.bayes.chains.mcse" title="cultivars.bayes.chains.mcse"><span class="n">mcse</span></a><span class="p">(</span><span class="n">persistence_a</span><span class="p">,</span> <span class="n">persistence_b</span><span class="p">)),</span> <span class="mi">4</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.geweke.html#cultivars.bayes.chains.geweke" title="cultivars.bayes.chains.geweke"><span class="n">geweke</span></a><span class="p">(</span><span class="n">persistence_a</span><span class="p">,</span> <span class="n">persistence_b</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">own</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.chains.convergence.html#cultivars.bayes.chains.convergence" title="cultivars.bayes.chains.convergence"><span class="n">convergence</span></a><span class="p">(</span><span class="n">persistence_a</span><span class="p">,</span> <span class="n">persistence_b</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">"infl.L1"</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">own</span><span class="o">.</span><span class="n">converged</span><span class="p">,</span> <span class="n">own</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1.002
+761.3
+0.0024
+[-0.53 -0.09]
+True ('infl.L1',)
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">geweke</span></code> returns one z-score per chain (and per quantity). With a
+single <code class="docutils literal notranslate"><span class="pre">(S,)</span></code> chain the scalar functions return a float; with <code class="docutils literal notranslate"><span class="pre">(S,</span> <span class="pre">d)</span></code>
+chains they return <code class="docutils literal notranslate"><span class="pre">(d,)</span></code> arrays.</p>
+</section>
+</section>
+<section id="posterior-predictive-checks">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Posterior predictive checks</a><a class="headerlink" href="#posterior-predictive-checks" title="Link to this heading">#</a></h2>
+<p>A posterior predictive check simulates replicated samples from retained
+posterior draws and asks whether the fitted model reproduces the data’s
+features (Rubin 1984; Gelman, Meng and Stern 1996). The p-values are not a
+test: under a correct model they concentrate near 0.5 rather than being
+uniform (Meng 1994). <code class="docutils literal notranslate"><span class="pre">extreme(level=0.05)</span></code> names the cells in either
+tail, <code class="docutils literal notranslate"><span class="pre">adequate()</span></code> is true when there are none. <code class="docutils literal notranslate"><span class="pre">pvalues</span></code> is
+<code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">k)</span></code>, rows following <code class="docutils literal notranslate"><span class="pre">statistics</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.html#module-cultivars.bayes.checks"><span class="nn">cultivars.bayes.checks</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.posterior_predictive_check.html#cultivars.bayes.checks.posterior_predictive_check" title="cultivars.bayes.checks.posterior_predictive_check"><span class="n">posterior_predictive_check</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.html#cultivars.bayes.checks.PredictiveCheckTest" title="cultivars.bayes.checks.PredictiveCheckTest"><span class="n">ppc</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.posterior_predictive_check.html#cultivars.bayes.checks.posterior_predictive_check" title="cultivars.bayes.checks.posterior_predictive_check"><span class="n">posterior_predictive_check</span></a><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.statistics.html#cultivars.bayes.checks.PredictiveCheckTest.statistics" title="cultivars.bayes.checks.PredictiveCheckTest.statistics"><span class="n">ppc</span><span class="o">.</span><span class="n">statistics</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ppc</span><span class="o">.</span><span class="n">pvalues</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.adequate.html#cultivars.bayes.checks.PredictiveCheckTest.adequate" title="cultivars.bayes.checks.PredictiveCheckTest.adequate"><span class="n">ppc</span><span class="o">.</span><span class="n">adequate</span></a><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.extreme.html#cultivars.bayes.checks.PredictiveCheckTest.extreme" title="cultivars.bayes.checks.PredictiveCheckTest.extreme"><span class="n">ppc</span><span class="o">.</span><span class="n">extreme</span></a><span class="p">())</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.pvalue.html#cultivars.bayes.checks.PredictiveCheckTest.pvalue" title="cultivars.bayes.checks.PredictiveCheckTest.pvalue"><span class="n">ppc</span><span class="o">.</span><span class="n">pvalue</span></a><span class="p">(</span><span class="s2">"kurtosis"</span><span class="p">,</span> <span class="s2">"gdp"</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>('mean', 'sd', 'acf1', 'kurtosis', 'arch1')
+[[0.54 0.52]
+ [0.6  0.65]
+ [0.57 0.6 ]
+ [0.06 0.62]
+ [0.36 0.76]]
+True ()
+0.065
+</pre></div>
+</div>
+<p>The VAR(1) reproduces every default feature; the excess kurtosis of
+<code class="docutils literal notranslate"><span class="pre">gdp</span></code>, with a tail probability of 0.065, comes closest to a tail.</p>
+<p><a class="reference internal" href="../api/generated/cultivars.bayes.checks.replication_check.html#cultivars.bayes.checks.replication_check" title="cultivars.bayes.checks.replication_check"><code class="xref py py-func docutils literal notranslate"><span class="pre">replication_check()</span></code></a> is the comparison alone,
+for replications simulated elsewhere: <code class="docutils literal notranslate"><span class="pre">observed</span></code> <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">k)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">replicated</span></code> <code class="docutils literal notranslate"><span class="pre">(R,</span> <span class="pre">n,</span> <span class="pre">k)</span></code> with at least 20 replications. Heavy-tailed
+data against Gaussian replications fail on <code class="docutils literal notranslate"><span class="pre">kurtosis</span></code> and nothing else:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.html#module-cultivars.bayes.checks"><span class="nn">cultivars.bayes.checks</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.replication_check.html#cultivars.bayes.checks.replication_check" title="cultivars.bayes.checks.replication_check"><span class="n">replication_check</span></a>
+
+<span class="n">gen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">heavy</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">standard_t</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">heavy</span> <span class="o">=</span> <span class="p">(</span><span class="n">heavy</span> <span class="o">-</span> <span class="n">heavy</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">heavy</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.html#cultivars.bayes.checks.PredictiveCheckTest" title="cultivars.bayes.checks.PredictiveCheckTest"><span class="n">check</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.replication_check.html#cultivars.bayes.checks.replication_check" title="cultivars.bayes.checks.replication_check"><span class="n">replication_check</span></a><span class="p">(</span><span class="n">heavy</span><span class="p">,</span> <span class="n">gen</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="mi">300</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">"r"</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.checks.PredictiveCheckTest.extreme.html#cultivars.bayes.checks.PredictiveCheckTest.extreme" title="cultivars.bayes.checks.PredictiveCheckTest.extreme"><span class="n">check</span><span class="o">.</span><span class="n">extreme</span></a><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>('kurtosis[r]',)
+</pre></div>
+</div>
+</section>
+<section id="marginal-likelihood-and-bayes-factors">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Marginal likelihood and Bayes factors</a><a class="headerlink" href="#marginal-likelihood-and-bayes-factors" title="Link to this heading">#</a></h2>
+<p>The marginal likelihood <span class="math notranslate nohighlight">\(m(y) = \int f(y \mid \theta)\pi(\theta)\,d\theta\)</span>
+penalizes prior mass spent where the data do not want it. Differences of
+log values on the same sample are log Bayes factors, and with prior model
+probabilities they give posterior model probabilities (Kass and Raftery
+1995). <a class="reference internal" href="../api/generated/cultivars.bayes.evidence.marginal_likelihood.html#cultivars.bayes.evidence.marginal_likelihood" title="cultivars.bayes.evidence.marginal_likelihood"><code class="xref py py-func docutils literal notranslate"><span class="pre">marginal_likelihood()</span></code></a> dispatches to
+the result’s own route and returns a
+<a class="reference internal" href="../api/generated/cultivars.bayes.evidence.MarginalLikelihoodSelection.html#cultivars.bayes.evidence.MarginalLikelihoodSelection" title="cultivars.bayes.evidence.MarginalLikelihoodSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarginalLikelihoodSelection</span></code></a> with
+<code class="docutils literal notranslate"><span class="pre">log_value</span></code>, <code class="docutils literal notranslate"><span class="pre">mcse</span></code> (zero when exact), <code class="docutils literal notranslate"><span class="pre">method</span></code>, <code class="docutils literal notranslate"><span class="pre">source</span></code>,
+<code class="docutils literal notranslate"><span class="pre">nobs</span></code> and <code class="docutils literal notranslate"><span class="pre">n_draws</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.html#module-cultivars.bayes.evidence"><span class="nn">cultivars.bayes.evidence</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.compare.html#cultivars.bayes.evidence.compare" title="cultivars.bayes.evidence.compare"><span class="n">compare</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.marginal_likelihood.html#cultivars.bayes.evidence.marginal_likelihood" title="cultivars.bayes.evidence.marginal_likelihood"><span class="n">marginal_likelihood</span></a>
+
+<span class="n">ml1</span><span class="p">,</span> <span class="n">ml2</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.marginal_likelihood.html#cultivars.bayes.evidence.marginal_likelihood" title="cultivars.bayes.evidence.marginal_likelihood"><span class="n">marginal_likelihood</span></a><span class="p">(</span><span class="n">p1</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.marginal_likelihood.html#cultivars.bayes.evidence.marginal_likelihood" title="cultivars.bayes.evidence.marginal_likelihood"><span class="n">marginal_likelihood</span></a><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ml1</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">ml1</span><span class="o">.</span><span class="n">mcse</span><span class="p">,</span> <span class="n">ml1</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ml1</span><span class="o">.</span><span class="n">log_value</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ml2</span><span class="o">.</span><span class="n">log_value</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ml1</span><span class="o">.</span><span class="n">log_bayes_factor</span><span class="p">(</span><span class="n">ml2</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> <span class="n">ml1</span><span class="o">.</span><span class="n">bayes_factor_strength</span><span class="p">(</span><span class="n">ml2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.summary.SummaryTable.html#cultivars.summary.SummaryTable" title="cultivars.summary.SummaryTable"><span class="n">table</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.compare.html#cultivars.bayes.evidence.compare" title="cultivars.bayes.evidence.compare"><span class="n">compare</span></a><span class="p">(</span><span class="n">ml1</span><span class="p">,</span> <span class="n">ml2</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">"BVAR(1)"</span><span class="p">,</span> <span class="s2">"BVAR(2)"</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.summary.SummaryTable.html#cultivars.summary.SummaryTable" title="cultivars.summary.SummaryTable"><span class="n">table</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>analytic 0.0 158
+-482.25 -483.14
+0.891 not worth more than a bare mention
+                                       Marginal likelihood comparison
+===========================================================================================================
+Models:                              2  Prior:                           equal
+-----------------------------------------------------------------------------------------------------------
+model         log ML    mcse   log BF vs best                             evidence   post. prob.     method
+BVAR(1)     -482.250   0.000            0.000                                 best         0.709   analytic
+BVAR(2)     -483.140   0.000           -0.891   not worth more than a bare mention         0.291   analytic
+===========================================================================================================
+Differences of log ML are log Bayes factors; the strength column is Kass and Raftery's reading of 2 log BF
+against the best model.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">compare(*records,</span> <span class="pre">names=None,</span> <span class="pre">prior_probabilities=None)</span></code> returns a
+summary table whose cells are formatted strings; read numbers from the
+records. Its notes warn when records score different numbers of
+observations or when a model lies within two Monte Carlo standard errors
+of the best.</p>
+<p>The Gibbs BVAR under a static prior uses Chib’s (1995) identity
+<span class="math notranslate nohighlight">\(\log m(y) = \log f(y \mid \theta^\ast) + \log\pi(\theta^\ast) -
+\log\pi(\theta^\ast \mid y)\)</span> with a simulated ordinate, so its record
+carries a Monte Carlo error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chib</span> <span class="o">=</span> <span class="n">marginal_likelihood</span><span class="p">(</span><span class="n">run_a</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">chib</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">chib</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">chib</span><span class="o">.</span><span class="n">mcse</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>chib 158 True
+</pre></div>
+</div>
+<section id="generic-estimators">
+<h3>Generic estimators<a class="headerlink" href="#generic-estimators" title="Link to this heading">#</a></h3>
+<p>For draws from another sampler, two estimators take posterior draws and the
+unnormalized log posterior. <a class="reference internal" href="../api/generated/cultivars.bayes.evidence.modified_harmonic_mean.html#cultivars.bayes.evidence.modified_harmonic_mean" title="cultivars.bayes.evidence.modified_harmonic_mean"><code class="xref py py-func docutils literal notranslate"><span class="pre">modified_harmonic_mean()</span></code></a>
+(Geweke 1999) uses a truncated Gaussian envelope with mass <code class="docutils literal notranslate"><span class="pre">tau=0.9</span></code>.
+<a class="reference internal" href="../api/generated/cultivars.bayes.evidence.bridge_sampling.html#cultivars.bayes.evidence.bridge_sampling" title="cultivars.bayes.evidence.bridge_sampling"><code class="xref py py-func docutils literal notranslate"><span class="pre">bridge_sampling()</span></code></a> (Meng and Wong 1996)
+also needs the log kernel as a callable, because it scores proposal
+draws. Both return the same record type, with <code class="docutils literal notranslate"><span class="pre">nobs</span> <span class="pre">=</span> <span class="pre">0</span></code>. On a
+bivariate standard normal with kernel <span class="math notranslate nohighlight">\(-\tfrac12\|z\|^2\)</span> the true
+value is <span class="math notranslate nohighlight">\(\log 2\pi \approx 1.838\)</span>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.html#module-cultivars.bayes.evidence"><span class="nn">cultivars.bayes.evidence</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.bridge_sampling.html#cultivars.bayes.evidence.bridge_sampling" title="cultivars.bayes.evidence.bridge_sampling"><span class="n">bridge_sampling</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.modified_harmonic_mean.html#cultivars.bayes.evidence.modified_harmonic_mean" title="cultivars.bayes.evidence.modified_harmonic_mean"><span class="n">modified_harmonic_mean</span></a>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">log_kernel</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">mhm</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.modified_harmonic_mean.html#cultivars.bayes.evidence.modified_harmonic_mean" title="cultivars.bayes.evidence.modified_harmonic_mean"><span class="n">modified_harmonic_mean</span></a><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">log_kernel</span><span class="p">)</span>
+<span class="n">bridge</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.evidence.bridge_sampling.html#cultivars.bayes.evidence.bridge_sampling" title="cultivars.bayes.evidence.bridge_sampling"><span class="n">bridge_sampling</span></a><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">log_kernel</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">v</span> <span class="o">@</span> <span class="n">v</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">mhm</span><span class="o">.</span><span class="n">log_value</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">bridge</span><span class="o">.</span><span class="n">log_value</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">bridge</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1.84 1.84 0
+</pre></div>
+</div>
+<p>Transform bounded parameters to the real line and include the Jacobian in
+the kernel; the plain harmonic mean is not offered, because its variance is
+infinite.</p>
+</section>
+</section>
+<section id="model-combination">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Model combination</a><a class="headerlink" href="#model-combination" title="Link to this heading">#</a></h2>
+<section id="bayesian-model-averaging">
+<h3>Bayesian model averaging<a class="headerlink" href="#bayesian-model-averaging" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../api/generated/cultivars.bayes.combination.bayesian_model_average.html#cultivars.bayes.combination.bayesian_model_average" title="cultivars.bayes.combination.bayesian_model_average"><code class="xref py py-func docutils literal notranslate"><span class="pre">bayesian_model_average()</span></code></a> weights models
+by posterior probability, <span class="math notranslate nohighlight">\(w_i \propto \pi_i\, m_i(y)\)</span>, normalized on
+the log scale (Hoeting et al. 1999). It computes the records through
+<code class="docutils literal notranslate"><span class="pre">marginal_likelihood</span></code> unless <code class="docutils literal notranslate"><span class="pre">records=</span></code> is given:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.combination.html#module-cultivars.bayes.combination"><span class="nn">cultivars.bayes.combination</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.combination.bayesian_model_average.html#cultivars.bayes.combination.bayesian_model_average" title="cultivars.bayes.combination.bayesian_model_average"><span class="n">bayesian_model_average</span></a>
+
+<span class="n">bma</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.combination.bayesian_model_average.html#cultivars.bayes.combination.bayesian_model_average" title="cultivars.bayes.combination.bayesian_model_average"><span class="n">bayesian_model_average</span></a><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">"BVAR(1)"</span><span class="p">,</span> <span class="s2">"BVAR(2)"</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">bma</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">bma</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">bma</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">mixed</span> <span class="o">=</span> <span class="n">bma</span><span class="o">.</span><span class="n">forecast_paths</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">mixed</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">bma</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>bayesian model average [0.709 0.291] [-482.25 -483.14]
+(200, 4, 2) (4, 2, 3)
+</pre></div>
+</div>
+<p>The returned
+<a class="reference internal" href="../api/generated/cultivars.bayes.combination.ModelCombinationSelection.html#cultivars.bayes.combination.ModelCombinationSelection" title="cultivars.bayes.combination.ModelCombinationSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelCombinationSelection</span></code></a> draws a
+model in proportion to its weight and then one of that model’s paths.
+<code class="docutils literal notranslate"><span class="pre">forecast_paths(steps=8,</span> <span class="pre">*,</span> <span class="pre">n_draws=None,</span> <span class="pre">seed=None)</span></code> returns as many
+mixed paths as the largest model supplies unless <code class="docutils literal notranslate"><span class="pre">n_draws</span></code> is given.</p>
+<p>Records that score different numbers of observations are refused, which is
+why the example fitted on a common sample:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.html#module-cultivars.exceptions"><span class="nn">cultivars.exceptions</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><span class="n">SpecificationError</span></a>
+
+<span class="n">naive</span> <span class="o">=</span> <span class="n">BVAR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">bayesian_model_average</span><span class="p">(</span><span class="n">naive</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+<span class="k">except</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><span class="n">SpecificationError</span></a> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#str"><span class="nb">str</span></a><span class="p">(</span><span class="n">err</span><span class="p">)[:</span><span class="mi">62</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The marginal likelihoods score different numbers of observatio
+</pre></div>
+</div>
+</section>
+<section id="stacking">
+<h3>Stacking<a class="headerlink" href="#stacking" title="Link to this heading">#</a></h3>
+<p>BMA concentrates on one model as the sample grows even when no model is
+true. Stacking (Yao, Vehtari, Simpson and Gelman 2018; Geweke and Amisano
+2011) instead chooses the simplex weights that maximize the held-out log
+score of the mixture,</p>
+<div class="math notranslate nohighlight">
+\[\max_{w \in \Delta^{M-1}} \frac{1}{T}\sum_{t=1}^{T}
+\log \sum_{m=1}^{M} w_m\, p_m(y_t \mid y_{&lt;t}),\]</div>
+<p>so it needs genuinely held-out log predictive densities, one row per
+origin and one column per model. A density backtest supplies them: the
+log loss is the negative log predictive density, so negate it. The
+backtest’s log score is per series; summing across series treats the
+series as independent given the model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.combination.html#module-cultivars.bayes.combination"><span class="nn">cultivars.bayes.combination</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.combination.stacking.html#cultivars.bayes.combination.stacking" title="cultivars.bayes.combination.stacking"><span class="n">stacking</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.html#module-cultivars.forecast.backtest"><span class="nn">cultivars.forecast.backtest</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a>
+
+<span class="n">fits</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"BVAR(1)"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">BVAR</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <span class="s2">"BVAR(2)"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">BVAR</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">log_density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span>
+    <span class="o">-</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><span class="n">Backtest</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.Backtest.run.html#cultivars.forecast.backtest.Backtest.run" title="cultivars.forecast.backtest.Backtest.run"><span class="n">run</span></a><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.backtest.BacktestResult.losses.html#cultivars.forecast.backtest.BacktestResult.losses" title="cultivars.forecast.backtest.BacktestResult.losses"><span class="n">losses</span></a><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fits</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="p">])</span>
+<span class="n">stacked</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.combination.stacking.html#cultivars.bayes.combination.stacking" title="cultivars.bayes.combination.stacking"><span class="n">stacking</span></a><span class="p">(</span><span class="n">log_density</span><span class="p">,</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">),</span> <span class="n">names</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#tuple"><span class="nb">tuple</span></a><span class="p">(</span><span class="n">fits</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">log_density</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">stacked</span><span class="o">.</span><span class="n">n_origins</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">stacked</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">stacked</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(20, 2) 20
+[0. 1.] [-3.689 -3.541]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">scores</span></code> holds each model’s mean held-out log density. On these 20
+origins the BVAR(2) has the higher held-out score and takes the whole
+weight, while the marginal likelihood gave the BVAR(1) 0.709: the two
+criteria answer different questions, and 20 origins is a short window. The
+stacked
+weights are optimized on the same origins they are reported on, so the
+gain over the best single model is optimistic. The <code class="docutils literal notranslate"><span class="pre">results</span></code> argument
+supplies the models the mixture predicts from, typically the full-sample
+fits.</p>
+</section>
+</section>
+<section id="how-the-pieces-connect">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">How the pieces connect</a><a class="headerlink" href="#how-the-pieces-connect" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">forecast_paths</span></code> is the common currency. Every result that combination
+accepts can also be backtested as a density forecaster, scored with
+<a class="reference internal" href="../api/generated/cultivars.forecast.scoring.DensityScore.html#cultivars.forecast.scoring.DensityScore" title="cultivars.forecast.scoring.DensityScore"><code class="xref py py-class docutils literal notranslate"><span class="pre">DensityScore</span></code></a> and fanned with
+<a class="reference internal" href="../api/generated/cultivars.forecast.fan.fan_chart.html#cultivars.forecast.fan.fan_chart" title="cultivars.forecast.fan.fan_chart"><code class="xref py py-func docutils literal notranslate"><span class="pre">fan_chart()</span></code></a>
+(<a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>). A <code class="docutils literal notranslate"><span class="pre">ModelCombinationSelection</span></code> itself has
+<code class="docutils literal notranslate"><span class="pre">forecast_paths</span></code>, so a combination can be backtested.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">losses("log")</span></code> from <a class="reference internal" href="../api/generated/cultivars.forecast.backtest.BacktestResult.html#cultivars.forecast.backtest.BacktestResult" title="cultivars.forecast.backtest.BacktestResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">BacktestResult</span></code></a>
+is the input of <a class="reference internal" href="../api/generated/cultivars.bayes.combination.stacking.html#cultivars.bayes.combination.stacking" title="cultivars.bayes.combination.stacking"><code class="xref py py-func docutils literal notranslate"><span class="pre">stacking()</span></code></a> after a
+sign change.</p></li>
+<li><p>The convergence machinery is shared: <code class="docutils literal notranslate"><span class="pre">result.convergence()</span></code> and
+<a class="reference internal" href="../api/generated/cultivars.bayes.chains.convergence.html#cultivars.bayes.chains.convergence" title="cultivars.bayes.chains.convergence"><code class="xref py py-func docutils literal notranslate"><span class="pre">convergence()</span></code></a> build the same
+<code class="docutils literal notranslate"><span class="pre">ConvergenceTest</span></code>.</p></li>
+<li><p>The marginal-likelihood record is shared by <code class="docutils literal notranslate"><span class="pre">compare</span></code>,
+<code class="docutils literal notranslate"><span class="pre">bayesian_model_average</span></code> and each result’s own
+<code class="docutils literal notranslate"><span class="pre">marginal_likelihood()</span></code>; <code class="docutils literal notranslate"><span class="pre">BVARResult</span></code> also exposes the bare float
+<code class="docutils literal notranslate"><span class="pre">log_marginal_likelihood</span></code>.</p></li>
+</ul>
+</section>
+<section id="nuances-and-gotchas">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Nuances and gotchas</a><a class="headerlink" href="#nuances-and-gotchas" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Conjugate draws can be flagged.</strong> <code class="docutils literal notranslate"><span class="pre">BVAR</span></code> draws are i.i.d. from the
+exact posterior, yet with 200 draws a single-chain report flags
+quantities whose split-<span class="math notranslate nohighlight">\(\widehat R\)</span> exceeds 1.01 by noise; the
+report’s notes say so. Pass a second run or raise <code class="docutils literal notranslate"><span class="pre">n_draws</span></code>.</p></li>
+<li><p><strong>Not every sampled result has a marginal likelihood.</strong>
+<code class="docutils literal notranslate"><span class="pre">StudentBVARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">BVARSVResult</span></code>, <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code>,
+<code class="docutils literal notranslate"><span class="pre">UCSVPosterior</span></code>, the TVP models and <code class="docutils literal notranslate"><span class="pre">GibbsBVARResult</span></code> under an
+adaptive prior or with dummy observations raise
+<code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code>. Compare them by held-out score (<code class="docutils literal notranslate"><span class="pre">stacking</span></code> or a
+backtest). The Gibbs refusal for adaptive priors names the reason:
+Chib’s estimator would need reduced runs.</p></li>
+<li><p><strong>The hierarchical BVAR’s evidence is at the mode.</strong>
+<code class="docutils literal notranslate"><span class="pre">HierarchicalBVARResult.marginal_likelihood()</span></code> returns
+<span class="math notranslate nohighlight">\(p(y \mid \hat\theta)\)</span> at the hyperparameter mode, reported as
+<code class="docutils literal notranslate"><span class="pre">method="analytic"</span></code> with <code class="docutils literal notranslate"><span class="pre">mcse=0</span></code> and source <code class="docutils literal notranslate"><span class="pre">"BVAR(1),</span> <span class="pre">glp(...)"</span></code>.
+It is not integrated over the hyperprior, and the mode maximizes it, so a
+Bayes factor against a fixed-prior BVAR favors the hierarchical model by
+construction.</p></li>
+<li><p><strong>Different presamples are not comparable.</strong> <code class="docutils literal notranslate"><span class="pre">compare</span></code> warns and
+<code class="docutils literal notranslate"><span class="pre">bayesian_model_average</span></code> refuses when records score different
+<code class="docutils literal notranslate"><span class="pre">nobs</span></code>. Records from <code class="docutils literal notranslate"><span class="pre">modified_harmonic_mean</span></code> and
+<code class="docutils literal notranslate"><span class="pre">bridge_sampling</span></code> carry <code class="docutils literal notranslate"><span class="pre">nobs</span> <span class="pre">=</span> <span class="pre">0</span></code> and escape this check.</p></li>
+<li><p><strong>No prior predictive check under adaptive priors or for BVARSV.</strong>
+<code class="docutils literal notranslate"><span class="pre">prior_predictive_check</span></code> on a <code class="docutils literal notranslate"><span class="pre">GibbsBVAR</span></code> with a horseshoe-type
+prior raises, because the marginal prior of the latent scales has no
+closed form; <code class="docutils literal notranslate"><span class="pre">BVARSV</span></code> has no <code class="docutils literal notranslate"><span class="pre">prior_replications</span></code>.</p></li>
+<li><p><strong>Prior replications start at the observed presample.</strong> For data in
+levels, the <code class="docutils literal notranslate"><span class="pre">mean</span></code> statistic reads the drift the prior admits over the
+sample, not a prior on the level.</p></li>
+<li><p><strong>Tail probabilities are resolved to 1/R.</strong> With the default 200
+replications the smallest non-zero p-value is 0.005; at least 20
+replications are required.</p></li>
+<li><p><strong>compare returns strings.</strong> The table’s cells are formatted text. Read
+<code class="docutils literal notranslate"><span class="pre">log_value</span></code> and <code class="docutils literal notranslate"><span class="pre">log_bayes_factor</span></code> from the records.</p></li>
+<li><p><strong>Stacking needs held-out densities.</strong> In-sample log densities reward
+overfitting. <code class="docutils literal notranslate"><span class="pre">stacking</span></code> cannot check this; produce the matrix with a
+<a class="reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backtest</span></code></a>.</p></li>
+<li><p><strong>Two weights near 0.5 are a finding.</strong> Stacking weights do not
+concentrate when two models err in different directions.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a> – the Bayesian VAR family, its samplers and the
+prior catalogue.</p></li>
+<li><p><a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a> – backtests and proper scores for the density
+forecasts combined here.</p></li>
+<li><p><a class="reference internal" href="volatility.html"><span class="doc">Volatility models</span></a> – the stochastic-volatility posteriors with
+<code class="docutils literal notranslate"><span class="pre">convergence()</span></code> and posterior checks.</p></li>
+<li><p><a class="reference internal" href="nuances.html"><span class="doc">Nuances and known issues</span></a> – package-wide conventions.</p></li>
+<li><p><a class="reference internal" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors" title="cultivars.bayes.priors"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.priors</span></code></a>, <a class="reference internal" href="../api/generated/cultivars.bayes.chains.html#module-cultivars.bayes.chains" title="cultivars.bayes.chains"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.chains</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.checks.html#module-cultivars.bayes.checks" title="cultivars.bayes.checks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.checks</span></code></a>, <a class="reference internal" href="../api/generated/cultivars.bayes.evidence.html#module-cultivars.bayes.evidence" title="cultivars.bayes.evidence"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.evidence</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.combination.html#module-cultivars.bayes.combination" title="cultivars.bayes.combination"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.combination</span></code></a></p></li>
+</ul>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="forecasting.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Forecasting and forecast evaluation</p>
+</div>
+</a>
+<a class="right-next" href="../auto_examples/index.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Examples</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-family-at-a-glance">The family at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#which-results-qualify">Which results qualify</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#priors">Priors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-predictive-checks">Prior predictive checks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#two-models-on-a-common-sample">Two models on a common sample</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convergence">Convergence</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#on-a-result">On a result</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#on-draws-of-your-own">On draws of your own</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-predictive-checks">Posterior predictive checks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#marginal-likelihood-and-bayes-factors">Marginal likelihood and Bayes factors</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generic-estimators">Generic estimators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-combination">Model combination</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-model-averaging">Bayesian model averaging</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stacking">Stacking</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-pieces-connect">How the pieces connect</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nuances-and-gotchas">Nuances and gotchas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="tocsection editthispage">
+<a href="https://github.com/nikhilxsunder/cultivars/edit/v1.0.0a4/docs/source/user_guide/bayesian_workflow.rst">
+<i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+</div>
+</div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item"><div class="cv-footer">
+<section aria-label="Documentation sections" class="cv-footer__band cv-footer__band--guide">
+<div class="cv-footer__inner cv-footer__columns">
+<div class="cv-footer__column">
+<h2>API reference</h2>
+<p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+<a class="cv-footer__cta" href="../api/index.html">View the API<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Examples</h2>
+<p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+<a class="cv-footer__cta" href="../auto_examples/index.html">View the examples<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Engine</h2>
+<p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+<a class="cv-footer__cta" href="../engine/index.html">View the engine<span aria-hidden="true"> ›</span></a>
+</div>
+</div>
+</section>
+<section aria-label="Project links" class="cv-footer__band cv-footer__band--site">
+<div class="cv-footer__inner">
+<div class="cv-footer__grid">
+<div class="cv-footer__install">
+<h2>Get cultivars</h2>
+<p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a4</code></pre>
+</div>
+<nav aria-label="Resources" class="cv-footer__links">
+<h2>Resources</h2>
+<ul>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/releases">Releases</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md">Changelog</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/issues">Issues</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md">Contributing</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md">Security</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md">Code of conduct</a>
+</li>
+</ul>
+</nav>
+<nav aria-label="Related projects" class="cv-footer__links">
+<h2>Related</h2>
+<ul>
+<li>
+<a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a><span class="cv-footer__muted"> FRED client</span>
+</li>
+<li>
+<a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a><span class="cv-footer__muted"> SEC EDGAR client</span>
+</li>
+</ul>
+</nav>
+</div>
+<ul aria-label="Project pages" class="cv-footer__social">
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li>
+<a href="https://pypi.org/project/cultivars/" title="PyPI"><i aria-hidden="true" class="fa-brands fa-python"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li>
+<a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov"><i aria-hidden="true" class="fa-solid fa-umbrella"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff" title="Cite"><i aria-hidden="true" class="fa-solid fa-quote-left"></i><span class="visually-hidden">Cite</span></a>
+</li>
+</ul>
+<div class="cv-footer__legal">
+<p>
+          © 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE">MIT License</a>. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED® is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+<p class="cv-footer__build">
+          cultivars 1.0.0a4 · updated 2026-10-12 · built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
+</p>
+</div>
+</div>
+</section>
+</div></div>
+</div>
+</div>
+</footer>
+</body>
+</html>

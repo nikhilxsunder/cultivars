@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Threshold, smooth-transition, Markov-switching and neural autoregressions in cultivars: specification, estimation, regimes and linearity tests." name="description"/>
+<meta content="Nonlinear and regime-switching univariate models" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/user_guide/univariate_nonlinear.html" property="og:url"/>
+<meta content="cultivars" property="og:site_name"/>
+<meta content="This page covers autoregressions whose conditional mean changes with a regime: a hard switch on an observed variable (SETAR, TAR), a smooth blend (LSTAR, ESTAR), a latent Markov chain (Markov-switching AR), or a mean function learned by a neural network (AR-NN, TAR-NN). Use it when a linear AR le..." property="og:description"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" property="og:image"/>
+<meta content="cultivars" property="og:image:alt"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="cultivars Documentation" property="og:site_name"/>
+<meta content="cultivars Logo" property="og:image:alt"/>
+<meta content="2026-10-12T19:40:35+00:00" property="article:modified_time"/>
+<title>Nonlinear and regime-switching univariate models — cultivars</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/plot_directive.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=c83e6b79" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=7fc003df" rel="stylesheet" type="text/css"/>
+<link href="../_static/consent.css?v=8cbde1cf" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script defer="" src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<script src="../_static/documentation_options.js?v=fc897e8e"></script>
+<script src="../_static/doctools.js?v=fd6eb6e6"></script>
+<script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+<script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+<script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+<script defer="defer" src="../_static/tippy/user_guide/univariate_nonlinear.ab536b10-3395-4962-bb33-e7d7707cc386.js"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/univariate_nonlinear';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0a4';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+<script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+<link href="https://nikhilxsunder.github.io/cultivars/stable/user_guide/univariate_nonlinear.html" rel="canonical"/>
+<link href="../_static/cultivars-favicon.ico" rel="icon"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="var.html" rel="next" title="Vector autoregressions"/>
+<link href="volatility.html" rel="prev" title="Volatility models"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="1.0" name="docsearch:version"/>
+<meta content="2026-10-12" name="docbuild:last-update"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
+</head>
+<body data-default-mode="">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle" type="button">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="cultivars - Home" class="logo__image only-light" src="../_static/cultivars-logo.png"/>
+<img alt="cultivars - Home" class="logo__image only-dark pst-js-only" src="../_static/cultivars-logo.png"/>
+</a></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle" type="button">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button" type="button">
+<svg aria-hidden="true" class="pst-icon" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing_a_model.html">Choosing a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nuances.html">Nuances and known issues</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Before estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.html">Diagnostics and specification testing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Univariate models</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="univariate_linear.html">Univariate linear models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility.html">Volatility models</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Nonlinear and regime-switching univariate models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multivariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="var.html">Vector autoregressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="var_extensions.html">Beyond the basic VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_identification.html">Structural identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_vars.html">Bayesian VARs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="large_dimensional.html">Large and high-dimensional systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nonlinear_multivariate.html">Nonlinear, time-varying and regime-switching VARs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Engines and frequency-domain views</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="state_space.html">State-space models and filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral analysis and filtering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">After estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="forecasting.html">Forecasting and forecast evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_workflow.html">The Bayesian workflow</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="index.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">Nonlinear and regime-switching univariate models</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section id="nonlinear-and-regime-switching-univariate-models">
+<h1>Nonlinear and regime-switching univariate models<a class="headerlink" href="#nonlinear-and-regime-switching-univariate-models" title="Link to this heading">#</a></h1>
+<p>This page covers autoregressions whose conditional mean changes with a
+regime: a hard switch on an observed variable (SETAR, TAR), a smooth blend
+(LSTAR, ESTAR), a latent Markov chain (Markov-switching AR), or a mean
+function learned by a neural network (AR-NN, TAR-NN). Use it when a linear
+AR leaves structure in the residuals that depends on the level or sign of
+the series. Linear ARMA models are in <a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a>, volatility
+models in <a class="reference internal" href="volatility.html"><span class="doc">Volatility models</span></a>, and the vector versions of everything here in
+<a class="reference internal" href="nonlinear_multivariate.html"><span class="doc">Nonlinear, time-varying and regime-switching VARs</span></a>.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-family-at-a-glance" id="id7">The family at a glance</a></p></li>
+<li><p><a class="reference internal" href="#test-for-linearity-before-fitting" id="id8">Test for linearity before fitting</a></p></li>
+<li><p><a class="reference internal" href="#threshold-autoregressions-setar-and-tar" id="id9">Threshold autoregressions: SETAR and TAR</a></p></li>
+<li><p><a class="reference internal" href="#smooth-transition-autoregressions-lstar-and-estar" id="id10">Smooth-transition autoregressions: LSTAR and ESTAR</a></p></li>
+<li><p><a class="reference internal" href="#markov-switching-autoregression" id="id11">Markov-switching autoregression</a></p></li>
+<li><p><a class="reference internal" href="#learned-conditional-means-arnn-and-tarnn" id="id12">Learned conditional means: ARNN and TARNN</a></p></li>
+<li><p><a class="reference internal" href="#simulation-and-state-space-emission" id="id13">Simulation and state-space emission</a></p></li>
+<li><p><a class="reference internal" href="#how-the-pieces-connect" id="id14">How the pieces connect</a></p></li>
+<li><p><a class="reference internal" href="#nuances-and-gotchas" id="id15">Nuances and gotchas</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id16">See also</a></p></li>
+</ul>
+</nav>
+<section id="the-family-at-a-glance">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">The family at a glance</a><a class="headerlink" href="#the-family-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 18.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 22.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Module</p></th>
+<th class="head"><p>Model</p></th>
+<th class="head"><p>Use when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.threshold.SETAR.html#cultivars.univariate.threshold.SETAR" title="cultivars.univariate.threshold.SETAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">SETAR</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.threshold.html#module-cultivars.univariate.threshold" title="cultivars.univariate.threshold"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.threshold</span></code></a></p></td>
+<td><p>Two AR regimes split by <span class="math notranslate nohighlight">\(y_{t-d} \le r\)</span></p></td>
+<td><p>The regime is a lag of the series and switches abruptly</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.threshold.TAR.html#cultivars.univariate.threshold.TAR" title="cultivars.univariate.threshold.TAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">TAR</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.threshold.html#module-cultivars.univariate.threshold" title="cultivars.univariate.threshold"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.threshold</span></code></a></p></td>
+<td><p>Two AR regimes split by an external <span class="math notranslate nohighlight">\(z_{t-d} \le r\)</span></p></td>
+<td><p>An observed driver (a spread, an index) decides the regime</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.smooth_transition.LSTAR.html#cultivars.univariate.smooth_transition.LSTAR" title="cultivars.univariate.smooth_transition.LSTAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">LSTAR</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.smooth_transition.html#module-cultivars.univariate.smooth_transition" title="cultivars.univariate.smooth_transition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.smooth_transition</span></code></a></p></td>
+<td><p>Two AR regimes blended by a logistic weight in <span class="math notranslate nohighlight">\(y_{t-d}\)</span></p></td>
+<td><p>Asymmetry with a direction (contractions versus expansions)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.smooth_transition.ESTAR.html#cultivars.univariate.smooth_transition.ESTAR" title="cultivars.univariate.smooth_transition.ESTAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">ESTAR</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.smooth_transition.html#module-cultivars.univariate.smooth_transition" title="cultivars.univariate.smooth_transition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.smooth_transition</span></code></a></p></td>
+<td><p>Two AR regimes blended by an exponential weight in <span class="math notranslate nohighlight">\(y_{t-d}\)</span></p></td>
+<td><p>Mean reversion that strengthens with distance from equilibrium</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingAR</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.regime_switching.html#module-cultivars.univariate.regime_switching" title="cultivars.univariate.regime_switching"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.regime_switching</span></code></a></p></td>
+<td><p>Intercept, AR block and variance switch with a latent chain</p></td>
+<td><p>Regimes are not observable (recession dating, volatility states)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.ARNN.html#cultivars.univariate.mean_function.ARNN" title="cultivars.univariate.mean_function.ARNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARNN</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function" title="cultivars.univariate.mean_function"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.mean_function</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(y_t = f(y_{t-1}, \ldots, y_{t-p}) + \varepsilon_t\)</span>, <span class="math notranslate nohighlight">\(f\)</span>
+learned</p></td>
+<td><p>The shape of the nonlinearity is unknown and prediction is the goal</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.TARNN.html#cultivars.univariate.mean_function.TARNN" title="cultivars.univariate.mean_function.TARNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">TARNN</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function" title="cultivars.univariate.mean_function"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.mean_function</span></code></a></p></td>
+<td><p>One learned function per side of a fixed threshold</p></td>
+<td><p>A known split point with unknown dynamics on each side</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All seven take a one-dimensional array and are fitted with <code class="docutils literal notranslate"><span class="pre">fit()</span></code>. Only
+<a class="reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingAR</span></code></a> takes
+arguments in <code class="docutils literal notranslate"><span class="pre">fit</span></code>, because its likelihood is multimodal and the answer
+depends on the starting values and the seed.</p>
+</section>
+<section id="test-for-linearity-before-fitting">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Test for linearity before fitting</a><a class="headerlink" href="#test-for-linearity-before-fitting" title="Link to this heading">#</a></h2>
+<p>A threshold or smooth-transition model claims that the linear AR is wrong
+in a specific way. Test that claim first, on the linear model’s own terms,
+with <a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.html#module-cultivars.diagnostics.nonlinearity" title="cultivars.diagnostics.nonlinearity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.diagnostics.nonlinearity</span></code></a> (details in
+<a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a>). Every test takes the raw series and fits the
+AR(<span class="math notranslate nohighlight">\(p\)</span>) null internally, so the degrees of freedom are always right.
+The threshold and transition parameters are not identified under linearity
+(Davies, 1987), so a plain likelihood-ratio test against the AR is invalid;
+these tests are the valid route.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 70.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>What a rejection points to</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.tsay.html#cultivars.diagnostics.nonlinearity.tsay" title="cultivars.diagnostics.nonlinearity.tsay"><code class="xref py py-func docutils literal notranslate"><span class="pre">tsay()</span></code></a></p></td>
+<td><p>A threshold (Tsay, 1989, arranged autoregression)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.hansen_threshold.html#cultivars.diagnostics.nonlinearity.hansen_threshold" title="cultivars.diagnostics.nonlinearity.hansen_threshold"><code class="xref py py-func docutils literal notranslate"><span class="pre">hansen_threshold()</span></code></a></p></td>
+<td><p>A SETAR, by a bootstrap sup-F over the threshold grid (Hansen, 1996);
+the record carries the threshold it found</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.terasvirta.html#cultivars.diagnostics.nonlinearity.terasvirta" title="cultivars.diagnostics.nonlinearity.terasvirta"><code class="xref py py-func docutils literal notranslate"><span class="pre">terasvirta()</span></code></a></p></td>
+<td><p>A smooth transition (Teräsvirta, 1994); <code class="docutils literal notranslate"><span class="pre">suggestion</span></code> reads LSTAR or
+ESTAR from the escalation sequence in <code class="docutils literal notranslate"><span class="pre">companions</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.ramsey_reset.html#cultivars.diagnostics.nonlinearity.ramsey_reset" title="cultivars.diagnostics.nonlinearity.ramsey_reset"><code class="xref py py-func docutils literal notranslate"><span class="pre">ramsey_reset()</span></code></a></p></td>
+<td><p>Some smooth function of the fit left in the residual (no regime
+implied)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The running example is a two-regime SETAR: the AR coefficient is 0.7 when
+the previous value is at or below zero and -0.3 above it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.html#module-cultivars.diagnostics.nonlinearity"><span class="nn">cultivars.diagnostics.nonlinearity</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.hansen_threshold.html#cultivars.diagnostics.nonlinearity.hansen_threshold" title="cultivars.diagnostics.nonlinearity.hansen_threshold"><span class="n">hansen_threshold</span></a><span class="p">,</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.ramsey_reset.html#cultivars.diagnostics.nonlinearity.ramsey_reset" title="cultivars.diagnostics.nonlinearity.ramsey_reset"><span class="n">ramsey_reset</span></a><span class="p">,</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.terasvirta.html#cultivars.diagnostics.nonlinearity.terasvirta" title="cultivars.diagnostics.nonlinearity.terasvirta"><span class="n">terasvirta</span></a><span class="p">,</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.tsay.html#cultivars.diagnostics.nonlinearity.tsay" title="cultivars.diagnostics.nonlinearity.tsay"><span class="n">tsay</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">rng</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">400</span><span class="p">):</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="mf">0.7</span> <span class="k">if</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="o">-</span><span class="mf">0.3</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.tsay.html#cultivars.diagnostics.nonlinearity.tsay" title="cultivars.diagnostics.nonlinearity.tsay"><span class="n">tsay</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.terasvirta.html#cultivars.diagnostics.nonlinearity.terasvirta" title="cultivars.diagnostics.nonlinearity.terasvirta"><span class="n">terasvirta</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.ramsey_reset.html#cultivars.diagnostics.nonlinearity.ramsey_reset" title="cultivars.diagnostics.nonlinearity.ramsey_reset"><span class="n">ramsey_reset</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)):</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">name</span><span class="si">:</span><span class="s2">11s</span><span class="si">}</span><span class="s2"> p=</span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">test</span><span class="o">.</span><span class="n">alternative</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.LinearityTest.html#cultivars.diagnostics.nonlinearity.LinearityTest" title="cultivars.diagnostics.nonlinearity.LinearityTest"><span class="n">sup</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.hansen_threshold.html#cultivars.diagnostics.nonlinearity.hansen_threshold" title="cultivars.diagnostics.nonlinearity.hansen_threshold"><span class="n">hansen_threshold</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">replications</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.LinearityTest.statistic.html#cultivars.diagnostics.nonlinearity.LinearityTest.statistic" title="cultivars.diagnostics.nonlinearity.LinearityTest.statistic"><span class="n">sup</span><span class="o">.</span><span class="n">statistic</span></a><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.LinearityTest.pvalue.html#cultivars.diagnostics.nonlinearity.LinearityTest.pvalue" title="cultivars.diagnostics.nonlinearity.LinearityTest.pvalue"><span class="n">sup</span><span class="o">.</span><span class="n">pvalue</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.diagnostics.nonlinearity.LinearityTest.threshold.html#cultivars.diagnostics.nonlinearity.LinearityTest.threshold" title="cultivars.diagnostics.nonlinearity.LinearityTest.threshold"><span class="n">sup</span><span class="o">.</span><span class="n">threshold</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">({</span><span class="n">k</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sup</span><span class="o">.</span><span class="n">critical_values</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tsay        p=0.0000 -&gt; threshold
+Teräsvirta  p=0.0000 -&gt; smooth transition
+RESET       p=0.0000 -&gt; smooth misspecification
+62.4 0.0 0.346
+{'1%': 19.42, '5%': 13.44, '10%': 10.96}
+</pre></div>
+</div>
+<p>All four reject. Two further points before choosing a model. The tests
+target the conditional mean, and neglected conditional heteroskedasticity
+inflates every one of them, so run an ARCH test on the linear residuals
+first (see <a class="reference internal" href="volatility.html"><span class="doc">Volatility models</span></a>). And the Teräsvirta record always carries a
+<code class="docutils literal notranslate"><span class="pre">suggestion</span></code>, even when it does not reject; read it only after
+<code class="docutils literal notranslate"><span class="pre">reject()</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</section>
+<section id="threshold-autoregressions-setar-and-tar">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Threshold autoregressions: SETAR and TAR</a><a class="headerlink" href="#threshold-autoregressions-setar-and-tar" title="Link to this heading">#</a></h2>
+<section id="the-model">
+<h3>The model<a class="headerlink" href="#the-model" title="Link to this heading">#</a></h3>
+<p>Two linear autoregressions, selected by an indicator on an observed
+transition variable (Tong, 1990):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y_t = \begin{cases}
+\phi_L' x_t + \varepsilon_t &amp; z_{t-d} \le r \\
+\phi_U' x_t + \varepsilon_t &amp; z_{t-d} &gt; r
+\end{cases},
+\qquad x_t = (1, y_{t-1}, \ldots, y_{t-p})',\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(z_t = y_t\)</span> for <a class="reference internal" href="../api/generated/cultivars.univariate.threshold.SETAR.html#cultivars.univariate.threshold.SETAR" title="cultivars.univariate.threshold.SETAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">SETAR</span></code></a>
+and an external series for <a class="reference internal" href="../api/generated/cultivars.univariate.threshold.TAR.html#cultivars.univariate.threshold.TAR" title="cultivars.univariate.threshold.TAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">TAR</span></code></a>.
+The sum of squares is a step function of <span class="math notranslate nohighlight">\(r\)</span>, so no gradient method
+applies. The estimator is an exhaustive grid search: <code class="docutils literal notranslate"><span class="pre">n_grid</span></code> quantiles
+of the transition variable with <code class="docutils literal notranslate"><span class="pre">trim</span></code> removed from each tail, two
+least-squares regressions at every candidate, and (for SETAR with
+<code class="docutils literal notranslate"><span class="pre">delay=None</span></code>) every delay in <code class="docutils literal notranslate"><span class="pre">1..order</span></code> on one common sample. The
+threshold estimate is super-consistent (Chan, 1993), so the coefficients
+are read as OLS conditional on it.</p>
+</section>
+<section id="a-minimal-fit">
+<h3>A minimal fit<a class="headerlink" href="#a-minimal-fit" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.autoregression.html#module-cultivars.univariate.autoregression"><span class="nn">cultivars.univariate.autoregression</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.autoregression.AR.html#cultivars.univariate.autoregression.AR" title="cultivars.univariate.autoregression.AR"><span class="n">AR</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.html#module-cultivars.univariate.threshold"><span class="nn">cultivars.univariate.threshold</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETAR.html#cultivars.univariate.threshold.SETAR" title="cultivars.univariate.threshold.SETAR"><span class="n">SETAR</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.TAR.html#cultivars.univariate.threshold.TAR" title="cultivars.univariate.threshold.TAR"><span class="n">TAR</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.html#cultivars.univariate.threshold.SETARResult" title="cultivars.univariate.threshold.SETARResult"><span class="n">hard</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETAR.html#cultivars.univariate.threshold.SETAR" title="cultivars.univariate.threshold.SETAR"><span class="n">SETAR</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETAR.fit.html#cultivars.univariate.threshold.SETAR.fit" title="cultivars.univariate.threshold.SETAR.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.delay.html#cultivars.univariate.threshold.SETARResult.delay" title="cultivars.univariate.threshold.SETARResult.delay"><span class="n">hard</span><span class="o">.</span><span class="n">delay</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.searched_delay.html#cultivars.univariate.threshold.SETARResult.searched_delay" title="cultivars.univariate.threshold.SETARResult.searched_delay"><span class="n">hard</span><span class="o">.</span><span class="n">searched_delay</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.threshold.html#cultivars.univariate.threshold.SETARResult.threshold" title="cultivars.univariate.threshold.SETARResult.threshold"><span class="n">hard</span><span class="o">.</span><span class="n">threshold</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.n_lower.html#cultivars.univariate.threshold.SETARResult.n_lower" title="cultivars.univariate.threshold.SETARResult.n_lower"><span class="n">hard</span><span class="o">.</span><span class="n">n_lower</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.n_upper.html#cultivars.univariate.threshold.SETARResult.n_upper" title="cultivars.univariate.threshold.SETARResult.n_upper"><span class="n">hard</span><span class="o">.</span><span class="n">n_upper</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.nobs.html#cultivars.univariate.threshold.SETARResult.nobs" title="cultivars.univariate.threshold.SETARResult.nobs"><span class="n">hard</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.n_params.html#cultivars.univariate.threshold.SETARResult.n_params" title="cultivars.univariate.threshold.SETARResult.n_params"><span class="n">hard</span><span class="o">.</span><span class="n">n_params</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">hard</span><span class="o">.</span><span class="n">lower_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">hard</span><span class="o">.</span><span class="n">upper_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.threshold.SETARResult.is_regimewise_stationary.html#cultivars.univariate.threshold.SETARResult.is_regimewise_stationary" title="cultivars.univariate.threshold.SETARResult.is_regimewise_stationary"><span class="n">hard</span><span class="o">.</span><span class="n">is_regimewise_stationary</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1 True 0.347
+325 73 398 7
+[ 0.056  0.858 -0.132] [-0.324 -0.082  0.188]
+True
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">lower_params</span></code> and <code class="docutils literal notranslate"><span class="pre">upper_params</span></code> are <code class="docutils literal notranslate"><span class="pre">[const,</span> <span class="pre">ar.L1,</span> <span class="pre">...,</span> <span class="pre">ar.Lp]</span></code>.
+<code class="docutils literal notranslate"><span class="pre">params</span></code> is the same information as a dict keyed <code class="docutils literal notranslate"><span class="pre">lower.const</span></code>,
+<code class="docutils literal notranslate"><span class="pre">lower.ar.L1</span></code>, …, <code class="docutils literal notranslate"><span class="pre">threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma2</span></code>. The summary prints the
+coefficient table and the regime split:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">hard</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                             SETAR(2, d=1) Results
+================================================================================
+Model:                   SETAR(2, d=1)  Log-likelihood:               -535.834
+Delay:                               1  AIC:                          1085.669
+Threshold:                      0.3474  BIC:                          1113.574
+Observations:                      398  HQIC:                         1096.722
+--------------------------------------------------------------------------------
+                   coef
+lower.const      0.0563
+lower.ar.L1      0.8583
+lower.ar.L2     -0.1322
+upper.const     -0.3243
+upper.ar.L1     -0.0822
+upper.ar.L2      0.1877
+threshold        0.3474
+sigma2           0.8648
+================================================================================
+Regime-wise stationary: True   max |root| lower = 0.6572, upper = 0.4763
+Regime split: 325 below, 73 above (18.3% upper).
+The delay was selected by the same grid search as the threshold; d = 1 minimized
+the total sum of squares.
+The threshold is not identified under linearity, so information criteria rank
+specifications but do not test for a threshold.
+Standard errors are not yet available for this estimator.
+</pre></div>
+</div>
+<p>Against the linear AR, rank by information criteria. <code class="docutils literal notranslate"><span class="pre">compare</span></code> requires
+both fits to share the effective sample, which holds here because both
+drop <code class="docutils literal notranslate"><span class="pre">order</span> <span class="pre">=</span> <span class="pre">2</span></code> observations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">linear</span> <span class="o">=</span> <span class="n">AR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">hard</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">linear</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s2">"bic"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>['SETAR(2, d=1)', 'AR(2)']
+</pre></div>
+</div>
+<p>The likelihood-ratio test is refused rather than computed, because its
+chi-squared reference is wrong under the Davies problem:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">hard</span><span class="o">.</span><span class="n">likelihood_ratio_test</span><span class="p">(</span><span class="n">linear</span><span class="p">)</span>
+<span class="k">except</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/exceptions.html#Exception"><span class="ne">Exception</span></a> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#type"><span class="nb">type</span></a><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SpecificationError
+</pre></div>
+</div>
+</section>
+<section id="specification-choices">
+<h3>Specification choices<a class="headerlink" href="#specification-choices" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 18.0%"/>
+<col style="width: 60.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">order</span></code></p></td>
+<td><p>required</p></td>
+<td><p>AR order <span class="math notranslate nohighlight">\(p\)</span> within each regime, at least 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">delay</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code> (SETAR), <code class="docutils literal notranslate"><span class="pre">1</span></code> (TAR)</p></td>
+<td><p>Lag <span class="math notranslate nohighlight">\(d\)</span> of the transition variable. <code class="docutils literal notranslate"><span class="pre">None</span></code> searches
+<code class="docutils literal notranslate"><span class="pre">1..order</span></code> jointly with the threshold; only SETAR can search, TAR
+requires a fixed delay</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.15</span></code></p></td>
+<td><p>Fraction removed from each tail of the threshold grid, in
+<code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0.5)</span></code>; keeps either regime from being fitted on a handful of
+extreme points</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">n_grid</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">300</span></code></p></td>
+<td><p>Candidate thresholds per delay; splits leaving a regime fewer than
+<code class="docutils literal notranslate"><span class="pre">order</span> <span class="pre">+</span> <span class="pre">2</span></code> observations are skipped</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">threshold_variable</span></code></p></td>
+<td><p>TAR only, required</p></td>
+<td><p>The external driver, same length as <code class="docutils literal notranslate"><span class="pre">endog</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For <a class="reference internal" href="../api/generated/cultivars.univariate.threshold.TAR.html#cultivars.univariate.threshold.TAR" title="cultivars.univariate.threshold.TAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">TAR</span></code></a> the threshold is in the
+units of the driver and <code class="docutils literal notranslate"><span class="pre">threshold_values</span></code> holds the lagged driver
+aligned with the residuals:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">400</span><span class="p">):</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="k">if</span> <span class="n">driver</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="o">-</span><span class="mf">0.5</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<span class="n">ext</span> <span class="o">=</span> <span class="n">TAR</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold_variable</span><span class="o">=</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">self_exciting</span><span class="p">,</span> <span class="n">ext</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">threshold_values</span><span class="p">,</span> <span class="n">driver</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">lower_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">ext</span><span class="o">.</span><span class="n">upper_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>False 1 0.089
+True
+[-0.1   0.53] [ 0.04 -0.47]
+</pre></div>
+</div>
+</section>
+<section id="what-the-result-gives-you">
+<h3>What the result gives you<a class="headerlink" href="#what-the-result-gives-you" title="Link to this heading">#</a></h3>
+<p>Both classes return a <a class="reference internal" href="../api/generated/cultivars.univariate.threshold.SETARResult.html#cultivars.univariate.threshold.SETARResult" title="cultivars.univariate.threshold.SETARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">SETARResult</span></code></a>.</p>
+<ul class="simple">
+<li><p>Estimates: <code class="docutils literal notranslate"><span class="pre">threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">delay</span></code>, <code class="docutils literal notranslate"><span class="pre">lower_params</span></code>, <code class="docutils literal notranslate"><span class="pre">upper_params</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sigma2</span></code> (one pooled variance), <code class="docutils literal notranslate"><span class="pre">ssr</span></code>, <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p></li>
+<li><p>Regimes: <code class="docutils literal notranslate"><span class="pre">threshold_values</span></code> (the lagged transition variable over the
+effective sample), <code class="docutils literal notranslate"><span class="pre">regime_weight</span></code> (1.0 above the threshold, 0.0 at or
+below), <code class="docutils literal notranslate"><span class="pre">n_lower</span></code>, <code class="docutils literal notranslate"><span class="pre">n_upper</span></code>, <code class="docutils literal notranslate"><span class="pre">upper_fraction</span></code>.</p></li>
+<li><p>Stability per regime: <code class="docutils literal notranslate"><span class="pre">lower_stability</span></code>, <code class="docutils literal notranslate"><span class="pre">upper_stability</span></code>,
+<code class="docutils literal notranslate"><span class="pre">is_regimewise_stationary</span></code>. Regime-wise stationarity is sufficient,
+not necessary, for the process to be stationary; an explosive regime
+that the other regime pulls back from is admissible.</p></li>
+<li><p>Comparison: <code class="docutils literal notranslate"><span class="pre">information_criteria</span></code>, <code class="docutils literal notranslate"><span class="pre">compare</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">simulate(n,</span> <span class="pre">seed=...)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">nonlinear_state_space(measurement_variance)</span></code> (SETAR only; see
+<a class="reference internal" href="#simulation-and-state-space-emission">Simulation and state-space emission</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fittedvalues</span></code>, <code class="docutils literal notranslate"><span class="pre">resid</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>/<code class="docutils literal notranslate"><span class="pre">to_polars</span></code>/<code class="docutils literal notranslate"><span class="pre">to_dict</span></code>
+for the aligned series.</p></li>
+</ul>
+</section>
+</section>
+<section id="smooth-transition-autoregressions-lstar-and-estar">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Smooth-transition autoregressions: LSTAR and ESTAR</a><a class="headerlink" href="#smooth-transition-autoregressions-lstar-and-estar" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3>The model<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>The indicator is replaced by a weight <span class="math notranslate nohighlight">\(G \in [0, 1]\)</span> that moves
+continuously with <span class="math notranslate nohighlight">\(z_t = y_{t-d}\)</span> (Teräsvirta, 1994):</p>
+<div class="math notranslate nohighlight">
+\[y_t = \bigl(1 - G(z_t)\bigr)\,\phi_L' x_t + G(z_t)\,\phi_U' x_t
++ \varepsilon_t,\]</div>
+<div class="math notranslate nohighlight">
+\[G_{\text{logistic}}(z) = \Bigl(1 + e^{-\gamma (z - c)/s}\Bigr)^{-1},
+\qquad
+G_{\text{exponential}}(z) = 1 - e^{-\gamma (z - c)^2 / s^2},\]</div>
+<p>where <span class="math notranslate nohighlight">\(s\)</span> is the sample standard deviation of the transition
+variable, so <code class="docutils literal notranslate"><span class="pre">gamma</span></code> is a speed per standard deviation and comparable
+across series. The logistic weight is monotone (regimes are low and high).
+The exponential weight is symmetric about <span class="math notranslate nohighlight">\(c\)</span>: the “lower” regime is
+the middle (weight 0 at <span class="math notranslate nohighlight">\(z = c\)</span>) and the “upper” regime is both
+tails. Conditional on <span class="math notranslate nohighlight">\((\gamma, c)\)</span> the model is linear, so the two
+coefficient blocks are concentrated out by least squares and only
+<span class="math notranslate nohighlight">\((\gamma, c)\)</span> are searched, by multi-start Nelder-Mead seeded from
+the best hard split. The fit is deterministic; there is no seed.</p>
+</section>
+<section id="lstar">
+<h3>LSTAR<a class="headerlink" href="#lstar" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.html#module-cultivars.univariate.smooth_transition"><span class="nn">cultivars.univariate.smooth_transition</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.ESTAR.html#cultivars.univariate.smooth_transition.ESTAR" title="cultivars.univariate.smooth_transition.ESTAR"><span class="n">ESTAR</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.LSTAR.html#cultivars.univariate.smooth_transition.LSTAR" title="cultivars.univariate.smooth_transition.LSTAR"><span class="n">LSTAR</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">):</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">6.0</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.4</span> <span class="o">+</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">terasvirta</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">suggestion</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.html#cultivars.univariate.smooth_transition.STARResult" title="cultivars.univariate.smooth_transition.STARResult"><span class="n">smooth</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.LSTAR.html#cultivars.univariate.smooth_transition.LSTAR" title="cultivars.univariate.smooth_transition.LSTAR"><span class="n">LSTAR</span></a><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.LSTAR.fit.html#cultivars.univariate.smooth_transition.LSTAR.fit" title="cultivars.univariate.smooth_transition.LSTAR.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.transition.html#cultivars.univariate.smooth_transition.STARResult.transition" title="cultivars.univariate.smooth_transition.STARResult.transition"><span class="n">smooth</span><span class="o">.</span><span class="n">transition</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.gamma.html#cultivars.univariate.smooth_transition.STARResult.gamma" title="cultivars.univariate.smooth_transition.STARResult.gamma"><span class="n">smooth</span><span class="o">.</span><span class="n">gamma</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.transition_scale.html#cultivars.univariate.smooth_transition.STARResult.transition_scale" title="cultivars.univariate.smooth_transition.STARResult.transition_scale"><span class="n">smooth</span><span class="o">.</span><span class="n">transition_scale</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.gamma.html#cultivars.univariate.smooth_transition.STARResult.gamma" title="cultivars.univariate.smooth_transition.STARResult.gamma"><span class="n">smooth</span><span class="o">.</span><span class="n">gamma</span></a> <span class="o">/</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.transition_scale.html#cultivars.univariate.smooth_transition.STARResult.transition_scale" title="cultivars.univariate.smooth_transition.STARResult.transition_scale"><span class="n">smooth</span><span class="o">.</span><span class="n">transition_scale</span></a><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.threshold.html#cultivars.univariate.smooth_transition.STARResult.threshold" title="cultivars.univariate.smooth_transition.STARResult.threshold"><span class="n">smooth</span><span class="o">.</span><span class="n">threshold</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">smooth</span><span class="o">.</span><span class="n">lower_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">smooth</span><span class="o">.</span><span class="n">upper_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#list"><span class="nb">list</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.params.html#cultivars.univariate.smooth_transition.STARResult.params" title="cultivars.univariate.smooth_transition.STARResult.params"><span class="n">smooth</span><span class="o">.</span><span class="n">params</span></a><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.is_effectively_abrupt.html#cultivars.univariate.smooth_transition.STARResult.is_effectively_abrupt" title="cultivars.univariate.smooth_transition.STARResult.is_effectively_abrupt"><span class="n">smooth</span><span class="o">.</span><span class="n">is_effectively_abrupt</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.upper_fraction.html#cultivars.univariate.smooth_transition.STARResult.upper_fraction" title="cultivars.univariate.smooth_transition.STARResult.upper_fraction"><span class="n">smooth</span><span class="o">.</span><span class="n">upper_fraction</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>LSTAR
+logistic 2.661 0.462
+5.75 -0.114
+[0.48 0.69] [-0.32 -0.67]
+['lower.const', 'lower.ar.L1', 'upper.const', 'upper.ar.L1', 'threshold', 'gamma', 'sigma2']
+False 0.502
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">/</span> <span class="pre">transition_scale</span></code> is the speed in the units of the series (the
+truth here is 6). For the logistic form <code class="docutils literal notranslate"><span class="pre">upper_fraction</span></code> is the mean
+weight, not a count.</p>
+<p>When the fitted speed is so large that the weight is an indicator,
+<code class="docutils literal notranslate"><span class="pre">is_effectively_abrupt</span></code> turns <code class="docutils literal notranslate"><span class="pre">True</span></code> (logistic, <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">&gt;</span> <span class="pre">100</span></code>). The
+likelihood is then flat in <code class="docutils literal notranslate"><span class="pre">gamma</span></code>, the reported value is a lower bound,
+and <a class="reference internal" href="../api/generated/cultivars.univariate.threshold.SETAR.html#cultivars.univariate.threshold.SETAR" title="cultivars.univariate.threshold.SETAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">SETAR</span></code></a> says the same thing
+with two fewer parameters. On this sample the hard switch wins on BIC even
+though the truth is smooth:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rivals</span> <span class="o">=</span> <span class="p">[</span><span class="n">ESTAR</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span> <span class="n">SETAR</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span> <span class="n">AR</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()]</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">smooth</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="o">*</span><span class="n">rivals</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s2">"bic"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SETAR(1, d=1) 5 0.000
+LSTAR(1, d=1) 6 5.870
+ESTAR(1, d=1) 6 5.958
+AR(1) 3 149.984
+</pre></div>
+</div>
+</section>
+<section id="estar">
+<h3>ESTAR<a class="headerlink" href="#estar" title="Link to this heading">#</a></h3>
+<p>The canonical ESTAR is a real exchange rate under transaction costs:
+persistent near equilibrium, mean-reverting far from it (Kapetanios, Shin
+and Snell, 2003). Exponential fits need more data than logistic ones to
+pin down <span class="math notranslate nohighlight">\(c\)</span>; 800 observations are used here.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">800</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">800</span><span class="p">):</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">q</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">q</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.95</span> <span class="o">*</span> <span class="n">q</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">q</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">q</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">terasvirta</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">suggestion</span><span class="p">)</span>
+<span class="n">band</span> <span class="o">=</span> <span class="n">ESTAR</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">lower_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">band</span><span class="o">.</span><span class="n">upper_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ESTAR
+-0.098 0.41
+[0.01 0.9 ] [0.04 0.23]
+</pre></div>
+</div>
+<p>The “lower” block (near the threshold) carries the near-unit-root
+persistence 0.9, the “upper” block (the tails) the fast reversion 0.23.</p>
+</section>
+<section id="specification-choices-and-outputs">
+<h3>Specification choices and outputs<a class="headerlink" href="#specification-choices-and-outputs" title="Link to this heading">#</a></h3>
+<p>Both constructors take <code class="docutils literal notranslate"><span class="pre">endog</span></code>, <code class="docutils literal notranslate"><span class="pre">order</span></code> (at least 1) and <code class="docutils literal notranslate"><span class="pre">delay</span></code>
+(default 1). The delay is not searched; fit several and rank them on a
+common sample. Both return a
+<a class="reference internal" href="../api/generated/cultivars.univariate.smooth_transition.STARResult.html#cultivars.univariate.smooth_transition.STARResult" title="cultivars.univariate.smooth_transition.STARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">STARResult</span></code></a>, which carries
+everything listed for <code class="docutils literal notranslate"><span class="pre">SETARResult</span></code> above (<code class="docutils literal notranslate"><span class="pre">threshold</span></code>,
+<code class="docutils literal notranslate"><span class="pre">lower_params</span></code>, <code class="docutils literal notranslate"><span class="pre">upper_params</span></code>, <code class="docutils literal notranslate"><span class="pre">regime_weight</span></code>, the per-regime
+stability verdicts, <code class="docutils literal notranslate"><span class="pre">simulate</span></code>, <code class="docutils literal notranslate"><span class="pre">nonlinear_state_space</span></code>) plus
+<code class="docutils literal notranslate"><span class="pre">transition</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code>, <code class="docutils literal notranslate"><span class="pre">transition_scale</span></code> and
+<code class="docutils literal notranslate"><span class="pre">is_effectively_abrupt</span></code>. <code class="docutils literal notranslate"><span class="pre">regime_weight</span></code> reproduces the estimator’s
+weight exactly, so <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">w)</span> <span class="pre">*</span> <span class="pre">X</span> <span class="pre">@</span> <span class="pre">lower_params</span> <span class="pre">+</span> <span class="pre">w</span> <span class="pre">*</span> <span class="pre">X</span> <span class="pre">@</span> <span class="pre">upper_params</span></code>
+equals <code class="docutils literal notranslate"><span class="pre">fittedvalues</span></code>.</p>
+</section>
+</section>
+<section id="markov-switching-autoregression">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Markov-switching autoregression</a><a class="headerlink" href="#markov-switching-autoregression" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h3>The model<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>A <span class="math notranslate nohighlight">\(K\)</span>-regime autoregression whose intercept, AR coefficients and
+variance may each switch with a latent first-order Markov chain
+<span class="math notranslate nohighlight">\(S_t\)</span> (Hamilton, 1989):</p>
+<div class="math notranslate nohighlight">
+\[y_t = c_{S_t} + \sum_{i=1}^{p} \phi_{i,S_t}\, y_{t-i} + \varepsilon_t,
+\qquad \varepsilon_t \sim N(0, \sigma^2_{S_t}),
+\qquad P_{ij} = \Pr(S_t = j \mid S_{t-1} = i).\]</div>
+<p>This is the <em>intercept</em>-switching form. Conditional on the observed lags
+each regime is linear, so the Hamilton filter runs on <span class="math notranslate nohighlight">\(K\)</span> states
+rather than the <span class="math notranslate nohighlight">\(K^{p+1}\)</span> that Hamilton’s mean-switching form
+needs; the two coincide only at <span class="math notranslate nohighlight">\(p = 0\)</span>. Estimation is EM (Hamilton,
+1990): the E-step is the Hamilton filter and Kim (1994) smoother, the
+M-step updates <span class="math notranslate nohighlight">\(P\)</span> from expected transition counts and the
+coefficients by probability-weighted least squares. Which blocks switch is
+reported in Krolzig’s (1997) notation by <code class="docutils literal notranslate"><span class="pre">specification</span></code>: <code class="docutils literal notranslate"><span class="pre">I</span></code>
+intercept, <code class="docutils literal notranslate"><span class="pre">A</span></code> AR block, <code class="docutils literal notranslate"><span class="pre">H</span></code> variance. Hamilton’s recession model,
+MSIH(2)-AR(4), is <code class="docutils literal notranslate"><span class="pre">MarkovSwitchingAR(y,</span> <span class="pre">order=4,</span> <span class="pre">n_regimes=2)</span></code>.</p>
+</section>
+<section id="id3">
+<h3>A minimal fit<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>The example has a low-mean quiet regime and a high-mean volatile one,
+with a common AR coefficient of 0.5:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.html#module-cultivars.univariate.regime_switching"><span class="nn">cultivars.univariate.regime_switching</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><span class="n">MarkovSwitchingAR</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.90</span><span class="p">]])</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">400</span><span class="p">):</span>
+    <span class="n">state</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">P</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">400</span><span class="p">):</span>
+    <span class="n">level</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)][</span><span class="n">state</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span>
+    <span class="n">m</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">level</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">m</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">ms</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><span class="n">MarkovSwitchingAR</span></a><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_regimes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.fit.html#cultivars.univariate.regime_switching.MarkovSwitchingAR.fit" title="cultivars.univariate.regime_switching.MarkovSwitchingAR.fit"><span class="n">fit</span></a><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.specification.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.specification" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.specification"><span class="n">ms</span><span class="o">.</span><span class="n">specification</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.label_ordering.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.label_ordering" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.label_ordering"><span class="n">ms</span><span class="o">.</span><span class="n">label_ordering</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.converged.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.converged" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.converged"><span class="n">ms</span><span class="o">.</span><span class="n">converged</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.nobs.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.nobs" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.nobs"><span class="n">ms</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.n_params.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.n_params" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.n_params"><span class="n">ms</span><span class="o">.</span><span class="n">n_params</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">intercepts</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">ms</span><span class="o">.</span><span class="n">ar_params</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">ms</span><span class="o">.</span><span class="n">variances</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">transition</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">expected_durations</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">ms</span><span class="o">.</span><span class="n">ergodic_prob</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MSIH(2)-AR(1) intercept True 399 7
+[-0.5   1.17] [0.48 0.48] [0.24 1.02]
+[[0.959 0.041]
+ [0.142 0.858]]
+[24.4  7. ] [0.776 0.224]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ar_params</span></code> has shape <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">p)</span></code>; a non-switching block is stored with
+identical rows. <code class="docutils literal notranslate"><span class="pre">n_params</span></code> counts the <span class="math notranslate nohighlight">\(K(K-1)\)</span> free transition
+probabilities plus each block once per regime that switches it: here
+2 + 2 intercepts + 1 AR + 2 variances = 7.</p>
+</section>
+<section id="reading-regime-probabilities-and-regimes">
+<h3>Reading regime probabilities and regimes<a class="headerlink" href="#reading-regime-probabilities-and-regimes" title="Link to this heading">#</a></h3>
+<p>The regime is never observed. Three posteriors are returned, each of shape
+<code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">K)</span></code> and aligned with the last <code class="docutils literal notranslate"><span class="pre">nobs</span></code> observations:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">probabilities("smoothed")</span></code> (the default, also <code class="docutils literal notranslate"><span class="pre">smoothed_prob</span></code>):
+<span class="math notranslate nohighlight">\(\Pr(S_t \mid y_{1:T})\)</span>, for dating regimes after the fact;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">probabilities("filtered")</span></code> (<code class="docutils literal notranslate"><span class="pre">filtered_prob</span></code>):
+<span class="math notranslate nohighlight">\(\Pr(S_t \mid y_{1:t})\)</span>, the real-time view;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">probabilities("predicted")</span></code> (<code class="docutils literal notranslate"><span class="pre">predicted_prob</span></code>):
+<span class="math notranslate nohighlight">\(\Pr(S_t \mid y_{1:t-1})\)</span>, the one-step-ahead state forecast.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">smoothed</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">probabilities</span><span class="p">(</span><span class="s2">"filtered"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">smoothed</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">smoothed</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">most_likely_regime</span> <span class="o">==</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">:])),</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">:])),</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">regime_shares</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">regime_uncertainty</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">unconditional_mean</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(399, 2) [[0.991, 0.009], [0.996, 0.004], [0.998, 0.002]]
+0.98
+0.94
+[0.776 0.224] 0.115
+-0.245
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">most_likely_regime</span></code> is the pointwise argmax of the smoothed posterior,
+not the Viterbi path; it can contain a one-period switch that, as a
+sequence, has almost no posterior mass. <code class="docutils literal notranslate"><span class="pre">regime_shares</span></code> (average
+smoothed probability) is the honest frequency count; compare it with
+<code class="docutils literal notranslate"><span class="pre">ergodic_prob</span></code>. <code class="docutils literal notranslate"><span class="pre">regime_uncertainty</span></code> is the mean posterior entropy
+normalized to <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>: near 0 the regimes are cleanly separated, near
+1 the data barely distinguish them.</p>
+<p>Two tables read across regimes rather than down parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ms</span><span class="o">.</span><span class="n">regime_table</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                             MSIH(2)-AR(1) regimes
+================================================================================
+Ordering:          ascending intercept  Observations:                      399
+--------------------------------------------------------------------------------
+regime       const   sigma2   ergodic   duration    share
+0          -0.5038   0.2381    0.7760      24.36   0.7764
+1           1.1700   1.0212    0.2240       7.03   0.2236
+================================================================================
+'ergodic' is the stationary probability implied by the transition matrix;
+'share' is the average smoothed probability actually observed. 'duration' is 1 /
+(1 - P_jj), in periods.
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">transition_table()</span></code> prints <span class="math notranslate nohighlight">\(P\)</span> with rows indexed by the origin
+regime.</p>
+</section>
+<section id="specification-and-estimation-choices">
+<h3>Specification and estimation choices<a class="headerlink" href="#specification-and-estimation-choices" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 24.0%"/>
+<col style="width: 14.0%"/>
+<col style="width: 62.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">order</span></code></p></td>
+<td><p>required</p></td>
+<td><p>AR order <span class="math notranslate nohighlight">\(p\)</span>; <code class="docutils literal notranslate"><span class="pre">0</span></code> is allowed and gives a Gaussian hidden
+Markov model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">n_regimes</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K\)</span>, at least 2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">switching_mean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Intercept switches</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">switching_variance</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Variance switches</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">switching_ar</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>AR block switches; multiplies the AR parameter count by <span class="math notranslate nohighlight">\(K\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fit(max_iter=)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">500</span></code></p></td>
+<td><p>Iteration cap for the refining EM run</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fit(tol=)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-6</span></code></p></td>
+<td><p>Tolerance on the log-likelihood increment</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fit(n_init=)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+<td><p>Starting values screened; the first uses quantile intercepts and a
+0.9 diagonal, the rest draw both at random</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fit(screen_iter=)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">15</span></code></p></td>
+<td><p>EM iterations used to score each start; only the best is refined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fit(seed=)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Seed or <code class="docutils literal notranslate"><span class="pre">Generator</span></code> for the starts; pass one for reproducibility</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>At least one block must switch. Regime labels are sorted to make two runs
+comparable: by ascending intercept when it switches, else by variance,
+else by the first AR coefficient; <code class="docutils literal notranslate"><span class="pre">label_ordering</span></code> names the rule. Under
+a variance-only model, regime 0 is the quiet regime, not a low-mean one.</p>
+</section>
+<section id="testing-against-nested-specifications">
+<h3>Testing against nested specifications<a class="headerlink" href="#testing-against-nested-specifications" title="Link to this heading">#</a></h3>
+<p>A likelihood-ratio test that holds <span class="math notranslate nohighlight">\(K\)</span> fixed is valid and allowed;
+here, whether the variance switches:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">msi</span> <span class="o">=</span> <span class="n">MarkovSwitchingAR</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">switching_variance</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">msi</span><span class="o">.</span><span class="n">likelihood_ratio_test</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">msi</span><span class="o">.</span><span class="n">specification</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">lr</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">lr</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">lr</span><span class="o">.</span><span class="n">reject</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MSI(2)-AR(1) 40.19 1 True
+</pre></div>
+</div>
+<p>A test that changes <span class="math notranslate nohighlight">\(K\)</span> (including two regimes against a linear AR)
+is refused with a <code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code>: under the smaller model the
+extra regime’s parameters are unidentified and its transition
+probabilities sit on the boundary (Hansen, 1992). Rank such models by
+<code class="docutils literal notranslate"><span class="pre">compare</span></code> instead, or bootstrap.</p>
+</section>
+<section id="id4">
+<h3>What the result gives you<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingARResult</span></code></a>
+carries <code class="docutils literal notranslate"><span class="pre">transition</span></code>, <code class="docutils literal notranslate"><span class="pre">intercepts</span></code>, <code class="docutils literal notranslate"><span class="pre">ar_params</span></code>, <code class="docutils literal notranslate"><span class="pre">variances</span></code>,
+<code class="docutils literal notranslate"><span class="pre">params</span></code> (keys <code class="docutils literal notranslate"><span class="pre">const[j]</span></code>, <code class="docutils literal notranslate"><span class="pre">ar.L1[j]</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma2[j]</span></code>,
+<code class="docutils literal notranslate"><span class="pre">p[i-&gt;j]</span></code>), the three posteriors, <code class="docutils literal notranslate"><span class="pre">ergodic_prob</span></code>,
+<code class="docutils literal notranslate"><span class="pre">expected_durations</span></code>, <code class="docutils literal notranslate"><span class="pre">n_iter</span></code>, <code class="docutils literal notranslate"><span class="pre">converged</span></code>,
+<code class="docutils literal notranslate"><span class="pre">regime_stability(j)</span></code>, <code class="docutils literal notranslate"><span class="pre">is_regimewise_stationary</span></code>,
+<code class="docutils literal notranslate"><span class="pre">unconditional_mean</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code> if any regime is non-stationary),
+<code class="docutils literal notranslate"><span class="pre">simulate</span></code>, <code class="docutils literal notranslate"><span class="pre">simulate_regimes</span></code> and <code class="docutils literal notranslate"><span class="pre">state_space</span></code>. <code class="docutils literal notranslate"><span class="pre">fittedvalues</span></code>
+are posterior-weighted means <span class="math notranslate nohighlight">\(\sum_j \Pr(S_t = j)\, m_{j,t}\)</span>, not
+the fit of any one regime; <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code> adds one smoothed-probability
+column per regime and the most likely regime.</p>
+<p><code class="docutils literal notranslate"><span class="pre">state_space</span></code> re-applies the fitted chain to data the model was not
+estimated on, the natural out-of-sample check for a regime model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">system</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">state_space</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#abs"><span class="nb">abs</span></a><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">loglikelihood</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">-</span> <span class="n">ms</span><span class="o">.</span><span class="n">llf</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">m</span><span class="p">[:</span><span class="mi">100</span><span class="p">])</span><span class="o">.</span><span class="n">filtered_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>True
+(99, 2)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="learned-conditional-means-arnn-and-tarnn">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Learned conditional means: ARNN and TARNN</a><a class="headerlink" href="#learned-conditional-means-arnn-and-tarnn" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h3>The model<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>The mean is a function learned from lagged levels by a pluggable training
+engine (Kuan and White, 1994):</p>
+<div class="math notranslate nohighlight">
+\[y_t = f(y_{t-1}, \ldots, y_{t-p}) + \varepsilon_t,
+\qquad f(x) = b + \sum_{h=1}^{H} w_h \tanh(a_h' x + c_h),\]</div>
+<p>for the default engine, a one-hidden-layer perceptron with 8 tanh units
+trained by L-BFGS with an L2 penalty, 3 random restarts and a fixed seed
+of 0. <a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.TARNN.html#cultivars.univariate.mean_function.TARNN" title="cultivars.univariate.mean_function.TARNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">TARNN</span></code></a> splits the
+sample at a <em>fixed</em> threshold on <span class="math notranslate nohighlight">\(z_{t-d}\)</span> (the median by default)
+and trains one network per side with a pooled variance. The variance is
+concentrated out as <span class="math notranslate nohighlight">\(\mathrm{SSR}/n\)</span>.</p>
+<p>There is no coefficient table: the weights are unidentified up to
+permuting and sign-flipping hidden units. The results expose the fitted
+function through <code class="docutils literal notranslate"><span class="pre">predict</span></code> and report <code class="docutils literal notranslate"><span class="pre">r_squared</span></code>, the capacity, and
+the engine.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function"><span class="nn">cultivars.univariate.mean_function</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNN.html#cultivars.univariate.mean_function.ARNN" title="cultivars.univariate.mean_function.ARNN"><span class="n">ARNN</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.TARNN.html#cultivars.univariate.mean_function.TARNN" title="cultivars.univariate.mean_function.TARNN"><span class="n">TARNN</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">):</span>
+    <span class="n">v</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.html#cultivars.univariate.mean_function.ARNNResult" title="cultivars.univariate.mean_function.ARNNResult"><span class="n">net</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNN.html#cultivars.univariate.mean_function.ARNN" title="cultivars.univariate.mean_function.ARNN"><span class="n">ARNN</span></a><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNN.fit.html#cultivars.univariate.mean_function.ARNN.fit" title="cultivars.univariate.mean_function.ARNN.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.nobs.html#cultivars.univariate.mean_function.ARNNResult.nobs" title="cultivars.univariate.mean_function.ARNNResult.nobs"><span class="n">net</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.n_learner_parameters.html#cultivars.univariate.mean_function.ARNNResult.n_learner_parameters" title="cultivars.univariate.mean_function.ARNNResult.n_learner_parameters"><span class="n">net</span><span class="o">.</span><span class="n">n_learner_parameters</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.n_params.html#cultivars.univariate.mean_function.ARNNResult.n_params" title="cultivars.univariate.mean_function.ARNNResult.n_params"><span class="n">net</span><span class="o">.</span><span class="n">n_params</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.engine.html#cultivars.univariate.mean_function.ARNNResult.engine" title="cultivars.univariate.mean_function.ARNNResult.engine"><span class="n">net</span><span class="o">.</span><span class="n">engine</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.r_squared.html#cultivars.univariate.mean_function.ARNNResult.r_squared" title="cultivars.univariate.mean_function.ARNNResult.r_squared"><span class="n">net</span><span class="o">.</span><span class="n">r_squared</span></a><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.parameters_per_observation.html#cultivars.univariate.mean_function.ARNNResult.parameters_per_observation" title="cultivars.univariate.mean_function.ARNNResult.parameters_per_observation"><span class="n">net</span><span class="o">.</span><span class="n">parameters_per_observation</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.ARNNResult.predict.html#cultivars.univariate.mean_function.ARNNResult.predict" title="cultivars.univariate.mean_function.ARNNResult.predict"><span class="n">net</span><span class="o">.</span><span class="n">predict</span></a><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>199 25 26 NumpyMLPEngine
+0.78 0.126
+[-0.8  0.1  0.7] [-0.8  0.   0.8]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">predict</span></code> takes a matrix of shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">order)</span></code> with columns
+<code class="docutils literal notranslate"><span class="pre">[y_{t-1},</span> <span class="pre">...,</span> <span class="pre">y_{t-p}]</span></code>. Columns in the wrong order do not raise; they
+return wrong numbers. <a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.TARNNResult.html#cultivars.univariate.mean_function.TARNNResult" title="cultivars.univariate.mean_function.TARNNResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TARNNResult</span></code></a>
+<code class="docutils literal notranslate"><span class="pre">predict</span></code> also needs the already-lagged threshold variable, because the
+regime cannot always be read off the feature columns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">split</span> <span class="o">=</span> <span class="n">TARNN</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">split</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="n">split</span><span class="o">.</span><span class="n">n_lower</span><span class="p">,</span> <span class="n">split</span><span class="o">.</span><span class="n">n_upper</span><span class="p">,</span> <span class="n">split</span><span class="o">.</span><span class="n">n_learner_parameters</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">split</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.0 74 125 50
+[-0.8  0.7]
+</pre></div>
+</div>
+</section>
+<section id="plugging-in-an-engine">
+<h3>Plugging in an engine<a class="headerlink" href="#plugging-in-an-engine" title="Link to this heading">#</a></h3>
+<p>Any object with <code class="docutils literal notranslate"><span class="pre">fit(features,</span> <span class="pre">target)</span></code> returning something with
+<code class="docutils literal notranslate"><span class="pre">predict(features)</span></code> and an <code class="docutils literal notranslate"><span class="pre">n_parameters</span></code> attribute satisfies
+<a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.MeanFunctionEngine.html#cultivars.univariate.mean_function.MeanFunctionEngine" title="cultivars.univariate.mean_function.MeanFunctionEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeanFunctionEngine</span></code></a>. A
+least-squares engine reproduces the linear AR and shows the contract:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function"><span class="nn">cultivars.univariate.mean_function</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.MeanFunctionEngine.html#cultivars.univariate.mean_function.MeanFunctionEngine" title="cultivars.engine._internals._engines.MeanFunctionEngine"><span class="n">MeanFunctionEngine</span></a>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LinearEngine</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">design</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#len"><span class="nb">len</span></a><span class="p">(</span><span class="n">target</span><span class="p">)),</span> <span class="n">features</span><span class="p">])</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">class</span><span class="w"> </span><span class="nc">Predictor</span><span class="p">:</span>
+            <span class="n">n_parameters</span> <span class="o">=</span> <span class="n">design</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#len"><span class="nb">len</span></a><span class="p">(</span><span class="n">new</span><span class="p">)),</span> <span class="n">new</span><span class="p">])</span> <span class="o">@</span> <span class="n">beta</span>
+
+        <span class="k">return</span> <span class="n">Predictor</span><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#isinstance"><span class="nb">isinstance</span></a><span class="p">(</span><span class="n">LinearEngine</span><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.MeanFunctionEngine.html#cultivars.univariate.mean_function.MeanFunctionEngine" title="cultivars.engine._internals._engines.MeanFunctionEngine"><span class="n">MeanFunctionEngine</span></a><span class="p">))</span>
+<span class="n">ols</span> <span class="o">=</span> <span class="n">ARNN</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="n">LinearEngine</span><span class="p">())</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">AR</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>True
+LinearEngine -40.18 -40.18
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>Specification choices<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ARNN(endog,</span> <span class="pre">*,</span> <span class="pre">order,</span> <span class="pre">engine=None)</span></code>: <code class="docutils literal notranslate"><span class="pre">engine=None</span></code> uses the
+reference perceptron.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TARNN(endog,</span> <span class="pre">*,</span> <span class="pre">order,</span> <span class="pre">engine=None,</span> <span class="pre">threshold_variable=None,</span>
+<span class="pre">delay=1,</span> <span class="pre">threshold=None,</span> <span class="pre">trim=0.15)</span></code>: <code class="docutils literal notranslate"><span class="pre">threshold=None</span></code> uses the
+median of the lagged threshold variable; <code class="docutils literal notranslate"><span class="pre">fit</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">NumericalError</span></code> if a stated threshold leaves either side with less
+than <code class="docutils literal notranslate"><span class="pre">trim</span></code> of the sample. The threshold is never searched: a grid
+would retrain both networks at every candidate.</p></li>
+</ul>
+<p>Information criteria penalize the nominal weight count, which overstates
+the effective degrees of freedom of a weight-decayed network. Use them to
+choose capacity <em>within</em> one engine configuration, never against a
+linear model. <code class="docutils literal notranslate"><span class="pre">llf</span></code> is a concentrated Gaussian likelihood at a
+penalized fit, a goodness-of-fit summary. <code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test</span></code>
+against a linear null is refused.</p>
+</section>
+</section>
+<section id="simulation-and-state-space-emission">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Simulation and state-space emission</a><a class="headerlink" href="#simulation-and-state-space-emission" title="Link to this heading">#</a></h2>
+<p>The parametric results simulate at the fitted parameters with Gaussian
+innovations. <code class="docutils literal notranslate"><span class="pre">seed</span></code> takes an integer or a <code class="docutils literal notranslate"><span class="pre">Generator</span></code>; <code class="docutils literal notranslate"><span class="pre">burn</span></code>
+initial periods are discarded.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">hard</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">hard</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">3</span><span class="p">))))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">smooth</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">draw</span><span class="p">,</span> <span class="n">regimes</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">simulate_regimes</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">draw</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">regimes</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(300,) True
+[ 0.357 -0.12   0.026 -0.469  0.456]
+(1000,) [0.739 0.261]
+</pre></div>
+</div>
+<p>A TAR fit cannot simulate (<code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code>): its driver’s future is
+not part of the model. The ARNN and TARNN results do not simulate.</p>
+<p><code class="docutils literal notranslate"><span class="pre">nonlinear_state_space(measurement_variance)</span></code> on SETAR, STAR, ARNN and
+self-exciting TARNN results returns a
+<a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.html#cultivars.state_space.nonlinear.NonlinearSSM" title="cultivars.state_space.nonlinear.NonlinearSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonlinearSSM</span></code></a> whose state is the
+lag stack of the true series and whose observation adds Gaussian noise of
+the stated (strictly positive) variance. Use the particle filter for the
+hard-switch emitters and any of the three filters for the smooth ones
+(see <a class="reference internal" href="state_space.html"><span class="doc">State-space models and filtering</span></a>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ssm</span> <span class="o">=</span> <span class="n">smooth</span><span class="o">.</span><span class="n">nonlinear_state_space</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">noisy</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">cleaned</span> <span class="o">=</span> <span class="n">ssm</span><span class="o">.</span><span class="n">unscented_filter</span><span class="p">(</span><span class="n">noisy</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">filtered_state</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ssm</span><span class="o">.</span><span class="n">k_states</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">cleaned</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">noisy</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1 True
+</pre></div>
+</div>
+</section>
+<section id="how-the-pieces-connect">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">How the pieces connect</a><a class="headerlink" href="#how-the-pieces-connect" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Diagnostics first.</strong> <a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.html#module-cultivars.diagnostics.nonlinearity" title="cultivars.diagnostics.nonlinearity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.diagnostics.nonlinearity</span></code></a>
+supplies the valid tests of linearity (Tsay, Hansen sup-F, Teräsvirta,
+RESET) and <a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.bds.html#cultivars.diagnostics.nonlinearity.bds" title="cultivars.diagnostics.nonlinearity.bds"><code class="xref py py-func docutils literal notranslate"><span class="pre">bds()</span></code></a> for residual
+independence; see <a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a>.</p></li>
+<li><p><strong>Comparison.</strong> Every parametric result here and the linear
+<a class="reference internal" href="../api/generated/cultivars.univariate.autoregression.AR.html#cultivars.univariate.autoregression.AR" title="cultivars.univariate.autoregression.AR"><code class="xref py py-class docutils literal notranslate"><span class="pre">AR</span></code></a> share <code class="docutils literal notranslate"><span class="pre">compare</span></code> and
+<code class="docutils literal notranslate"><span class="pre">information_criteria</span></code> through the comparison mixin. <code class="docutils literal notranslate"><span class="pre">compare</span></code>
+raises <code class="docutils literal notranslate"><span class="pre">DimensionError</span></code> unless all fits have the same <code class="docutils literal notranslate"><span class="pre">nobs</span></code>.</p></li>
+<li><p><strong>State space.</strong> <code class="docutils literal notranslate"><span class="pre">nonlinear_state_space</span></code> hands the fitted mean to
+<a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.html#module-cultivars.state_space.nonlinear" title="cultivars.state_space.nonlinear"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.state_space.nonlinear</span></code></a>; <code class="docutils literal notranslate"><span class="pre">MarkovSwitchingARResult</span></code>’s
+<code class="docutils literal notranslate"><span class="pre">state_space</span></code> is the same Hamilton-filter engine that
+<a class="reference internal" href="../api/generated/cultivars.state_space.regime_switching.MarkovSwitchingSSM.html#cultivars.state_space.regime_switching.MarkovSwitchingSSM" title="cultivars.state_space.regime_switching.MarkovSwitchingSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code></a>
+exposes for general measurements.</p></li>
+<li><p><strong>Vector versions.</strong> <a class="reference internal" href="../api/generated/cultivars.multivariate.nonlinear.threshold.TVAR.html#cultivars.multivariate.nonlinear.threshold.TVAR" title="cultivars.multivariate.nonlinear.threshold.TVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">TVAR</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.multivariate.nonlinear.smooth_transition.STVAR.html#cultivars.multivariate.nonlinear.smooth_transition.STVAR" title="cultivars.multivariate.nonlinear.smooth_transition.STVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">STVAR</span></code></a> and
+<a class="reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingVAR</span></code></a>
+in <a class="reference internal" href="nonlinear_multivariate.html"><span class="doc">Nonlinear, time-varying and regime-switching VARs</span></a>.</p></li>
+<li><p><strong>Forecast evaluation.</strong> None of these results has a <code class="docutils literal notranslate"><span class="pre">forecast</span></code>
+method. For a forecast comparison (<a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>), build point
+forecasts from <code class="docutils literal notranslate"><span class="pre">simulate</span></code> paths or from <code class="docutils literal notranslate"><span class="pre">predict</span></code> on a lag matrix
+you construct.</p></li>
+</ul>
+</section>
+<section id="nuances-and-gotchas">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Nuances and gotchas</a><a class="headerlink" href="#nuances-and-gotchas" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>No forecast method.</strong> <code class="docutils literal notranslate"><span class="pre">SETARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">STARResult</span></code> and
+<code class="docutils literal notranslate"><span class="pre">MarkovSwitchingARResult</span></code> have no <code class="docutils literal notranslate"><span class="pre">forecast</span></code>; <code class="docutils literal notranslate"><span class="pre">ARNNResult</span></code> and
+<code class="docutils literal notranslate"><span class="pre">TARNNResult</span></code> have <code class="docutils literal notranslate"><span class="pre">predict</span></code> (one step, given lags you build) but no
+<code class="docutils literal notranslate"><span class="pre">simulate</span></code>. The multi-step conditional mean of a nonlinear model is a
+simulation problem.</p></li>
+<li><p><strong>No standard errors.</strong> None of the estimators on this page reports
+standard errors; every summary says so.</p></li>
+<li><p><strong>Effective samples differ.</strong> SETAR and STAR drop <code class="docutils literal notranslate"><span class="pre">max(order,</span> <span class="pre">delay)</span></code>
+observations, MS-AR drops <code class="docutils literal notranslate"><span class="pre">order</span></code>. <code class="docutils literal notranslate"><span class="pre">LSTAR(y,</span> <span class="pre">order=1,</span> <span class="pre">delay=2)</span></code> has
+one fewer observation than <code class="docutils literal notranslate"><span class="pre">AR(y,</span> <span class="pre">order=1)</span></code>, and <code class="docutils literal notranslate"><span class="pre">compare</span></code> between
+them raises <code class="docutils literal notranslate"><span class="pre">DimensionError</span></code>. Trim the series yourself to align
+samples.</p></li>
+<li><p><strong>Parameter counts are not uniform.</strong> <code class="docutils literal notranslate"><span class="pre">SETARResult.n_params</span></code> and
+<code class="docutils literal notranslate"><span class="pre">STARResult.n_params</span></code> count the coefficient blocks, the threshold and
+(STAR) <code class="docutils literal notranslate"><span class="pre">gamma</span></code>, but <em>not</em> the variance, while
+<a class="reference internal" href="../api/generated/cultivars.univariate.autoregression.AR.html#cultivars.univariate.autoregression.AR" title="cultivars.univariate.autoregression.AR"><code class="xref py py-class docutils literal notranslate"><span class="pre">AR</span></code></a> counts its variance.
+In the BIC table above SETAR(1) has <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">5</span></code> and AR(1) has <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">3</span></code>:
+the threshold model is penalized one parameter less than a consistent
+count would.</p></li>
+<li><p><strong>The threshold sits on a data point.</strong> Candidates are sample quantiles
+of the lagged transition variable, and <code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">&lt;=</span> <span class="pre">r</span></code> is assigned to the
+lower regime everywhere (estimation, <code class="docutils literal notranslate"><span class="pre">regime_weight</span></code>, <code class="docutils literal notranslate"><span class="pre">simulate</span></code>,
+<code class="docutils literal notranslate"><span class="pre">nonlinear_state_space</span></code>).</p></li>
+<li><p><strong>Large ``gamma`` is a lower bound.</strong> When <code class="docutils literal notranslate"><span class="pre">is_effectively_abrupt</span></code> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>, refit as SETAR. <code class="docutils literal notranslate"><span class="pre">gamma</span></code> is per standard deviation of the
+transition variable; divide by <code class="docutils literal notranslate"><span class="pre">transition_scale</span></code> for the raw-unit
+speed.</p></li>
+<li><p><strong>ESTAR labels.</strong> For ESTAR the “lower” block is the region near the
+threshold, the “upper” block is both tails.</p></li>
+<li><p><strong>TAR refusals.</strong> A TAR result refuses <code class="docutils literal notranslate"><span class="pre">simulate</span></code> and
+<code class="docutils literal notranslate"><span class="pre">nonlinear_state_space</span></code>; so does an externally driven TARNN for the
+latter. <code class="docutils literal notranslate"><span class="pre">TAR</span></code> requires a fixed <code class="docutils literal notranslate"><span class="pre">delay</span></code> (default 1).</p></li>
+<li><p><strong>Markov-switching seeds.</strong> Different seeds can land on different local
+optima. Every start, including the first, draws a perturbed transition
+matrix from the generator, so even <code class="docutils literal notranslate"><span class="pre">n_init=1</span></code> depends on <code class="docutils literal notranslate"><span class="pre">seed</span></code>.
+Always pass <code class="docutils literal notranslate"><span class="pre">seed</span></code> and check <code class="docutils literal notranslate"><span class="pre">converged</span></code>.</p></li>
+<li><p><strong>``converged=False`` with ``n_iter == screen_iter``.</strong> If the refining
+EM run ends below the best screened log-likelihood, the result falls
+back to the screened start and reports that run’s iteration count and a
+<code class="docutils literal notranslate"><span class="pre">False</span></code> convergence flag, and the summary leads with a
+non-convergence warning. Refit with a different <code class="docutils literal notranslate"><span class="pre">seed</span></code> or larger
+<code class="docutils literal notranslate"><span class="pre">n_init</span></code> before trusting the numbers.</p></li>
+<li><p><strong>Testing the number of regimes.</strong> <code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test</span></code> refuses any
+comparison that changes <span class="math notranslate nohighlight">\(K\)</span>, including against a non-switching
+result.</p></li>
+<li><p><strong>Fitted values are mixtures.</strong> MS-AR <code class="docutils literal notranslate"><span class="pre">fittedvalues</span></code> and <code class="docutils literal notranslate"><span class="pre">resid</span></code> are
+expectations under the smoothed posterior, which uses the full sample;
+they are not real-time quantities. Use <code class="docutils literal notranslate"><span class="pre">probabilities("filtered")</span></code>
+for anything that must be real time.</p></li>
+<li><p><strong>Configuring the reference network.</strong> The default engine class,
+<code class="docutils literal notranslate"><span class="pre">NumpyMLPEngine</span></code>, lives in the private module
+<code class="docutils literal notranslate"><span class="pre">cultivars.engine._internals._engines</span></code>; there is no public import path
+for it. To change <code class="docutils literal notranslate"><span class="pre">hidden_units</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">n_restarts</span></code> or the
+training <code class="docutils literal notranslate"><span class="pre">seed</span></code> you either import that private name or write your own
+engine. <code class="docutils literal notranslate"><span class="pre">engine_config</span></code> on the result records the full configuration.</p></li>
+<li><p><strong>Network fits are slow.</strong> The reference engine takes a few seconds per
+fit on a few hundred observations; TARNN trains two networks.</p></li>
+<li><p><strong>ARNN comparisons.</strong> <code class="docutils literal notranslate"><span class="pre">compare</span></code> does not stop you ranking an ARNN
+against an AR by BIC; the result is not meaningful. Two ARNN fits with
+different engines share the label <code class="docutils literal notranslate"><span class="pre">AR-NN(p)</span></code> in the table; read the
+<code class="docutils literal notranslate"><span class="pre">k</span></code> column to tell them apart.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a> for the linearity tests and BDS.</p></li>
+<li><p><a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a> for the linear AR/ARMA baselines.</p></li>
+<li><p><a class="reference internal" href="volatility.html"><span class="doc">Volatility models</span></a> for conditional-variance models and ARCH tests.</p></li>
+<li><p><a class="reference internal" href="nonlinear_multivariate.html"><span class="doc">Nonlinear, time-varying and regime-switching VARs</span></a> for TVAR, STVAR and MS-VAR.</p></li>
+<li><p><a class="reference internal" href="state_space.html"><span class="doc">State-space models and filtering</span></a> for filtering the emitted nonlinear systems.</p></li>
+<li><p><a class="reference internal" href="nuances.html"><span class="doc">Nuances and known issues</span></a> for package-wide conventions on refusals and
+comparisons.</p></li>
+<li><p>API: <a class="reference internal" href="../api/generated/cultivars.univariate.threshold.html#module-cultivars.univariate.threshold" title="cultivars.univariate.threshold"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.threshold</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.smooth_transition.html#module-cultivars.univariate.smooth_transition" title="cultivars.univariate.smooth_transition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.smooth_transition</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.regime_switching.html#module-cultivars.univariate.regime_switching" title="cultivars.univariate.regime_switching"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.regime_switching</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function" title="cultivars.univariate.mean_function"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.mean_function</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.diagnostics.nonlinearity.html#module-cultivars.diagnostics.nonlinearity" title="cultivars.diagnostics.nonlinearity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.diagnostics.nonlinearity</span></code></a>.</p></li>
+</ul>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="volatility.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Volatility models</p>
+</div>
+</a>
+<a class="right-next" href="var.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Vector autoregressions</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-family-at-a-glance">The family at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-for-linearity-before-fitting">Test for linearity before fitting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#threshold-autoregressions-setar-and-tar">Threshold autoregressions: SETAR and TAR</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-model">The model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-minimal-fit">A minimal fit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specification-choices">Specification choices</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-result-gives-you">What the result gives you</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smooth-transition-autoregressions-lstar-and-estar">Smooth-transition autoregressions: LSTAR and ESTAR</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">The model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lstar">LSTAR</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#estar">ESTAR</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specification-choices-and-outputs">Specification choices and outputs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-switching-autoregression">Markov-switching autoregression</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">The model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">A minimal fit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-regime-probabilities-and-regimes">Reading regime probabilities and regimes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specification-and-estimation-choices">Specification and estimation choices</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-against-nested-specifications">Testing against nested specifications</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">What the result gives you</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learned-conditional-means-arnn-and-tarnn">Learned conditional means: ARNN and TARNN</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">The model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plugging-in-an-engine">Plugging in an engine</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Specification choices</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-and-state-space-emission">Simulation and state-space emission</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-pieces-connect">How the pieces connect</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nuances-and-gotchas">Nuances and gotchas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="tocsection editthispage">
+<a href="https://github.com/nikhilxsunder/cultivars/edit/v1.0.0a4/docs/source/user_guide/univariate_nonlinear.rst">
+<i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+</div>
+</div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item"><div class="cv-footer">
+<section aria-label="Documentation sections" class="cv-footer__band cv-footer__band--guide">
+<div class="cv-footer__inner cv-footer__columns">
+<div class="cv-footer__column">
+<h2>API reference</h2>
+<p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+<a class="cv-footer__cta" href="../api/index.html">View the API<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Examples</h2>
+<p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+<a class="cv-footer__cta" href="../auto_examples/index.html">View the examples<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Engine</h2>
+<p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+<a class="cv-footer__cta" href="../engine/index.html">View the engine<span aria-hidden="true"> ›</span></a>
+</div>
+</div>
+</section>
+<section aria-label="Project links" class="cv-footer__band cv-footer__band--site">
+<div class="cv-footer__inner">
+<div class="cv-footer__grid">
+<div class="cv-footer__install">
+<h2>Get cultivars</h2>
+<p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a4</code></pre>
+</div>
+<nav aria-label="Resources" class="cv-footer__links">
+<h2>Resources</h2>
+<ul>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/releases">Releases</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md">Changelog</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/issues">Issues</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md">Contributing</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md">Security</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md">Code of conduct</a>
+</li>
+</ul>
+</nav>
+<nav aria-label="Related projects" class="cv-footer__links">
+<h2>Related</h2>
+<ul>
+<li>
+<a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a><span class="cv-footer__muted"> FRED client</span>
+</li>
+<li>
+<a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a><span class="cv-footer__muted"> SEC EDGAR client</span>
+</li>
+</ul>
+</nav>
+</div>
+<ul aria-label="Project pages" class="cv-footer__social">
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li>
+<a href="https://pypi.org/project/cultivars/" title="PyPI"><i aria-hidden="true" class="fa-brands fa-python"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li>
+<a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov"><i aria-hidden="true" class="fa-solid fa-umbrella"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff" title="Cite"><i aria-hidden="true" class="fa-solid fa-quote-left"></i><span class="visually-hidden">Cite</span></a>
+</li>
+</ul>
+<div class="cv-footer__legal">
+<p>
+          © 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE">MIT License</a>. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED® is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+<p class="cv-footer__build">
+          cultivars 1.0.0a4 · updated 2026-10-12 · built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
+</p>
+</div>
+</div>
+</section>
+</div></div>
+</div>
+</div>
+</footer>
+</body>
+</html>
