@@ -159,7 +159,7 @@ from ...engine._internals._models import _IdentificationModel
 from ...exceptions import SpecificationError
 from ...summary import SummaryTable
 
-__all__ = ["SignRestrictedSVAR", "SignRestrictedSVARResult"]
+__all__ = ["NarrativeSignRestrictedSVAR", "SignRestrictedSVAR", "SignRestrictedSVARResult"]
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)

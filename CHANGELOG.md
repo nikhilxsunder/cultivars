@@ -17,6 +17,9 @@ listed under Changed.
 - The "declare at least one narrative event" error from
   `NarrativeSignRestrictedSVAR` names `SignRestrictedSVAR` instead of the
   pre-a2 `SignSVAR` (#497).
+- `cultivars.multivariate.structural.sign_restrictions.__all__` lists
+  `NarrativeSignRestrictedSVAR`, so star imports and the API reference
+  see it (#452, #496).
 
 ## [1.0.0a4] - 2026-10-13
 
