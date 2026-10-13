@@ -11,7 +11,7 @@ to the page that demonstrates it.
 
 The first part describes deliberate design that will stay. The second
 part, :ref:`known-issues`, lists bugs and gaps found while writing this
-guide against ``1.0.0a3``; items leave the list as they are fixed, and
+guide against ``1.0.0a4``; items leave the list as they are fixed, and
 the :doc:`release notes <../project/release_notes>` record each fix.
 
 .. contents:: On this page
@@ -185,7 +185,7 @@ See :doc:`spectral`.
 
 .. _known-issues:
 
-Known issues in 1.0.0a3
+Known issues in 1.0.0a4
 -----------------------
 
 These are defects, not design. Each has a workaround.

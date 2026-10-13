@@ -10,15 +10,15 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/project/release_notes.html" />
 <meta property="og:site_name" content="cultivars" />
-<meta property="og:description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: 1.0.0a3- 2026-10-..." />
+<meta property="og:description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: 1.0.0a4- 2026-10-..." />
 <meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
 <meta property="og:image:alt" content="cultivars" />
-<meta name="description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: 1.0.0a3- 2026-10-..." />
+<meta name="description" content="Changelog: All notable changes to cultivars will be documented in this file. The format is based on Keep a Changelog, and this project adheres to Semantic Versioning. Until 1.0.0, pre-releases may move public names between alphas; such moves are listed under Changed. Unreleased: 1.0.0a4- 2026-10-..." />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-11T18:12:34+00:00" />
+    <meta property="article:modified_time" content="2026-10-13T19:06:33+00:00" />
     <title>Release notes &#8212; cultivars</title>
   
   
@@ -86,7 +86,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/project/release_notes.ee5ac778-a7e1-4613-9069-d344adbbab55.js"></script>
+    <script defer="defer" src="../_static/tippy/project/release_notes.c7b39ffb-9ec4-42db-936f-5341a590cd61.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'project/release_notes';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-11"/>
+    <meta name="docbuild:last-update" content="2026-10-13"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -588,15 +588,72 @@ and this project adheres to <a class="reference external" href="https://semver.o
 Until 1.0.0, pre-releases may move public names between alphas; such moves are
 listed under Changed.</p>
 <section id="unreleased">
-<h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a3...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
+<h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
+</section>
+<section id="a4-2026-10-13">
+<h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a3...v1.0.0a4">1.0.0a4</a> - 2026-10-13<a class="headerlink" href="#a4-2026-10-13" title="Link to this heading">#</a></h2>
+<p>Documentation and integration release. No public model, result or test
+was renamed or removed.</p>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>User guide: nineteen pages under <code class="docutils literal notranslate"><span class="pre">docs/source/user_guide/</span></code>. Foundations
+(architecture, conventions, choosing a model, nuances and known
+issues), diagnostics, three univariate pages, six multivariate pages
+(VAR, VAR extensions, structural identification, Bayesian VARs, large
+and high-dimensional systems, nonlinear and switching VARs), state
+space, spectral, forecasting and the Bayesian workflow. Every example
+runs under the Sphinx doctest builder against this release.</p></li>
+<li><p>Getting started: installation, a quickstart that runs a unit-root test,
+ARIMA comparison and an identified VAR end to end, and a core-concepts
+page on the model-fit-result design.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cultivars.experimental</span></code>: a subpackage for recent models under a looser
+stability contract. Importing it raises
+<code class="docutils literal notranslate"><span class="pre">cultivars.exceptions.ExperimentalWarning</span></code> once.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cultivars.experimental.spectral</span></code>: the Non-Stationary Spectral
+Decomposition Network (Sunder and Leon, 2026), re-exported from the
+<code class="docutils literal notranslate"><span class="pre">ns-sdn</span></code> distribution under an <code class="docutils literal notranslate"><span class="pre">NSSDN</span></code> prefix (<code class="docutils literal notranslate"><span class="pre">NSSDN</span></code>, <code class="docutils literal notranslate"><span class="pre">NSSDNResult</span></code>,
+<code class="docutils literal notranslate"><span class="pre">NSSDNStage</span></code>, <code class="docutils literal notranslate"><span class="pre">NSSDNPenalties</span></code>, <code class="docutils literal notranslate"><span class="pre">NSSDNSpectralState</span></code>, the option aliases
+and the error hierarchy).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cultivars.data</span></code>: the FRED client <code class="docutils literal notranslate"><span class="pre">fedfred</span></code> re-exported as
+<code class="docutils literal notranslate"><span class="pre">cultivars.data.economic</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cultivars.exceptions.ExperimentalWarning</span></code>.</p></li>
+<li><p>API reference entries for <code class="docutils literal notranslate"><span class="pre">cultivars.summary</span></code>, <code class="docutils literal notranslate"><span class="pre">cultivars.data</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cultivars.experimental</span></code>; intersphinx mapping for <code class="docutils literal notranslate"><span class="pre">ns-sdn</span></code>.</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ns-sdn</span></code> is a runtime dependency, pinned to <code class="docutils literal notranslate"><span class="pre">1.0.0a1</span></code>. It depends on
+<code class="docutils literal notranslate"><span class="pre">torch</span></code>, so an install now pulls in PyTorch; a later release will move
+it behind an extra.</p></li>
+<li><p>The top-level package imports <code class="docutils literal notranslate"><span class="pre">cultivars.experimental</span></code>. Because of that,
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">cultivars</span></code> raises <code class="docutils literal notranslate"><span class="pre">ExperimentalWarning</span></code> and imports <code class="docutils literal notranslate"><span class="pre">torch</span></code>
+through <code class="docutils literal notranslate"><span class="pre">ns-sdn</span></code>; see the note below.</p></li>
+</ul>
+</section>
+<section id="known-issues">
+<h3>Known issues<a class="headerlink" href="#known-issues" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The user guide’s “Nuances and known issues” page lists the defects
+found while verifying this release’s documentation: the
+Christiano-Fitzgerald endpoint weights, the moving-average block
+ignored by the model-implied spectral views and the shared
+<code class="docutils literal notranslate"><span class="pre">simulate</span></code>, mis-scaled <code class="docutils literal notranslate"><span class="pre">HeteroskedasticSVAR</span></code> variance shares, <code class="docutils literal notranslate"><span class="pre">kpss</span></code>
+verdicts outside the tabulated p-value range, and the VAR portmanteau
+degrees of freedom, among others. Each entry has a workaround. Fixes
+land in <code class="docutils literal notranslate"><span class="pre">1.0.0b1</span></code>.</p></li>
+</ul>
+</section>
 </section>
 <section id="a3-2026-10-11">
 <h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a2...v1.0.0a3">1.0.0a3</a> - 2026-10-11<a class="headerlink" href="#a3-2026-10-11" title="Link to this heading">#</a></h2>
 <p>Structure and documentation release. No public model, result or test was
 renamed or removed; code that imports from the public leaf modules is
 unaffected.</p>
-<section id="added">
-<h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+<section id="id1">
+<h3>Added<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cultivars.summary</span></code>: the public home of <code class="docutils literal notranslate"><span class="pre">SummaryTable</span></code> and
 <code class="docutils literal notranslate"><span class="pre">InformationCriteria</span></code>, the records every <code class="docutils literal notranslate"><span class="pre">summary()</span></code> and
@@ -609,8 +666,8 @@ backtests and forecast evaluation, built and executed with the docs.</p></li>
 <code class="docutils literal notranslate"><span class="pre">dev</span></code>.</p></li>
 </ul>
 </section>
-<section id="changed">
-<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
+<section id="id2">
+<h3>Changed<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>The numerical core and internal layers moved from <code class="docutils literal notranslate"><span class="pre">cultivars._core</span></code> and
 <code class="docutils literal notranslate"><span class="pre">cultivars._internals</span></code> to <code class="docutils literal notranslate"><span class="pre">cultivars.engine._core</span></code> and
@@ -638,8 +695,8 @@ paths.</p></li>
 now carries a Google-style docstring with a runnable, deterministic example;
 the examples are the doctest suite. The pass also surfaced several hundred
 findings, which are tracked as GitHub issues against the 1.0.0 milestone.</p>
-<section id="id1">
-<h3>Added<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<section id="id3">
+<h3>Added<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>API reference generated from the docstrings, with a sphinx-gallery examples
 section, source links, and a version switcher that works on the published
@@ -651,8 +708,8 @@ family of models commits to and where its helpers live.</p></li>
 patterns each class supports.</p></li>
 </ul>
 </section>
-<section id="id2">
-<h3>Changed<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<section id="id4">
+<h3>Changed<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Documentation builds no longer fail on warnings or on a failing gallery
 example; <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-C</span> <span class="pre">docs</span> <span class="pre">strict</span></code> (and the workflow’s <code class="docutils literal notranslate"><span class="pre">strict</span></code> input) restore
@@ -662,8 +719,8 @@ warnings-as-errors.</p></li>
 subpackage <code class="docutils literal notranslate"><span class="pre">__init__</span></code> modules re-export modules only, not classes.</p></li>
 </ul>
 </section>
-<section id="id3">
-<h3>Fixed<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<section id="id5">
+<h3>Fixed<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">VARResult._from_fit</span></code> dropped the <code class="docutils literal notranslate"><span class="pre">posterior</span></code> and <code class="docutils literal notranslate"><span class="pre">prior_label</span></code> fields when
 building a result from a Bayesian (Minnesota-prior) fit, so a shrinkage
@@ -681,8 +738,8 @@ paths, across the multivariate packages.</p></li>
 <h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/compare/v0.0.1...v1.0.0a1">1.0.0a1</a> - 2026-09-22<a class="headerlink" href="#a1-2026-09-22" title="Link to this heading">#</a></h2>
 <p>First public pre-release of the rebuilt package. The 0.0.x line was a
 placeholder.</p>
-<section id="id4">
-<h3>Added<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<section id="id6">
+<h3>Added<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Univariate: ARIMA family, GARCH family, stochastic volatility, unobserved
 components, fractional integration, Markov-switching, threshold and
@@ -721,8 +778,8 @@ causality, MODWT and wavelet coherence.</p></li>
 uniform <code class="docutils literal notranslate"><span class="pre">summary()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_polars()</span></code> conveniences.</p></li>
 </ul>
 </section>
-<section id="id5">
-<h3>Changed<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<section id="id7">
+<h3>Changed<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Requires Python 3.12 or later (PEP 695 type syntax).</p></li>
 <li><p>Runtime dependencies are <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">scipy</span></code> and <code class="docutils literal notranslate"><span class="pre">fedfred</span></code>; <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and
@@ -730,10 +787,10 @@ uniform <code class="docutils literal notranslate"><span class="pre">summary()</
 </ul>
 </section>
 </section>
-<section id="id6">
-<h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/releases/tag/v0.0.1">0.0.1</a> - 2026-05-08<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
-<section id="id7">
-<h3>Added<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<section id="id8">
+<h2><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/releases/tag/v0.0.1">0.0.1</a> - 2026-05-08<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h3>Added<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Initial file dump.</p></li>
 </ul>
@@ -782,25 +839,31 @@ uniform <code class="docutils literal notranslate"><span class="pre">summary()</
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Release notes</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#changelog">Changelog</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a3-2026-10-11">1.0.0a3 - 2026-10-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a4-2026-10-13">1.0.0a4 - 2026-10-13</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues">Known issues</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a3-2026-10-11">1.0.0a3 - 2026-10-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Changed</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a2-2026-10-08">1.0.0a2 - 2026-10-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Fixed</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a1-2026-09-22">1.0.0a1 - 2026-09-22</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">0.0.1 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Added</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">0.0.1 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Added</a></li>
 </ul>
 </li>
 </ul>
@@ -998,7 +1061,7 @@ uniform <code class="docutils literal notranslate"><span class="pre">summary()</
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-11 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"
