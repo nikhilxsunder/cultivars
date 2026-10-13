@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Business-cycle regimes: Markov switching against the NBER chronology" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/auto_examples/plot_06_business_cycle_regimes.html" />
+<meta property="og:site_name" content="cultivars" />
+<meta property="og:description" content="Hamilton (1989) modelled quarterly GNP growth as an autoregression whose intercept switches between two unobserved regimes governed by a Markov chain, and found that the smoothed regime probabilities trace the NBER recession dates with no business-cycle information supplied to the model. The exer..." />
+<meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
+<meta property="og:image:alt" content="cultivars" />
+<meta name="description" content="Hamilton (1989) modelled quarterly GNP growth as an autoregression whose intercept switches between two unobserved regimes governed by a Markov chain, and found that the smoothed regime probabilities trace the NBER recession dates with no business-cycle information supplied to the model. The exer..." />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="cultivars Documentation" />
+<meta property="og:image:alt" content="cultivars Logo" />
+
+    <title>Business-cycle regimes: Markov switching against the NBER chronology &#8212; cultivars</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=b2176991" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=7fc003df" />
+    <link rel="stylesheet" type="text/css" href="../_static/consent.css?v=8cbde1cf" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=fc897e8e"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../_static/tippy/auto_examples/plot_06_business_cycle_regimes.a99549b2-3689-4ea2-8479-efb1b9c3a4cb.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_06_business_cycle_regimes';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+    <link rel="canonical" href="https://nikhilxsunder.github.io/cultivars/stable/auto_examples/plot_06_business_cycle_regimes.html" />
+    <link rel="icon" href="../_static/cultivars-favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Equity volatility: GARCH, asymmetric GARCH and stochastic volatility" href="plot_09_volatility_models_var_backtest.html" />
+    <link rel="prev" title="An inflation forecasting horse race, evaluated properly" href="plot_10_inflation_forecast_evaluation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/cultivars-logo.png" class="logo__image only-light" alt="cultivars - Home"/>
+    <img src="../_static/cultivars-logo.png" class="logo__image only-dark pst-js-only" alt="cultivars - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/cultivars/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/cultivars" title="Conda-Forge" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-database fa-lg" aria-hidden="true"></i><span class="visually-hidden">Conda-Forge</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-umbrella fa-lg" aria-hidden="true"></i><span class="visually-hidden">Codecov</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plot_10_inflation_forecast_evaluation.html">An inflation forecasting horse race, evaluated properly</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Business-cycle regimes: Markov switching against the NBER chronology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_09_volatility_models_var_backtest.html">Equity volatility: GARCH, asymmetric GARCH and stochastic volatility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_05_nelson_siegel_yield_curve.html">Forecasting the Treasury yield curve with dynamic Nelson-Siegel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_08_large_bvar_forecasting.html">Forecasting with a medium-sized Bayesian VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_01_monetary_policy_var.html">Monetary policy shocks in a recursive VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_04_heteroskedasticity_and_proxy.html">Monetary policy without recursiveness: heteroskedasticity and proxies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_03_oil_market_sign_restrictions.html">Oil supply and demand shocks: sign, narrative and set identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_02_blanchard_quah.html">Supply and demand shocks with long-run restrictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_07_great_ratios_vecm.html">The great ratios: cointegration and a vector error-correction model</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Business-cycle regimes: Markov switching against the NBER chronology</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-06-business-cycle-regimes-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="business-cycle-regimes-markov-switching-against-the-nber-chronology">
+<span id="sphx-glr-auto-examples-plot-06-business-cycle-regimes-py"></span><h1>Business-cycle regimes: Markov switching against the NBER chronology<a class="headerlink" href="#business-cycle-regimes-markov-switching-against-the-nber-chronology" title="Link to this heading">#</a></h1>
+<p>Hamilton (1989) modelled quarterly GNP growth as an autoregression
+whose intercept switches between two unobserved regimes governed by a
+Markov chain, and found that the smoothed regime probabilities trace
+the NBER recession dates with no business-cycle information supplied
+to the model. The exercise has become the standard test of a
+regime-switching estimator, and the NBER chronology is on FRED, so it
+can be run with no hand-entered dates.</p>
+<p>This example fits Hamilton’s specification and two extensions to real
+GDP growth, compares them by likelihood and by their agreement with
+the NBER indicator, and then estimates a two-variable Markov-switching
+VAR on monthly data where the recession regime shows up in the
+covariance as much as in the mean.</p>
+<section id="data">
+<h2>Data<a class="headerlink" href="#data" title="Link to this heading">#</a></h2>
+<p>Quarterly real GDP growth, continuously compounded and in percent,
+and the NBER recession indicator <code class="docutils literal notranslate"><span class="pre">USRECQ</span></code>, 1952 to 2019. Hamilton’s
+sample ended in 1984; the longer sample includes the Great Moderation,
+which is what motivates letting the variance switch.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">multivariate</span><span class="nn">.</span><span class="nn">regime_switching</span><span class="nn">.</span><span class="nn">markov_switching</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-multivariate-regime_switching-markov_switching sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR"><span class="n">MarkovSwitchingVAR</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cultivars</span><span class="nn">.</span><span class="nn">univariate</span><span class="nn">.</span><span class="nn">regime_switching</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><span class="n">MarkovSwitchingAR</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">_fred</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">quarterly</span></a> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="w">
+</span>    <span class="p">{</span><span class="s2">&quot;</span><span class="s2">growth</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">GDPC1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">nber</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">USRECQ</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">1951-10-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">2019-12-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">q</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">aggregation_method</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">avg</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">units</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">growth</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">cch</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">growth</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">quarterly</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">growth</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">quarterly</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">nber</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">growth</span></a><span class="p">)</span><span class="si">}</span><span class="s2"> quarters, </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber</span></a><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="si">}</span><span class="s2"> of them NBER recession quarters</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>273 quarters, 37 of them NBER recession quarters
+</pre></div>
+</div>
+</section>
+<section id="three-specifications">
+<h2>Three specifications<a class="headerlink" href="#three-specifications" title="Link to this heading">#</a></h2>
+<p>Hamilton’s MSI(2)-AR(4): the intercept switches, the autoregressive
+coefficients and the variance do not. The MSIH variant lets the
+variance switch as well; the MSIAH variant lets everything switch.
+All three are estimated by EM from several random starts, and the
+regimes are labelled by ascending intercept, so regime 0 is always
+the low-growth state.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a> <span class="o">=</span> <span class="mi">4</span><span class="w">
+</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">hamilton</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><span class="n">MarkovSwitchingAR</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">growth</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="p">,</span> <span class="n">switching_mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">switching_variance</span><span class="o">=</span><span class="kc">False</span><span class="w">
+</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">msih</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><span class="n">MarkovSwitchingAR</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">growth</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="p">,</span> <span class="n">switching_mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">switching_variance</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="w">
+</span>    <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">msiah</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingAR.html#cultivars.univariate.regime_switching.MarkovSwitchingAR" title="cultivars.univariate.regime_switching.MarkovSwitchingAR"><span class="n">MarkovSwitchingAR</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">growth</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="p">,</span> <span class="n">switching_mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">switching_variance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">switching_ar</span><span class="o">=</span><span class="kc">True</span><span class="w">
+</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.summary.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.summary" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.summary"><span class="n">hamilton</span><span class="o">.</span><span class="n">summary</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.compare.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.compare" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.compare"><span class="n">hamilton</span><span class="o">.</span><span class="n">compare</span></a><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">msih</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">msiah</span></a><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">bic</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                              MSI(2)-AR(4) Results
+================================================================================
+Model:                    MSI(2)-AR(4)  Log-likelihood:               -321.903
+Regimes:                             2  AIC:                           661.805
+EM iterations:                       9  BIC:                           694.157
+Converged:                        True  HQIC:                          674.798
+Observations:                      269  Entropy:                         0.089
+--------------------------------------------------------------------------------
+                 coef
+const[0]      -1.2661
+ar.L1[0]       0.2669
+ar.L2[0]       0.1180
+ar.L3[0]      -0.0814
+ar.L4[0]      -0.0558
+const[1]       0.6507
+ar.L1[1]       0.2669
+ar.L2[1]       0.1180
+ar.L3[1]      -0.0814
+ar.L4[1]      -0.0558
+sigma2[0]      0.5197
+sigma2[1]      0.5197
+p[0-&gt;0]        0.2607
+p[0-&gt;1]        0.7393
+p[1-&gt;0]        0.0335
+p[1-&gt;1]        0.9665
+================================================================================
+Regimes ordered by ascending intercept; the likelihood is invariant to
+relabelling, so that convention is what makes 'regime 0' mean anything.
+Mean posterior entropy 0.089 of 1 (well separated regimes); expected durations [
+1.4 29.8] periods.
+Regime-wise stationary: True. This is sufficient but not necessary: a rarely
+visited explosive regime still leaves the switching process stationary.
+Transition rows sum to one, so only K(K-1) of the reported p[i-&gt;j] are free; the
+parameter count reflects that.
+The number of regimes cannot be tested by a likelihood ratio; see
+likelihood_ratio_test.
+Standard errors are not yet available for this estimator.
+                            Model comparison by BIC
+================================================================================
+Observations:                      269  Models:                              3
+--------------------------------------------------------------------------------
+model                   llf    k       BIC     dBIC
+MSIH(2)-AR(4)      -293.263   10   642.473    0.000
+MSIAH(2)-AR(4)     -284.572   14   647.471    4.998
+MSI(2)-AR(4)       -321.903    9   694.157   51.684
+================================================================================
+Ranked best-first; the final column is the gap to the best model.
+</pre></div>
+</div>
+</section>
+<section id="a-likelihood-ratio-test-of-the-variance-restriction">
+<h2>A likelihood-ratio test of the variance restriction<a class="headerlink" href="#a-likelihood-ratio-test-of-the-variance-restriction" title="Link to this heading">#</a></h2>
+<p>The number of regimes cannot be tested by a likelihood ratio: under
+the null the transition probabilities are unidentified (the Davies
+problem). The equal-variance restriction, with the regime count held
+fixed, is a regular nested hypothesis and the test is valid.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.likelihood_ratio_test.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.likelihood_ratio_test" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.likelihood_ratio_test"><span class="n">hamilton</span><span class="o">.</span><span class="n">likelihood_ratio_test</span></a><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">msih</span></a><span class="p">)</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                             Likelihood-Ratio Test
+================================================================================
+Verdict at 5%:                  reject
+--------------------------------------------------------------------------------
+null                   statistic   df   p-value
+nested restriction       57.2791    1    0.0000
+================================================================================
+</pre></div>
+</div>
+</section>
+<section id="regime-characteristics">
+<h2>Regime characteristics<a class="headerlink" href="#regime-characteristics" title="Link to this heading">#</a></h2>
+<p>The regime table reports each regime’s intercept and variance, its
+ergodic probability, its expected duration in quarters and the share
+of the sample the smoothed probabilities assign to it. Hamilton’s
+estimates were a recession lasting about four quarters and an
+expansion lasting about ten.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.regime_table.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.regime_table" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.regime_table"><span class="n">msih</span><span class="o">.</span><span class="n">regime_table</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.transition_table.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.transition_table" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.transition_table"><span class="n">msih</span><span class="o">.</span><span class="n">transition_table</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                             MSIH(2)-AR(4) regimes
+================================================================================
+Ordering:          ascending intercept  Observations:                      269
+--------------------------------------------------------------------------------
+regime      const   sigma2   ergodic   duration    share
+0          0.4615   0.2011    0.6390      93.56   0.5155
+1          0.4958   1.1791    0.3610      52.85   0.4845
+================================================================================
+'ergodic' is the stationary probability implied by the transition matrix;
+'share' is the average smoothed probability actually observed. 'duration' is 1 /
+(1 - P_jj), in periods.
+                        MSIH(2)-AR(4) transition matrix
+================================================================================
+Regimes:                             2
+--------------------------------------------------------------------------------
+from \ to          0        1
+0             0.9893   0.0107
+1             0.0189   0.9811
+================================================================================
+Rows sum to one, so K(K-1) of the K**2 entries are free.
+</pre></div>
+</div>
+</section>
+<section id="agreement-with-the-nber-chronology">
+<h2>Agreement with the NBER chronology<a class="headerlink" href="#agreement-with-the-nber-chronology" title="Link to this heading">#</a></h2>
+<p>The smoothed probability of regime 0 is compared with the NBER
+indicator, aligned on the effective sample. Two summaries: the
+quadratic probability score, the Brier score of the regime
+probability as a recession forecast, and the concordance of the
+most-likely regime with the chronology.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">effective</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">quarterly</span><span class="o">.</span><span class="n">index</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="p">:</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_effective</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="p">:</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">def</span><span class="w"> </span><span class="nf">agreement</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">result</span></a><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-</span><span class="o">&gt;</span> <span class="kc">None</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Print quadratic probability score and concordance against NBER.&quot;&quot;&quot;</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">probability</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities"><span class="n">result</span><span class="o">.</span><span class="n">probabilities</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">smoothed</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">qps</span></a> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">probability</span></a> <span class="o">-</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_effective</span></a><span class="p">)</span> <span class="o">*</span><span class="o">*</span> <span class="mi">2</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">concordance</span></a> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">probability</span></a> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_effective</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="si">:</span><span class="s2">10s</span><span class="si">}</span><span class="s2">  QPS </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">qps</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   concordance </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">concordance</span></a><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">%</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">result</span></a> <span class="ow">in</span> <span class="p">(</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">MSI</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">hamilton</span></a><span class="p">)</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">MSIH</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">msih</span></a><span class="p">)</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">MSIAH</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">msiah</span></a><span class="p">)</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="n">agreement</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><span class="n">result</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.fill_between.html#matplotlib.axes.Axes.fill_between" title="matplotlib.axes.Axes.fill_between"><span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">effective</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_effective</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">grey</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">NBER</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">effective</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities"><span class="n">hamilton</span><span class="o">.</span><span class="n">probabilities</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">smoothed</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">MSI</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">effective</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities"><span class="n">msih</span><span class="o">.</span><span class="n">probabilities</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">smoothed</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C3</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">MSIH</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Smoothed probability of the low-growth regime</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">upper right</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../_images/sphx_glr_plot_06_business_cycle_regimes_001.png" srcset="../_images/sphx_glr_plot_06_business_cycle_regimes_001.png" alt="Smoothed probability of the low-growth regime" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>MSI         QPS 0.094   concordance  88.8%
+MSIH        QPS 0.587   concordance  39.4%
+MSIAH       QPS 0.844   concordance  15.6%
+</pre></div>
+</div>
+</section>
+<section id="filtered-versus-smoothed">
+<h2>Filtered versus smoothed<a class="headerlink" href="#filtered-versus-smoothed" title="Link to this heading">#</a></h2>
+<p>The smoothed probabilities use the whole sample and are what a
+historian wants; the filtered probabilities use data up to each date
+and are what a forecaster had. The gap between them at the start of
+each recession is the recognition lag of a real-time regime call.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">filtered</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities"><span class="n">msih</span><span class="o">.</span><span class="n">probabilities</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">filtered</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">smoothed</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-univariate-regime_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult.probabilities"><span class="n">msih</span><span class="o">.</span><span class="n">probabilities</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">smoothed</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.fill_between.html#matplotlib.axes.Axes.fill_between" title="matplotlib.axes.Axes.fill_between"><span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">effective</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_effective</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">grey</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">effective</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">filtered</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">filtered</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html#pandas.DatetimeIndex" title="pandas.DatetimeIndex"><span class="n">effective</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">smoothed</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">C3</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">label</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">smoothed</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">MSIH: filtered and smoothed recession probabilities</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">upper right</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../_images/sphx_glr_plot_06_business_cycle_regimes_002.png" srcset="../_images/sphx_glr_plot_06_business_cycle_regimes_002.png" alt="MSIH: filtered and smoothed recession probabilities" class = "sphx-glr-single-img"/></section>
+<section id="a-markov-switching-var-on-monthly-data">
+<h2>A Markov-switching VAR on monthly data<a class="headerlink" href="#a-markov-switching-var-on-monthly-data" title="Link to this heading">#</a></h2>
+<p>Industrial production growth and the change in the unemployment rate,
+monthly 1960-2019, with the intercepts and the innovation covariance
+switching. The recession regime in a bivariate system is a state of
+falling output, rising unemployment and a larger, more negatively
+correlated covariance; the regime table reports the log-determinant
+of each regime’s covariance and the largest root of its dynamics.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">monthly</span></a> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="w">
+</span>    <span class="p">{</span><span class="s2">&quot;</span><span class="s2">ip</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">INDPRO</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">UNRATE</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">nber</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">USREC</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">1959-10-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">2019-12-01</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">units</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">ip</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">cch</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">chg</span><span class="s2">&quot;</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="s2">ip</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">du</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-cultivars-multivariate-regime_switching-markov_switching sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult"><span class="n">msvar</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-regime_switching-markov_switching sphx-glr-backref-type-py-class reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVAR"><span class="n">MarkovSwitchingVAR</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">monthly</span></a><span class="p">[</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">ip</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">u</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">order</span></a><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
+</span>    <span class="n">n_regimes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
+</span>    <span class="n">switching_mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="n">switching_variance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">names</span></a><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-cultivars-multivariate-regime_switching-markov_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.regime_table.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.regime_table" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.regime_table"><span class="n">msvar</span><span class="o">.</span><span class="n">regime_table</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">index</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">msvar</span><span class="o">.</span><span class="n">n_regimes</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="n">regime</span> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-regime_switching-markov_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.regime.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.regime" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.regime"><span class="n">msvar</span><span class="o">.</span><span class="n">regime</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">index</span></a><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">regime </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">index</span></a><span class="si">}</span><span class="s2">: intercepts </span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.round.html#numpy.round" title="numpy.round"><span class="n">np</span><span class="o">.</span><span class="n">round</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">regime</span><span class="o">.</span><span class="n">deterministic</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">           innovation covariance</span><span class="se">\n</span><span class="si">{</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.round.html#numpy.round" title="numpy.round"><span class="n">np</span><span class="o">.</span><span class="n">round</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">regime</span><span class="o">.</span><span class="n">sigma_u</span></a><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_monthly</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">monthly</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">nber</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="p">)</span><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">msvar</span><span class="o">.</span><span class="n">order</span></a> <span class="p">:</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">probability</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cultivars-multivariate-regime_switching-markov_switching sphx-glr-backref-type-py-method reference internal" href="../api/generated/cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.probabilities.html#cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.probabilities" title="cultivars.multivariate.regime_switching.markov_switching.MarkovSwitchingVARResult.probabilities"><span class="n">msvar</span><span class="o">.</span><span class="n">probabilities</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">smoothed</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">qps</span></a> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">probability</span></a> <span class="o">-</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_monthly</span></a><span class="p">)</span> <span class="o">*</span><span class="o">*</span> <span class="mi">2</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">concordance</span></a> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">probability</span></a> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">nber_monthly</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">MS-VAR     QPS </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">qps</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">   concordance </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">concordance</span></a><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">%</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                                      MSIH(2)-VAR(2) regimes
+==================================================================================================
+Ordering:     ascending first-variable intercept  Observations:                                721
+--------------------------------------------------------------------------------------------------
+regime     log|Sigma|   max |root|   ergodic   duration    share
+0             -2.5106       0.5950    0.1652       5.00   0.1696
+1             -5.4375       0.5950    0.8348      25.24   0.8304
+==================================================================================================
+'ergodic' is the stationary probability implied by the transition matrix; 'share' is the average
+smoothed probability actually realized in this sample.
+regime 0: intercepts [0.107 0.075]
+           innovation covariance
+[[ 1.8987 -0.1519]
+ [-0.1519  0.0549]]
+regime 1: intercepts [0.149 0.005]
+           innovation covariance
+[[ 0.2311 -0.0144]
+ [-0.0144  0.0197]]
+MS-VAR     QPS 0.121   concordance  85.3%
+</pre></div>
+</div>
+</section>
+<section id="what-to-take-away">
+<h2>What to take away<a class="headerlink" href="#what-to-take-away" title="Link to this heading">#</a></h2>
+<p>The regime-switching model is not told where the recessions are and
+finds most of them; where it disagrees with the NBER, the disagreement
+is informative about what the committee weighs beyond GDP. Two
+cautions carry over to any application. The labelling convention,
+ascending intercept, is what makes “regime 0” comparable across
+specifications; and the EM likelihood is multimodal, so the number of
+random starts is a parameter of the estimate, not a detail.</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-06-business-cycle-regimes-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/1b6fce8899a1c908f1b7a9b2128bd456/plot_06_business_cycle_regimes.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_06_business_cycle_regimes.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/882a9be707034164bc828d24e1008f01/plot_06_business_cycle_regimes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_06_business_cycle_regimes.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/f3c5337007825c15c9fca80e235ed145/plot_06_business_cycle_regimes.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_06_business_cycle_regimes.zip</span></code></a></p>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_10_inflation_forecast_evaluation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">An inflation forecasting horse race, evaluated properly</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_09_volatility_models_var_backtest.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Equity volatility: GARCH, asymmetric GARCH and stochastic volatility</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data">Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#three-specifications">Three specifications</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-likelihood-ratio-test-of-the-variance-restriction">A likelihood-ratio test of the variance restriction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regime-characteristics">Regime characteristics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agreement-with-the-nber-chronology">Agreement with the NBER chronology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filtered-versus-smoothed">Filtered versus smoothed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-markov-switching-var-on-monthly-data">A Markov-switching VAR on monthly data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-take-away">What to take away</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div class="cv-footer">
+  <section
+    class="cv-footer__band cv-footer__band--guide"
+    aria-label="Documentation sections"
+  >
+    <div class="cv-footer__inner cv-footer__columns">
+      <div class="cv-footer__column">
+        <h2>API reference</h2>
+        <p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+        <a class="cv-footer__cta" href="../api/index.html"
+          >View the API<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+      <div class="cv-footer__column">
+        <h2>Examples</h2>
+        <p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+        <a class="cv-footer__cta" href="index.html"
+          >View the examples<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+      <div class="cv-footer__column">
+        <h2>Engine</h2>
+        <p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+        <a class="cv-footer__cta" href="../engine/index.html"
+          >View the engine<span aria-hidden="true">&nbsp;&rsaquo;</span></a
+        >
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="cv-footer__band cv-footer__band--site"
+    aria-label="Project links"
+  >
+    <div class="cv-footer__inner">
+      <div class="cv-footer__grid">
+        <div class="cv-footer__install">
+          <h2>Get cultivars</h2>
+          <p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+          <pre
+            class="cv-footer__code"
+          ><code>pip install --pre cultivars==1.0.0a4</code></pre>
+        </div>
+
+        <nav class="cv-footer__links" aria-label="Resources">
+          <h2>Resources</h2>
+          <ul>
+            <li>
+              <a href="https://github.com/nikhilxsunder/cultivars/releases"
+                >Releases</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md"
+                >Changelog</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/nikhilxsunder/cultivars/issues"
+                >Issues</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md"
+                >Contributing</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md"
+                >Security</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md"
+                >Code of conduct</a
+              >
+            </li>
+          </ul>
+        </nav>
+
+        <nav class="cv-footer__links" aria-label="Related projects">
+          <h2>Related</h2>
+          <ul>
+            <li>
+              <a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a
+              ><span class="cv-footer__muted"> FRED client</span>
+            </li>
+            <li>
+              <a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a
+              ><span class="cv-footer__muted"> SEC EDGAR client</span>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <ul class="cv-footer__social" aria-label="Project pages">
+        <li>
+          <a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"
+            ><i class="fa-brands fa-github" aria-hidden="true"></i
+            ><span class="visually-hidden">GitHub</span></a
+          >
+        </li>
+        <li>
+          <a href="https://pypi.org/project/cultivars/" title="PyPI"
+            ><i class="fa-brands fa-python" aria-hidden="true"></i
+            ><span class="visually-hidden">PyPI</span></a
+          >
+        </li>
+        <li>
+          <a
+            href="https://app.codecov.io/gh/nikhilxsunder/cultivars"
+            title="Codecov"
+            ><i class="fa-solid fa-umbrella" aria-hidden="true"></i
+            ><span class="visually-hidden">Codecov</span></a
+          >
+        </li>
+        <li>
+          <a
+            href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff"
+            title="Cite"
+            ><i class="fa-solid fa-quote-left" aria-hidden="true"></i
+            ><span class="visually-hidden">Cite</span></a
+          >
+        </li>
+      </ul>
+
+      <div class="cv-footer__legal">
+        <p>
+          &copy; 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE"
+            >MIT License</a
+          >. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED&reg; is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+        <p class="cv-footer__build">
+          cultivars 1.0.0a4 &middot; built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/"
+            >PyData Sphinx Theme</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</div></div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

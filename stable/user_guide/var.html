@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Reduced-form VAR and VARX in cultivars: specification, lag selection, coefficient layout, inference, diagnostics, IRF, FEVD and forecasts." name="description"/>
+<meta content="Vector autoregressions" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/user_guide/var.html" property="og:url"/>
+<meta content="cultivars" property="og:site_name"/>
+<meta content="This page covers the reduced-form vector autoregression and its exogenous-regressor variant: how to specify and estimate them, how the fitted coefficients are laid out, and what the result answers – inference, residual diagnostics, stability, forecasts, impulse responses, variance and historical ..." property="og:description"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" property="og:image"/>
+<meta content="cultivars" property="og:image:alt"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="cultivars Documentation" property="og:site_name"/>
+<meta content="cultivars Logo" property="og:image:alt"/>
+<meta content="2026-10-13T21:01:40+00:00" property="article:modified_time"/>
+<title>Vector autoregressions — cultivars</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/plot_directive.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=c83e6b79" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=7fc003df" rel="stylesheet" type="text/css"/>
+<link href="../_static/consent.css?v=8cbde1cf" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script defer="" src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<script src="../_static/documentation_options.js?v=fc897e8e"></script>
+<script src="../_static/doctools.js?v=fd6eb6e6"></script>
+<script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+<script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+<script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+<script defer="defer" src="../_static/tippy/user_guide/var.6f2122f8-200b-4ed4-911e-73515a27f131.js"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/var';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+<script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+<link href="https://nikhilxsunder.github.io/cultivars/stable/user_guide/var.html" rel="canonical"/>
+<link href="../_static/cultivars-favicon.ico" rel="icon"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="var_extensions.html" rel="next" title="Beyond the basic VAR"/>
+<link href="univariate_nonlinear.html" rel="prev" title="Nonlinear and regime-switching univariate models"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="1.0" name="docsearch:version"/>
+<meta content="2026-10-13" name="docbuild:last-update"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
+</head>
+<body data-default-mode="">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle" type="button">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="cultivars - Home" class="logo__image only-light" src="../_static/cultivars-logo.png"/>
+<img alt="cultivars - Home" class="logo__image only-dark pst-js-only" src="../_static/cultivars-logo.png"/>
+</a></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle" type="button">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button" type="button">
+<svg aria-hidden="true" class="pst-icon" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing_a_model.html">Choosing a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nuances.html">Nuances and known issues</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Before estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.html">Diagnostics and specification testing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Univariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="univariate_linear.html">Univariate linear models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility.html">Volatility models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="univariate_nonlinear.html">Nonlinear and regime-switching univariate models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multivariate models</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Vector autoregressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="var_extensions.html">Beyond the basic VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_identification.html">Structural identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_vars.html">Bayesian VARs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="large_dimensional.html">Large and high-dimensional systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nonlinear_multivariate.html">Nonlinear, time-varying and regime-switching VARs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Engines and frequency-domain views</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="state_space.html">State-space models and filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral analysis and filtering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">After estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="forecasting.html">Forecasting and forecast evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_workflow.html">The Bayesian workflow</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="index.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">Vector autoregressions</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section id="vector-autoregressions">
+<h1>Vector autoregressions<a class="headerlink" href="#vector-autoregressions" title="Link to this heading">#</a></h1>
+<p>This page covers the reduced-form vector autoregression and its
+exogenous-regressor variant: how to specify and estimate them, how the
+fitted coefficients are laid out, and what the result answers –
+inference, residual diagnostics, stability, forecasts, impulse responses,
+variance and historical decompositions, Granger causality and model
+comparison. It is not about declaring structural shocks (see
+<a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a>), full posterior simulation for
+Bayesian VARs (see <a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a>), or cointegrated, VARMA, panel,
+global and mixed-frequency systems (see <a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a>).</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-family-at-a-glance" id="id1">The family at a glance</a></p></li>
+<li><p><a class="reference internal" href="#the-model" id="id2">The model</a></p></li>
+<li><p><a class="reference internal" href="#a-first-fit" id="id3">A first fit</a></p></li>
+<li><p><a class="reference internal" href="#specification" id="id4">Specification</a></p></li>
+<li><p><a class="reference internal" href="#choosing-the-lag-order" id="id5">Choosing the lag order</a></p></li>
+<li><p><a class="reference internal" href="#estimation-and-coefficient-layout" id="id6">Estimation and coefficient layout</a></p></li>
+<li><p><a class="reference internal" href="#coefficient-inference" id="id7">Coefficient inference</a></p></li>
+<li><p><a class="reference internal" href="#shrinkage-through-prior" id="id8">Shrinkage through <code class="docutils literal notranslate"><span class="pre">prior=</span></code></a></p></li>
+<li><p><a class="reference internal" href="#residual-diagnostics" id="id9">Residual diagnostics</a></p></li>
+<li><p><a class="reference internal" href="#stability-and-the-companion-form" id="id10">Stability and the companion form</a></p></li>
+<li><p><a class="reference internal" href="#forecasting-and-simulation" id="id11">Forecasting and simulation</a></p></li>
+<li><p><a class="reference internal" href="#impulse-responses" id="id12">Impulse responses</a></p></li>
+<li><p><a class="reference internal" href="#variance-and-historical-decompositions" id="id13">Variance and historical decompositions</a></p></li>
+<li><p><a class="reference internal" href="#granger-causality" id="id14">Granger causality</a></p></li>
+<li><p><a class="reference internal" href="#comparing-specifications" id="id15">Comparing specifications</a></p></li>
+<li><p><a class="reference internal" href="#exogenous-regressors-varx" id="id16">Exogenous regressors: <code class="docutils literal notranslate"><span class="pre">VARX</span></code></a></p></li>
+<li><p><a class="reference internal" href="#how-the-pieces-connect" id="id17">How the pieces connect</a></p></li>
+<li><p><a class="reference internal" href="#nuances-and-gotchas" id="id18">Nuances and gotchas</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id19">See also</a></p></li>
+</ul>
+</nav>
+<section id="the-family-at-a-glance">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">The family at a glance</a><a class="headerlink" href="#the-family-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 22.0%"/>
+<col style="width: 32.0%"/>
+<col style="width: 24.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Module</p></th>
+<th class="head"><p>Role in one line</p></th>
+<th class="head"><p>Use when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">VAR</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.html#module-cultivars.multivariate.reduced_form.vector_autoregression" title="cultivars.multivariate.reduced_form.vector_autoregression"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vector_autoregression</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(y_t = D d_t + \sum_{i=1}^p A_i y_{t-i} + u_t\)</span> by
+multivariate least squares, optionally shrunk by a prior</p></td>
+<td><p>every variable is modelled and gets an equation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARX.html#cultivars.multivariate.reduced_form.vector_autoregression.VARX" title="cultivars.multivariate.reduced_form.vector_autoregression.VARX"><code class="xref py py-class docutils literal notranslate"><span class="pre">VARX</span></code></a></p></td>
+<td><p>same</p></td>
+<td><p>the VAR plus a distributed lag <span class="math notranslate nohighlight">\(\sum_{j=0}^s B_j x_{t-j}\)</span> of
+weakly exogenous regressors</p></td>
+<td><p>some series are conditioned on (oil price, foreign rate) rather
+than modelled</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">VARResult</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARXResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARXResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">VARXResult</span></code></a></p></td>
+<td><p>same</p></td>
+<td><p>frozen fitted records returned by <code class="docutils literal notranslate"><span class="pre">fit()</span></code></p></td>
+<td><p>always; this is where every answer lives</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.CoefficientInference.html#cultivars.multivariate.reduced_form.vector_autoregression.CoefficientInference" title="cultivars.multivariate.reduced_form.vector_autoregression.CoefficientInference"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoefficientInference</span></code></a></p></td>
+<td><p>same</p></td>
+<td><p>protocol of the object behind <code class="docutils literal notranslate"><span class="pre">coefficient_covariance</span></code>
+(sampling or posterior covariance of the coefficients)</p></td>
+<td><p>custom Wald tests and the full <span class="math notranslate nohighlight">\(\operatorname{vec}(B)\)</span>
+covariance</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels.html#cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels" title="cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalLevels</span></code></a></p></td>
+<td><p>same</p></td>
+<td><p>record returned by <code class="docutils literal notranslate"><span class="pre">VARXResult.to_varx()</span></code>: a unit’s equations in
+levels</p></td>
+<td><p>feeding a VARX unit to
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.closed_global.GVAR.html#cultivars.multivariate.reduced_form.closed_global.GVAR" title="cultivars.multivariate.reduced_form.closed_global.GVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">GVAR</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="the-model">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">The model</a><a class="headerlink" href="#the-model" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[y_t = D d_t + A_1 y_{t-1} + \cdots + A_p y_{t-p} + u_t,
+\qquad \mathrm{E}(u_t) = 0, \quad \mathrm{E}(u_t u_t') = \Sigma_u,\]</div>
+<p>with <span class="math notranslate nohighlight">\(y_t\)</span> of dimension <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(d_t\)</span> holding a
+constant, a constant and a linear trend, or nothing. Writing the
+regressors of all equations as one matrix <span class="math notranslate nohighlight">\(Z\)</span> gives <span class="math notranslate nohighlight">\(Y = Z B
++ U\)</span>, and multivariate least squares <span class="math notranslate nohighlight">\(\hat B = (Z'Z)^{-1}Z'Y\)</span> is
+equation-by-equation OLS and, under Gaussian innovations, the
+conditional maximum-likelihood estimator at the same time (Lütkepohl,
+2005, ch. 3; Hamilton, 1994, ch. 11). There is no separate <code class="docutils literal notranslate"><span class="pre">method</span></code>
+argument: OLS and ML coincide for the coefficients, and the result
+stores both residual covariances (see <a class="reference internal" href="#estimation-and-coefficient-layout">Estimation and coefficient
+layout</a>). The reduced form originates with Sims (1980).</p>
+</section>
+<section id="a-first-fit">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">A first fit</a><a class="headerlink" href="#a-first-fit" title="Link to this heading">#</a></h2>
+<p>The examples on this page share one simulated three-variable system with
+a constant and correlated innovations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.html#module-cultivars.multivariate.reduced_form.vector_autoregression"><span class="nn">cultivars.multivariate.reduced_form.vector_autoregression</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">A1</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+               <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+               <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]])</span>
+<span class="n">impact</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">y</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="mi">350</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">350</span><span class="p">):</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">]</span> <span class="o">+</span> <span class="n">A1</span> <span class="o">@</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">impact</span> <span class="o">@</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">50</span><span class="p">:]</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><span class="n">res</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">"gdp"</span><span class="p">,</span> <span class="s2">"infl"</span><span class="p">,</span> <span class="s2">"rate"</span><span class="p">))</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">deterministic</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.nobs.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult.nobs" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult.nobs"><span class="n">res</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.n_params.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult.n_params" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult.n_params"><span class="n">res</span><span class="o">.</span><span class="n">n_params</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.coefficients.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult.coefficients" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult.coefficients"><span class="n">res</span><span class="o">.</span><span class="n">coefficients</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.is_stable.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult.is_stable" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult.is_stable"><span class="n">res</span><span class="o">.</span><span class="n">is_stable</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.stability_check.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult.stability_check" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult.stability_check"><span class="n">res</span><span class="o">.</span><span class="n">stability_check</span></a><span class="p">()</span><span class="o">.</span><span class="n">max_modulus</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(1, 3, 3) (1, 3) 299 18.0
+[[ 0.54  0.02  0.13]
+ [ 0.21  0.38  0.11]
+ [-0.07  0.29  0.26]]
+True 0.643
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">print(res)</span></code> (or <code class="docutils literal notranslate"><span class="pre">res.summary()</span></code>) renders a coefficient table with
+the information criteria, the stability verdict and a standing note that
+orthogonalized responses rest on the ordering of <code class="docutils literal notranslate"><span class="pre">names</span></code>.</p>
+</section>
+<section id="specification">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Specification</a><a class="headerlink" href="#specification" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 18.0%"/>
+<col style="width: 18.0%"/>
+<col style="width: 64.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">endog</span></code></p></td>
+<td><p>required</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k)</span></code> array, time down the rows. A <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>
+is accepted as an array; its column names are <strong>not</strong> read.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">order</span></code></p></td>
+<td><p>required, keyword</p></td>
+<td><p>lag length <span class="math notranslate nohighlight">\(p \ge 0\)</span>. <code class="docutils literal notranslate"><span class="pre">order=0</span></code> is allowed (a constant
+plus white noise); Granger tests then refuse.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trend</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">"c"</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">"n"</span></code> (none), <code class="docutils literal notranslate"><span class="pre">"c"</span></code> (constant), <code class="docutils literal notranslate"><span class="pre">"ct"</span></code> (constant and linear
+trend). The trend regressor counts observations from 1 at the
+first sample row, so on the first usable row of a VAR(p) it
+equals <span class="math notranslate nohighlight">\(p + 1\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">names</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">...</span> <span class="pre">yk</span></code></p></td>
+<td><p>one unique label per column. The order of <code class="docutils literal notranslate"><span class="pre">names</span></code> is the
+Cholesky order used by <code class="docutils literal notranslate"><span class="pre">irf</span></code>, <code class="docutils literal notranslate"><span class="pre">fevd</span></code>, <code class="docutils literal notranslate"><span class="pre">structural_shocks</span></code>
+and <code class="docutils literal notranslate"><span class="pre">historical_decomposition</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">prior</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>a prior from <a class="reference internal" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors" title="cultivars.bayes.priors"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.priors</span></code></a> (for example
+<a class="reference internal" href="../api/generated/cultivars.bayes.priors.MinnesotaPrior.html#cultivars.bayes.priors.MinnesotaPrior" title="cultivars.bayes.priors.MinnesotaPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">MinnesotaPrior</span></code></a>). Replaces the
+least-squares solve by the posterior mean and switches inference
+to posterior moments; see <a class="reference internal" href="#shrinkage-through-prior">Shrinkage through prior=</a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARX.html#cultivars.multivariate.reduced_form.vector_autoregression.VARX" title="cultivars.multivariate.reduced_form.vector_autoregression.VARX"><code class="xref py py-class docutils literal notranslate"><span class="pre">VARX</span></code></a>
+takes <code class="docutils literal notranslate"><span class="pre">(endog,</span> <span class="pre">exog)</span></code> positionally plus <code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">exog_order</span></code>
+(default <code class="docutils literal notranslate"><span class="pre">0</span></code>: contemporaneous term only), <code class="docutils literal notranslate"><span class="pre">trend</span></code>, <code class="docutils literal notranslate"><span class="pre">names</span></code> and
+<code class="docutils literal notranslate"><span class="pre">exog_names</span></code> (default <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">...</span> <span class="pre">xm</span></code>). It does not accept <code class="docutils literal notranslate"><span class="pre">prior</span></code>.</p>
+<p>The constructor checks that the sample can support the design: without
+a prior it needs at least <span class="math notranslate nohighlight">\(p + (d + kp) + 1\)</span> rows, where <span class="math notranslate nohighlight">\(d\)</span>
+is the number of deterministic columns.</p>
+</section>
+<section id="choosing-the-lag-order">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Choosing the lag order</a><a class="headerlink" href="#choosing-the-lag-order" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">lag_order_selection</span></code> lives on the <em>model</em>, so it runs before any fit.
+Every order from 0 to <code class="docutils literal notranslate"><span class="pre">max_lags</span></code> is scored on the same effective
+sample, trimmed at <code class="docutils literal notranslate"><span class="pre">max_lags</span></code>, so a column of the table is comparable
+across orders.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">VAR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">"gdp"</span><span class="p">,</span> <span class="s2">"infl"</span><span class="p">,</span> <span class="s2">"rate"</span><span class="p">))</span>
+<span class="n">selection</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lag_order_selection</span><span class="p">(</span><span class="n">max_lags</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">selection</span><span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="n">selection</span><span class="o">.</span><span class="n">consensus</span><span class="p">,</span> <span class="n">selection</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">selection</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="s2">"bic"</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">selection</span><span class="o">.</span><span class="n">best</span><span class="p">(</span><span class="s2">"aic"</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>LagOrderSelection(max_lags=6, nobs=294, AIC=1, BIC=1, HQIC=1, FPE=1)
+{'aic': 1, 'bic': 1, 'hqic': 1, 'fpe': 1} 1 294
+[0.779 0.177 0.315] 1
+</pre></div>
+</div>
+<p>The record carries the four whole curves (<code class="docutils literal notranslate"><span class="pre">aic</span></code>, <code class="docutils literal notranslate"><span class="pre">bic</span></code>, <code class="docutils literal notranslate"><span class="pre">hqic</span></code>,
+<code class="docutils literal notranslate"><span class="pre">fpe</span></code>, indexed by order from zero), <code class="docutils literal notranslate"><span class="pre">orders</span></code>, <code class="docutils literal notranslate"><span class="pre">best(criterion)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">selected</span></code>, <code class="docutils literal notranslate"><span class="pre">consensus</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code> when the criteria disagree) and
+<code class="docutils literal notranslate"><span class="pre">to_table()</span></code>. <code class="docutils literal notranslate"><span class="pre">max_lags=None</span></code> uses the largest order the sample
+supports; a larger request raises <code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code>.</p>
+</section>
+<section id="estimation-and-coefficient-layout">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Estimation and coefficient layout</a><a class="headerlink" href="#estimation-and-coefficient-layout" title="Link to this heading">#</a></h2>
+<p>The fitted record stores the estimate in two shapes.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">coefficients</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">k,</span> <span class="pre">k)</span></code>. <code class="docutils literal notranslate"><span class="pre">coefficients[i][r,</span> <span class="pre">c]</span></code> is the effect of variable
+<code class="docutils literal notranslate"><span class="pre">c</span></code> at lag <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">+</span> <span class="pre">1</span></code> on equation <code class="docutils literal notranslate"><span class="pre">r</span></code>, so <code class="docutils literal notranslate"><span class="pre">coefficients[0]</span></code> is
+<span class="math notranslate nohighlight">\(A_1\)</span> in the usual row-equation orientation.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">deterministic</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">(d,</span> <span class="pre">k)</span></code>, one row per deterministic term in the order constant,
+trend; zero rows when <code class="docutils literal notranslate"><span class="pre">trend="n"</span></code>. Column <code class="docutils literal notranslate"><span class="pre">r</span></code> belongs to equation
+<code class="docutils literal notranslate"><span class="pre">r</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">design</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">d</span> <span class="pre">+</span> <span class="pre">kp)</span></code> regressor matrix in the column order
+<code class="docutils literal notranslate"><span class="pre">[const,</span> <span class="pre">trend,</span> <span class="pre">y1.L1</span> <span class="pre">...</span> <span class="pre">yk.L1,</span> <span class="pre">y1.L2,</span> <span class="pre">...]</span></code>.</p>
+</dd>
+</dl>
+<p>The labelled views follow the design order. <code class="docutils literal notranslate"><span class="pre">params</span></code> is a flat
+<code class="docutils literal notranslate"><span class="pre">dict</span></code> keyed <code class="docutils literal notranslate"><span class="pre">"{equation}:</span> <span class="pre">{regressor}"</span></code>, equation-major;
+<code class="docutils literal notranslate"><span class="pre">equation(name)</span></code> returns one equation’s coefficients keyed by
+regressor. Lag regressors are named <code class="docutils literal notranslate"><span class="pre">"{variable}.L{lag}"</span></code>, the
+deterministic ones <code class="docutils literal notranslate"><span class="pre">"const"</span></code> and <code class="docutils literal notranslate"><span class="pre">"trend"</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#list"><span class="nb">list</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">params</span><span class="p">)[:</span><span class="mi">5</span><span class="p">],</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#len"><span class="nb">len</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">params</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">({</span><span class="n">key</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">equation</span><span class="p">(</span><span class="s2">"infl"</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"infl: gdp.L1"</span><span class="p">]</span> <span class="o">==</span> <span class="n">res</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>['gdp: const', 'gdp: gdp.L1', 'gdp: infl.L1', 'gdp: rate.L1', 'infl: const'] 12
+{'const': 0.084, 'gdp.L1': 0.211, 'infl.L1': 0.381, 'rate.L1': 0.111}
+True
+</pre></div>
+</div>
+<p>Two residual covariances are stored. <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code> divides
+<span class="math notranslate nohighlight">\(\hat U'\hat U\)</span> by <span class="math notranslate nohighlight">\(T - (d + kp)\)</span> and feeds every
+inferential quantity (standard errors, Wald tests, the Cholesky impact
+matrix); <code class="docutils literal notranslate"><span class="pre">sigma_ml</span></code> divides by <span class="math notranslate nohighlight">\(T\)</span> and feeds <code class="docutils literal notranslate"><span class="pre">llf</span></code> and the
+information criteria. <code class="docutils literal notranslate"><span class="pre">nobs</span></code> is the effective sample <span class="math notranslate nohighlight">\(n - p\)</span>,
+<code class="docutils literal notranslate"><span class="pre">resid</span></code> and <code class="docutils literal notranslate"><span class="pre">fittedvalues</span></code> are <code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k)</span></code> and aligned with
+<code class="docutils literal notranslate"><span class="pre">endog[p:]</span></code>. <code class="docutils literal notranslate"><span class="pre">n_params</span></code> counts <span class="math notranslate nohighlight">\(k(d + kp) + k(k+1)/2\)</span>, the
+covariance included, and <code class="docutils literal notranslate"><span class="pre">information_criteria</span></code> returns
+<code class="docutils literal notranslate"><span class="pre">InformationCriteria(aic,</span> <span class="pre">bic,</span> <span class="pre">hqic)</span></code> on the total-likelihood scale
+<span class="math notranslate nohighlight">\(-2\ell + \text{penalty}\)</span>.</p>
+</section>
+<section id="coefficient-inference">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Coefficient inference</a><a class="headerlink" href="#coefficient-inference" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bse</span></code>, <code class="docutils literal notranslate"><span class="pre">tvalues</span></code> and <code class="docutils literal notranslate"><span class="pre">pvalues</span></code> are dicts keyed exactly like
+<code class="docutils literal notranslate"><span class="pre">params</span></code>; <code class="docutils literal notranslate"><span class="pre">conf_int(alpha=0.05)</span></code> maps the same keys to
+<code class="docutils literal notranslate"><span class="pre">(lower,</span> <span class="pre">upper)</span></code> tuples. The statistics are referred to the standard
+normal, not a <span class="math notranslate nohighlight">\(t\)</span>, and the summary heads the column <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">bse</span><span class="p">[</span><span class="s2">"gdp: rate.L1"</span><span class="p">],</span> <span class="mi">4</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">tvalues</span><span class="p">[</span><span class="s2">"gdp: rate.L1"</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">pvalues</span><span class="p">[</span><span class="s2">"gdp: rate.L1"</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">conf_int</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.10</span><span class="p">)[</span><span class="s2">"gdp: rate.L1"</span><span class="p">]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">high</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.0583 2.16 0.031
+0.03 0.222
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">coefficient_covariance</span></code> returns the object these are computed from,
+which satisfies the
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.CoefficientInference.html#cultivars.multivariate.reduced_form.vector_autoregression.CoefficientInference" title="cultivars.multivariate.reduced_form.vector_autoregression.CoefficientInference"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoefficientInference</span></code></a>
+protocol: <code class="docutils literal notranslate"><span class="pre">coefficients</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code>, <code class="docutils literal notranslate"><span class="pre">tstat</span></code>, <code class="docutils literal notranslate"><span class="pre">pvalue</span></code> as
+<code class="docutils literal notranslate"><span class="pre">(d</span> <span class="pre">+</span> <span class="pre">kp,</span> <span class="pre">k)</span></code> arrays (regressor rows, equation columns),
+<code class="docutils literal notranslate"><span class="pre">conf_int(alpha=...)</span></code> returning <code class="docutils literal notranslate"><span class="pre">(lower,</span> <span class="pre">upper)</span></code> arrays,
+<code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> for the full covariance of <span class="math notranslate nohighlight">\(\operatorname{vec}(B)\)</span>
+stacked equation by equation (index <code class="docutils literal notranslate"><span class="pre">equation</span> <span class="pre">*</span> <span class="pre">width</span> <span class="pre">+</span> <span class="pre">regressor</span></code>),
+<code class="docutils literal notranslate"><span class="pre">wald(cells,</span> <span class="pre">null=...)</span></code> for a joint zero restriction on
+<code class="docutils literal notranslate"><span class="pre">(equation,</span> <span class="pre">regressor)</span></code> index pairs, and <code class="docutils literal notranslate"><span class="pre">wald_restriction(R,</span>
+<span class="pre">null=...)</span></code> for a general <span class="math notranslate nohighlight">\(R\operatorname{vec}(B) = 0\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cov</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">coefficient_covariance</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">cov</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">cov</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># rate.L1 (design column 3) in the gdp and infl equations (0 and 1)</span>
+<span class="n">joint</span> <span class="o">=</span> <span class="n">cov</span><span class="o">.</span><span class="n">wald</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)],</span> <span class="n">null</span><span class="o">=</span><span class="s2">"rate.L1 is zero in gdp and infl"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">joint</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(4, 3) (12, 12)
+5.112 2 0.0776
+</pre></div>
+</div>
+<p>Every test in this family returns a Wald or likelihood-ratio record with
+<code class="docutils literal notranslate"><span class="pre">statistic</span></code>, <code class="docutils literal notranslate"><span class="pre">df</span></code>, <code class="docutils literal notranslate"><span class="pre">pvalue</span></code>, <code class="docutils literal notranslate"><span class="pre">null</span></code>, <code class="docutils literal notranslate"><span class="pre">reject(alpha=0.05)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">summary()</span></code>.</p>
+</section>
+<section id="shrinkage-through-prior">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Shrinkage through <code class="docutils literal notranslate"><span class="pre">prior=</span></code></a><a class="headerlink" href="#shrinkage-through-prior" title="Link to this heading">#</a></h2>
+<p>Passing a prior from <a class="reference internal" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors" title="cultivars.bayes.priors"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.priors</span></code></a> keeps the VAR a point
+estimator but replaces least squares by the posterior mean under that
+prior. Three things change on the result: <code class="docutils literal notranslate"><span class="pre">coefficient_covariance</span></code> is
+a posterior covariance (so <code class="docutils literal notranslate"><span class="pre">bse</span></code> are posterior standard deviations and
+the summary drops the p-value column and relabels the others
+<code class="docutils literal notranslate"><span class="pre">post.</span> <span class="pre">sd</span></code> and <code class="docutils literal notranslate"><span class="pre">m/sd</span></code>); <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code> is corrected by the <em>effective</em>
+number of parameters; and <code class="docutils literal notranslate"><span class="pre">n_params</span></code> becomes that effective, generally
+fractional, count, which is what the information criteria then charge.
+<code class="docutils literal notranslate"><span class="pre">posterior</span></code> holds the posterior object (<code class="docutils literal notranslate"><span class="pre">None</span></code> without a prior) and
+<code class="docutils literal notranslate"><span class="pre">prior_label</span></code> describes it. A proper prior also lifts the sample-size
+check, so a system with more regressors than observations estimates.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors"><span class="nn">cultivars.bayes.priors</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.MinnesotaPrior.html#cultivars.bayes.priors.MinnesotaPrior" title="cultivars.bayes.priors.MinnesotaPrior"><span class="n">MinnesotaPrior</span></a>
+
+<span class="n">shrunk</span> <span class="o">=</span> <span class="n">VAR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">"gdp"</span><span class="p">,</span> <span class="s2">"infl"</span><span class="p">,</span> <span class="s2">"rate"</span><span class="p">),</span>
+             <span class="n">prior</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.MinnesotaPrior.html#cultivars.bayes.priors.MinnesotaPrior" title="cultivars.bayes.priors.MinnesotaPrior"><span class="n">MinnesotaPrior</span></a><span class="p">(</span><span class="n">tightness</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">shrunk</span><span class="o">.</span><span class="n">prior_label</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">shrunk</span><span class="o">.</span><span class="n">n_params</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">shrunk</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">wide</span> <span class="o">=</span> <span class="n">VAR</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="mi">20</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.bayes.priors.MinnesotaPrior.html#cultivars.bayes.priors.MinnesotaPrior" title="cultivars.bayes.priors.MinnesotaPrior"><span class="n">MinnesotaPrior</span></a><span class="p">(</span><span class="n">tightness</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">wide</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">wide</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>minnesota(l1=0.1, l2=0.5, l3=1, l4=100)
+13.81 [0.66 0.62 0.5 ]
+(8, 3, 3) 12
+</pre></div>
+</div>
+<p>The default <code class="docutils literal notranslate"><span class="pre">MinnesotaPrior</span></code> centres own first lags at one
+(<code class="docutils literal notranslate"><span class="pre">persistence=1.0</span></code>, the random-walk prior of Litterman, 1986), so on
+stationary data it pulls own-lag coefficients up, as above. Full
+posterior simulation, marginal likelihoods and posterior predictive
+checks are the job of the Bayesian VAR classes in <a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a>.</p>
+</section>
+<section id="residual-diagnostics">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Residual diagnostics</a><a class="headerlink" href="#residual-diagnostics" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 66.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">portmanteau_test(lags=10)</span></code></p></td>
+<td><p>multivariate Ljung-Box statistic on the residual autocovariances
+through <code class="docutils literal notranslate"><span class="pre">lags</span></code>; rejection means the lag order is too short</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">normality_test(variable)</span></code></p></td>
+<td><p>Jarque-Bera on one equation’s residuals, 2 degrees of freedom</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">arch_test(variable,</span> <span class="pre">lags=5)</span></code></p></td>
+<td><p>Engle’s LM test, <span class="math notranslate nohighlight">\((T - \text{lags}) R^2\)</span> from a regression
+of squared residuals on their lags</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">residual_diagnostics(portmanteau_lags=10,</span> <span class="pre">arch_lags=5)</span></code></p></td>
+<td><p>all of the above in one table, one Jarque-Bera and one ARCH row
+per equation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">residual_diagnostics</span><span class="p">(</span><span class="n">portmanteau_lags</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">arch_lags</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                              Residual diagnostics
+================================================================================
+Observations:                      299  Equations:                           3
+--------------------------------------------------------------------------------
+test                  statistic   df   p-value
+portmanteau(8)           65.529   60    0.2910
+jarque-bera[gdp]          0.898    2    0.6381
+jarque-bera[infl]         0.085    2    0.9585
+jarque-bera[rate]         0.109    2    0.9471
+arch-lm(4)[gdp]           2.622    4    0.6229
+arch-lm(4)[infl]          7.796    4    0.0993
+arch-lm(4)[rate]          0.335    4    0.9875
+================================================================================
+Small p-values reject the null named by each test. A rejected portmanteau means
+the lag order is too short, which invalidates every other quantity the result
+reports.
+</pre></div>
+</div>
+<p>The portmanteau degrees of freedom are <span class="math notranslate nohighlight">\(k^2 h - k(d + kp)\)</span>: the
+deterministic columns are charged as well as the lags (60 above, where
+the textbook <span class="math notranslate nohighlight">\(k^2(h - p)\)</span> gives 63). A <code class="docutils literal notranslate"><span class="pre">lags</span></code> value that leaves no
+degrees of freedom raises <code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code>.</p>
+</section>
+<section id="stability-and-the-companion-form">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Stability and the companion form</a><a class="headerlink" href="#stability-and-the-companion-form" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">companion</span></code> is the <code class="docutils literal notranslate"><span class="pre">(kp,</span> <span class="pre">kp)</span></code> companion matrix and
+<code class="docutils literal notranslate"><span class="pre">stability_check()</span></code> its eigenvalue verdict, a record with
+<code class="docutils literal notranslate"><span class="pre">eigenvalues</span></code> (complex), <code class="docutils literal notranslate"><span class="pre">max_modulus</span></code>, <code class="docutils literal notranslate"><span class="pre">is_stable</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_unit_roots</span></code>, <code class="docutils literal notranslate"><span class="pre">n_explosive</span></code> and <code class="docutils literal notranslate"><span class="pre">tol</span></code>. <code class="docutils literal notranslate"><span class="pre">is_stable</span></code> is the
+shortcut. Every propagation method below presumes stability; none of
+them refuses an unstable system, and the summary prints a warning first
+when the system is not stable.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">stability_check</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">companion</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">check</span><span class="o">.</span><span class="n">n_unit_roots</span><span class="p">,</span> <span class="n">check</span><span class="o">.</span><span class="n">n_explosive</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">check</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(3, 3) 0 0
+[0.23  0.307 0.643]
+</pre></div>
+</div>
+</section>
+<section id="forecasting-and-simulation">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Forecasting and simulation</a><a class="headerlink" href="#forecasting-and-simulation" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">forecast(steps)</span></code> iterates the fitted system forward from the last
+<code class="docutils literal notranslate"><span class="pre">p</span></code> observations with future innovations at zero and the
+deterministic terms extrapolated. It returns a <code class="docutils literal notranslate"><span class="pre">(steps,</span> <span class="pre">k)</span></code> array of
+point forecasts; row <code class="docutils literal notranslate"><span class="pre">h</span></code> is the forecast of <span class="math notranslate nohighlight">\(y_{T+h+1}\)</span>. <strong>No
+forecast interval is returned</strong>, and there is no method for one on the
+reduced-form result. Forecast densities and evaluation are covered in
+<a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">simulate(n=200,</span> <span class="pre">seed=None,</span> <span class="pre">burn=100)</span></code> draws a fresh <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">k)</span></code> path
+from the fitted coefficients with Gaussian innovations of covariance
+<code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>, starting from zeros and discarding <code class="docutils literal notranslate"><span class="pre">burn</span></code> periods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">hand</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">deterministic</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">res</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">@</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hand</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[[ 0.556  0.288 -0.16 ]
+ [ 0.505  0.293 -0.137]
+ [ 0.48   0.287 -0.126]]
+True
+(100, 3)
+</pre></div>
+</div>
+</section>
+<section id="impulse-responses">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Impulse responses</a><a class="headerlink" href="#impulse-responses" title="Link to this heading">#</a></h2>
+<p>All propagation arrays share one index convention:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 40.0%"/>
+<col style="width: 20.0%"/>
+<col style="width: 40.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Entry</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ma_representation(horizon=20)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(H+1,</span> <span class="pre">k,</span> <span class="pre">k)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[h,</span> <span class="pre">i,</span> <span class="pre">j]</span></code> is <span class="math notranslate nohighlight">\(\Psi_h[i, j]\)</span>, with <span class="math notranslate nohighlight">\(\Psi_0 = I\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">irf(horizon=20,</span> <span class="pre">orthogonalized=True,</span> <span class="pre">cumulative=False)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(H+1,</span> <span class="pre">k,</span> <span class="pre">k)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[h,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>: response of variable <code class="docutils literal notranslate"><span class="pre">i</span></code> at horizon <code class="docutils literal notranslate"><span class="pre">h</span></code> to
+shock <code class="docutils literal notranslate"><span class="pre">j</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">generalized_irf(horizon=20,</span> <span class="pre">cumulative=False)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(H+1,</span> <span class="pre">k,</span> <span class="pre">k)</span></code></p></td>
+<td><p>same reading, Pesaran-Shin shocks</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fevd(horizon=20)</span></code>, <code class="docutils literal notranslate"><span class="pre">generalized_fevd(horizon=20)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(H+1,</span> <span class="pre">k,</span> <span class="pre">k)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[h,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>: share of variable <code class="docutils literal notranslate"><span class="pre">i</span></code>’s <code class="docutils literal notranslate"><span class="pre">(h+1)</span></code>-step forecast
+error variance due to shock <code class="docutils literal notranslate"><span class="pre">j</span></code>; sums to one over <code class="docutils literal notranslate"><span class="pre">j</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">historical_decomposition()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k,</span> <span class="pre">k)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[t,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>: cumulative contribution of shock <code class="docutils literal notranslate"><span class="pre">j</span></code> to variable
+<code class="docutils literal notranslate"><span class="pre">i</span></code> at effective-sample date <code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">structural_shocks()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k)</span></code></p></td>
+<td><p>Cholesky-orthogonalized residuals <span class="math notranslate nohighlight">\(P^{-1}\hat u_t\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">horizon</span></code> is the largest lead, so every array has <code class="docutils literal notranslate"><span class="pre">horizon</span> <span class="pre">+</span> <span class="pre">1</span></code>
+rows with the impact at index 0.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">orthogonalized=True</span></code> (the default) the response is
+<span class="math notranslate nohighlight">\(\Psi_h P\)</span> with <span class="math notranslate nohighlight">\(P\)</span> the lower Cholesky factor of
+<code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>: a one-standard-deviation shock under the recursive ordering
+of <code class="docutils literal notranslate"><span class="pre">names</span></code>. This is a recursive SVAR whose identifying assumption is
+the column order; permute <code class="docutils literal notranslate"><span class="pre">names</span></code> and the answer changes. With
+<code class="docutils literal notranslate"><span class="pre">orthogonalized=False</span></code> the response is <span class="math notranslate nohighlight">\(\Psi_h\)</span>, a unit
+reduced-form innovation, whose columns are not interpretable one at a
+time because the innovations are correlated. <code class="docutils literal notranslate"><span class="pre">cumulative=True</span></code> returns
+running sums over <code class="docutils literal notranslate"><span class="pre">h</span></code> (levels responses of differenced data).
+<code class="docutils literal notranslate"><span class="pre">generalized_irf</span></code> (Pesaran and Shin, 1998) is
+<span class="math notranslate nohighlight">\(\Psi_h \Sigma_u e_j / \sqrt{\sigma_{jj}}\)</span>; it needs no ordering
+and coincides with the orthogonalized response for the first variable
+only.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">irf</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">irf</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">irf</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">irf</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">sigma_u</span><span class="p">)))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">irf</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">orthogonalized</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">res</span><span class="o">.</span><span class="n">ma_representation</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">irf</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">cumulative</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">irf</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)))</span>
+<span class="n">girf</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">generalized_irf</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">girf</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">irf</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">girf</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">irf</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="c1"># response of rate (i=2) at horizon 2 to an infl shock (j=1)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">irf</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(11, 3, 3)
+True
+True
+True
+True False
+0.211
+</pre></div>
+</div>
+<p>Confidence bands for impulse responses are not produced by the reduced
+form. Declared identification and its inference live in
+<a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a>; posterior bands come from
+<a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a>.</p>
+</section>
+<section id="variance-and-historical-decompositions">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Variance and historical decompositions</a><a class="headerlink" href="#variance-and-historical-decompositions" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fevd</span></code> uses the orthogonalized responses and inherits their ordering
+dependence; at <code class="docutils literal notranslate"><span class="pre">h</span> <span class="pre">=</span> <span class="pre">0</span></code> it is exactly triangular, so the first variable
+is attributed all of its own impact variance by construction.
+<code class="docutils literal notranslate"><span class="pre">generalized_fevd</span></code> normalizes the squared generalized responses so
+rows sum to one (Diebold and Yilmaz, 2012); because generalized shocks
+are correlated, read it as a relative ranking, not as an exact
+decomposition.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shares</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">fevd</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">shares</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">shares</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">shares</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">generalized_fevd</span><span class="p">(</span><span class="mi">10</span><span class="p">)[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[[1.    0.    0.   ]
+ [0.286 0.714 0.   ]
+ [0.038 0.097 0.866]]
+[[0.967 0.014 0.019]
+ [0.396 0.589 0.015]
+ [0.077 0.21  0.713]]
+True
+[[0.689 0.241 0.07 ]
+ [0.261 0.62  0.119]
+ [0.061 0.225 0.714]]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">historical_decomposition()</span></code> attributes the stochastic part of each
+observation to the Cholesky shocks. Summing over the last axis recovers
+<span class="math notranslate nohighlight">\(\sum_{s=0}^{t}\Psi_s\hat u_{t-s}\)</span>, <em>not</em> the observed series: the
+deterministic terms and the effect of pre-sample initial conditions are
+excluded. Its cost is <span class="math notranslate nohighlight">\(O(\text{nobs}^2)\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hd</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">historical_decomposition</span><span class="p">()</span>
+<span class="n">psi</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">ma_representation</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">nobs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">by_hand</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#sum"><span class="nb">sum</span></a><span class="p">(</span><span class="n">psi</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">@</span> <span class="n">res</span><span class="o">.</span><span class="n">resid</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">hd</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">hd</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">by_hand</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">structural_shocks</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">diagonal</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(299, 3, 3) True
+[0.99 0.99 0.99]
+</pre></div>
+</div>
+<p>The structural shocks have sample variance <span class="math notranslate nohighlight">\((T - d - kp)/(T-1)\)</span>
+rather than one, because <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code> is degrees-of-freedom corrected.</p>
+</section>
+<section id="granger-causality">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Granger causality</a><a class="headerlink" href="#granger-causality" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">granger_causality(cause,</span> <span class="pre">effect)</span></code> is the Wald test that all <code class="docutils literal notranslate"><span class="pre">p</span></code>
+lags of <code class="docutils literal notranslate"><span class="pre">cause</span></code> are zero in the <code class="docutils literal notranslate"><span class="pre">effect</span></code> equation (Granger, 1969),
+using <code class="docutils literal notranslate"><span class="pre">coefficient_covariance</span></code>. Both arguments are variable names.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">test</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="s2">"rate"</span><span class="p">,</span> <span class="s2">"gdp"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">null</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">test</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">test</span><span class="o">.</span><span class="n">reject</span><span class="p">())</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="s2">"infl"</span><span class="p">,</span> <span class="s2">"gdp"</span><span class="p">)</span><span class="o">.</span><span class="n">reject</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rate does not Granger-cause gdp
+4.665 1 0.0308 True
+False
+</pre></div>
+</div>
+<p>The test is pairwise and per equation. Block exogeneity of several
+variables, or restrictions across equations, go through
+<code class="docutils literal notranslate"><span class="pre">coefficient_covariance.wald</span></code> or <code class="docutils literal notranslate"><span class="pre">wald_restriction</span></code>.</p>
+</section>
+<section id="comparing-specifications">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Comparing specifications</a><a class="headerlink" href="#comparing-specifications" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">compare(*others,</span> <span class="pre">criterion="aic")</span></code> ranks results by <code class="docutils literal notranslate"><span class="pre">"aic"</span></code>,
+<code class="docutils literal notranslate"><span class="pre">"bic"</span></code> or <code class="docutils literal notranslate"><span class="pre">"hqic"</span></code> and returns a table, best first;
+<code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test(unrestricted)</span></code> treats the calling result as the
+restricted model. Both require the same <code class="docutils literal notranslate"><span class="pre">nobs</span></code>. A VAR(1) and a VAR(2)
+on the same array do <em>not</em> share a sample (299 and 298 rows), so drop
+the extra leading row from the shorter model first.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">var1</span> <span class="o">=</span> <span class="n">VAR</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">var2</span> <span class="o">=</span> <span class="n">VAR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">var1</span><span class="o">.</span><span class="n">nobs</span><span class="p">,</span> <span class="n">var2</span><span class="o">.</span><span class="n">nobs</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">var1</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">var2</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s2">"bic"</span><span class="p">))</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">var1</span><span class="o">.</span><span class="n">likelihood_ratio_test</span><span class="p">(</span><span class="n">var2</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">lr</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">lr</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">lr</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>298 298
+                            Model comparison by BIC
+================================================================================
+Observations:                      298  Models:                              2
+--------------------------------------------------------------------------------
+model            llf    k        BIC     dBIC
+VAR(1)     -1261.124   18   2624.795    0.000
+VAR(2)     -1256.007   27   2665.835   41.040
+================================================================================
+Ranked best-first; the final column is the gap to the best model.
+10.234 9 0.332
+</pre></div>
+</div>
+<p>For choosing <code class="docutils literal notranslate"><span class="pre">p</span></code> the model-level <code class="docutils literal notranslate"><span class="pre">lag_order_selection</span></code> is the better
+tool; <code class="docutils literal notranslate"><span class="pre">compare</span></code> is for comparing different trends, variable sets or
+families on one sample.</p>
+</section>
+<section id="exogenous-regressors-varx">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Exogenous regressors: <code class="docutils literal notranslate"><span class="pre">VARX</span></code></a><a class="headerlink" href="#exogenous-regressors-varx" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[y_t = D d_t + \sum_{i=1}^{p} A_i y_{t-i} + \sum_{j=0}^{s} B_j x_{t-j} + u_t.\]</div>
+<p>The distributed lag of <span class="math notranslate nohighlight">\(x\)</span> is appended to the design after the
+endogenous lags. The result adds <code class="docutils literal notranslate"><span class="pre">exog</span></code>, <code class="docutils literal notranslate"><span class="pre">exog_names</span></code>,
+<code class="docutils literal notranslate"><span class="pre">exog_order</span></code>, <code class="docutils literal notranslate"><span class="pre">k_exog</span></code> and <code class="docutils literal notranslate"><span class="pre">exog_coefficients</span></code>, a <code class="docutils literal notranslate"><span class="pre">(s</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">k,</span>
+<span class="pre">m)</span></code> stack with <code class="docutils literal notranslate"><span class="pre">exog_coefficients[j][r,</span> <span class="pre">q]</span></code> the effect of
+<span class="math notranslate nohighlight">\(x_{q, t-j}\)</span> on equation <code class="docutils literal notranslate"><span class="pre">r</span></code> (<code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">=</span> <span class="pre">0</span></code> is the impact). In
+<code class="docutils literal notranslate"><span class="pre">params</span></code> the contemporaneous term is keyed by the bare exogenous name
+and lag <code class="docutils literal notranslate"><span class="pre">j</span></code> by <code class="docutils literal notranslate"><span class="pre">"{name}.L{j}"</span></code>. The effective sample is
+<span class="math notranslate nohighlight">\(n - \max(p, s)\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.html#module-cultivars.multivariate.reduced_form.vector_autoregression"><span class="nn">cultivars.multivariate.reduced_form.vector_autoregression</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARX.html#cultivars.multivariate.reduced_form.vector_autoregression.VARX" title="cultivars.multivariate.reduced_form.vector_autoregression.VARX"><span class="n">VARX</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">oil</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">250</span><span class="p">):</span>
+    <span class="n">z</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]])</span> <span class="o">@</span> <span class="n">z</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="o">*</span> <span class="n">oil</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span> <span class="o">*</span> <span class="n">oil</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARXResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARXResult"><span class="n">resx</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARX.html#cultivars.multivariate.reduced_form.vector_autoregression.VARX" title="cultivars.multivariate.reduced_form.vector_autoregression.VARX"><span class="n">VARX</span></a><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">oil</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">exog_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">"output"</span><span class="p">,</span> <span class="s2">"prices"</span><span class="p">),</span> <span class="n">exog_names</span><span class="o">=</span><span class="p">(</span><span class="s2">"oil"</span><span class="p">,))</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARX.fit.html#cultivars.multivariate.reduced_form.vector_autoregression.VARX.fit" title="cultivars.multivariate.reduced_form.vector_autoregression.VARX.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">resx</span><span class="o">.</span><span class="n">exog_coefficients</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.nobs.html#cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.nobs" title="cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.nobs"><span class="n">resx</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <span class="n">resx</span><span class="o">.</span><span class="n">design</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#list"><span class="nb">list</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.equation.html#cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.equation" title="cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.equation"><span class="n">resx</span><span class="o">.</span><span class="n">equation</span></a><span class="p">(</span><span class="s2">"prices"</span><span class="p">)))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.exog_coefficients.html#cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.exog_coefficients" title="cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.exog_coefficients"><span class="n">resx</span><span class="o">.</span><span class="n">exog_coefficients</span></a><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.forecast.html#cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.forecast" title="cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.forecast"><span class="n">resx</span><span class="o">.</span><span class="n">forecast</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">exog_future</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(2, 2, 1) 249 (249, 5)
+['const', 'output.L1', 'prices.L1', 'oil', 'oil.L1']
+[[0.81 0.01]
+ [0.07 0.32]]
+[[0.439 0.263]
+ [0.253 0.251]]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">forecast</span></code> is the only method whose signature changes:
+<code class="docutils literal notranslate"><span class="pre">forecast(steps,</span> <span class="pre">*,</span> <span class="pre">exog_future)</span></code> requires a <code class="docutils literal notranslate"><span class="pre">(steps,</span> <span class="pre">m)</span></code> path for
+<span class="math notranslate nohighlight">\(x\)</span>, uses the last <code class="docutils literal notranslate"><span class="pre">s</span></code> sample rows of <code class="docutils literal notranslate"><span class="pre">exog</span></code> for the lags that
+reach back into the sample, and raises <code class="docutils literal notranslate"><span class="pre">SpecificationError</span></code> without
+the path. Stability, <code class="docutils literal notranslate"><span class="pre">irf</span></code>, <code class="docutils literal notranslate"><span class="pre">fevd</span></code>, <code class="docutils literal notranslate"><span class="pre">historical_decomposition</span></code> and
+<code class="docutils literal notranslate"><span class="pre">granger_causality</span></code> read the endogenous block only: <span class="math notranslate nohighlight">\(x\)</span> is
+conditioned on, never shocked, so it does not enter the moving-average
+representation, and naming an exogenous variable in
+<code class="docutils literal notranslate"><span class="pre">granger_causality</span></code> raises. <code class="docutils literal notranslate"><span class="pre">lag_order_selection</span></code> varies <code class="docutils literal notranslate"><span class="pre">p</span></code> with
+the exogenous block held fixed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_varx()</span></code> repackages the unit in levels as a
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels.html#cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels" title="cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalLevels</span></code></a>
+record (<code class="docutils literal notranslate"><span class="pre">phi</span></code> the endogenous stack, <code class="docutils literal notranslate"><span class="pre">impact</span></code> <span class="math notranslate nohighlight">\(= B_0\)</span>,
+<code class="docutils literal notranslate"><span class="pre">exog_lags</span></code> <span class="math notranslate nohighlight">\(= B_1, \dots, B_s\)</span>, <code class="docutils literal notranslate"><span class="pre">deterministic</span></code>, <code class="docutils literal notranslate"><span class="pre">names</span></code>,
+<code class="docutils literal notranslate"><span class="pre">exog_names</span></code>), the currency
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.closed_global.GVAR.html#cultivars.multivariate.reduced_form.closed_global.GVAR" title="cultivars.multivariate.reduced_form.closed_global.GVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">GVAR</span></code></a> links.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">levels</span> <span class="o">=</span> <span class="n">resx</span><span class="o">.</span><span class="n">to_varx</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">levels</span><span class="o">.</span><span class="n">phi</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">levels</span><span class="o">.</span><span class="n">impact</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">levels</span><span class="o">.</span><span class="n">exog_lags</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">levels</span><span class="o">.</span><span class="n">exog_names</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(1, 2, 2) (2, 1) (1, 2, 1) ('oil',)
+</pre></div>
+</div>
+</section>
+<section id="how-the-pieces-connect">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">How the pieces connect</a><a class="headerlink" href="#how-the-pieces-connect" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><strong>Structural identification.</strong> A fitted <code class="docutils literal notranslate"><span class="pre">VARResult</span></code> (and
+<code class="docutils literal notranslate"><span class="pre">VARXResult</span></code>) satisfies the <code class="docutils literal notranslate"><span class="pre">ClosedSystemResult</span></code> protocol in
+<code class="docutils literal notranslate"><span class="pre">cultivars.engine._core._protocols</span></code> – <code class="docutils literal notranslate"><span class="pre">names</span></code>, <code class="docutils literal notranslate"><span class="pre">nobs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>, <code class="docutils literal notranslate"><span class="pre">resid</span></code>, <code class="docutils literal notranslate"><span class="pre">coefficients</span></code>, <code class="docutils literal notranslate"><span class="pre">k_endog</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ma_representation</span></code> – which is everything an identification scheme
+reads. Schemes take the result in their constructor and identify with
+a no-argument <code class="docutils literal notranslate"><span class="pre">identify()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.html#module-cultivars.multivariate.structural.zero_restrictions"><span class="nn">cultivars.multivariate.structural.zero_restrictions</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR"><span class="n">RecursiveSVAR</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.SVARResult.html#cultivars.multivariate.structural.zero_restrictions.SVARResult" title="cultivars.multivariate.structural.zero_restrictions.SVARResult"><span class="n">svar</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR"><span class="n">RecursiveSVAR</span></a><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="s2">"rate"</span><span class="p">,</span> <span class="s2">"gdp"</span><span class="p">,</span> <span class="s2">"infl"</span><span class="p">))</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify"><span class="n">identify</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">svar</span><span class="o">.</span><span class="n">impact</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR"><span class="n">RecursiveSVAR</span></a><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify.html#cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify" title="cultivars.multivariate.structural.zero_restrictions.RecursiveSVAR.identify"><span class="n">identify</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.SVARResult.irf.html#cultivars.multivariate.structural.zero_restrictions.SVARResult.irf" title="cultivars.multivariate.structural.zero_restrictions.SVARResult.irf"><span class="n">irf</span></a><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">res</span><span class="o">.</span><span class="n">irf</span><span class="p">(</span><span class="mi">5</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[[0.202 1.023 0.   ]
+ [0.421 0.544 0.922]
+ [1.057 0.    0.   ]]
+True
+</pre></div>
+</div>
+<p>The declared recursive scheme in the variables’ own order reproduces
+<code class="docutils literal notranslate"><span class="pre">irf()</span></code>; the full menu (long-run, sign, external instruments,
+heteroskedasticity, non-Gaussianity) is in
+<a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a>.</p>
+</li>
+<li><p><strong>Bayesian estimation.</strong> <code class="docutils literal notranslate"><span class="pre">prior=</span></code> gives a shrunk point estimate;
+the posterior samplers that take the same priors are in
+<a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a> and <a class="reference internal" href="large_dimensional.html"><span class="doc">Large and high-dimensional systems</span></a>.</p></li>
+<li><p><strong>Extensions.</strong> VECM, VARMA, panel and MIDAS results present the same
+surface (same <code class="docutils literal notranslate"><span class="pre">params</span></code> keys pattern, same array conventions); see
+<a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a>.</p></li>
+<li><p><strong>Global systems.</strong> <code class="docutils literal notranslate"><span class="pre">VARXResult.to_varx()</span></code> is what
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.closed_global.GVAR.html#cultivars.multivariate.reduced_form.closed_global.GVAR" title="cultivars.multivariate.reduced_form.closed_global.GVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">GVAR</span></code></a>
+consumes.</p></li>
+<li><p><strong>Mixed frequency.</strong> <code class="docutils literal notranslate"><span class="pre">MFVAR.from_result</span></code> takes <code class="docutils literal notranslate"><span class="pre">coefficients</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sigma_u</span></code> and <code class="docutils literal notranslate"><span class="pre">names</span></code> from a fitted VAR to filter a
+mixed-frequency panel (<a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a>).</p></li>
+<li><p><strong>Diagnostics and forecasting.</strong> Unit-root and cointegration tests to
+run before choosing levels, differences or a VECM are in
+<a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a>; forecast evaluation is in <a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>.</p></li>
+</ul>
+</section>
+<section id="nuances-and-gotchas">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Nuances and gotchas</a><a class="headerlink" href="#nuances-and-gotchas" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><strong>The identify method does not work with the shipped schemes.</strong>
+<code class="docutils literal notranslate"><span class="pre">VARResult.identify(strategy)</span></code> calls <code class="docutils literal notranslate"><span class="pre">strategy.identify(self)</span></code>,
+but every scheme in <a class="reference internal" href="../api/generated/cultivars.multivariate.structural.html#module-cultivars.multivariate.structural" title="cultivars.multivariate.structural"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.multivariate.structural</span></code></a> takes the result
+in its constructor and defines <code class="docutils literal notranslate"><span class="pre">identify()</span></code> with no argument.
+Passing an instance raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>; passing the class raises
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>. Use <code class="docutils literal notranslate"><span class="pre">Scheme(result,</span> <span class="pre">...).identify()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">identify</span><span class="p">(</span><span class="n">RecursiveSVAR</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+<span class="k">except</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/exceptions.html#TypeError"><span class="ne">TypeError</span></a> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RecursiveSVAR.identify() takes 1 positional argument but 2 were given
+</pre></div>
+</div>
+</li>
+<li><p><strong>DataFrame column names are ignored.</strong> <code class="docutils literal notranslate"><span class="pre">endog</span></code> is converted to an
+array; <code class="docutils literal notranslate"><span class="pre">names</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">...</span> <span class="pre">yk</span></code> regardless. Pass
+<code class="docutils literal notranslate"><span class="pre">names=tuple(df.columns)</span></code> yourself.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas"><span class="nn">pandas</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<a class="sphinx-codeautolink-a" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">frame</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"gdp"</span><span class="p">,</span> <span class="s2">"infl"</span><span class="p">,</span> <span class="s2">"rate"</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">VAR</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">frame</span></a><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>('y1', 'y2', 'y3')
+</pre></div>
+</div>
+</li>
+<li><p><strong>No DataFrame export and no AIC attribute.</strong> There is no
+<code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">to_dict</span></code> or <code class="docutils literal notranslate"><span class="pre">aic</span></code> on the result; it returns
+NumPy arrays and dicts; criteria are under
+<code class="docutils literal notranslate"><span class="pre">information_criteria.aic</span></code> (and <code class="docutils literal notranslate"><span class="pre">.bic</span></code>, <code class="docutils literal notranslate"><span class="pre">.hqic</span></code>).</p></li>
+<li><p><strong>Two information-criterion scales.</strong> <code class="docutils literal notranslate"><span class="pre">lag_order_selection</span></code> reports
+Lütkepohl’s per-observation criteria (<span class="math notranslate nohighlight">\(\log\det\hat\Sigma +
+\text{penalty}/T\)</span>, covariance parameters excluded);
+<code class="docutils literal notranslate"><span class="pre">information_criteria</span></code> on a result is on the <span class="math notranslate nohighlight">\(-2\ell +
+\text{penalty}\)</span> scale with covariance parameters included. The same
+model scores differently in the two places; compare within one.</p></li>
+<li><p><strong>The effective sample shrinks with the order.</strong> <code class="docutils literal notranslate"><span class="pre">nobs</span> <span class="pre">=</span> <span class="pre">n</span> <span class="pre">-</span> <span class="pre">p</span></code>
+(VARX: <span class="math notranslate nohighlight">\(n - \max(p, s)\)</span>), and <code class="docutils literal notranslate"><span class="pre">resid[t]</span></code> belongs to <code class="docutils literal notranslate"><span class="pre">endog[t</span> <span class="pre">+</span> <span class="pre">p]</span></code>.
+<code class="docutils literal notranslate"><span class="pre">compare</span></code> and <code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test</span></code> raise <code class="docutils literal notranslate"><span class="pre">DimensionError</span></code>
+across different <code class="docutils literal notranslate"><span class="pre">nobs</span></code>.</p></li>
+<li><p><strong>Variable order is an identifying assumption.</strong> The order of
+<code class="docutils literal notranslate"><span class="pre">names</span></code> drives <code class="docutils literal notranslate"><span class="pre">irf</span></code> (default <code class="docutils literal notranslate"><span class="pre">orthogonalized=True</span></code>), <code class="docutils literal notranslate"><span class="pre">fevd</span></code>,
+<code class="docutils literal notranslate"><span class="pre">structural_shocks</span></code> and <code class="docutils literal notranslate"><span class="pre">historical_decomposition</span></code>. Forecasts,
+Granger tests, <code class="docutils literal notranslate"><span class="pre">ma_representation</span></code> and <code class="docutils literal notranslate"><span class="pre">generalized_irf</span></code> are
+invariant to it.</p></li>
+<li><p><strong>Normal, not t, reference distribution.</strong> <code class="docutils literal notranslate"><span class="pre">pvalues</span></code> and
+<code class="docutils literal notranslate"><span class="pre">conf_int</span></code> use the standard normal.</p></li>
+<li><p><strong>Under a prior, p-values are still returned.</strong> <code class="docutils literal notranslate"><span class="pre">pvalues</span></code> gives
+normal tail areas of posterior mean over posterior sd even though the
+summary drops that column as having no frequentist meaning. Do not
+report them as p-values.</p></li>
+<li><p><strong>Likelihood-ratio test against a shrunk model.</strong>
+<code class="docutils literal notranslate"><span class="pre">shrunk.likelihood_ratio_test(ols_fit)</span></code> runs with the fractional
+parameter difference truncated to an integer (18 - 13.81 gives
+<code class="docutils literal notranslate"><span class="pre">df=4</span></code>) instead of refusing; a chi-squared LR test is not defined
+for that pair.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">shrunk</span><span class="o">.</span><span class="n">likelihood_ratio_test</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>4
+</pre></div>
+</div>
+</li>
+<li><p><strong>Point forecasts only.</strong> <code class="docutils literal notranslate"><span class="pre">forecast</span></code> returns points, and there is
+no <code class="docutils literal notranslate"><span class="pre">forecast_interval</span></code>. <code class="docutils literal notranslate"><span class="pre">simulate</span></code> gives paths from the point
+estimates (no parameter uncertainty).</p></li>
+<li><p><strong>VARX simulation ignores the exogenous block.</strong>
+<code class="docutils literal notranslate"><span class="pre">VARXResult.simulate</span></code> is the inherited VAR simulator, so it draws the endogenous system with
+<span class="math notranslate nohighlight">\(x \equiv 0\)</span>.</p></li>
+<li><p><strong>Granger tests need lags and endogenous names.</strong> <code class="docutils literal notranslate"><span class="pre">order=0</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">SpecificationError("a</span> <span class="pre">VAR(0)</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">lags</span> <span class="pre">to</span> <span class="pre">test.")</span></code>; an exogenous
+name in a VARX raises too.</p></li>
+<li><p><strong>The portmanteau degrees of freedom</strong> subtract <span class="math notranslate nohighlight">\(k\)</span> times the
+full regressor count, deterministic columns included (see
+<a class="reference internal" href="#residual-diagnostics">Residual diagnostics</a>).</p></li>
+<li><p><strong>No shrinkage for VARX.</strong> <code class="docutils literal notranslate"><span class="pre">VARX</span></code> takes no <code class="docutils literal notranslate"><span class="pre">prior</span></code>; passing one
+raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a> – VECM, VARMA, panel, global, mixed-frequency,
+functional and yield-curve systems on the same surface.</p></li>
+<li><p><a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a> – declaring the shocks.</p></li>
+<li><p><a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a> and <a class="reference internal" href="large_dimensional.html"><span class="doc">Large and high-dimensional systems</span></a> – posterior
+simulation and high-dimensional systems.</p></li>
+<li><p><a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a>, <a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>, <a class="reference internal" href="conventions.html"><span class="doc">Conventions</span></a>,
+<a class="reference internal" href="nuances.html"><span class="doc">Nuances and known issues</span></a>.</p></li>
+<li><p><a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.html#module-cultivars.multivariate.reduced_form.vector_autoregression" title="cultivars.multivariate.reduced_form.vector_autoregression"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.multivariate.reduced_form.vector_autoregression</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">VARResult</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.bayes.priors.MinnesotaPrior.html#cultivars.bayes.priors.MinnesotaPrior" title="cultivars.bayes.priors.MinnesotaPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">MinnesotaPrior</span></code></a>.</p></li>
+</ul>
+<p>References: Sims (1980); Granger (1969); Litterman (1986); Hamilton
+(1994, ch. 11); Pesaran and Shin (1998); Lütkepohl (2005, chs. 2-4 and
+10); Diebold and Yilmaz (2012).</p>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="univariate_nonlinear.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Nonlinear and regime-switching univariate models</p>
+</div>
+</a>
+<a class="right-next" href="var_extensions.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Beyond the basic VAR</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-family-at-a-glance">The family at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-model">The model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-first-fit">A first fit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#specification">Specification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-lag-order">Choosing the lag order</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estimation-and-coefficient-layout">Estimation and coefficient layout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coefficient-inference">Coefficient inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shrinkage-through-prior">Shrinkage through <code class="docutils literal notranslate"><span class="pre">prior=</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#residual-diagnostics">Residual diagnostics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stability-and-the-companion-form">Stability and the companion form</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forecasting-and-simulation">Forecasting and simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#impulse-responses">Impulse responses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-and-historical-decompositions">Variance and historical decompositions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#granger-causality">Granger causality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-specifications">Comparing specifications</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exogenous-regressors-varx">Exogenous regressors: <code class="docutils literal notranslate"><span class="pre">VARX</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-pieces-connect">How the pieces connect</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nuances-and-gotchas">Nuances and gotchas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="tocsection editthispage">
+<a href="https://github.com/nikhilxsunder/cultivars/edit/main/docs/source/user_guide/var.rst">
+<i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+</div>
+</div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item"><div class="cv-footer">
+<section aria-label="Documentation sections" class="cv-footer__band cv-footer__band--guide">
+<div class="cv-footer__inner cv-footer__columns">
+<div class="cv-footer__column">
+<h2>API reference</h2>
+<p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+<a class="cv-footer__cta" href="../api/index.html">View the API<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Examples</h2>
+<p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+<a class="cv-footer__cta" href="../auto_examples/index.html">View the examples<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Engine</h2>
+<p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+<a class="cv-footer__cta" href="../engine/index.html">View the engine<span aria-hidden="true"> ›</span></a>
+</div>
+</div>
+</section>
+<section aria-label="Project links" class="cv-footer__band cv-footer__band--site">
+<div class="cv-footer__inner">
+<div class="cv-footer__grid">
+<div class="cv-footer__install">
+<h2>Get cultivars</h2>
+<p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a4</code></pre>
+</div>
+<nav aria-label="Resources" class="cv-footer__links">
+<h2>Resources</h2>
+<ul>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/releases">Releases</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md">Changelog</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/issues">Issues</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md">Contributing</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md">Security</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md">Code of conduct</a>
+</li>
+</ul>
+</nav>
+<nav aria-label="Related projects" class="cv-footer__links">
+<h2>Related</h2>
+<ul>
+<li>
+<a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a><span class="cv-footer__muted"> FRED client</span>
+</li>
+<li>
+<a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a><span class="cv-footer__muted"> SEC EDGAR client</span>
+</li>
+</ul>
+</nav>
+</div>
+<ul aria-label="Project pages" class="cv-footer__social">
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li>
+<a href="https://pypi.org/project/cultivars/" title="PyPI"><i aria-hidden="true" class="fa-brands fa-python"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li>
+<a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov"><i aria-hidden="true" class="fa-solid fa-umbrella"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff" title="Cite"><i aria-hidden="true" class="fa-solid fa-quote-left"></i><span class="visually-hidden">Cite</span></a>
+</li>
+</ul>
+<div class="cv-footer__legal">
+<p>
+          © 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE">MIT License</a>. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED® is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+<p class="cv-footer__build">
+          cultivars 1.0.0a4 · updated 2026-10-13 · built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
+</p>
+</div>
+</div>
+</section>
+</div></div>
+</div>
+</div>
+</footer>
+</body>
+</html>

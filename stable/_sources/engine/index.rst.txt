@@ -18,8 +18,8 @@ Private layers
    :nosignatures:
    :template: engine/module.rst
 
-   cultivars._core
-   cultivars._internals
+   cultivars.engine._core
+   cultivars.engine._internals
 
 Public surface, private members
 -------------------------------

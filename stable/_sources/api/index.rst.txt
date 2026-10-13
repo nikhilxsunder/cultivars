@@ -15,6 +15,9 @@ change between releases without notice.
    cultivars.univariate
    cultivars.multivariate
    cultivars.state_space
+   cultivars.data
+   cultivars.summary
+   cultivars.experimental
    cultivars.bayes
    cultivars.diagnostics
    cultivars.forecast
