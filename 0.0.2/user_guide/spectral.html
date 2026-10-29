@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Spectra from data and from fitted VARs, Geweke causality, HP, Hamilton, Baxter-King and CF filters, turning points and wavelets in cultivars." name="description"/>
+<meta content="Spectral analysis and filtering" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/user_guide/spectral.html" property="og:url"/>
+<meta content="cultivars" property="og:site_name"/>
+<meta content="The cultivars.spectral package reads time series and fitted systems by frequency. It answers four questions: where in the cycle a series’ variance sits (nonparametric spectra), what a fitted VAR claims at each frequency (model-implied density, coherence, phase, Geweke causality), how to separate ..." property="og:description"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" property="og:image"/>
+<meta content="cultivars" property="og:image:alt"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="cultivars Documentation" property="og:site_name"/>
+<meta content="cultivars Logo" property="og:image:alt"/>
+<meta content="2026-10-13T21:01:40+00:00" property="article:modified_time"/>
+<title>Spectral analysis and filtering — cultivars</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/plot_directive.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=c83e6b79" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=7fc003df" rel="stylesheet" type="text/css"/>
+<link href="../_static/consent.css?v=8cbde1cf" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script defer="" src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<script src="../_static/documentation_options.js?v=fc897e8e"></script>
+<script src="../_static/doctools.js?v=fd6eb6e6"></script>
+<script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+<script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+<script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+<script defer="defer" src="../_static/tippy/user_guide/spectral.4d772fe6-50e4-4082-90af-cb73e35d12bf.js"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/spectral';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.0.2';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+<script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+<link href="https://nikhilxsunder.github.io/cultivars/stable/user_guide/spectral.html" rel="canonical"/>
+<link href="../_static/cultivars-favicon.ico" rel="icon"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="forecasting.html" rel="next" title="Forecasting and forecast evaluation"/>
+<link href="state_space.html" rel="prev" title="State-space models and filtering"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="1.0" name="docsearch:version"/>
+<meta content="2026-10-13" name="docbuild:last-update"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
+</head>
+<body data-default-mode="">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle" type="button">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="cultivars - Home" class="logo__image only-light" src="../_static/cultivars-logo.png"/>
+<img alt="cultivars - Home" class="logo__image only-dark pst-js-only" src="../_static/cultivars-logo.png"/>
+</a></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle" type="button">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button" type="button">
+<svg aria-hidden="true" class="pst-icon" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing_a_model.html">Choosing a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nuances.html">Nuances and known issues</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Before estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.html">Diagnostics and specification testing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Univariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="univariate_linear.html">Univariate linear models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility.html">Volatility models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="univariate_nonlinear.html">Nonlinear and regime-switching univariate models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multivariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="var.html">Vector autoregressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="var_extensions.html">Beyond the basic VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_identification.html">Structural identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_vars.html">Bayesian VARs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="large_dimensional.html">Large and high-dimensional systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nonlinear_multivariate.html">Nonlinear, time-varying and regime-switching VARs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Engines and frequency-domain views</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="state_space.html">State-space models and filtering</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Spectral analysis and filtering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">After estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="forecasting.html">Forecasting and forecast evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_workflow.html">The Bayesian workflow</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="index.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">Spectral analysis and filtering</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section id="spectral-analysis-and-filtering">
+<h1>Spectral analysis and filtering<a class="headerlink" href="#spectral-analysis-and-filtering" title="Link to this heading">#</a></h1>
+<p>The <a class="reference internal" href="../api/generated/cultivars.spectral.html#module-cultivars.spectral" title="cultivars.spectral"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral</span></code></a> package reads time series and fitted
+systems by frequency. It answers four questions: where in the cycle a
+series’ variance sits (nonparametric spectra), what a fitted VAR claims
+at each frequency (model-implied density, coherence, phase, Geweke
+causality), how to separate trend from cycle (HP, Butterworth, Hamilton,
+Beveridge-Nelson, Baxter-King, Christiano-Fitzgerald) and how to date
+and compare cycles (turning points, concordance), with wavelets adding a
+date axis. It does not estimate models: the model-implied views take a
+fitted result from <a class="reference internal" href="var.html"><span class="doc">Vector autoregressions</span></a> or <a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a>, and long-memory
+estimators that read the spectrum near zero are on <a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a>.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-family-at-a-glance" id="id1">The family at a glance</a></p></li>
+<li><p><a class="reference internal" href="#units-and-conventions" id="id2">Units and conventions</a></p></li>
+<li><p><a class="reference internal" href="#nonparametric-spectra-from-data" id="id3">Nonparametric spectra from data</a></p></li>
+<li><p><a class="reference internal" href="#model-implied-spectra-from-fitted-systems" id="id4">Model-implied spectra from fitted systems</a></p></li>
+<li><p><a class="reference internal" href="#spectral-granger-causality" id="id5">Spectral Granger causality</a></p></li>
+<li><p><a class="reference internal" href="#trend-cycle-filters" id="id6">Trend-cycle filters</a></p></li>
+<li><p><a class="reference internal" href="#band-pass-filters" id="id7">Band-pass filters</a></p></li>
+<li><p><a class="reference internal" href="#dating-cycles" id="id8">Dating cycles</a></p></li>
+<li><p><a class="reference internal" href="#wavelets" id="id9">Wavelets</a></p></li>
+<li><p><a class="reference internal" href="#how-the-pieces-connect" id="id10">How the pieces connect</a></p></li>
+<li><p><a class="reference internal" href="#nuances-and-gotchas" id="id11">Nuances and gotchas</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id12">See also</a></p></li>
+</ul>
+</nav>
+<section id="the-family-at-a-glance">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">The family at a glance</a><a class="headerlink" href="#the-family-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 26.0%"/>
+<col style="width: 20.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 24.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Module</p></th>
+<th class="head"><p>What it computes</p></th>
+<th class="head"><p>Use when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.spectral.periodogram.MultitaperSpectrum.html#cultivars.spectral.periodogram.MultitaperSpectrum" title="cultivars.spectral.periodogram.MultitaperSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultitaperSpectrum</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.periodogram.DaniellSpectrum.html#cultivars.spectral.periodogram.DaniellSpectrum" title="cultivars.spectral.periodogram.DaniellSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaniellSpectrum</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.periodogram.WelchSpectrum.html#cultivars.spectral.periodogram.WelchSpectrum" title="cultivars.spectral.periodogram.WelchSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">WelchSpectrum</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.spectral.periodogram.html#module-cultivars.spectral.periodogram" title="cultivars.spectral.periodogram"><code class="xref py py-mod docutils literal notranslate"><span class="pre">periodogram</span></code></a></p></td>
+<td><p>Smoothed periodogram matrix of a panel, with degrees of freedom
+and resolution</p></td>
+<td><p>You want the data’s spectrum, before or instead of a model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralDensity</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.spectral.density.html#module-cultivars.spectral.density" title="cultivars.spectral.density"><code class="xref py py-mod docutils literal notranslate"><span class="pre">density</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\Psi(\omega)\Sigma_u\Psi(\omega)^*/2\pi\)</span> of a fitted VAR;
+coherence, partial coherence, gain, phase</p></td>
+<td><p>You want what a fitted system implies by frequency.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.spectral.causality.SpectralCausality.html#cultivars.spectral.causality.SpectralCausality" title="cultivars.spectral.causality.SpectralCausality"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralCausality</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.causality.ConditionalSpectralCausality.html#cultivars.spectral.causality.ConditionalSpectralCausality" title="cultivars.spectral.causality.ConditionalSpectralCausality"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalSpectralCausality</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.spectral.causality.html#module-cultivars.spectral.causality" title="cultivars.spectral.causality"><code class="xref py py-mod docutils literal notranslate"><span class="pre">causality</span></code></a></p></td>
+<td><p>Geweke (1982, 1984) causality measures by frequency</p></td>
+<td><p>You want Granger causality resolved by cycle length.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.spectral.filters.HodrickPrescottFilter.html#cultivars.spectral.filters.HodrickPrescottFilter" title="cultivars.spectral.filters.HodrickPrescottFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HodrickPrescottFilter</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.filters.ButterworthFilter.html#cultivars.spectral.filters.ButterworthFilter" title="cultivars.spectral.filters.ButterworthFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ButterworthFilter</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.filters.HamiltonFilter.html#cultivars.spectral.filters.HamiltonFilter" title="cultivars.spectral.filters.HamiltonFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HamiltonFilter</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.filters.BeveridgeNelsonDecomposition.html#cultivars.spectral.filters.BeveridgeNelsonDecomposition" title="cultivars.spectral.filters.BeveridgeNelsonDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">BeveridgeNelsonDecomposition</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.spectral.filters.html#module-cultivars.spectral.filters" title="cultivars.spectral.filters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">filters</span></code></a></p></td>
+<td><p>Trend-cycle decompositions</p></td>
+<td><p>You need a trend removed, under a stated definition of trend.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.spectral.band_pass.BaxterKingFilter.html#cultivars.spectral.band_pass.BaxterKingFilter" title="cultivars.spectral.band_pass.BaxterKingFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaxterKingFilter</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.band_pass.ChristianoFitzgeraldFilter.html#cultivars.spectral.band_pass.ChristianoFitzgeraldFilter" title="cultivars.spectral.band_pass.ChristianoFitzgeraldFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChristianoFitzgeraldFilter</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.spectral.band_pass.html#module-cultivars.spectral.band_pass" title="cultivars.spectral.band_pass"><code class="xref py py-mod docutils literal notranslate"><span class="pre">band_pass</span></code></a></p></td>
+<td><p>Approximate ideal band-pass between two periods</p></td>
+<td><p>You need the business-cycle band isolated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.spectral.cycles.TurningPoints.html#cultivars.spectral.cycles.TurningPoints" title="cultivars.spectral.cycles.TurningPoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">TurningPoints</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.cycles.concordance.html#cultivars.spectral.cycles.concordance" title="cultivars.spectral.cycles.concordance"><code class="xref py py-func docutils literal notranslate"><span class="pre">concordance()</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.spectral.cycles.html#module-cultivars.spectral.cycles" title="cultivars.spectral.cycles"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cycles</span></code></a></p></td>
+<td><p>Bry-Boschan / Harding-Pagan peaks and troughs; concordance index</p></td>
+<td><p>You need a chronology, or agreement between two.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.spectral.wavelets.MODWT.html#cultivars.spectral.wavelets.MODWT" title="cultivars.spectral.wavelets.MODWT"><code class="xref py py-class docutils literal notranslate"><span class="pre">MODWT</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherence.html#cultivars.spectral.wavelets.WaveletCoherence" title="cultivars.spectral.wavelets.WaveletCoherence"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletCoherence</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.spectral.wavelets.html#module-cultivars.spectral.wavelets" title="cultivars.spectral.wavelets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">wavelets</span></code></a></p></td>
+<td><p>Variance by octave and date; Morlet coherence over scale and time</p></td>
+<td><p>You suspect the frequency content changed during the sample.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="units-and-conventions">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Units and conventions</a><a class="headerlink" href="#units-and-conventions" title="Link to this heading">#</a></h2>
+<p>Every object on this page uses the same units, so a data estimate and a
+model density overlay without conversion.</p>
+<dl class="simple">
+<dt>Frequency</dt><dd><p><span class="math notranslate nohighlight">\(\omega\)</span> in <strong>radians per observation</strong> on <span class="math notranslate nohighlight">\([0, \pi]\)</span>.
+<span class="math notranslate nohighlight">\(\pi\)</span> is the Nyquist frequency, a cycle of two observations.
+Results store the grid as <code class="docutils literal notranslate"><span class="pre">frequencies</span></code>.</p>
+</dd>
+<dt>Period</dt><dd><p><span class="math notranslate nohighlight">\(2\pi / \omega\)</span> in <strong>observations per cycle</strong>. <code class="docutils literal notranslate"><span class="pre">periods()</span></code> on
+<a class="reference internal" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.html#cultivars.spectral.periodogram.SpectrumEstimate" title="cultivars.spectral.periodogram.SpectrumEstimate"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrumEstimate</span></code></a> and
+<a class="reference internal" href="../api/generated/cultivars.spectral.density.SpectralDensityResult.html#cultivars.spectral.density.SpectralDensityResult" title="cultivars.spectral.density.SpectralDensityResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralDensityResult</span></code></a> returns it,
+with <code class="docutils literal notranslate"><span class="pre">inf</span></code> at <span class="math notranslate nohighlight">\(\omega = 0\)</span>. The package never converts to
+years: for quarterly data a period of 8 is two years, for monthly
+data it is eight months.</p>
+</dd>
+<dt>Bands</dt><dd><p>Stated in <strong>periods</strong>, never in frequencies: <code class="docutils literal notranslate"><span class="pre">low</span></code> is the shortest
+period passed and <code class="docutils literal notranslate"><span class="pre">high</span></code> the longest. The Burns-Mitchell business
+cycle is 6 to 32 at quarterly frequency (<span class="math notranslate nohighlight">\(\omega\)</span> from
+<span class="math notranslate nohighlight">\(2\pi/32 = 0.196\)</span> to <span class="math notranslate nohighlight">\(2\pi/6 = 1.047\)</span>) and 18 to 96 at
+monthly frequency. Periods below 2 do not exist at the sampling
+frequency.</p>
+</dd>
+<dt>Normalization</dt><dd><p>Densities carry the <span class="math notranslate nohighlight">\(1/2\pi\)</span> factor:
+<span class="math notranslate nohighlight">\(\int_{-\pi}^{\pi} f(\omega)\,d\omega = \gamma(0)\)</span>, so twice the
+integral of a spectrum over <span class="math notranslate nohighlight">\([0, \pi]\)</span> is the variance, and
+white noise of variance <span class="math notranslate nohighlight">\(\sigma^2\)</span> has the flat spectrum
+<span class="math notranslate nohighlight">\(\sigma^2 / 2\pi\)</span>.</p>
+</dd>
+<dt>Matrix axes</dt><dd><p>Spectral matrices are <code class="docutils literal notranslate"><span class="pre">(n_frequencies,</span> <span class="pre">k,</span> <span class="pre">k)</span></code>; series are addressed
+by name (<code class="docutils literal notranslate"><span class="pre">"y1"</span></code>, <code class="docutils literal notranslate"><span class="pre">"y2"</span></code>, … unless <code class="docutils literal notranslate"><span class="pre">names</span></code> is given), not by
+index.</p>
+</dd>
+</dl>
+<p>The argument names for bands differ by class:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 45.0%"/>
+<col style="width: 55.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>Band arguments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BaxterKingFilter</span></code>, <code class="docutils literal notranslate"><span class="pre">ChristianoFitzgeraldFilter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">low=6.0,</span> <span class="pre">high=32.0</span></code> (periods)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ButterworthFilter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">period=32.0</span></code> (cutoff period), <code class="docutils literal notranslate"><span class="pre">order=2</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SpectralCausalityResult.band</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">low_period=...,</span> <span class="pre">high_period=...</span></code> (keyword-only)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WaveletCoherenceResult.lead</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scale_band=(low,</span> <span class="pre">high)</span></code> (periods, inclusive)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nonparametric-spectra-from-data">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Nonparametric spectra from data</a><a class="headerlink" href="#nonparametric-spectra-from-data" title="Link to this heading">#</a></h2>
+<p>The three estimators smooth the periodogram
+<span class="math notranslate nohighlight">\(I(\omega_j) = (2\pi N)^{-1} |\sum_t y_t e^{-i\omega_j t}|^2\)</span>,
+which is inconsistent on its own, and each ordinate of the result is
+approximately <span class="math notranslate nohighlight">\(f(\omega)\chi^2_\nu/\nu\)</span>. They take the panel at
+construction and estimate through <code class="docutils literal notranslate"><span class="pre">compute()</span></code>.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 26.0%"/>
+<col style="width: 26.0%"/>
+<col style="width: 26.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Estimator</p></th>
+<th class="head"><p>Smoothing control (default)</p></th>
+<th class="head"><p>Degrees of freedom <span class="math notranslate nohighlight">\(\nu\)</span></p></th>
+<th class="head"><p>Resolution <code class="docutils literal notranslate"><span class="pre">bandwidth</span></code> (radians)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MultitaperSpectrum</span></code>
+(Thomson 1982)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bandwidth</span></code> <span class="math notranslate nohighlight">\(NW\)</span> (4.0), <code class="docutils literal notranslate"><span class="pre">n_tapers</span></code> <span class="math notranslate nohighlight">\(K\)</span>
+(<span class="math notranslate nohighlight">\(2NW - 1\)</span>)</p></td>
+<td><p><span class="math notranslate nohighlight">\(2K\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(2\pi NW / N\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DaniellSpectrum</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">span</span></code> <span class="math notranslate nohighlight">\(m\)</span> (<span class="math notranslate nohighlight">\(\operatorname{round}(\sqrt{N}/2)\)</span>)</p></td>
+<td><p><span class="math notranslate nohighlight">\(16m^2/(4m-1)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(2\pi m / N\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WelchSpectrum</span></code>
+(Welch 1967)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">segment</span></code> <span class="math notranslate nohighlight">\(L\)</span> (<span class="math notranslate nohighlight">\(\max(32, N/8)\)</span>, even)</p></td>
+<td><p><span class="math notranslate nohighlight">\(36B/19\)</span> for <span class="math notranslate nohighlight">\(B\)</span> half-overlapped segments</p></td>
+<td><p><span class="math notranslate nohighlight">\(2\pi / L\)</span>, on the segment’s coarser grid</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All three take <code class="docutils literal notranslate"><span class="pre">detrend</span></code> (<code class="docutils literal notranslate"><span class="pre">"n"</span></code>, <code class="docutils literal notranslate"><span class="pre">"c"</span></code> the default, or <code class="docutils literal notranslate"><span class="pre">"ct"</span></code>)
+and <code class="docutils literal notranslate"><span class="pre">names</span></code>, need at least 32 observations, and return a
+<a class="reference internal" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.html#cultivars.spectral.periodogram.SpectrumEstimate" title="cultivars.spectral.periodogram.SpectrumEstimate"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrumEstimate</span></code></a>. Multitaper is
+the default choice: least leakage at a given variance, full Fourier
+grid. A three-variable system whose first series has an AR(2) cycle of
+period 12:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.html#module-cultivars.spectral.periodogram"><span class="nn">cultivars.spectral.periodogram</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.DaniellSpectrum.html#cultivars.spectral.periodogram.DaniellSpectrum" title="cultivars.spectral.periodogram.DaniellSpectrum"><span class="n">DaniellSpectrum</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.MultitaperSpectrum.html#cultivars.spectral.periodogram.MultitaperSpectrum" title="cultivars.spectral.periodogram.MultitaperSpectrum"><span class="n">MultitaperSpectrum</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.WelchSpectrum.html#cultivars.spectral.periodogram.WelchSpectrum" title="cultivars.spectral.periodogram.WelchSpectrum"><span class="n">WelchSpectrum</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">rng</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">400</span>
+<span class="n">y</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.3</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"cycle"</span><span class="p">,</span> <span class="s2">"output"</span><span class="p">,</span> <span class="s2">"prices"</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.html#cultivars.spectral.periodogram.SpectrumEstimate" title="cultivars.spectral.periodogram.SpectrumEstimate"><span class="n">est</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.MultitaperSpectrum.html#cultivars.spectral.periodogram.MultitaperSpectrum" title="cultivars.spectral.periodogram.MultitaperSpectrum"><span class="n">MultitaperSpectrum</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.MultitaperSpectrum.compute.html#cultivars.spectral.periodogram.MultitaperSpectrum.compute" title="cultivars.spectral.periodogram.MultitaperSpectrum.compute"><span class="n">compute</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.method.html#cultivars.spectral.periodogram.SpectrumEstimate.method" title="cultivars.spectral.periodogram.SpectrumEstimate.method"><span class="n">est</span><span class="o">.</span><span class="n">method</span></a><span class="p">,</span> <span class="n">est</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">est</span><span class="o">.</span><span class="n">density</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.degrees_of_freedom.html#cultivars.spectral.periodogram.SpectrumEstimate.degrees_of_freedom" title="cultivars.spectral.periodogram.SpectrumEstimate.degrees_of_freedom"><span class="n">est</span><span class="o">.</span><span class="n">degrees_of_freedom</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.bandwidth.html#cultivars.spectral.periodogram.SpectrumEstimate.bandwidth" title="cultivars.spectral.periodogram.SpectrumEstimate.bandwidth"><span class="n">est</span><span class="o">.</span><span class="n">bandwidth</span></a><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">power</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.spectrum.html#cultivars.spectral.periodogram.SpectrumEstimate.spectrum" title="cultivars.spectral.periodogram.SpectrumEstimate.spectrum"><span class="n">est</span><span class="o">.</span><span class="n">spectrum</span></a><span class="p">(</span><span class="s2">"cycle"</span><span class="p">)</span>
+<span class="n">peak</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.argmax.html#numpy.argmax" title="numpy.argmax"><span class="n">np</span><span class="o">.</span><span class="n">argmax</span></a><span class="p">(</span><span class="n">power</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.frequencies.html#cultivars.spectral.periodogram.SpectrumEstimate.frequencies" title="cultivars.spectral.periodogram.SpectrumEstimate.frequencies"><span class="n">est</span><span class="o">.</span><span class="n">frequencies</span></a><span class="p">[</span><span class="n">peak</span><span class="p">]),</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.periods.html#cultivars.spectral.periodogram.SpectrumEstimate.periods" title="cultivars.spectral.periodogram.SpectrumEstimate.periods"><span class="n">est</span><span class="o">.</span><span class="n">periods</span></a><span class="p">()[</span><span class="n">peak</span><span class="p">]),</span> <span class="mi">1</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.trapezoid.html#numpy.trapezoid" title="numpy.trapezoid"><span class="n">np</span><span class="o">.</span><span class="n">trapezoid</span></a><span class="p">(</span><span class="n">power</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.periodogram.SpectrumEstimate.frequencies.html#cultivars.spectral.periodogram.SpectrumEstimate.frequencies" title="cultivars.spectral.periodogram.SpectrumEstimate.frequencies"><span class="n">est</span><span class="o">.</span><span class="n">frequencies</span></a><span class="p">)</span> <span class="o">/</span> <span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">var</span><span class="p">()),</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>multitaper (201,) (201, 3, 3)
+14.0 0.0628
+0.534 11.8
+1.01
+</pre></div>
+</div>
+<p>The peak sits at period 11.8 against the AR(2)’s theoretical 12.0, and
+twice the integral recovers the sample variance. The three estimators
+trade resolution for stability differently on the same data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">(</span><span class="n">est</span><span class="p">,</span> <span class="n">DaniellSpectrum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">(),</span>
+          <span class="n">WelchSpectrum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()):</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#len"><span class="nb">len</span></a><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">frequencies</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">degrees_of_freedom</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+          <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>multitaper 201 14.0 0.0628
+daniell 201 41.0 0.1571
+welch 26 28.4 0.1257
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrumEstimate</span></code> provides <code class="docutils literal notranslate"><span class="pre">spectrum(name)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">coherence(first,</span> <span class="pre">second)</span></code> (squared, biased upward by about
+<span class="math notranslate nohighlight">\(2/\nu\)</span> under zero coherence), <code class="docutils literal notranslate"><span class="pre">confidence_interval(name,</span>
+<span class="pre">alpha=0.05)</span></code> (pointwise, constant ratio, so plot spectra on a log
+scale), <code class="docutils literal notranslate"><span class="pre">periods()</span></code> and <code class="docutils literal notranslate"><span class="pre">summary()</span></code>.</p>
+</section>
+<section id="model-implied-spectra-from-fitted-systems">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Model-implied spectra from fitted systems</a><a class="headerlink" href="#model-implied-spectra-from-fitted-systems" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralDensity</span></code></a> evaluates the
+closed form</p>
+<div class="math notranslate nohighlight">
+\[f(\omega) = \frac{1}{2\pi}\, \Psi(\omega)\, \Sigma_u\, \Psi(\omega)^\ast,
+\qquad
+\Psi(\omega) = \Bigl[I - \sum_{l=1}^{p} A_l e^{-i\omega l}\Bigr]^{-1},\]</div>
+<p>of a fitted result on an inclusive grid of <code class="docutils literal notranslate"><span class="pre">n_frequencies</span></code> points
+(default 256) on <span class="math notranslate nohighlight">\([0, \pi]\)</span> (Hamilton 1994, ch. 6). It
+re-estimates nothing and reads no data: the input is the result’s
+<code class="docutils literal notranslate"><span class="pre">coefficients</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>. The result must satisfy the
+closed-system protocol (<code class="docutils literal notranslate"><span class="pre">names</span></code>, <code class="docutils literal notranslate"><span class="pre">nobs</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>, <code class="docutils literal notranslate"><span class="pre">resid</span></code>,
+<code class="docutils literal notranslate"><span class="pre">coefficients</span></code>, <code class="docutils literal notranslate"><span class="pre">k_endog</span></code>, <code class="docutils literal notranslate"><span class="pre">ma_representation</span></code>), which
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">VAR</span></code></a>
+and <a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.error_correction.VECM.html#cultivars.multivariate.reduced_form.error_correction.VECM" title="cultivars.multivariate.reduced_form.error_correction.VECM"><code class="xref py py-class docutils literal notranslate"><span class="pre">VECM</span></code></a>
+results do; anything else raises
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> at construction.</p>
+<p>The model’s grid matches a periodogram’s Fourier grid when the sample
+length <span class="math notranslate nohighlight">\(N\)</span> is even and <code class="docutils literal notranslate"><span class="pre">n_frequencies</span> <span class="pre">=</span> <span class="pre">N</span> <span class="pre">//</span> <span class="pre">2</span> <span class="pre">+</span> <span class="pre">1</span></code>, so the two
+overlay directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.html#module-cultivars.multivariate.reduced_form.vector_autoregression"><span class="nn">cultivars.multivariate.reduced_form.vector_autoregression</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.html#module-cultivars.spectral.density"><span class="nn">cultivars.spectral.density</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><span class="n">SpectralDensity</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><span class="n">fit</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR"><span class="n">VAR</span></a><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit" title="cultivars.multivariate.reduced_form.vector_autoregression.VAR.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensityResult.html#cultivars.spectral.density.SpectralDensityResult" title="cultivars.spectral.density.SpectralDensityResult"><span class="n">model</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensity.html#cultivars.spectral.density.SpectralDensity" title="cultivars.spectral.density.SpectralDensity"><span class="n">SpectralDensity</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.html#cultivars.multivariate.reduced_form.vector_autoregression.VARResult" title="cultivars.multivariate.reduced_form.vector_autoregression.VARResult"><span class="n">fit</span></a><span class="p">,</span> <span class="n">n_frequencies</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensity.compute.html#cultivars.spectral.density.SpectralDensity.compute" title="cultivars.spectral.density.SpectralDensity.compute"><span class="n">compute</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensityResult.frequencies.html#cultivars.spectral.density.SpectralDensityResult.frequencies" title="cultivars.spectral.density.SpectralDensityResult.frequencies"><span class="n">model</span><span class="o">.</span><span class="n">frequencies</span></a><span class="p">,</span> <span class="n">est</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)))</span>
+<span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">confidence_interval</span><span class="p">(</span><span class="s2">"cycle"</span><span class="p">)</span>
+<span class="n">implied</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.density.SpectralDensityResult.spectrum.html#cultivars.spectral.density.SpectralDensityResult.spectrum" title="cultivars.spectral.density.SpectralDensityResult.spectrum"><span class="n">model</span><span class="o">.</span><span class="n">spectrum</span></a><span class="p">(</span><span class="s2">"cycle"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">lower</span> <span class="o">&lt;=</span> <span class="n">implied</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">implied</span> <span class="o">&lt;=</span> <span class="n">upper</span><span class="p">))),</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>True
+0.97
+</pre></div>
+</div>
+<p>The VAR(2) density lies inside the data’s 95% band at 97% of the
+ordinates. Where the two disagree is where the model is misspecified,
+frequency by frequency.</p>
+<section id="readings-off-the-density">
+<h3>Readings off the density<a class="headerlink" href="#readings-off-the-density" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 66.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Returns</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spectrum(name)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(f_{ii}(\omega)\)</span>, real <code class="docutils literal notranslate"><span class="pre">(n,)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">coherence(first,</span> <span class="pre">second)</span></code></p></td>
+<td><p>Squared coherence <span class="math notranslate nohighlight">\(|f_{ij}|^2 / f_{ii} f_{jj}\)</span>, symmetric</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">partial_coherence(first,</span> <span class="pre">second)</span></code></p></td>
+<td><p>The same from <span class="math notranslate nohighlight">\(f^{-1}\)</span>, conditioning on all other variables</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gain(effect,</span> <span class="pre">cause)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(|f_{ij}| / f_{jj}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">phase(effect,</span> <span class="pre">cause)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\arg f_{ij}\)</span> in <span class="math notranslate nohighlight">\((-\pi, \pi]\)</span>; negative means
+<code class="docutils literal notranslate"><span class="pre">cause</span></code> leads by <span class="math notranslate nohighlight">\(-\phi/\omega\)</span> observations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">periods()</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(2\pi/\omega\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In the simulated system <code class="docutils literal notranslate"><span class="pre">cycle</span></code> reaches <code class="docutils literal notranslate"><span class="pre">prices</span></code> only through
+<code class="docutils literal notranslate"><span class="pre">output</span></code>. Coherence sees the link; partial coherence removes it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">w</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">frequencies</span>
+<span class="n">business</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">32</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">w</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">(</span><span class="n">business</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="s2">"cycle"</span><span class="p">,</span> <span class="s2">"prices"</span><span class="p">)[</span><span class="n">business</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">2</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">partial_coherence</span><span class="p">(</span><span class="s2">"cycle"</span><span class="p">,</span> <span class="s2">"prices"</span><span class="p">)[</span><span class="n">business</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">k</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">periods</span><span class="p">()</span> <span class="o">-</span> <span class="mi">12</span><span class="p">)))</span>
+<span class="n">lead</span> <span class="o">=</span> <span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="s2">"output"</span><span class="p">,</span> <span class="s2">"cycle"</span><span class="p">)[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">periods</span><span class="p">()[</span><span class="n">k</span><span class="p">]),</span> <span class="mi">1</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">lead</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>54
+0.52 0.01
+12.1 1.46
+</pre></div>
+</div>
+<p>At period 12, <code class="docutils literal notranslate"><span class="pre">cycle</span></code> leads <code class="docutils literal notranslate"><span class="pre">output</span></code> by 1.46 quarters.</p>
+</section>
+</section>
+<section id="spectral-granger-causality">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Spectral Granger causality</a><a class="headerlink" href="#spectral-granger-causality" title="Link to this heading">#</a></h2>
+<p>Geweke (1982) splits the effect’s spectrum into an intrinsic part and a
+part driven by the cause’s innovations:</p>
+<div class="math notranslate nohighlight">
+\[f_{x \to y}(\omega) = \ln \frac{S_{yy}(\omega)}
+{H_{yy}(\omega)\, \tilde\Sigma_{yy}\, \overline{H_{yy}(\omega)}}
+\;\ge\; 0,
+\qquad
+\frac{1}{\pi}\int_0^{\pi} f_{x \to y}(\omega)\,d\omega
+= \ln \frac{\sigma^2_{\text{restricted}}}{\sigma^2_{\text{full}}}.\]</div>
+<p><a class="reference internal" href="../api/generated/cultivars.spectral.causality.SpectralCausality.html#cultivars.spectral.causality.SpectralCausality" title="cultivars.spectral.causality.SpectralCausality"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralCausality</span></code></a> computes the
+unconditional measure for every ordered pair from one fitted system.
+For more than two variables each pair’s marginal process is factored by
+Wilson’s (1972) algorithm, following Dhamala, Rangarajan and Ding
+(2008); nothing is re-estimated.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.html#module-cultivars.spectral.causality"><span class="nn">cultivars.spectral.causality</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.ConditionalSpectralCausality.html#cultivars.spectral.causality.ConditionalSpectralCausality" title="cultivars.spectral.causality.ConditionalSpectralCausality"><span class="n">ConditionalSpectralCausality</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.SpectralCausality.html#cultivars.spectral.causality.SpectralCausality" title="cultivars.spectral.causality.SpectralCausality"><span class="n">SpectralCausality</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.SpectralCausalityResult.html#cultivars.spectral.causality.SpectralCausalityResult" title="cultivars.spectral.causality.SpectralCausalityResult"><span class="n">geweke</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.SpectralCausality.html#cultivars.spectral.causality.SpectralCausality" title="cultivars.spectral.causality.SpectralCausality"><span class="n">SpectralCausality</span></a><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">n_frequencies</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.SpectralCausality.compute.html#cultivars.spectral.causality.SpectralCausality.compute" title="cultivars.spectral.causality.SpectralCausality.compute"><span class="n">compute</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">geweke</span><span class="o">.</span><span class="n">measure</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.SpectralCausalityResult.integrated.html#cultivars.spectral.causality.SpectralCausalityResult.integrated" title="cultivars.spectral.causality.SpectralCausalityResult.integrated"><span class="n">geweke</span><span class="o">.</span><span class="n">integrated</span></a><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.SpectralCausalityResult.band.html#cultivars.spectral.causality.SpectralCausalityResult.band" title="cultivars.spectral.causality.SpectralCausalityResult.band"><span class="n">geweke</span><span class="o">.</span><span class="n">band</span></a><span class="p">(</span><span class="s2">"cycle"</span><span class="p">,</span> <span class="s2">"output"</span><span class="p">,</span> <span class="n">low_period</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">high_period</span><span class="o">=</span><span class="mi">32</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.causality.SpectralCausalityResult.band.html#cultivars.spectral.causality.SpectralCausalityResult.band" title="cultivars.spectral.causality.SpectralCausalityResult.band"><span class="n">geweke</span><span class="o">.</span><span class="n">band</span></a><span class="p">(</span><span class="s2">"output"</span><span class="p">,</span> <span class="s2">"cycle"</span><span class="p">,</span> <span class="n">low_period</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">high_period</span><span class="o">=</span><span class="mi">32</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(201, 3, 3)
+[[0.    0.005 0.003]
+ [0.628 0.    0.007]
+ [0.285 0.485 0.   ]]
+1.569 0.001
+</pre></div>
+</div>
+<p>The axes of <code class="docutils literal notranslate"><span class="pre">measure</span></code> and <code class="docutils literal notranslate"><span class="pre">integrated()</span></code> are <code class="docutils literal notranslate"><span class="pre">[effect,</span> <span class="pre">cause]</span></code>:
+row 1, column 0 above is <code class="docutils literal notranslate"><span class="pre">cycle</span> <span class="pre">-&gt;</span> <span class="pre">output</span></code>. <code class="docutils literal notranslate"><span class="pre">pair(cause,</span> <span class="pre">effect)</span></code>
+and <code class="docutils literal notranslate"><span class="pre">band(cause,</span> <span class="pre">effect,</span> <span class="pre">...)</span></code> take the spoken order and transpose for
+you.</p>
+<p>The unconditional measure credits <code class="docutils literal notranslate"><span class="pre">cycle</span></code> with causing <code class="docutils literal notranslate"><span class="pre">prices</span></code>
+(0.285), although the effect runs entirely through <code class="docutils literal notranslate"><span class="pre">output</span></code>. Geweke’s
+(1984) conditional measure removes that, but needs a second, restricted
+model fitted without the cause, which you supply:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">restricted</span> <span class="o">=</span> <span class="n">VAR</span><span class="p">(</span><span class="n">y</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">order</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">conditional</span> <span class="o">=</span> <span class="n">ConditionalSpectralCausality</span><span class="p">(</span>
+    <span class="n">fit</span><span class="p">,</span> <span class="n">restricted</span><span class="p">,</span> <span class="n">n_frequencies</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">conditional</span><span class="o">.</span><span class="n">cause</span><span class="p">,</span> <span class="n">conditional</span><span class="o">.</span><span class="n">effect_names</span><span class="p">,</span> <span class="n">conditional</span><span class="o">.</span><span class="n">measure</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">conditional</span><span class="o">.</span><span class="n">integrated</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">conditional</span><span class="o">.</span><span class="n">consistency</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cycle ('output', 'prices') (201, 2)
+[0.615, 0.004] 0.255
+</pre></div>
+</div>
+<p>The cause is inferred as the one name the restricted model lacks; the
+remaining names must appear in the same order. <code class="docutils literal notranslate"><span class="pre">consistency</span></code> is the
+largest relative gap between the two models’ implied innovation
+variances: zero in population, and large when the restricted model is
+too short (the true restricted process is generally VARMA, hence the
+generous <code class="docutils literal notranslate"><span class="pre">order=6</span></code>).</p>
+</section>
+<section id="trend-cycle-filters">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Trend-cycle filters</a><a class="headerlink" href="#trend-cycle-filters" title="Link to this heading">#</a></h2>
+<p>The four classes in <a class="reference internal" href="../api/generated/cultivars.spectral.filters.html#module-cultivars.spectral.filters" title="cultivars.spectral.filters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">filters</span></code></a> define the trend
+four ways and return one record,
+<a class="reference internal" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.html#cultivars.spectral.filters.DecompositionFilterResult" title="cultivars.spectral.filters.DecompositionFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecompositionFilterResult</span></code></a>, with
+<code class="docutils literal notranslate"><span class="pre">trend</span></code> and <code class="docutils literal notranslate"><span class="pre">cycle</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(rows,</span> <span class="pre">k)</span></code>. Each filter is applied
+column by column; a 1-D series becomes one column.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 26.0%"/>
+<col style="width: 34.0%"/>
+<col style="width: 40.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class (defaults)</p></th>
+<th class="head"><p>Trend is</p></th>
+<th class="head"><p>Bill on the result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HodrickPrescottFilter(penalty=1600.0)</span></code>
+(Hodrick and Prescott 1997)</p></td>
+<td><p>Minimizer of <span class="math notranslate nohighlight">\(\sum(y_t-\tau_t)^2 + \lambda\sum(\Delta^2\tau_t)^2\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">provisional</span></code>: the first and last <span class="math notranslate nohighlight">\(\lceil\text{cutoff}\rceil\)</span>
+rows (cutoff 39.7 at 1600) will be revised</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ButterworthFilter(period=32.0,</span> <span class="pre">order=2)</span></code> (Gomez 2001)</p></td>
+<td><p>Same family, stated by cutoff period and order</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">provisional</span></code> as for HP; <code class="docutils literal notranslate"><span class="pre">penalty</span></code> reports the implied
+<span class="math notranslate nohighlight">\(\lambda\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HamiltonFilter(horizon=8,</span> <span class="pre">lags=4)</span></code> (Hamilton 2018)</p></td>
+<td><p>Fitted value of <span class="math notranslate nohighlight">\(y_{t+h}\)</span> on a constant and
+<span class="math notranslate nohighlight">\(y_t,\dots,y_{t-p+1}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">offset</span></code> <span class="math notranslate nohighlight">\(= h + p - 1\)</span> rows lost at the start</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BeveridgeNelsonDecomposition(result)</span></code>
+(Beveridge and Nelson 1981; Morley 2002)</p></td>
+<td><p>Long-horizon forecast net of drift, from a fitted ARIMA(p, 1, q)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">offset</span></code> 1; conditional on the ARIMA</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">filter(data)</span></code> applies the first three; the Beveridge-Nelson
+decomposition takes a fitted
+<a class="reference internal" href="../api/generated/cultivars.univariate.box_jenkins.ARIMA.html#cultivars.univariate.box_jenkins.ARIMA" title="cultivars.univariate.box_jenkins.ARIMA"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARIMA</span></code></a> result with <code class="docutils literal notranslate"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">1</span></code>,
+no seasonal part, no exogenous regressors and trend <code class="docutils literal notranslate"><span class="pre">"n"</span></code> or <code class="docutils literal notranslate"><span class="pre">"c"</span></code>,
+and runs through <code class="docutils literal notranslate"><span class="pre">compute()</span></code>. Row <code class="docutils literal notranslate"><span class="pre">i</span></code> of the output is input
+observation <code class="docutils literal notranslate"><span class="pre">offset</span> <span class="pre">+</span> <span class="pre">i</span></code>.</p>
+<p>A quarterly log-level with drift, a random-walk component and a
+period-20 cycle:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.html#module-cultivars.spectral.filters"><span class="nn">cultivars.spectral.filters</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.BeveridgeNelsonDecomposition.html#cultivars.spectral.filters.BeveridgeNelsonDecomposition" title="cultivars.spectral.filters.BeveridgeNelsonDecomposition"><span class="n">BeveridgeNelsonDecomposition</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.ButterworthFilter.html#cultivars.spectral.filters.ButterworthFilter" title="cultivars.spectral.filters.ButterworthFilter"><span class="n">ButterworthFilter</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.HamiltonFilter.html#cultivars.spectral.filters.HamiltonFilter" title="cultivars.spectral.filters.HamiltonFilter"><span class="n">HamiltonFilter</span></a><span class="p">,</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.HodrickPrescottFilter.html#cultivars.spectral.filters.HodrickPrescottFilter" title="cultivars.spectral.filters.HodrickPrescottFilter"><span class="n">HodrickPrescottFilter</span></a><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.box_jenkins.html#module-cultivars.univariate.box_jenkins"><span class="nn">cultivars.univariate.box_jenkins</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.box_jenkins.ARIMA.html#cultivars.univariate.box_jenkins.ARIMA" title="cultivars.univariate.box_jenkins.ARIMA"><span class="n">ARIMA</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">240</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">true_cycle</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">log_gdp</span> <span class="o">=</span> <span class="mf">0.005</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="n">true_cycle</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.html#cultivars.spectral.filters.DecompositionFilterResult" title="cultivars.spectral.filters.DecompositionFilterResult"><span class="n">hp</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.HodrickPrescottFilter.html#cultivars.spectral.filters.HodrickPrescottFilter" title="cultivars.spectral.filters.HodrickPrescottFilter"><span class="n">HodrickPrescottFilter</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.HodrickPrescottFilter.filter.html#cultivars.spectral.filters.HodrickPrescottFilter.filter" title="cultivars.spectral.filters.HodrickPrescottFilter.filter"><span class="n">filter</span></a><span class="p">(</span><span class="n">log_gdp</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">trend</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.offset.html#cultivars.spectral.filters.DecompositionFilterResult.offset" title="cultivars.spectral.filters.DecompositionFilterResult.offset"><span class="n">hp</span><span class="o">.</span><span class="n">offset</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.cutoff.html#cultivars.spectral.filters.DecompositionFilterResult.cutoff" title="cultivars.spectral.filters.DecompositionFilterResult.cutoff"><span class="n">hp</span><span class="o">.</span><span class="n">cutoff</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">(</span><span class="n">hp</span><span class="o">.</span><span class="n">provisional</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.html#cultivars.spectral.filters.DecompositionFilterResult" title="cultivars.spectral.filters.DecompositionFilterResult"><span class="n">bw</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.ButterworthFilter.html#cultivars.spectral.filters.ButterworthFilter" title="cultivars.spectral.filters.ButterworthFilter"><span class="n">ButterworthFilter</span></a><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.ButterworthFilter.filter.html#cultivars.spectral.filters.ButterworthFilter.filter" title="cultivars.spectral.filters.ButterworthFilter.filter"><span class="n">filter</span></a><span class="p">(</span><span class="n">log_gdp</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.penalty.html#cultivars.spectral.filters.DecompositionFilterResult.penalty" title="cultivars.spectral.filters.DecompositionFilterResult.penalty"><span class="n">bw</span><span class="o">.</span><span class="n">penalty</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">(</span><span class="n">bw</span><span class="o">.</span><span class="n">provisional</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.html#cultivars.spectral.filters.DecompositionFilterResult" title="cultivars.spectral.filters.DecompositionFilterResult"><span class="n">ham</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.HamiltonFilter.html#cultivars.spectral.filters.HamiltonFilter" title="cultivars.spectral.filters.HamiltonFilter"><span class="n">HamiltonFilter</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.HamiltonFilter.filter.html#cultivars.spectral.filters.HamiltonFilter.filter" title="cultivars.spectral.filters.HamiltonFilter.filter"><span class="n">filter</span></a><span class="p">(</span><span class="n">log_gdp</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.offset.html#cultivars.spectral.filters.DecompositionFilterResult.offset" title="cultivars.spectral.filters.DecompositionFilterResult.offset"><span class="n">ham</span><span class="o">.</span><span class="n">offset</span></a><span class="p">,</span> <span class="n">ham</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">ham</span><span class="o">.</span><span class="n">provisional</span><span class="o">.</span><span class="n">any</span><span class="p">()))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_to_truth</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">cycle</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">aligned</span> <span class="o">=</span> <span class="n">true_cycle</span><span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span><span class="n">res</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#len"><span class="nb">len</span></a><span class="p">(</span><span class="n">c</span><span class="p">)]</span>
+    <span class="k">return</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">aligned</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">fit_to_truth</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.html#cultivars.spectral.filters.DecompositionFilterResult" title="cultivars.spectral.filters.DecompositionFilterResult"><span class="n">hp</span></a><span class="p">),</span> <span class="n">fit_to_truth</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.html#cultivars.spectral.filters.DecompositionFilterResult" title="cultivars.spectral.filters.DecompositionFilterResult"><span class="n">bw</span></a><span class="p">),</span> <span class="n">fit_to_truth</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.filters.DecompositionFilterResult.html#cultivars.spectral.filters.DecompositionFilterResult" title="cultivars.spectral.filters.DecompositionFilterResult"><span class="n">ham</span></a><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(240, 1) 0 39.7 80
+677.1 64
+11 (229, 1) False
+0.97 0.97 0.66
+</pre></div>
+</div>
+<p>Butterworth at <code class="docutils literal notranslate"><span class="pre">period=32,</span> <span class="pre">order=2</span></code> is HP at <span class="math notranslate nohighlight">\(\lambda = 677\)</span>.
+The Hamilton cycle is the eight-quarter forecast error, so it carries the
+random-walk component’s eight-step variation as well as the cycle; that
+is its definition, not a failure. The point of Hamilton (2018) shows on
+a pure random walk, which has no cycle: HP manufactures one, about as
+large as the increments themselves, and the summary prints that ratio:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">walk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="n">hp_walk</span> <span class="o">=</span> <span class="n">HodrickPrescottFilter</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">walk</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">hp_walk</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">walk</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()),</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">bn</span> <span class="o">=</span> <span class="n">BeveridgeNelsonDecomposition</span><span class="p">(</span><span class="n">ARIMA</span><span class="p">(</span><span class="n">log_gdp</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">())</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">bn</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">bn</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">bn</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">bn</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1.13
+beveridge-nelson 1 (239, 1) (1, 0)
+</pre></div>
+</div>
+</section>
+<section id="band-pass-filters">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Band-pass filters</a><a class="headerlink" href="#band-pass-filters" title="Link to this heading">#</a></h2>
+<p>The ideal band-pass between periods <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> has weights
+<span class="math notranslate nohighlight">\(b_0 = (\omega_h - \omega_l)/\pi\)</span>,
+<span class="math notranslate nohighlight">\(b_j = (\sin j\omega_h - \sin j\omega_l)/(\pi j)\)</span>, with
+<span class="math notranslate nohighlight">\(\omega_l = 2\pi/\text{high}\)</span> and <span class="math notranslate nohighlight">\(\omega_h = 2\pi/\text{low}\)</span>.
+Both filters approximate it and return
+<a class="reference internal" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.html#cultivars.spectral.band_pass.BandPassResult" title="cultivars.spectral.band_pass.BandPassResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">BandPassResult</span></code></a> with <code class="docutils literal notranslate"><span class="pre">cycle</span></code>,
+<code class="docutils literal notranslate"><span class="pre">trend</span></code> (everything outside the band, low <em>and</em> high frequencies),
+<code class="docutils literal notranslate"><span class="pre">low</span></code>, <code class="docutils literal notranslate"><span class="pre">high</span></code>, <code class="docutils literal notranslate"><span class="pre">method</span></code>, <code class="docutils literal notranslate"><span class="pre">offset</span></code> and <code class="docutils literal notranslate"><span class="pre">symmetric</span></code>.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">BaxterKingFilter(low=6.0,</span> <span class="pre">high=32.0,</span> <span class="pre">truncation=12)</span></code></dt><dd><p>Baxter and King (1999): symmetric weights truncated at lag <span class="math notranslate nohighlight">\(K\)</span>
+and recentred to sum to zero. Phase-neutral and final everywhere it
+is defined; loses <code class="docutils literal notranslate"><span class="pre">truncation</span></code> rows at each end.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ChristianoFitzgeraldFilter(low=6.0,</span> <span class="pre">high=32.0)</span></code></dt><dd><p>Christiano and Fitzgerald (2003), random-walk version: keeps every
+row by letting the weights turn asymmetric near the ends.
+<code class="docutils literal notranslate"><span class="pre">symmetric</span></code> marks the rows with at least <code class="docutils literal notranslate"><span class="pre">ceil(high)</span></code> observations
+on both sides; elsewhere the value is phase-shifted and will be
+revised.</p>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.html#module-cultivars.spectral.band_pass"><span class="nn">cultivars.spectral.band_pass</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BaxterKingFilter.html#cultivars.spectral.band_pass.BaxterKingFilter" title="cultivars.spectral.band_pass.BaxterKingFilter"><span class="n">BaxterKingFilter</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.ChristianoFitzgeraldFilter.html#cultivars.spectral.band_pass.ChristianoFitzgeraldFilter" title="cultivars.spectral.band_pass.ChristianoFitzgeraldFilter"><span class="n">ChristianoFitzgeraldFilter</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.html#cultivars.spectral.band_pass.BandPassResult" title="cultivars.spectral.band_pass.BandPassResult"><span class="n">bk</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BaxterKingFilter.html#cultivars.spectral.band_pass.BaxterKingFilter" title="cultivars.spectral.band_pass.BaxterKingFilter"><span class="n">BaxterKingFilter</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BaxterKingFilter.filter.html#cultivars.spectral.band_pass.BaxterKingFilter.filter" title="cultivars.spectral.band_pass.BaxterKingFilter.filter"><span class="n">filter</span></a><span class="p">(</span><span class="n">log_gdp</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">bk</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.offset.html#cultivars.spectral.band_pass.BandPassResult.offset" title="cultivars.spectral.band_pass.BandPassResult.offset"><span class="n">bk</span><span class="o">.</span><span class="n">offset</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.low.html#cultivars.spectral.band_pass.BandPassResult.low" title="cultivars.spectral.band_pass.BandPassResult.low"><span class="n">bk</span><span class="o">.</span><span class="n">low</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.high.html#cultivars.spectral.band_pass.BandPassResult.high" title="cultivars.spectral.band_pass.BandPassResult.high"><span class="n">bk</span><span class="o">.</span><span class="n">high</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">bk</span><span class="o">.</span><span class="n">symmetric</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">fit_to_truth</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.html#cultivars.spectral.band_pass.BandPassResult" title="cultivars.spectral.band_pass.BandPassResult"><span class="n">bk</span></a><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.html#cultivars.spectral.band_pass.BandPassResult" title="cultivars.spectral.band_pass.BandPassResult"><span class="n">cf</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.ChristianoFitzgeraldFilter.html#cultivars.spectral.band_pass.ChristianoFitzgeraldFilter" title="cultivars.spectral.band_pass.ChristianoFitzgeraldFilter"><span class="n">ChristianoFitzgeraldFilter</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.ChristianoFitzgeraldFilter.filter.html#cultivars.spectral.band_pass.ChristianoFitzgeraldFilter.filter" title="cultivars.spectral.band_pass.ChristianoFitzgeraldFilter.filter"><span class="n">filter</span></a><span class="p">(</span><span class="n">log_gdp</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">cf</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.band_pass.BandPassResult.offset.html#cultivars.spectral.band_pass.BandPassResult.offset" title="cultivars.spectral.band_pass.BandPassResult.offset"><span class="n">cf</span><span class="o">.</span><span class="n">offset</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">(</span><span class="n">cf</span><span class="o">.</span><span class="n">symmetric</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(216, 1) 12 6.0 32.0 True
+0.99
+(240, 1) 0 176
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="#nuances-and-gotchas">Nuances and gotchas</a> before relying on the Christiano-Fitzgerald
+output.</p>
+</section>
+<section id="dating-cycles">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Dating cycles</a><a class="headerlink" href="#dating-cycles" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../api/generated/cultivars.spectral.cycles.TurningPoints.html#cultivars.spectral.cycles.TurningPoints" title="cultivars.spectral.cycles.TurningPoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">TurningPoints</span></code></a> applies the Bry and
+Boschan (1971) rules in Harding and Pagan’s (2002) form: a peak is a
+local maximum over <code class="docutils literal notranslate"><span class="pre">window</span></code> observations on each side, turns
+alternate, and phases and cycles must last at least <code class="docutils literal notranslate"><span class="pre">min_phase</span></code> and
+<code class="docutils literal notranslate"><span class="pre">min_cycle</span></code> observations. <code class="docutils literal notranslate"><span class="pre">convention="quarterly"</span></code> is
+<span class="math notranslate nohighlight">\((2, 2, 5)\)</span> and <code class="docutils literal notranslate"><span class="pre">"monthly"</span></code> is <span class="math notranslate nohighlight">\((5, 6, 15)\)</span>; each element
+can be overridden by keyword. <code class="docutils literal notranslate"><span class="pre">date(endog)</span></code> returns a
+<a class="reference internal" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.html#cultivars.spectral.cycles.TurningPointsResult" title="cultivars.spectral.cycles.TurningPointsResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TurningPointsResult</span></code></a> with <code class="docutils literal notranslate"><span class="pre">peaks</span></code>,
+<code class="docutils literal notranslate"><span class="pre">troughs</span></code> (indices into the input), a <code class="docutils literal notranslate"><span class="pre">contraction</span></code> indicator, a
+<code class="docutils literal notranslate"><span class="pre">phases</span></code> table of <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end,</span> <span class="pre">is_contraction,</span> <span class="pre">duration,</span> <span class="pre">amplitude,</span>
+<span class="pre">excess)</span></code> and <code class="docutils literal notranslate"><span class="pre">n_cycles</span></code>. The concordance index of Harding and Pagan
+(2006) is the share of dates on which two contraction indicators agree.
+Dating the Baxter-King cycle above against the true cycle’s chronology
+on the same rows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.html#module-cultivars.spectral.cycles"><span class="nn">cultivars.spectral.cycles</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPoints.html#cultivars.spectral.cycles.TurningPoints" title="cultivars.spectral.cycles.TurningPoints"><span class="n">TurningPoints</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.concordance.html#cultivars.spectral.cycles.concordance" title="cultivars.spectral.cycles.concordance"><span class="n">concordance</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.html#cultivars.spectral.cycles.TurningPointsResult" title="cultivars.spectral.cycles.TurningPointsResult"><span class="n">dated</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPoints.html#cultivars.spectral.cycles.TurningPoints" title="cultivars.spectral.cycles.TurningPoints"><span class="n">TurningPoints</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPoints.date.html#cultivars.spectral.cycles.TurningPoints.date" title="cultivars.spectral.cycles.TurningPoints.date"><span class="n">date</span></a><span class="p">(</span><span class="n">bk</span><span class="o">.</span><span class="n">cycle</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">dated</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.n_cycles.html#cultivars.spectral.cycles.TurningPointsResult.n_cycles" title="cultivars.spectral.cycles.TurningPointsResult.n_cycles"><span class="n">dated</span><span class="o">.</span><span class="n">n_cycles</span></a><span class="p">)</span>
+<span class="n">rows</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#slice"><span class="nb">slice</span></a><span class="p">(</span><span class="n">bk</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">bk</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">bk</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.html#cultivars.spectral.cycles.TurningPointsResult" title="cultivars.spectral.cycles.TurningPointsResult"><span class="n">truth</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPoints.html#cultivars.spectral.cycles.TurningPoints" title="cultivars.spectral.cycles.TurningPoints"><span class="n">TurningPoints</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPoints.date.html#cultivars.spectral.cycles.TurningPoints.date" title="cultivars.spectral.cycles.TurningPoints.date"><span class="n">date</span></a><span class="p">(</span><span class="n">true_cycle</span><span class="p">[</span><span class="n">rows</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">truth</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.concordance.html#cultivars.spectral.cycles.TurningPointsResult.concordance" title="cultivars.spectral.cycles.TurningPointsResult.concordance"><span class="n">dated</span><span class="o">.</span><span class="n">concordance</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.html#cultivars.spectral.cycles.TurningPointsResult" title="cultivars.spectral.cycles.TurningPointsResult"><span class="n">truth</span></a><span class="p">),</span> <span class="mi">2</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.concordance.html#cultivars.spectral.cycles.concordance" title="cultivars.spectral.cycles.concordance"><span class="n">concordance</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.html#cultivars.spectral.cycles.TurningPointsResult" title="cultivars.spectral.cycles.TurningPointsResult"><span class="n">dated</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.contraction.html#cultivars.spectral.cycles.TurningPointsResult.contraction" title="cultivars.spectral.cycles.TurningPointsResult.contraction"><span class="n">truth</span><span class="o">.</span><span class="n">contraction</span></a><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.cycles.TurningPointsResult.phases.html#cultivars.spectral.cycles.TurningPointsResult.phases" title="cultivars.spectral.cycles.TurningPointsResult.phases"><span class="n">dated</span><span class="o">.</span><span class="n">phases</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[13, 32, 53, 73, 93, 114, 133, 153, 173, 193, 212] 10
+[13, 33, 53, 73, 93, 113, 133, 153, 173, 193, 213]
+0.96 0.96
+(3, 13, False, 10)
+</pre></div>
+</div>
+<p>Indices are positions in the series passed to <code class="docutils literal notranslate"><span class="pre">date</span></code>: add
+<code class="docutils literal notranslate"><span class="pre">bk.offset</span></code> to map a Baxter-King row back to the original sample.
+<code class="docutils literal notranslate"><span class="pre">concordance</span></code> also accepts a probability series (thresholded at one
+half), such as smoothed recession probabilities from
+<a class="reference internal" href="../api/generated/cultivars.univariate.regime_switching.MarkovSwitchingARResult.html#cultivars.univariate.regime_switching.MarkovSwitchingARResult" title="cultivars.univariate.regime_switching.MarkovSwitchingARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkovSwitchingARResult</span></code></a>.</p>
+</section>
+<section id="wavelets">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Wavelets</a><a class="headerlink" href="#wavelets" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../api/generated/cultivars.spectral.wavelets.MODWT.html#cultivars.spectral.wavelets.MODWT" title="cultivars.spectral.wavelets.MODWT"><code class="xref py py-class docutils literal notranslate"><span class="pre">MODWT</span></code></a> (Percival and Walden 2000)
+splits one series into octave bands, each aligned in time:
+<span class="math notranslate nohighlight">\(y_t = \sum_{j=1}^J D_{j,t} + S_{J,t}\)</span>, where level <span class="math notranslate nohighlight">\(j\)</span>
+covers periods <span class="math notranslate nohighlight">\([2^j, 2^{j+1})\)</span>. <code class="docutils literal notranslate"><span class="pre">wavelet</span></code> is <code class="docutils literal notranslate"><span class="pre">"la8"</span></code>
+(default), <code class="docutils literal notranslate"><span class="pre">"d4"</span></code> or <code class="docutils literal notranslate"><span class="pre">"haar"</span></code>; <code class="docutils literal notranslate"><span class="pre">levels</span></code> defaults to the deepest
+level that keeps a boundary-free coefficient. <code class="docutils literal notranslate"><span class="pre">transform(endog)</span></code>
+takes a 1-D series of at least 32 observations.</p>
+<p><a class="reference internal" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherence.html#cultivars.spectral.wavelets.WaveletCoherence" title="cultivars.spectral.wavelets.WaveletCoherence"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletCoherence</span></code></a> (Torrence and
+Compo 1998; Grinsted, Moore and Jevrejeva 2004) computes Morlet
+coherence over scale and date, with a cone of influence and an AR(1)
+surrogate significance level. <code class="docutils literal notranslate"><span class="pre">compute(first,</span> <span class="pre">second)</span></code> takes two
+aligned 1-D series. The surrogates dominate the cost: the default
+<code class="docutils literal notranslate"><span class="pre">surrogates=300</span></code> takes seconds; <code class="docutils literal notranslate"><span class="pre">surrogates=0</span></code> skips the
+significance level. Pass <code class="docutils literal notranslate"><span class="pre">seed</span></code> for a reproducible level.</p>
+<p>A period-24 cycle shared by two series in the first half of the sample
+only, the second series lagging by three observations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.html#module-cultivars.spectral.wavelets"><span class="nn">cultivars.spectral.wavelets</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWT.html#cultivars.spectral.wavelets.MODWT" title="cultivars.spectral.wavelets.MODWT"><span class="n">MODWT</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherence.html#cultivars.spectral.wavelets.WaveletCoherence" title="cultivars.spectral.wavelets.WaveletCoherence"><span class="n">WaveletCoherence</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">24</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">shared</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">24</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">shared</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWTResult.html#cultivars.spectral.wavelets.MODWTResult" title="cultivars.spectral.wavelets.MODWTResult"><span class="n">mra</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWT.html#cultivars.spectral.wavelets.MODWT" title="cultivars.spectral.wavelets.MODWT"><span class="n">MODWT</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWT.transform.html#cultivars.spectral.wavelets.MODWT.transform" title="cultivars.spectral.wavelets.MODWT.transform"><span class="n">transform</span></a><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWTResult.levels.html#cultivars.spectral.wavelets.MODWTResult.levels" title="cultivars.spectral.wavelets.MODWTResult.levels"><span class="n">mra</span><span class="o">.</span><span class="n">levels</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWTResult.wavelet.html#cultivars.spectral.wavelets.MODWTResult.wavelet" title="cultivars.spectral.wavelets.MODWTResult.wavelet"><span class="n">mra</span><span class="o">.</span><span class="n">wavelet</span></a><span class="p">,</span> <span class="n">mra</span><span class="o">.</span><span class="n">details</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWTResult.periods.html#cultivars.spectral.wavelets.MODWTResult.periods" title="cultivars.spectral.wavelets.MODWTResult.periods"><span class="n">mra</span><span class="o">.</span><span class="n">periods</span></a><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">mra</span><span class="o">.</span><span class="n">details</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWTResult.smooth.html#cultivars.spectral.wavelets.MODWTResult.smooth" title="cultivars.spectral.wavelets.MODWTResult.smooth"><span class="n">mra</span><span class="o">.</span><span class="n">smooth</span></a><span class="p">,</span> <span class="n">x</span><span class="p">)))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#int"><span class="nb">int</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.MODWTResult.variance.html#cultivars.spectral.wavelets.MODWTResult.variance" title="cultivars.spectral.wavelets.MODWTResult.variance"><span class="n">mra</span><span class="o">.</span><span class="n">variance</span></a><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mra</span><span class="o">.</span><span class="n">variance</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherenceResult.html#cultivars.spectral.wavelets.WaveletCoherenceResult" title="cultivars.spectral.wavelets.WaveletCoherenceResult"><span class="n">wc</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherence.html#cultivars.spectral.wavelets.WaveletCoherence" title="cultivars.spectral.wavelets.WaveletCoherence"><span class="n">WaveletCoherence</span></a><span class="p">(</span><span class="n">surrogates</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherence.compute.html#cultivars.spectral.wavelets.WaveletCoherence.compute" title="cultivars.spectral.wavelets.WaveletCoherence.compute"><span class="n">compute</span></a><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">wc</span><span class="o">.</span><span class="n">coherence</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">wc</span><span class="o">.</span><span class="n">periods</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">band</span> <span class="o">=</span> <span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherenceResult.periods.html#cultivars.spectral.wavelets.WaveletCoherenceResult.periods" title="cultivars.spectral.wavelets.WaveletCoherenceResult.periods"><span class="n">wc</span><span class="o">.</span><span class="n">periods</span></a> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherenceResult.periods.html#cultivars.spectral.wavelets.WaveletCoherenceResult.periods" title="cultivars.spectral.wavelets.WaveletCoherenceResult.periods"><span class="n">wc</span><span class="o">.</span><span class="n">periods</span></a> <span class="o">&lt;=</span> <span class="mi">28</span><span class="p">)</span>
+<span class="n">significant</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherenceResult.significant.html#cultivars.spectral.wavelets.WaveletCoherenceResult.significant" title="cultivars.spectral.wavelets.WaveletCoherenceResult.significant"><span class="n">wc</span><span class="o">.</span><span class="n">significant</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">significant</span><span class="p">[</span><span class="n">band</span><span class="p">][:,</span> <span class="mi">40</span><span class="p">:</span><span class="mi">100</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">2</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">significant</span><span class="p">[</span><span class="n">band</span><span class="p">][:,</span> <span class="mi">160</span><span class="p">:</span><span class="mi">220</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.spectral.wavelets.WaveletCoherenceResult.lead.html#cultivars.spectral.wavelets.WaveletCoherenceResult.lead" title="cultivars.spectral.wavelets.WaveletCoherenceResult.lead"><span class="n">wc</span><span class="o">.</span><span class="n">lead</span></a><span class="p">((</span><span class="mi">20</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>5 la8 (5, 256) (16.0, 32.0)
+True
+4 [0.121, 0.058, 0.06, 0.398, 0.022]
+(57, 256) (57,)
+1.0 0.0
+3.4
+</pre></div>
+</div>
+<p>Level 4 (periods 16 to 32) holds the cycle’s variance; coherence is
+significant throughout the first half and nowhere in the second, which
+no full-sample spectrum can show; and <code class="docutils literal notranslate"><span class="pre">lead</span></code> recovers the three-period
+delay. <code class="docutils literal notranslate"><span class="pre">MODWTResult</span></code> also gives <code class="docutils literal notranslate"><span class="pre">coefficients</span></code>, <code class="docutils literal notranslate"><span class="pre">scaling</span></code>,
+<code class="docutils literal notranslate"><span class="pre">degrees_of_freedom</span></code>, <code class="docutils literal notranslate"><span class="pre">variance_interval(alpha)</span></code>, <code class="docutils literal notranslate"><span class="pre">scales</span></code> and
+<code class="docutils literal notranslate"><span class="pre">summary()</span></code>; <code class="docutils literal notranslate"><span class="pre">WaveletCoherenceResult</span></code> gives <code class="docutils literal notranslate"><span class="pre">phase</span></code>, <code class="docutils literal notranslate"><span class="pre">scales</span></code>,
+<code class="docutils literal notranslate"><span class="pre">cone</span></code> (<code class="docutils literal notranslate"><span class="pre">True</span></code> inside the cone of influence), <code class="docutils literal notranslate"><span class="pre">significance</span></code> and
+<code class="docutils literal notranslate"><span class="pre">summary()</span></code>.</p>
+</section>
+<section id="how-the-pieces-connect">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">How the pieces connect</a><a class="headerlink" href="#how-the-pieces-connect" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Fitted VARs feed the model-implied views.</strong> <code class="docutils literal notranslate"><span class="pre">SpectralDensity</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SpectralCausality</span></code> and <code class="docutils literal notranslate"><span class="pre">ConditionalSpectralCausality</span></code> accept any
+result that satisfies the closed-system protocol, the same protocol
+the identification schemes on <a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a> read.
+The time-domain counterpart of the integrated Geweke measure is
+<code class="docutils literal notranslate"><span class="pre">granger_causality(cause,</span> <span class="pre">effect)</span></code> on a fitted VAR result
+(<a class="reference internal" href="var.html"><span class="doc">Vector autoregressions</span></a>).</p></li>
+<li><p><strong>Data and model overlay.</strong> Fit a VAR, estimate a multitaper spectrum
+on the same sample with <code class="docutils literal notranslate"><span class="pre">n_frequencies</span> <span class="pre">=</span> <span class="pre">N</span> <span class="pre">//</span> <span class="pre">2</span> <span class="pre">+</span> <span class="pre">1</span></code>, and read the
+model density against the data’s confidence band, as in
+<a class="reference internal" href="#model-implied-spectra-from-fitted-systems">Model-implied spectra from fitted systems</a>. This is a frequency-wise
+misspecification check to set beside the residual diagnostics on
+<a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a>.</p></li>
+<li><p><strong>Filters feed dating.</strong> A band-pass or trend-cycle <code class="docutils literal notranslate"><span class="pre">cycle</span></code> column
+is the input for a growth-cycle chronology; the level itself is the
+input for a classical chronology.</p></li>
+<li><p><strong>Models and filters agree where they should.</strong> The smooth-trend
+<a class="reference internal" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponents.html#cultivars.univariate.unobserved_components.UnobservedComponents" title="cultivars.univariate.unobserved_components.UnobservedComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnobservedComponents</span></code></a>
+model reproduces the HP trend at the penalty
+<span class="math notranslate nohighlight">\(\sigma^2_\varepsilon / \sigma^2_\zeta\)</span> it estimates
+(<a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a>); its cycle period is
+<span class="math notranslate nohighlight">\(2\pi/\lambda_c\)</span> in the units of this page.</p></li>
+<li><p><strong>Regime models feed concordance.</strong> Smoothed recession probabilities
+from a Markov-switching model (<a class="reference internal" href="univariate_nonlinear.html"><span class="doc">Nonlinear and regime-switching univariate models</span></a>) go
+straight into <a class="reference internal" href="../api/generated/cultivars.spectral.cycles.concordance.html#cultivars.spectral.cycles.concordance" title="cultivars.spectral.cycles.concordance"><code class="xref py py-func docutils literal notranslate"><span class="pre">concordance()</span></code></a>.</p></li>
+</ul>
+</section>
+<section id="nuances-and-gotchas">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Nuances and gotchas</a><a class="headerlink" href="#nuances-and-gotchas" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><strong>Christiano-Fitzgerald output is wrong in this release.</strong> The
+endpoint weights of
+<a class="reference internal" href="../api/generated/cultivars.spectral.band_pass.ChristianoFitzgeraldFilter.html#cultivars.spectral.band_pass.ChristianoFitzgeraldFilter" title="cultivars.spectral.band_pass.ChristianoFitzgeraldFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChristianoFitzgeraldFilter</span></code></a> are
+off by one lag, so the weights applied at each date do not sum to
+zero: a constant series returns a nonzero cycle, and a trending level
+leaks into the cycle everywhere, not only near the ends. Above, the CF
+cycle of <code class="docutils literal notranslate"><span class="pre">log_gdp</span></code> correlates 0.45 with the true cycle where
+Baxter-King reaches 0.99. Use <code class="docutils literal notranslate"><span class="pre">BaxterKingFilter</span></code> until this is
+fixed, and check any CF output on a constant first:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">cf_flat</span> <span class="o">=</span> <span class="n">ChristianoFitzgeraldFilter</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span><span class="o">.</span><span class="n">cycle</span>
+<span class="n">bk_flat</span> <span class="o">=</span> <span class="n">BaxterKingFilter</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span><span class="o">.</span><span class="n">cycle</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cf_flat</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="mi">3</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#float"><span class="nb">float</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">bk_flat</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fit_to_truth</span><span class="p">(</span><span class="n">cf</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.215 0.0 0.45
+</pre></div>
+</div>
+</li>
+<li><p><strong>VARMA results give the wrong density.</strong> <code class="docutils literal notranslate"><span class="pre">SpectralDensity</span></code> and
+<code class="docutils literal notranslate"><span class="pre">SpectralCausality</span></code> build <span class="math notranslate nohighlight">\(\Psi(\omega)\)</span> from <code class="docutils literal notranslate"><span class="pre">coefficients</span></code>
+alone. For a
+<a class="reference internal" href="../api/generated/cultivars.multivariate.reduced_form.moving_average.VARMA.html#cultivars.multivariate.reduced_form.moving_average.VARMA" title="cultivars.multivariate.reduced_form.moving_average.VARMA"><code class="xref py py-class docutils literal notranslate"><span class="pre">VARMA</span></code></a>
+result that is the autoregressive block only, so the moving-average
+part is silently dropped (a VARMA(1, 1) with MA coefficient 0.8
+returns about half the true variance). Pass VAR or VECM results.</p></li>
+<li><p><strong>Not every multivariate result is accepted.</strong>
+<a class="reference internal" href="../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR" title="cultivars.multivariate.large_dim.bayesian.BVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">BVAR</span></code></a> results lack
+<code class="docutils literal notranslate"><span class="pre">ma_representation</span></code> and are refused with
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a>.</p></li>
+<li><p><strong>Unit roots.</strong> A near-unit root gives a legitimately huge density at
+<span class="math notranslate nohighlight">\(\omega = 0\)</span> (a fitted VECM in levels does this); an exact unit
+root makes the lag polynomial singular and <code class="docutils literal notranslate"><span class="pre">compute()</span></code> raises
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>. Summaries exclude
+<span class="math notranslate nohighlight">\(\omega = 0\)</span> from the peak search for this reason.</p></li>
+<li><p><strong>Grids align only by construction.</strong> A periodogram’s grid is
+<span class="math notranslate nohighlight">\(2\pi j/N\)</span>, <span class="math notranslate nohighlight">\(j = 0,\dots,\lfloor N/2 \rfloor\)</span>, ending
+short of <span class="math notranslate nohighlight">\(\pi\)</span> when <span class="math notranslate nohighlight">\(N\)</span> is odd; the model grid always ends
+at <span class="math notranslate nohighlight">\(\pi\)</span>. Welch uses the segment’s grid, <code class="docutils literal notranslate"><span class="pre">segment</span> <span class="pre">//</span> <span class="pre">2</span> <span class="pre">+</span> <span class="pre">1</span></code>
+points. Check <code class="docutils literal notranslate"><span class="pre">np.allclose</span></code> on the two <code class="docutils literal notranslate"><span class="pre">frequencies</span></code> arrays before
+comparing ordinates.</p></li>
+<li><p><strong>Phase signs differ between modules.</strong> <code class="docutils literal notranslate"><span class="pre">SpectralDensityResult.phase</span></code>
+is negative when <code class="docutils literal notranslate"><span class="pre">cause</span></code> leads <code class="docutils literal notranslate"><span class="pre">effect</span></code>. <code class="docutils literal notranslate"><span class="pre">WaveletCoherenceResult</span></code>
+<code class="docutils literal notranslate"><span class="pre">phase</span></code> and <code class="docutils literal notranslate"><span class="pre">lead</span></code> are positive when the <em>first</em> series leads.</p></li>
+<li><p><strong>Axis order of causality arrays is</strong> <code class="docutils literal notranslate"><span class="pre">[effect,</span> <span class="pre">cause]</span></code>.
+<code class="docutils literal notranslate"><span class="pre">measure[:,</span> <span class="pre">i,</span> <span class="pre">j]</span></code> is <code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">-&gt;</span> <span class="pre">i</span></code>; use <code class="docutils literal notranslate"><span class="pre">pair(cause,</span> <span class="pre">effect)</span></code> to
+avoid transposition errors. <code class="docutils literal notranslate"><span class="pre">band</span></code> raises if no grid point falls in
+the band; refine <code class="docutils literal notranslate"><span class="pre">n_frequencies</span></code> for narrow bands.</p></li>
+<li><p><strong>Conditional causality needs matching names.</strong> The restricted model
+must contain the full model’s names minus exactly one, in the same
+order; give it explicit <code class="docutils literal notranslate"><span class="pre">names</span></code>. Nothing checks that the two models
+were fitted on the same sample; <code class="docutils literal notranslate"><span class="pre">consistency</span></code> will be large if they
+were not.</p></li>
+<li><p><strong>Rows lost and rows provisional.</strong> Hamilton loses <code class="docutils literal notranslate"><span class="pre">horizon</span> <span class="pre">+</span> <span class="pre">lags</span> <span class="pre">-</span>
+<span class="pre">1</span></code> rows at the start, Baxter-King <code class="docutils literal notranslate"><span class="pre">truncation</span></code> at each end,
+Beveridge-Nelson one. HP and Butterworth keep every row but flag
+<code class="docutils literal notranslate"><span class="pre">ceil(cutoff)</span></code> rows at each edge as <code class="docutils literal notranslate"><span class="pre">provisional</span></code> (80 of 240 at
+<code class="docutils literal notranslate"><span class="pre">penalty=1600</span></code>); a sample shorter than twice the cutoff is
+provisional throughout.</p></li>
+<li><p><strong>The band-pass “trend” is not a trend.</strong> <code class="docutils literal notranslate"><span class="pre">BandPassResult.trend</span></code> is
+the input minus the cycle, so it holds the frequencies above the band
+as well as below it. Its summary’s “cycle share of variance” uses that
+trend, so for a trending level it is close to zero; filter a detrended
+or differenced series to read it as a variance share.</p></li>
+<li><p><strong>Turning points near the ends.</strong> The first and last <code class="docutils literal notranslate"><span class="pre">window</span></code>
+observations can never be turns, and a phase open at the sample end is
+absent from <code class="docutils literal notranslate"><span class="pre">phases</span></code>. The quarterly triple dates spurious short
+phases on noisy series; use <code class="docutils literal notranslate"><span class="pre">convention="monthly"</span></code>, a larger
+<code class="docutils literal notranslate"><span class="pre">min_phase</span></code>, or a smoothed input.</p></li>
+<li><p><strong>Concordance base rate.</strong> Two independent chronologies with
+contraction shares <span class="math notranslate nohighlight">\(p, p'\)</span> agree at rate
+<span class="math notranslate nohighlight">\(pp' + (1-p)(1-p')\)</span>, not one half. A probability of exactly 0.5
+counts as expansion.</p></li>
+<li><p><strong>Wavelet edges.</strong> MODWT is circular: the first
+<span class="math notranslate nohighlight">\((2^j - 1)(L - 1)\)</span> coefficients at level <span class="math notranslate nohighlight">\(j\)</span> wrap around,
+and the variance excludes them, so the deepest level has very few
+degrees of freedom (<code class="docutils literal notranslate"><span class="pre">degrees_of_freedom</span></code> shows it). Coherence inside
+<code class="docutils literal notranslate"><span class="pre">cone</span></code> is contaminated by padding; <code class="docutils literal notranslate"><span class="pre">significant()</span></code> and <code class="docutils literal notranslate"><span class="pre">lead</span></code>
+ignore it, and <code class="docutils literal notranslate"><span class="pre">significant()</span></code> raises if <code class="docutils literal notranslate"><span class="pre">surrogates=0</span></code>.</p></li>
+<li><p><strong>Univariate inputs.</strong> <code class="docutils literal notranslate"><span class="pre">MODWT</span></code>, <code class="docutils literal notranslate"><span class="pre">TurningPoints</span></code> and
+<code class="docutils literal notranslate"><span class="pre">WaveletCoherence</span></code> take 1-D series; the periodogram estimators and
+the filters take panels. <code class="docutils literal notranslate"><span class="pre">SpectralCausality</span></code> needs at least two
+variables.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="var.html"><span class="doc">Vector autoregressions</span></a> and <a class="reference internal" href="var_extensions.html"><span class="doc">Beyond the basic VAR</span></a>: the fitted systems the
+model-implied views read.</p></li>
+<li><p><a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a>: the same closed-system protocol,
+read for identification.</p></li>
+<li><p><a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a>: unobserved components, the model-based
+trend-cycle decomposition, and ARIMA for Beveridge-Nelson.</p></li>
+<li><p><a class="reference internal" href="univariate_nonlinear.html"><span class="doc">Nonlinear and regime-switching univariate models</span></a>: Markov-switching regime probabilities
+for concordance.</p></li>
+<li><p><a class="reference internal" href="diagnostics.html"><span class="doc">Diagnostics and specification testing</span></a>: Granger tests, residual checks and long-memory
+estimators.</p></li>
+<li><p><a class="reference internal" href="state_space.html"><span class="doc">State-space models and filtering</span></a>: the filtering engines behind unobserved
+components.</p></li>
+<li><p>API: <a class="reference internal" href="../api/generated/cultivars.spectral.periodogram.html#module-cultivars.spectral.periodogram" title="cultivars.spectral.periodogram"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral.periodogram</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.density.html#module-cultivars.spectral.density" title="cultivars.spectral.density"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral.density</span></code></a>, <a class="reference internal" href="../api/generated/cultivars.spectral.causality.html#module-cultivars.spectral.causality" title="cultivars.spectral.causality"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral.causality</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.filters.html#module-cultivars.spectral.filters" title="cultivars.spectral.filters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral.filters</span></code></a>, <a class="reference internal" href="../api/generated/cultivars.spectral.band_pass.html#module-cultivars.spectral.band_pass" title="cultivars.spectral.band_pass"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral.band_pass</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.spectral.cycles.html#module-cultivars.spectral.cycles" title="cultivars.spectral.cycles"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral.cycles</span></code></a>, <a class="reference internal" href="../api/generated/cultivars.spectral.wavelets.html#module-cultivars.spectral.wavelets" title="cultivars.spectral.wavelets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.spectral.wavelets</span></code></a>.</p></li>
+</ul>
+<p>References: Thomson (1982); Welch (1967); Percival and Walden (1993,
+2000); Hamilton (1994); Geweke (1982, 1984); Wilson (1972); Dhamala,
+Rangarajan and Ding (2008); Hodrick and Prescott (1997); Ravn and Uhlig
+(2002); Hamilton (2018); Gomez (2001); Beveridge and Nelson (1981);
+Morley (2002); Baxter and King (1999); Christiano and Fitzgerald (2003);
+Burns and Mitchell (1946); Bry and Boschan (1971); Harding and Pagan
+(2002, 2006); Torrence and Compo (1998); Grinsted, Moore and Jevrejeva
+(2004).</p>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="state_space.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">State-space models and filtering</p>
+</div>
+</a>
+<a class="right-next" href="forecasting.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Forecasting and forecast evaluation</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-family-at-a-glance">The family at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#units-and-conventions">Units and conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonparametric-spectra-from-data">Nonparametric spectra from data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-implied-spectra-from-fitted-systems">Model-implied spectra from fitted systems</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#readings-off-the-density">Readings off the density</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-granger-causality">Spectral Granger causality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trend-cycle-filters">Trend-cycle filters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#band-pass-filters">Band-pass filters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dating-cycles">Dating cycles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wavelets">Wavelets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-pieces-connect">How the pieces connect</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nuances-and-gotchas">Nuances and gotchas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="tocsection editthispage">
+<a href="https://github.com/nikhilxsunder/cultivars/edit/v0.0.2/docs/source/user_guide/spectral.rst">
+<i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+</div>
+</div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item"><div class="cv-footer">
+<section aria-label="Documentation sections" class="cv-footer__band cv-footer__band--guide">
+<div class="cv-footer__inner cv-footer__columns">
+<div class="cv-footer__column">
+<h2>API reference</h2>
+<p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+<a class="cv-footer__cta" href="../api/index.html">View the API<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Examples</h2>
+<p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+<a class="cv-footer__cta" href="../auto_examples/index.html">View the examples<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Engine</h2>
+<p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+<a class="cv-footer__cta" href="../engine/index.html">View the engine<span aria-hidden="true"> ›</span></a>
+</div>
+</div>
+</section>
+<section aria-label="Project links" class="cv-footer__band cv-footer__band--site">
+<div class="cv-footer__inner">
+<div class="cv-footer__grid">
+<div class="cv-footer__install">
+<h2>Get cultivars</h2>
+<p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a4</code></pre>
+</div>
+<nav aria-label="Resources" class="cv-footer__links">
+<h2>Resources</h2>
+<ul>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/releases">Releases</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md">Changelog</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/issues">Issues</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md">Contributing</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md">Security</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md">Code of conduct</a>
+</li>
+</ul>
+</nav>
+<nav aria-label="Related projects" class="cv-footer__links">
+<h2>Related</h2>
+<ul>
+<li>
+<a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a><span class="cv-footer__muted"> FRED client</span>
+</li>
+<li>
+<a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a><span class="cv-footer__muted"> SEC EDGAR client</span>
+</li>
+</ul>
+</nav>
+</div>
+<ul aria-label="Project pages" class="cv-footer__social">
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li>
+<a href="https://pypi.org/project/cultivars/" title="PyPI"><i aria-hidden="true" class="fa-brands fa-python"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li>
+<a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov"><i aria-hidden="true" class="fa-solid fa-umbrella"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff" title="Cite"><i aria-hidden="true" class="fa-solid fa-quote-left"></i><span class="visually-hidden">Cite</span></a>
+</li>
+</ul>
+<div class="cv-footer__legal">
+<p>
+          © 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE">MIT License</a>. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED® is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+<p class="cv-footer__build">
+          cultivars 1.0.0a4 · updated 2026-10-13 · built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
+</p>
+</div>
+</div>
+</section>
+</div></div>
+</div>
+</div>
+</footer>
+</body>
+</html>

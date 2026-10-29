@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="GARCH, GJR, EGARCH, FIGARCH, ARMA-GARCH and stochastic-volatility models in cultivars: estimation, persistence, simulation and variance forecasts." name="description"/>
+<meta content="Volatility models" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/user_guide/volatility.html" property="og:url"/>
+<meta content="cultivars" property="og:site_name"/>
+<meta content="This page covers models for the time-varying variance of a single series. The observation-driven family in cultivars.univariate.conditional_variance(GARCH, GJR, EGARCH, FIGARCH, with constant or ARMA means) makes the variance a function of past shocks; the latent family in cultivars.univariate.st..." property="og:description"/>
+<meta content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" property="og:image"/>
+<meta content="cultivars" property="og:image:alt"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="cultivars Documentation" property="og:site_name"/>
+<meta content="cultivars Logo" property="og:image:alt"/>
+<meta content="2026-10-13T21:01:40+00:00" property="article:modified_time"/>
+<title>Volatility models — cultivars</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/plot_directive.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=c83e6b79" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=7fc003df" rel="stylesheet" type="text/css"/>
+<link href="../_static/consent.css?v=8cbde1cf" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script defer="" src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
+<script src="../_static/documentation_options.js?v=fc897e8e"></script>
+<script src="../_static/doctools.js?v=fd6eb6e6"></script>
+<script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-QPCZ8H078M"></script>
+<script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-QPCZ8H078M');
+            </script>
+<script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+<script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+<script defer="defer" src="../_static/tippy/user_guide/volatility.255bcdee-cb8e-49a6-8115-a2e9fa1c1af5.js"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/volatility';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://nikhilxsunder.github.io/cultivars/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.0.2';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+<script defer="defer" src="../_static/consent.js?v=a5019946"></script>
+<link href="https://nikhilxsunder.github.io/cultivars/stable/user_guide/volatility.html" rel="canonical"/>
+<link href="../_static/cultivars-favicon.ico" rel="icon"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="univariate_nonlinear.html" rel="next" title="Nonlinear and regime-switching univariate models"/>
+<link href="univariate_linear.html" rel="prev" title="Univariate linear models"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="1.0" name="docsearch:version"/>
+<meta content="2026-10-13" name="docbuild:last-update"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
+</head>
+<body data-default-mode="">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle" type="button">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="cultivars - Home" class="logo__image only-light" src="../_static/cultivars-logo.png"/>
+<img alt="cultivars - Home" class="logo__image only-dark pst-js-only" src="../_static/cultivars-logo.png"/>
+</a></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search" type="button">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle" type="button">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../engine/index.html">
+    Engine reference
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../project/index.html">
+    Project
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown" type="button">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto" type="button"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light" type="button"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark" type="button"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fab fa-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/cultivars/" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fab fa-python fa-lg"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://anaconda.org/conda-forge/cultivars" rel="noopener" target="_blank" title="Conda-Forge"><i aria-hidden="true" class="fas fa-database fa-lg"></i><span class="visually-hidden">Conda-Forge</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://app.codecov.io/gh/nikhilxsunder/cultivars" rel="noopener" target="_blank" title="Codecov"><i aria-hidden="true" class="fas fa-umbrella fa-lg"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button" type="button">
+<svg aria-hidden="true" class="pst-icon" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="choosing_a_model.html">Choosing a model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nuances.html">Nuances and known issues</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Before estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.html">Diagnostics and specification testing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Univariate models</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="univariate_linear.html">Univariate linear models</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Volatility models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="univariate_nonlinear.html">Nonlinear and regime-switching univariate models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multivariate models</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="var.html">Vector autoregressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="var_extensions.html">Beyond the basic VAR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structural_identification.html">Structural identification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_vars.html">Bayesian VARs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="large_dimensional.html">Large and high-dimensional systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nonlinear_multivariate.html">Nonlinear, time-varying and regime-switching VARs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Engines and frequency-domain views</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="state_space.html">State-space models and filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral analysis and filtering</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">After estimation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="forecasting.html">Forecasting and forecast evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bayesian_workflow.html">The Bayesian workflow</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="index.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">Volatility models</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section id="volatility-models">
+<h1>Volatility models<a class="headerlink" href="#volatility-models" title="Link to this heading">#</a></h1>
+<p>This page covers models for the time-varying variance of a single
+series. The observation-driven family in
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.html#module-cultivars.univariate.conditional_variance" title="cultivars.univariate.conditional_variance"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.conditional_variance</span></code></a> (GARCH, GJR, EGARCH,
+FIGARCH, with constant or ARMA means) makes the variance a function of
+past shocks; the latent family in
+<a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.html#module-cultivars.univariate.stochastic_volatility" title="cultivars.univariate.stochastic_volatility"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.stochastic_volatility</span></code></a> (SV, UCSV) makes it a
+state with its own innovation. They answer “how volatile is the series
+now, how persistent are variance shocks, and is there a leverage
+effect?”. Constant-variance mean models are on
+<a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a>; volatility in a system of series (BVAR with
+stochastic volatility, factor SV, identification through
+heteroskedasticity) is on <a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a>,
+<a class="reference internal" href="large_dimensional.html"><span class="doc">Large and high-dimensional systems</span></a> and <a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a>.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-family-at-a-glance" id="id1">The family at a glance</a></p></li>
+<li><p><a class="reference internal" href="#garch-type-models" id="id2">GARCH-type models</a></p></li>
+<li><p><a class="reference internal" href="#innovation-distributions" id="id3">Innovation distributions</a></p></li>
+<li><p><a class="reference internal" href="#persistence-and-stationarity" id="id4">Persistence and stationarity</a></p></li>
+<li><p><a class="reference internal" href="#stochastic-volatility-sv" id="id5">Stochastic volatility: <code class="docutils literal notranslate"><span class="pre">SV</span></code></a></p></li>
+<li><p><a class="reference internal" href="#trend-with-stochastic-volatility-ucsv" id="id6">Trend with stochastic volatility: <code class="docutils literal notranslate"><span class="pre">UCSV</span></code></a></p></li>
+<li><p><a class="reference internal" href="#variance-forecasts-and-var-style-use" id="id7">Variance forecasts and VaR-style use</a></p></li>
+<li><p><a class="reference internal" href="#simulating-from-a-fit" id="id8">Simulating from a fit</a></p></li>
+<li><p><a class="reference internal" href="#how-the-pieces-connect" id="id9">How the pieces connect</a></p></li>
+<li><p><a class="reference internal" href="#nuances-and-gotchas" id="id10">Nuances and gotchas</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id11">See also</a></p></li>
+</ul>
+</nav>
+<section id="the-family-at-a-glance">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">The family at a glance</a><a class="headerlink" href="#the-family-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%"/>
+<col style="width: 24.0%"/>
+<col style="width: 34.0%"/>
+<col style="width: 22.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Module</p></th>
+<th class="head"><p>Model in one line</p></th>
+<th class="head"><p>Use when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.GARCH.html#cultivars.univariate.conditional_variance.GARCH" title="cultivars.univariate.conditional_variance.GARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">GARCH</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma_t^2 = \omega + \sum\alpha_i\varepsilon_{t-i}^2 +
+\sum\beta_j\sigma_{t-j}^2\)</span></p></td>
+<td><p>symmetric volatility clustering; ARCH(p) with <code class="docutils literal notranslate"><span class="pre">q=0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.GJR.html#cultivars.univariate.conditional_variance.GJR" title="cultivars.univariate.conditional_variance.GJR"><code class="xref py py-class docutils literal notranslate"><span class="pre">GJR</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code></p></td>
+<td><p>GARCH plus <span class="math notranslate nohighlight">\(\gamma\,\varepsilon_{t-1}^2\,1\{\varepsilon_{t-1}&lt;0\}\)</span></p></td>
+<td><p>leverage in a level recursion</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.EGARCH.html#cultivars.univariate.conditional_variance.EGARCH" title="cultivars.univariate.conditional_variance.EGARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">EGARCH</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code></p></td>
+<td><p>recursion in <span class="math notranslate nohighlight">\(\log\sigma_t^2\)</span> driven by <span class="math notranslate nohighlight">\(|z_t|\)</span> and
+<span class="math notranslate nohighlight">\(z_t\)</span></p></td>
+<td><p>leverage without positivity constraints</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCH.html#cultivars.univariate.conditional_variance.FIGARCH" title="cultivars.univariate.conditional_variance.FIGARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">FIGARCH</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code></p></td>
+<td><p>FIGARCH(1, d, 1), hyperbolic ARCH(<span class="math notranslate nohighlight">\(\infty\)</span>) weights</p></td>
+<td><p>long memory in volatility</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.ARGARCH.html#cultivars.univariate.conditional_variance.ARGARCH" title="cultivars.univariate.conditional_variance.ARGARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARGARCH</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCH.html#cultivars.univariate.conditional_variance.ARMAGARCH" title="cultivars.univariate.conditional_variance.ARMAGARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARMAGARCH</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGJR.html#cultivars.univariate.conditional_variance.ARMAGJR" title="cultivars.univariate.conditional_variance.ARMAGJR"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARMAGJR</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.ARMAEGARCH.html#cultivars.univariate.conditional_variance.ARMAEGARCH" title="cultivars.univariate.conditional_variance.ARMAEGARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARMAEGARCH</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.ARMAFIGARCH.html#cultivars.univariate.conditional_variance.ARMAFIGARCH" title="cultivars.univariate.conditional_variance.ARMAFIGARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARMAFIGARCH</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code></p></td>
+<td><p>the same variances under an AR or ARMA mean, estimated jointly</p></td>
+<td><p>the mean dynamics matter as much as the variance</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.SV.html#cultivars.univariate.stochastic_volatility.SV" title="cultivars.univariate.stochastic_volatility.SV"><code class="xref py py-class docutils literal notranslate"><span class="pre">SV</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">stochastic_volatility</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(y_t = c + e^{h_t/2}\varepsilon_t\)</span>, AR(1) log variance</p></td>
+<td><p>latent volatility; Student-t tails or leverage; Bayesian posterior</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSV.html#cultivars.univariate.stochastic_volatility.UCSV" title="cultivars.univariate.stochastic_volatility.UCSV"><code class="xref py py-class docutils literal notranslate"><span class="pre">UCSV</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">stochastic_volatility</span></code></p></td>
+<td><p>random-walk trend plus irregular, both with random-walk log
+variances</p></td>
+<td><p>trend inflation (Stock and Watson, 2007)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.structural.stochastic_volatility.LongMemorySV.html#cultivars.multivariate.structural.stochastic_volatility.LongMemorySV" title="cultivars.multivariate.structural.stochastic_volatility.LongMemorySV"><code class="xref py py-class docutils literal notranslate"><span class="pre">LongMemorySV</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">multivariate.structural.stochastic_volatility</span></code></p></td>
+<td><p>fractionally integrated log variance, Whittle estimation</p></td>
+<td><p>long memory in a latent volatility</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="garch-type-models">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">GARCH-type models</a><a class="headerlink" href="#garch-type-models" title="Link to this heading">#</a></h2>
+<p>Every model in <a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.html#module-cultivars.univariate.conditional_variance" title="cultivars.univariate.conditional_variance"><code class="xref py py-mod docutils literal notranslate"><span class="pre">conditional_variance</span></code></a> writes</p>
+<div class="math notranslate nohighlight">
+\[y_t = \mu_t + \varepsilon_t, \qquad \varepsilon_t = \sigma_t z_t,
+\qquad z_t \sim N(0, 1),\]</div>
+<p>with <span class="math notranslate nohighlight">\(\mu_t\)</span> zero, a constant, or an AR/ARMA recursion, and
+<span class="math notranslate nohighlight">\(\sigma_t^2\)</span> one of the recursions of Engle (1982), Bollerslev
+(1986), Glosten, Jagannathan and Runkle (1993), Nelson (1991) or Baillie,
+Bollerslev and Mikkelsen (1996). Mean and variance are estimated
+<em>jointly</em> by maximizing the Gaussian likelihood; the mean uses conditional
+sum of squares, and the variance recursion starts from an exponentially
+weighted backcast. <code class="docutils literal notranslate"><span class="pre">fit()</span></code> takes no arguments.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.html#module-cultivars.univariate.conditional_variance"><span class="nn">cultivars.univariate.conditional_variance</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCH.html#cultivars.univariate.conditional_variance.GARCH" title="cultivars.univariate.conditional_variance.GARCH"><span class="n">GARCH</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">h</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.ones.html#numpy.ones" title="numpy.ones"><span class="n">np</span><span class="o">.</span><span class="n">ones</span></a><span class="p">(</span><span class="n">n</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">h</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">+</span> <span class="mf">0.08</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">+</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sqrt.html#numpy.sqrt" title="numpy.sqrt"><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span></a><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.html#cultivars.univariate.conditional_variance.GARCHResult" title="cultivars.univariate.conditional_variance.GARCHResult"><span class="n">garch</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCH.html#cultivars.univariate.conditional_variance.GARCH" title="cultivars.univariate.conditional_variance.GARCH"><span class="n">GARCH</span></a><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCH.fit.html#cultivars.univariate.conditional_variance.GARCH.fit" title="cultivars.univariate.conditional_variance.GARCH.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.vol.html#cultivars.univariate.conditional_variance.GARCHResult.vol" title="cultivars.univariate.conditional_variance.GARCHResult.vol"><span class="n">garch</span><span class="o">.</span><span class="n">vol</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.order.html#cultivars.univariate.conditional_variance.GARCHResult.order" title="cultivars.univariate.conditional_variance.GARCHResult.order"><span class="n">garch</span><span class="o">.</span><span class="n">order</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.nobs.html#cultivars.univariate.conditional_variance.GARCHResult.nobs" title="cultivars.univariate.conditional_variance.GARCHResult.nobs"><span class="n">garch</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.n_params.html#cultivars.univariate.conditional_variance.GARCHResult.n_params" title="cultivars.univariate.conditional_variance.GARCHResult.n_params"><span class="n">garch</span><span class="o">.</span><span class="n">n_params</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">({</span><span class="n">k</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">garch</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.persistence.html#cultivars.univariate.conditional_variance.GARCHResult.persistence" title="cultivars.univariate.conditional_variance.GARCHResult.persistence"><span class="n">garch</span><span class="o">.</span><span class="n">persistence</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.half_life.html#cultivars.univariate.conditional_variance.GARCHResult.half_life" title="cultivars.univariate.conditional_variance.GARCHResult.half_life"><span class="n">garch</span><span class="o">.</span><span class="n">half_life</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.unconditional_variance.html#cultivars.univariate.conditional_variance.GARCHResult.unconditional_variance" title="cultivars.univariate.conditional_variance.GARCHResult.unconditional_variance"><span class="n">garch</span><span class="o">.</span><span class="n">unconditional_variance</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>GARCH (1, 0, 1) 2000 4
+{'const': 0.048, 'omega': 0.041, 'alpha[1]': 0.087, 'beta[1]': 0.899}
+0.986 50.1 3.016
+</pre></div>
+</div>
+<p>Specification choices (constant-mean fronts):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 16.0%"/>
+<col style="width: 54.0%"/>
+<col style="width: 30.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">p</span></code></p></td>
+<td><p>lags of <span class="math notranslate nohighlight">\(\varepsilon_t^2\)</span> (EGARCH: of <span class="math notranslate nohighlight">\(|z_t| - E|z|\)</span>)</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">o</span></code></p></td>
+<td><p>asymmetry lags; GJR and EGARCH only, must be at least 1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">q</span></code></p></td>
+<td><p>lags of <span class="math notranslate nohighlight">\(\sigma_t^2\)</span> (EGARCH: of <span class="math notranslate nohighlight">\(\log\sigma_t^2\)</span>)</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ar_lags</span></code></p></td>
+<td><p>AR lags in the mean (GARCH, GJR, EGARCH accept it directly)</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">"constant"</span></code> or <code class="docutils literal notranslate"><span class="pre">"zero"</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">"constant"</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">truncation</span></code></p></td>
+<td><p>FIGARCH only: ARCH(<span class="math notranslate nohighlight">\(\infty\)</span>) lags retained</p></td>
+<td><p>1000</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>What the result
+(<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.GARCHResult.html#cultivars.univariate.conditional_variance.GARCHResult" title="cultivars.univariate.conditional_variance.GARCHResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">GARCHResult</span></code></a>) gives
+you:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: <code class="docutils literal notranslate"><span class="pre">const</span></code>, <code class="docutils literal notranslate"><span class="pre">ar.L1</span></code> .., <code class="docutils literal notranslate"><span class="pre">omega</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha[1]</span></code> ..,
+<code class="docutils literal notranslate"><span class="pre">gamma[1]</span></code> .., <code class="docutils literal notranslate"><span class="pre">beta[1]</span></code> .. (empty blocks omitted). Note the
+bracket naming, unlike <code class="docutils literal notranslate"><span class="pre">ar.L1</span></code>.</p></li>
+<li><p>Fields <code class="docutils literal notranslate"><span class="pre">vol</span></code> (<code class="docutils literal notranslate"><span class="pre">"GARCH"</span></code>, <code class="docutils literal notranslate"><span class="pre">"GJR"</span></code> or <code class="docutils literal notranslate"><span class="pre">"EGARCH"</span></code>), <code class="docutils literal notranslate"><span class="pre">mean</span></code>
+(<code class="docutils literal notranslate"><span class="pre">"constant"</span></code>/<code class="docutils literal notranslate"><span class="pre">"zero"</span></code>), <code class="docutils literal notranslate"><span class="pre">const</span></code>, <code class="docutils literal notranslate"><span class="pre">ar_params</span></code>, <code class="docutils literal notranslate"><span class="pre">omega</span></code>,
+<code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code>; property <code class="docutils literal notranslate"><span class="pre">order</span></code> = <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">o,</span> <span class="pre">q)</span></code>.</p></li>
+<li><p>Paths <code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code>, <code class="docutils literal notranslate"><span class="pre">conditional_volatility</span></code>
+(its square root), <code class="docutils literal notranslate"><span class="pre">standardized_resid</span></code> (<code class="docutils literal notranslate"><span class="pre">resid</span></code> divided by the
+volatility), <code class="docutils literal notranslate"><span class="pre">fittedvalues</span></code> and <code class="docutils literal notranslate"><span class="pre">resid</span></code> of the mean.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">persistence</span></code>, <code class="docutils literal notranslate"><span class="pre">is_covariance_stationary</span></code>, <code class="docutils literal notranslate"><span class="pre">half_life</span></code>,
+<code class="docutils literal notranslate"><span class="pre">unconditional_variance</span></code>, <code class="docutils literal notranslate"><span class="pre">has_leverage</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">llf</span></code>, <code class="docutils literal notranslate"><span class="pre">nobs</span></code>, <code class="docutils literal notranslate"><span class="pre">n_params</span></code>, <code class="docutils literal notranslate"><span class="pre">information_criteria</span></code>,
+<code class="docutils literal notranslate"><span class="pre">compare</span></code>, <code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test</span></code>, <code class="docutils literal notranslate"><span class="pre">simulate</span></code>,
+<code class="docutils literal notranslate"><span class="pre">to_pandas</span></code> / <code class="docutils literal notranslate"><span class="pre">to_polars</span></code> / <code class="docutils literal notranslate"><span class="pre">to_dict</span></code>.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#list"><span class="nb">list</span></a><span class="p">(</span><span class="n">garch</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+<span class="n">eps</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">garch</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span> <span class="n">garch</span><span class="o">.</span><span class="n">conditional_variance</span>
+<span class="n">one_step</span> <span class="o">=</span> <span class="n">garch</span><span class="o">.</span><span class="n">omega</span> <span class="o">+</span> <span class="n">garch</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">eps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">garch</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">s2</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">one_step</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>['observed', 'fitted', 'resid', 'conditional_variance', 'conditional_volatility', 'standardized_resid']
+True
+</pre></div>
+</div>
+<section id="asymmetry-gjr-and-egarch">
+<h3>Asymmetry: <code class="docutils literal notranslate"><span class="pre">GJR</span></code> and <code class="docutils literal notranslate"><span class="pre">EGARCH</span></code><a class="headerlink" href="#asymmetry-gjr-and-egarch" title="Link to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\text{GJR:}\quad
+\sigma_t^2 = \omega + \sum_i \alpha_i \varepsilon_{t-i}^2
++ \sum_k \gamma_k \varepsilon_{t-k}^2\,1\{\varepsilon_{t-k} &lt; 0\}
++ \sum_j \beta_j \sigma_{t-j}^2,\\\text{EGARCH:}\quad
+\log\sigma_t^2 = \omega + \sum_i \alpha_i\bigl(|z_{t-i}| - \sqrt{2/\pi}\bigr)
++ \sum_k \gamma_k z_{t-k} + \sum_j \beta_j \log\sigma_{t-j}^2.\end{aligned}\end{align} \]</div>
+<p>The two use <strong>opposite sign conventions</strong> for leverage: in GJR,
+<span class="math notranslate nohighlight">\(\gamma &gt; 0\)</span> means bad news raises volatility more; in EGARCH the
+same effect is <span class="math notranslate nohighlight">\(\gamma &lt; 0\)</span>. GJR’s <span class="math notranslate nohighlight">\(\gamma\)</span> is searched
+unconstrained, so a negative estimate is reported as reverse asymmetry.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.html#module-cultivars.univariate.conditional_variance"><span class="nn">cultivars.univariate.conditional_variance</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.EGARCH.html#cultivars.univariate.conditional_variance.EGARCH" title="cultivars.univariate.conditional_variance.EGARCH"><span class="n">EGARCH</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GJR.html#cultivars.univariate.conditional_variance.GJR" title="cultivars.univariate.conditional_variance.GJR"><span class="n">GJR</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">h</span><span class="p">,</span> <span class="n">lev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2500</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2500</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2500</span><span class="p">):</span>
+    <span class="n">h</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">lev</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">h</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.10</span> <span class="o">*</span> <span class="n">lev</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">lev</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">lev</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+
+<span class="n">fits</span> <span class="o">=</span> <span class="p">[</span><span class="n">GARCH</span><span class="p">(</span><span class="n">lev</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GJR.html#cultivars.univariate.conditional_variance.GJR" title="cultivars.univariate.conditional_variance.GJR"><span class="n">GJR</span></a><span class="p">(</span><span class="n">lev</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.EGARCH.fit.html#cultivars.univariate.conditional_variance.EGARCH.fit" title="cultivars.univariate.conditional_variance.EGARCH.fit"><span class="n">fit</span></a><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.EGARCH.html#cultivars.univariate.conditional_variance.EGARCH" title="cultivars.univariate.conditional_variance.EGARCH"><span class="n">EGARCH</span></a><span class="p">(</span><span class="n">lev</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.GJR.fit.html#cultivars.univariate.conditional_variance.GJR.fit" title="cultivars.univariate.conditional_variance.GJR.fit"><span class="n">fit</span></a><span class="p">()]</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">fits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">fits</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="o">*</span><span class="n">fits</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">criterion</span><span class="o">=</span><span class="s2">"bic"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">fits</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">unconditional_variance</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">fits</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">persistence</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.073 -0.057
+['EGARCH(1, 1, 1)', 'GJR(1, 1, 1)', 'GARCH(1, 1)']
+None 0.966
+</pre></div>
+</div>
+<p>For EGARCH, <code class="docutils literal notranslate"><span class="pre">persistence</span></code> is <span class="math notranslate nohighlight">\(\sum_j \beta_j\)</span> (the AR root of the
+log variance) and <code class="docutils literal notranslate"><span class="pre">unconditional_variance</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>: the stationary
+level is the mean of a lognormal and has no closed form in the reported
+parameters. For the level families <code class="docutils literal notranslate"><span class="pre">persistence</span></code> is
+<span class="math notranslate nohighlight">\(\sum\alpha_i + \tfrac12\sum\gamma_k + \sum\beta_j\)</span>.</p>
+</section>
+<section id="arma-means-argarch-to-armafigarch">
+<h3>ARMA means: <code class="docutils literal notranslate"><span class="pre">ARGARCH</span></code> to <code class="docutils literal notranslate"><span class="pre">ARMAFIGARCH</span></code><a class="headerlink" href="#arma-means-argarch-to-armafigarch" title="Link to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[y_t = c + \sum_{i=1}^{p} \phi_i y_{t-i} + \varepsilon_t
++ \sum_{j=1}^{q} \theta_j \varepsilon_{t-j},
+\qquad \varepsilon_t = \sigma_t z_t.\]</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">AR*</span></code>/<code class="docutils literal notranslate"><span class="pre">ARMA*</span></code> fronts take <code class="docutils literal notranslate"><span class="pre">ar_lags</span></code> and <code class="docutils literal notranslate"><span class="pre">ma_lags</span></code> (both
+default to 1 on the <code class="docutils literal notranslate"><span class="pre">ARMA*</span></code> fronts) and return
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.html#cultivars.univariate.conditional_variance.ARMAGARCHResult" title="cultivars.univariate.conditional_variance.ARMAGARCHResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARMAGARCHResult</span></code></a> or
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.ARMAFIGARCHResult.html#cultivars.univariate.conditional_variance.ARMAFIGARCHResult" title="cultivars.univariate.conditional_variance.ARMAFIGARCHResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARMAFIGARCHResult</span></code></a>,
+which add <code class="docutils literal notranslate"><span class="pre">mean_order</span></code>, <code class="docutils literal notranslate"><span class="pre">ma_params</span></code>, the mean-side <code class="docutils literal notranslate"><span class="pre">stability</span></code> /
+<code class="docutils literal notranslate"><span class="pre">is_stationary</span></code> and <code class="docutils literal notranslate"><span class="pre">invertibility</span></code> / <code class="docutils literal notranslate"><span class="pre">is_invertible</span></code> verdicts, and
+<code class="docutils literal notranslate"><span class="pre">is_structurally_constrained</span></code>. <code class="docutils literal notranslate"><span class="pre">const</span></code> is the recursion intercept
+<span class="math notranslate nohighlight">\(c\)</span>, as in <a class="reference internal" href="../api/generated/cultivars.univariate.autoregression.ARResult.html#cultivars.univariate.autoregression.ARResult" title="cultivars.univariate.autoregression.ARResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARResult</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.html#module-cultivars.univariate.conditional_variance"><span class="nn">cultivars.univariate.conditional_variance</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARGARCH.html#cultivars.univariate.conditional_variance.ARGARCH" title="cultivars.univariate.conditional_variance.ARGARCH"><span class="n">ARGARCH</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCH.html#cultivars.univariate.conditional_variance.ARMAGARCH" title="cultivars.univariate.conditional_variance.ARMAGARCH"><span class="n">ARMAGARCH</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.html#cultivars.univariate.conditional_variance.ARMAGARCHResult" title="cultivars.univariate.conditional_variance.ARMAGARCHResult"><span class="n">argarch</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARGARCH.html#cultivars.univariate.conditional_variance.ARGARCH" title="cultivars.univariate.conditional_variance.ARGARCH"><span class="n">ARGARCH</span></a><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ar_lags</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARGARCH.fit.html#cultivars.univariate.conditional_variance.ARGARCH.fit" title="cultivars.univariate.conditional_variance.ARGARCH.fit"><span class="n">fit</span></a><span class="p">()</span>
+<span class="n">plain</span> <span class="o">=</span> <span class="n">GARCH</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ar_lags</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.nobs.html#cultivars.univariate.conditional_variance.ARMAGARCHResult.nobs" title="cultivars.univariate.conditional_variance.ARMAGARCHResult.nobs"><span class="n">argarch</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.mean_order.html#cultivars.univariate.conditional_variance.ARMAGARCHResult.mean_order" title="cultivars.univariate.conditional_variance.ARMAGARCHResult.mean_order"><span class="n">argarch</span><span class="o">.</span><span class="n">mean_order</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.llf.html#cultivars.univariate.conditional_variance.ARMAGARCHResult.llf" title="cultivars.univariate.conditional_variance.ARMAGARCHResult.llf"><span class="n">argarch</span><span class="o">.</span><span class="n">llf</span></a> <span class="o">-</span> <span class="n">plain</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.is_stationary.html#cultivars.univariate.conditional_variance.ARMAGARCHResult.is_stationary" title="cultivars.univariate.conditional_variance.ARMAGARCHResult.is_stationary"><span class="n">argarch</span><span class="o">.</span><span class="n">is_stationary</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.is_structurally_constrained.html#cultivars.univariate.conditional_variance.ARMAGARCHResult.is_structurally_constrained" title="cultivars.univariate.conditional_variance.ARMAGARCHResult.is_structurally_constrained"><span class="n">argarch</span><span class="o">.</span><span class="n">is_structurally_constrained</span></a><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.html#cultivars.univariate.conditional_variance.ARMAGARCHResult" title="cultivars.univariate.conditional_variance.ARMAGARCHResult"><span class="n">armagarch</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCH.html#cultivars.univariate.conditional_variance.ARMAGARCH" title="cultivars.univariate.conditional_variance.ARMAGARCH"><span class="n">ARMAGARCH</span></a><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ar_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ma_lags</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCH.fit.html#cultivars.univariate.conditional_variance.ARMAGARCH.fit" title="cultivars.univariate.conditional_variance.ARMAGARCH.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#list"><span class="nb">list</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.ARMAGARCHResult.params.html#cultivars.univariate.conditional_variance.ARMAGARCHResult.params" title="cultivars.univariate.conditional_variance.ARMAGARCHResult.params"><span class="n">armagarch</span><span class="o">.</span><span class="n">params</span></a><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1998 (2, 0) 0.0
+True False
+['const', 'ar.L1', 'ma.L1', 'omega', 'alpha[1]', 'beta[1]']
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ARGARCH(y,</span> <span class="pre">ar_lags=k)</span></code> and <code class="docutils literal notranslate"><span class="pre">GARCH(y,</span> <span class="pre">ar_lags=k)</span></code> are the same
+estimator; the first returns the richer record. With a moving-average
+block the mean is searched inside the stationary-invertible region, so
+<code class="docutils literal notranslate"><span class="pre">is_stationary</span></code> then verifies the transform rather than describing the
+data (<code class="docutils literal notranslate"><span class="pre">is_structurally_constrained</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>).</p>
+</section>
+<section id="long-memory-figarch">
+<h3>Long memory: <code class="docutils literal notranslate"><span class="pre">FIGARCH</span></code><a class="headerlink" href="#long-memory-figarch" title="Link to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[\sigma_t^2 = \frac{\omega}{1 - \beta}
++ \Bigl[1 - \frac{(1 - \phi L)(1 - L)^d}{1 - \beta L}\Bigr]
+\varepsilon_t^2.\]</div>
+<p>The order is fixed at (1, d, 1); the parameters are <code class="docutils literal notranslate"><span class="pre">omega</span></code>, <code class="docutils literal notranslate"><span class="pre">phi</span></code>,
+<code class="docutils literal notranslate"><span class="pre">d</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code>, each of <code class="docutils literal notranslate"><span class="pre">phi</span></code>, <code class="docutils literal notranslate"><span class="pre">d</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code> inside
+<span class="math notranslate nohighlight">\((0, 1)\)</span>. The ARCH(<span class="math notranslate nohighlight">\(\infty\)</span>) weights sum to one for every
+<span class="math notranslate nohighlight">\(d &gt; 0\)</span>, so
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCHResult.html#cultivars.univariate.conditional_variance.FIGARCHResult" title="cultivars.univariate.conditional_variance.FIGARCHResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">FIGARCHResult</span></code></a>
+reports <code class="docutils literal notranslate"><span class="pre">persistence</span> <span class="pre">=</span> <span class="pre">1.0</span></code>, <code class="docutils literal notranslate"><span class="pre">is_covariance_stationary</span> <span class="pre">=</span> <span class="pre">False</span></code> and
+<code class="docutils literal notranslate"><span class="pre">half_life</span> <span class="pre">=</span> <span class="pre">inf</span></code>, has no <code class="docutils literal notranslate"><span class="pre">unconditional_variance</span></code>, and refuses
+<code class="docutils literal notranslate"><span class="pre">simulate</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.html#module-cultivars.univariate.conditional_variance"><span class="nn">cultivars.univariate.conditional_variance</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCH.html#cultivars.univariate.conditional_variance.FIGARCH" title="cultivars.univariate.conditional_variance.FIGARCH"><span class="n">FIGARCH</span></a>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCHResult.html#cultivars.univariate.conditional_variance.FIGARCHResult" title="cultivars.univariate.conditional_variance.FIGARCHResult"><span class="n">fig</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCH.html#cultivars.univariate.conditional_variance.FIGARCH" title="cultivars.univariate.conditional_variance.FIGARCH"><span class="n">FIGARCH</span></a><span class="p">(</span><span class="n">r</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span> <span class="n">truncation</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCH.fit.html#cultivars.univariate.conditional_variance.FIGARCH.fit" title="cultivars.univariate.conditional_variance.FIGARCH.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#list"><span class="nb">list</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCHResult.params.html#cultivars.univariate.conditional_variance.FIGARCHResult.params" title="cultivars.univariate.conditional_variance.FIGARCHResult.params"><span class="n">fig</span><span class="o">.</span><span class="n">params</span></a><span class="p">),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCHResult.truncation.html#cultivars.univariate.conditional_variance.FIGARCHResult.truncation" title="cultivars.univariate.conditional_variance.FIGARCHResult.truncation"><span class="n">fig</span><span class="o">.</span><span class="n">truncation</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCHResult.persistence.html#cultivars.univariate.conditional_variance.FIGARCHResult.persistence" title="cultivars.univariate.conditional_variance.FIGARCHResult.persistence"><span class="n">fig</span><span class="o">.</span><span class="n">persistence</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCHResult.is_covariance_stationary.html#cultivars.univariate.conditional_variance.FIGARCHResult.is_covariance_stationary" title="cultivars.univariate.conditional_variance.FIGARCHResult.is_covariance_stationary"><span class="n">fig</span><span class="o">.</span><span class="n">is_covariance_stationary</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.conditional_variance.FIGARCHResult.half_life.html#cultivars.univariate.conditional_variance.FIGARCHResult.half_life" title="cultivars.univariate.conditional_variance.FIGARCHResult.half_life"><span class="n">fig</span><span class="o">.</span><span class="n">half_life</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>['const', 'omega', 'phi', 'd', 'beta'] 200
+1.0 False inf
+</pre></div>
+</div>
+</section>
+</section>
+<section id="innovation-distributions">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Innovation distributions</a><a class="headerlink" href="#innovation-distributions" title="Link to this heading">#</a></h2>
+<p>The conditional-variance models are <strong>Gaussian only</strong>: there is no
+<code class="docutils literal notranslate"><span class="pre">dist</span></code> argument, and the reported <code class="docutils literal notranslate"><span class="pre">llf</span></code> is the Gaussian likelihood.
+With fat-tailed data, read the estimates as Gaussian quasi-maximum
+likelihood (consistent for the variance parameters under correct mean and
+variance specification) and inspect <code class="docutils literal notranslate"><span class="pre">standardized_resid</span></code> for the tail
+shape. <code class="docutils literal notranslate"><span class="pre">simulate</span></code> also draws Gaussian <span class="math notranslate nohighlight">\(z_t\)</span>.</p>
+<p>Heavy tails and leverage are available on the latent side:
+<code class="docutils literal notranslate"><span class="pre">SV(y,</span> <span class="pre">dist="t")</span></code> makes <span class="math notranslate nohighlight">\(\varepsilon_t\)</span> Student-t with estimated
+degrees of freedom, and <code class="docutils literal notranslate"><span class="pre">SV(y,</span> <span class="pre">leverage=True)</span></code> correlates the return and
+log-variance innovations. The two cannot be combined.</p>
+</section>
+<section id="persistence-and-stationarity">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Persistence and stationarity</a><a class="headerlink" href="#persistence-and-stationarity" title="Link to this heading">#</a></h2>
+<p>Stationarity on the variance side is <code class="docutils literal notranslate"><span class="pre">persistence</span> <span class="pre">&lt;</span> <span class="pre">1</span></code> alone
+(<code class="docutils literal notranslate"><span class="pre">is_covariance_stationary</span></code>), and <code class="docutils literal notranslate"><span class="pre">half_life</span></code> is
+<span class="math notranslate nohighlight">\(\log 0.5 / \log(\text{persistence})\)</span>. The constant-mean results
+carry no mean-stationarity verdict; the <code class="docutils literal notranslate"><span class="pre">ARMA*</span></code> results report it
+separately through <code class="docutils literal notranslate"><span class="pre">is_stationary</span></code>.</p>
+<p>The level families’ estimator rejects any draw with persistence at or
+above 0.999, so an integrated or explosive GARCH comes back just below
+the bound and <code class="docutils literal notranslate"><span class="pre">is_covariance_stationary</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> for every GARCH
+and GJR fit. Read a persistence above about 0.99 as “integrated”, not as
+a finite half-life to trust.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">h</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1500</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1500</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1500</span><span class="p">):</span>
+    <span class="n">h</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.82</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>   <span class="c1"># true sum 1.02</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+<span class="n">explosive</span> <span class="o">=</span> <span class="n">GARCH</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="s2">"zero"</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">explosive</span><span class="o">.</span><span class="n">persistence</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">explosive</span><span class="o">.</span><span class="n">is_covariance_stationary</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0.995 True
+</pre></div>
+</div>
+</section>
+<section id="stochastic-volatility-sv">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Stochastic volatility: <code class="docutils literal notranslate"><span class="pre">SV</span></code></a><a class="headerlink" href="#stochastic-volatility-sv" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[y_t = c + \exp(h_t / 2)\,\varepsilon_t,
+\qquad
+h_{t+1} = \mu + \phi\,(h_t - \mu) + \sigma\,\eta_t,
+\qquad \varepsilon_t, \eta_t \sim N(0, 1)\]</div>
+<p>(Taylor, 1986). The likelihood is an integral over the latent path, and
+<a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.SV.html#cultivars.univariate.stochastic_volatility.SV" title="cultivars.univariate.stochastic_volatility.SV"><code class="xref py py-class docutils literal notranslate"><span class="pre">SV</span></code></a> offers four ways
+to do it:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 33.0%"/>
+<col style="width: 33.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>Method</p></th>
+<th class="head"><p>Returns</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fit()</span></code> (<code class="docutils literal notranslate"><span class="pre">method="qml"</span></code>)</p></td>
+<td><p>Harvey, Ruiz and Shephard (1994) quasi-ML: Kalman filter on
+<span class="math notranslate nohighlight">\(\log(y_t - c)^2\)</span></p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.html#cultivars.univariate.stochastic_volatility.SVResult" title="cultivars.univariate.stochastic_volatility.SVResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVResult</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fit(method="particle",</span> <span class="pre">n_particles=500,</span> <span class="pre">seed=None)</span></code></p></td>
+<td><p>simulated ML on a bootstrap particle likelihood</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SVResult</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sample()</span></code> (<code class="docutils literal notranslate"><span class="pre">method="gibbs"</span></code>)</p></td>
+<td><p>Kim, Shephard and Chib (1998) mixture Gibbs sampler</p></td>
+<td><p><a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.SVPosterior.html#cultivars.univariate.stochastic_volatility.SVPosterior" title="cultivars.univariate.stochastic_volatility.SVPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVPosterior</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sample(method="particle")</span></code></p></td>
+<td><p>particle marginal Metropolis-Hastings (Andrieu, Doucet and
+Holenstein, 2010)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.html#module-cultivars.univariate.stochastic_volatility"><span class="nn">cultivars.univariate.stochastic_volatility</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SV.html#cultivars.univariate.stochastic_volatility.SV" title="cultivars.univariate.stochastic_volatility.SV"><span class="n">SV</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">lv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">lv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="n">lv</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">0.95</span> <span class="o">*</span> <span class="p">(</span><span class="n">lv</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">()</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">lv</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.html#cultivars.univariate.stochastic_volatility.SVResult" title="cultivars.univariate.stochastic_volatility.SVResult"><span class="n">sv</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SV.html#cultivars.univariate.stochastic_volatility.SV" title="cultivars.univariate.stochastic_volatility.SV"><span class="n">SV</span></a><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="s2">"zero"</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SV.fit.html#cultivars.univariate.stochastic_volatility.SV.fit" title="cultivars.univariate.stochastic_volatility.SV.fit"><span class="n">fit</span></a><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.method.html#cultivars.univariate.stochastic_volatility.SVResult.method" title="cultivars.univariate.stochastic_volatility.SVResult.method"><span class="n">sv</span><span class="o">.</span><span class="n">method</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.nobs.html#cultivars.univariate.stochastic_volatility.SVResult.nobs" title="cultivars.univariate.stochastic_volatility.SVResult.nobs"><span class="n">sv</span><span class="o">.</span><span class="n">nobs</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.n_params.html#cultivars.univariate.stochastic_volatility.SVResult.n_params" title="cultivars.univariate.stochastic_volatility.SVResult.n_params"><span class="n">sv</span><span class="o">.</span><span class="n">n_params</span></a><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.mu.html#cultivars.univariate.stochastic_volatility.SVResult.mu" title="cultivars.univariate.stochastic_volatility.SVResult.mu"><span class="n">sv</span><span class="o">.</span><span class="n">mu</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.phi.html#cultivars.univariate.stochastic_volatility.SVResult.phi" title="cultivars.univariate.stochastic_volatility.SVResult.phi"><span class="n">sv</span><span class="o">.</span><span class="n">phi</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.sigma2.html#cultivars.univariate.stochastic_volatility.SVResult.sigma2" title="cultivars.univariate.stochastic_volatility.SVResult.sigma2"><span class="n">sv</span><span class="o">.</span><span class="n">sigma2</span></a><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.unconditional_variance.html#cultivars.univariate.stochastic_volatility.SVResult.unconditional_variance" title="cultivars.univariate.stochastic_volatility.SVResult.unconditional_variance"><span class="n">sv</span><span class="o">.</span><span class="n">unconditional_variance</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.half_life.html#cultivars.univariate.stochastic_volatility.SVResult.half_life" title="cultivars.univariate.stochastic_volatility.SVResult.half_life"><span class="n">sv</span><span class="o">.</span><span class="n">half_life</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.forecast_variance.html#cultivars.univariate.stochastic_volatility.SVResult.forecast_variance" title="cultivars.univariate.stochastic_volatility.SVResult.forecast_variance"><span class="n">sv</span><span class="o">.</span><span class="n">forecast_variance</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.volatility_bands.html#cultivars.univariate.stochastic_volatility.SVResult.volatility_bands" title="cultivars.univariate.stochastic_volatility.SVResult.volatility_bands"><span class="n">sv</span><span class="o">.</span><span class="n">volatility_bands</span></a><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.10</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">lower</span> <span class="o">&lt;</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.volatility.html#cultivars.univariate.stochastic_volatility.SVResult.volatility" title="cultivars.univariate.stochastic_volatility.SVResult.volatility"><span class="n">sv</span><span class="o">.</span><span class="n">volatility</span></a><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.SVResult.volatility.html#cultivars.univariate.stochastic_volatility.SVResult.volatility" title="cultivars.univariate.stochastic_volatility.SVResult.volatility"><span class="n">sv</span><span class="o">.</span><span class="n">volatility</span></a> <span class="o">&lt;</span> <span class="n">upper</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>qml 300 3.0
+-0.85 0.946 0.0093
+0.447 12.6
+[0.514 0.51  0.507]
+True
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SVResult</span></code> carries <code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">mu</span></code>, <code class="docutils literal notranslate"><span class="pre">phi</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma2</span></code>, <code class="docutils literal notranslate"><span class="pre">nu</span></code>
+(<code class="docutils literal notranslate"><span class="pre">None</span></code> without <code class="docutils literal notranslate"><span class="pre">dist="t"</span></code>), <code class="docutils literal notranslate"><span class="pre">rho</span></code> (<code class="docutils literal notranslate"><span class="pre">0.0</span></code> without leverage),
+<code class="docutils literal notranslate"><span class="pre">method</span></code>, the smoothed <code class="docutils literal notranslate"><span class="pre">log_variance</span></code> and <code class="docutils literal notranslate"><span class="pre">log_variance_std</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">volatility</span></code> (<span class="math notranslate nohighlight">\(e^{\hat h_t/2}\)</span>). <code class="docutils literal notranslate"><span class="pre">volatility_bands(alpha=0.05)</span></code>
+exponentiates normal bands on the smoothed log variance.
+<code class="docutils literal notranslate"><span class="pre">forecast_variance(steps)</span></code> propagates the last smoothed log-variance
+moments through the AR(1) with the log-normal correction and converges to
+<code class="docutils literal notranslate"><span class="pre">unconditional_variance</span></code>. <code class="docutils literal notranslate"><span class="pre">state_space</span></code> is the fitted model as a
+<a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.html#cultivars.state_space.nonlinear.NonlinearSSM" title="cultivars.state_space.nonlinear.NonlinearSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonlinearSSM</span></code></a> (read by the
+particle filter); <code class="docutils literal notranslate"><span class="pre">quasi_state_space</span></code> is the linearized
+<a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.LinearGaussianSSM.html#cultivars.state_space.linear_gaussian.LinearGaussianSSM" title="cultivars.state_space.linear_gaussian.LinearGaussianSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code></a>.
+<code class="docutils literal notranslate"><span class="pre">to_pandas</span></code> columns are <code class="docutils literal notranslate"><span class="pre">observed</span></code>, <code class="docutils literal notranslate"><span class="pre">log_variance</span></code>, <code class="docutils literal notranslate"><span class="pre">volatility</span></code>,
+<code class="docutils literal notranslate"><span class="pre">volatility_lower</span></code>, <code class="docutils literal notranslate"><span class="pre">volatility_upper</span></code> and <code class="docutils literal notranslate"><span class="pre">standardized</span></code>.</p>
+<p>The Gibbs posterior:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">post</span> <span class="o">=</span> <span class="n">SV</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="s2">"zero"</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">n_burn</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">post</span><span class="o">.</span><span class="n">n_kept</span><span class="p">,</span> <span class="n">post</span><span class="o">.</span><span class="n">phi_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">phi_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">3</span><span class="p">),</span> <span class="n">post</span><span class="o">.</span><span class="n">volatility_quantiles</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>gibbs 200 (200,)
+0.94 (3, 300)
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">n_draws</span></code> counts <em>all</em> iterations, burn-in included, so
+<code class="docutils literal notranslate"><span class="pre">n_kept</span> <span class="pre">=</span> <span class="pre">(n_draws</span> <span class="pre">-</span> <span class="pre">n_burn)</span> <span class="pre">/</span> <span class="pre">thin</span></code>. <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code> exposes
+<code class="docutils literal notranslate"><span class="pre">mu_draws</span></code>, <code class="docutils literal notranslate"><span class="pre">phi_draws</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma2_draws</span></code>, <code class="docutils literal notranslate"><span class="pre">mean_draws</span></code>, <code class="docutils literal notranslate"><span class="pre">h_draws</span></code>
+(<code class="docutils literal notranslate"><span class="pre">(S,</span> <span class="pre">n)</span></code> under Gibbs), <code class="docutils literal notranslate"><span class="pre">log_variance</span></code> and <code class="docutils literal notranslate"><span class="pre">volatility</span></code> (posterior
+means), <code class="docutils literal notranslate"><span class="pre">volatility_quantiles(levels)</span></code>, <code class="docutils literal notranslate"><span class="pre">convergence()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">posterior_replications()</span></code> and <code class="docutils literal notranslate"><span class="pre">simulate(n,</span> <span class="pre">draw=None)</span></code>; the prior is
+<a class="reference internal" href="../api/generated/cultivars.bayes.priors.VolatilityPrior.html#cultivars.bayes.priors.VolatilityPrior" title="cultivars.bayes.priors.VolatilityPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolatilityPrior</span></code></a>, passed as
+<code class="docutils literal notranslate"><span class="pre">sample(prior=...)</span></code>. Convergence and predictive checks are covered in
+<a class="reference internal" href="bayesian_workflow.html"><span class="doc">The Bayesian workflow</span></a>.</p>
+</section>
+<section id="trend-with-stochastic-volatility-ucsv">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Trend with stochastic volatility: <code class="docutils literal notranslate"><span class="pre">UCSV</span></code></a><a class="headerlink" href="#trend-with-stochastic-volatility-ucsv" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[y_t = \tau_t + e^{h_t/2}\varepsilon_t,
+\qquad \tau_{t+1} = \tau_t + e^{q_t/2}\eta_t,\]</div>
+<p>with <span class="math notranslate nohighlight">\(h_t\)</span> and <span class="math notranslate nohighlight">\(q_t\)</span> random walks of standard deviation
+<span class="math notranslate nohighlight">\(\gamma\)</span> (Stock and Watson, 2007). <code class="docutils literal notranslate"><span class="pre">UCSV(y,</span> <span class="pre">gamma=0.2)</span></code> holds
+<span class="math notranslate nohighlight">\(\gamma\)</span> at the Stock-Watson value; <code class="docutils literal notranslate"><span class="pre">gamma=None</span></code> estimates both
+vol-of-vols under <a class="reference internal" href="../api/generated/cultivars.bayes.priors.RandomWalkVolatilityPrior.html#cultivars.bayes.priors.RandomWalkVolatilityPrior" title="cultivars.bayes.priors.RandomWalkVolatilityPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomWalkVolatilityPrior</span></code></a>.
+<code class="docutils literal notranslate"><span class="pre">fit()</span></code> runs the Gibbs sampler and returns a
+<a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSVPosterior.html#cultivars.univariate.stochastic_volatility.UCSVPosterior" title="cultivars.univariate.stochastic_volatility.UCSVPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">UCSVPosterior</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.html#module-cultivars.univariate.stochastic_volatility"><span class="nn">cultivars.univariate.stochastic_volatility</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSV.html#cultivars.univariate.stochastic_volatility.UCSV" title="cultivars.univariate.stochastic_volatility.UCSV"><span class="n">UCSV</span></a>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">infl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">150</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">ucsv</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSV.html#cultivars.univariate.stochastic_volatility.UCSV" title="cultivars.univariate.stochastic_volatility.UCSV"><span class="n">UCSV</span></a><span class="p">(</span><span class="n">infl</span><span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.stochastic_volatility.UCSV.fit.html#cultivars.univariate.stochastic_volatility.UCSV.fit" title="cultivars.univariate.stochastic_volatility.UCSV.fit"><span class="n">fit</span></a><span class="p">(</span><span class="n">n_draws</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_burn</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ucsv</span><span class="o">.</span><span class="n">n_kept</span><span class="p">,</span> <span class="n">ucsv</span><span class="o">.</span><span class="n">gamma_fixed</span><span class="p">,</span> <span class="n">ucsv</span><span class="o">.</span><span class="n">trend</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">paths</span> <span class="o">=</span> <span class="n">ucsv</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_paths</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">paths</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#list"><span class="nb">list</span></a><span class="p">(</span><span class="n">ucsv</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>150 True (150,)
+(500, 4)
+['observed', 'trend', 'trend_q05', 'trend_q95', 'gap', 'irregular_volatility', 'trend_volatility']
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">UCSVPosterior</span></code> carries <code class="docutils literal notranslate"><span class="pre">trend</span></code>, <code class="docutils literal notranslate"><span class="pre">trend_quantiles(levels)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gap</span></code>, <code class="docutils literal notranslate"><span class="pre">irregular_volatility</span></code>, <code class="docutils literal notranslate"><span class="pre">trend_volatility</span></code>, the draw arrays
+<code class="docutils literal notranslate"><span class="pre">trend_draws</span></code>, <code class="docutils literal notranslate"><span class="pre">h_draws</span></code>, <code class="docutils literal notranslate"><span class="pre">q_draws</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma2_irregular_draws</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gamma2_trend_draws</span></code>, and <code class="docutils literal notranslate"><span class="pre">forecast(steps,</span> <span class="pre">n_paths=2000,</span> <span class="pre">seed=None)</span></code>,
+which returns predictive <em>draws of the series</em>, shape
+<code class="docutils literal notranslate"><span class="pre">(n_paths,</span> <span class="pre">steps)</span></code>.</p>
+</section>
+<section id="variance-forecasts-and-var-style-use">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Variance forecasts and VaR-style use</a><a class="headerlink" href="#variance-forecasts-and-var-style-use" title="Link to this heading">#</a></h2>
+<p>What exists:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SVResult.forecast_variance(steps)</span></code>: expected variance
+<span class="math notranslate nohighlight">\(E[e^{h_{T+k}} \mid y]\)</span> for <span class="math notranslate nohighlight">\(k = 1, \ldots, steps\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UCSVPosterior.forecast(steps,</span> <span class="pre">...)</span></code>: predictive draws of the series.</p></li>
+<li><p><strong>Nothing on the GARCH-type results.</strong> <code class="docutils literal notranslate"><span class="pre">GARCHResult</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FIGARCHResult</span></code> and the ARMA variants have no <code class="docutils literal notranslate"><span class="pre">forecast</span></code> or
+<code class="docutils literal notranslate"><span class="pre">forecast_variance</span></code> method, and <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code> has none either.</p></li>
+</ul>
+<p>For a GARCH(1, 1) the forecasts follow from the fitted recursion: the
+one-step variance is
+<span class="math notranslate nohighlight">\(\sigma^2_{T+1} = \omega + \alpha\varepsilon_T^2 + \beta\sigma_T^2\)</span>,
+and for <span class="math notranslate nohighlight">\(h &gt; 1\)</span>,
+<span class="math notranslate nohighlight">\(E[\sigma^2_{T+h}] = \bar\sigma^2 + \pi^{h-1}(\sigma^2_{T+1} -
+\bar\sigma^2)\)</span> with <span class="math notranslate nohighlight">\(\pi\)</span> the persistence and <span class="math notranslate nohighlight">\(\bar\sigma^2\)</span>
+the unconditional variance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s2_next</span> <span class="o">=</span> <span class="p">(</span><span class="n">garch</span><span class="o">.</span><span class="n">omega</span> <span class="o">+</span> <span class="n">garch</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">garch</span><span class="o">.</span><span class="n">resid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+           <span class="o">+</span> <span class="n">garch</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">garch</span><span class="o">.</span><span class="n">conditional_variance</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ubar</span><span class="p">,</span> <span class="n">pi</span> <span class="o">=</span> <span class="n">garch</span><span class="o">.</span><span class="n">unconditional_variance</span><span class="p">,</span> <span class="n">garch</span><span class="o">.</span><span class="n">persistence</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">ubar</span> <span class="o">+</span> <span class="n">pi</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s2_next</span> <span class="o">-</span> <span class="n">ubar</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">s2_next</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">path</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1.005 [1.005 1.033 1.06  1.087 1.114]
+</pre></div>
+</div>
+<p>A one-step value-at-risk is a quantile of the predictive distribution,
+<span class="math notranslate nohighlight">\(\hat c + \sigma_{T+1} q_\alpha\)</span>. Under the Gaussian likelihood
+<span class="math notranslate nohighlight">\(q_\alpha\)</span> is the normal quantile; the empirical quantile of
+<code class="docutils literal notranslate"><span class="pre">standardized_resid</span></code> (filtered historical simulation) is the usual
+remedy for fat tails. Quantile forecasts are scored with
+<a class="reference internal" href="../api/generated/cultivars.forecast.scoring.pinball_loss.html#cultivars.forecast.scoring.pinball_loss" title="cultivars.forecast.scoring.pinball_loss"><code class="xref py py-func docutils literal notranslate"><span class="pre">pinball_loss()</span></code></a>; here the in-sample 1%
+quantiles of the GARCH fit beat a constant-variance quantile:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats"><span class="nn">scipy.stats</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html#scipy.stats.norm" title="scipy.stats.norm"><span class="n">norm</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.scoring.html#module-cultivars.forecast.scoring"><span class="nn">cultivars.forecast.scoring</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.scoring.pinball_loss.html#cultivars.forecast.scoring.pinball_loss" title="cultivars.forecast.scoring.pinball_loss"><span class="n">pinball_loss</span></a>
+
+<span class="n">z01</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">var_gauss</span> <span class="o">=</span> <span class="n">garch</span><span class="o">.</span><span class="n">const</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s2_next</span><span class="p">)</span> <span class="o">*</span> <span class="n">z01</span>
+<span class="n">var_fhs</span> <span class="o">=</span> <span class="n">garch</span><span class="o">.</span><span class="n">const</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s2_next</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">garch</span><span class="o">.</span><span class="n">standardized_resid</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">var_gauss</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">var_fhs</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">q_garch</span> <span class="o">=</span> <span class="n">garch</span><span class="o">.</span><span class="n">fittedvalues</span> <span class="o">+</span> <span class="n">garch</span><span class="o">.</span><span class="n">conditional_volatility</span> <span class="o">*</span> <span class="n">z01</span>
+<span class="n">q_const</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="n">z01</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.scoring.pinball_loss.html#cultivars.forecast.scoring.pinball_loss" title="cultivars.forecast.scoring.pinball_loss"><span class="n">pinball_loss</span></a><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">q_garch</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">4</span><span class="p">),</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.forecast.scoring.pinball_loss.html#cultivars.forecast.scoring.pinball_loss" title="cultivars.forecast.scoring.pinball_loss"><span class="n">pinball_loss</span></a><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">q_const</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-2.285 -2.36
+0.0427 0.0509
+</pre></div>
+</div>
+<p>Out-of-sample evaluation over rolling origins is
+<a class="reference internal" href="../api/generated/cultivars.forecast.backtest.Backtest.html#cultivars.forecast.backtest.Backtest" title="cultivars.forecast.backtest.Backtest"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backtest</span></code></a>; because the GARCH results
+have no <code class="docutils literal notranslate"><span class="pre">forecast</span></code>, pass a <code class="docutils literal notranslate"><span class="pre">predict=</span></code> hook built from the recursion
+above. See <a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>.</p>
+</section>
+<section id="simulating-from-a-fit">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Simulating from a fit</a><a class="headerlink" href="#simulating-from-a-fit" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GARCHResult.simulate(n=200,</span> <span class="pre">*,</span> <span class="pre">seed=None,</span> <span class="pre">burn=...)</span></code> runs the family’s
+own recursion from the unconditional variance with Gaussian shocks and
+applies the mean on top; <code class="docutils literal notranslate"><span class="pre">ARMAGARCHResult</span></code> drives the full ARMA mean.
+<code class="docutils literal notranslate"><span class="pre">SVResult.simulate</span></code> and <code class="docutils literal notranslate"><span class="pre">SVPosterior.simulate</span></code> start the log variance
+from its stationary law. <code class="docutils literal notranslate"><span class="pre">FIGARCHResult.simulate</span></code> (and the ARMA
+variant) always raises
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a>, because no finite
+burn-in makes a long-memory variance forget its start.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.html#module-cultivars.exceptions"><span class="nn">cultivars.exceptions</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><span class="n">SpecificationError</span></a>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">garch</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">20000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">var</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">except</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><span class="n">SpecificationError</span></a> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/stdtypes.html#str"><span class="nb">str</span></a><span class="p">(</span><span class="n">err</span><span class="p">)[:</span><span class="mi">40</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(20000,) 2.62
+[ 0.075 -0.081  0.417  0.072 -0.352]
+FIGARCH results do not simulate: the lon
+</pre></div>
+</div>
+</section>
+<section id="how-the-pieces-connect">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">How the pieces connect</a><a class="headerlink" href="#how-the-pieces-connect" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Mean first, jointly.</strong> A GARCH error on an ARMA mean is fitted in one
+likelihood by the <code class="docutils literal notranslate"><span class="pre">ARMA*</span></code> fronts; there is no two-step “fit ARIMA,
+then GARCH on its residuals” API, and <code class="docutils literal notranslate"><span class="pre">ARMAGARCHResult</span></code> is the joint
+analogue of <a class="reference internal" href="../api/generated/cultivars.univariate.box_jenkins.ARMAResult.html#cultivars.univariate.box_jenkins.ARMAResult" title="cultivars.univariate.box_jenkins.ARMAResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARMAResult</span></code></a>
+(<a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a>).</p></li>
+<li><p><strong>Long memory.</strong> FIGARCH is the variance counterpart of
+<a class="reference internal" href="../api/generated/cultivars.univariate.fractional_integration.ARFIMA.html#cultivars.univariate.fractional_integration.ARFIMA" title="cultivars.univariate.fractional_integration.ARFIMA"><code class="xref py py-class docutils literal notranslate"><span class="pre">ARFIMA</span></code></a>; the latent
+counterpart is
+<a class="reference internal" href="../api/generated/cultivars.multivariate.structural.stochastic_volatility.LongMemorySV.html#cultivars.multivariate.structural.stochastic_volatility.LongMemorySV" title="cultivars.multivariate.structural.stochastic_volatility.LongMemorySV"><code class="xref py py-class docutils literal notranslate"><span class="pre">LongMemorySV</span></code></a>,
+estimated by Whittle in the frequency domain.</p></li>
+<li><p><strong>Decomposition.</strong> <code class="docutils literal notranslate"><span class="pre">UCSV</span></code> relaxes the constant variances of
+<a class="reference internal" href="../api/generated/cultivars.univariate.unobserved_components.UnobservedComponents.html#cultivars.univariate.unobserved_components.UnobservedComponents" title="cultivars.univariate.unobserved_components.UnobservedComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnobservedComponents</span></code></a>
+with <code class="docutils literal notranslate"><span class="pre">trend="level"</span></code>.</p></li>
+<li><p><strong>State space.</strong> <code class="docutils literal notranslate"><span class="pre">SVResult.state_space</span></code> is a
+<a class="reference internal" href="../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.html#cultivars.state_space.nonlinear.NonlinearSSM" title="cultivars.state_space.nonlinear.NonlinearSSM"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonlinearSSM</span></code></a> whose
+<code class="docutils literal notranslate"><span class="pre">particle_filter</span></code> estimates the exact likelihood or reads new data
+with the fitted law (<a class="reference internal" href="state_space.html"><span class="doc">State-space models and filtering</span></a>).</p></li>
+<li><p><strong>Bayesian tools.</strong> <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code> and <code class="docutils literal notranslate"><span class="pre">UCSVPosterior</span></code> provide
+<code class="docutils literal notranslate"><span class="pre">convergence()</span></code>; <code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code> also provides
+<code class="docutils literal notranslate"><span class="pre">posterior_replications</span></code> for predictive checks
+(<a class="reference internal" href="bayesian_workflow.html"><span class="doc">The Bayesian workflow</span></a>).</p></li>
+<li><p><strong>Multivariate volatility.</strong> Stochastic volatility in VAR innovations
+(<a class="reference internal" href="../api/generated/cultivars.multivariate.large_dim.volatility.BVARSV.html#cultivars.multivariate.large_dim.volatility.BVARSV" title="cultivars.multivariate.large_dim.volatility.BVARSV"><code class="xref py py-class docutils literal notranslate"><span class="pre">BVARSV</span></code></a>), factor
+stochastic volatility
+(<a class="reference internal" href="../api/generated/cultivars.multivariate.large_dim.factor_volatility.FactorSV.html#cultivars.multivariate.large_dim.factor_volatility.FactorSV" title="cultivars.multivariate.large_dim.factor_volatility.FactorSV"><code class="xref py py-class docutils literal notranslate"><span class="pre">FactorSV</span></code></a>)
+and time-varying-parameter VARs with SV are on <a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a>,
+<a class="reference internal" href="large_dimensional.html"><span class="doc">Large and high-dimensional systems</span></a> and <a class="reference internal" href="nonlinear_multivariate.html"><span class="doc">Nonlinear, time-varying and regime-switching VARs</span></a>;
+identification through heteroskedasticity
+(<a class="reference internal" href="../api/generated/cultivars.multivariate.structural.stochastic_volatility.StochasticVolatilitySVAR.html#cultivars.multivariate.structural.stochastic_volatility.StochasticVolatilitySVAR" title="cultivars.multivariate.structural.stochastic_volatility.StochasticVolatilitySVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">StochasticVolatilitySVAR</span></code></a>)
+is on <a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a>.</p></li>
+<li><p><strong>Forecast evaluation.</strong> Quantile and density forecasts built from
+these results are scored by <a class="reference internal" href="../api/generated/cultivars.forecast.scoring.html#module-cultivars.forecast.scoring" title="cultivars.forecast.scoring"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.forecast.scoring</span></code></a> and
+<a class="reference internal" href="../api/generated/cultivars.forecast.calibration.html#module-cultivars.forecast.calibration" title="cultivars.forecast.calibration"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.forecast.calibration</span></code></a> (<a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a>).</p></li>
+</ul>
+</section>
+<section id="nuances-and-gotchas">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Nuances and gotchas</a><a class="headerlink" href="#nuances-and-gotchas" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><strong>No variance forecast on GARCH-type results.</strong> Compute it from
+<code class="docutils literal notranslate"><span class="pre">omega</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">gamma</span></code>, <code class="docutils literal notranslate"><span class="pre">beta</span></code>, the last <code class="docutils literal notranslate"><span class="pre">resid</span></code> and the
+last <code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code> as shown above. <code class="docutils literal notranslate"><span class="pre">SVResult</span></code> is the only
+record with <code class="docutils literal notranslate"><span class="pre">forecast_variance</span></code>.</p></li>
+<li><p><strong>No standard errors.</strong> Every summary says “Standard errors are not yet
+available for this estimator.”; use <code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test</span></code> between
+nested fits (for example GARCH inside GJR) for inference.</p></li>
+<li><p><strong>Gaussian innovations only in the GARCH family.</strong> No Student-t or
+skewed-t option; the likelihood is Gaussian QML.</p></li>
+<li><p><strong>Persistence is capped below 0.999</strong> for GARCH and GJR (and
+<span class="math notranslate nohighlight">\(|\sum\beta_j| &lt; 0.999\)</span> for EGARCH), so <code class="docutils literal notranslate"><span class="pre">is_covariance_stationary</span></code>
+cannot be <code class="docutils literal notranslate"><span class="pre">False</span></code> for those fits even on explosive data. The
+<a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.GARCH.html#cultivars.univariate.conditional_variance.GARCH" title="cultivars.univariate.conditional_variance.GARCH"><code class="xref py py-class docutils literal notranslate"><span class="pre">GARCH</span></code></a> docstring
+states otherwise; trust the behaviour shown above.</p></li>
+<li><p><strong>EGARCH and GJR sign conventions differ.</strong> Leverage is
+<code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> in GJR and <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> in EGARCH. GJR persistence counts
+<code class="docutils literal notranslate"><span class="pre">gamma</span></code> at half weight.</p></li>
+<li><p><strong>Effective sample.</strong> <code class="docutils literal notranslate"><span class="pre">nobs</span></code> is <span class="math notranslate nohighlight">\(n - \text{ar\_lags}\)</span> for any
+front with an AR mean (<code class="docutils literal notranslate"><span class="pre">GARCH(y,</span> <span class="pre">ar_lags=2)</span></code> has <code class="docutils literal notranslate"><span class="pre">nobs</span> <span class="pre">=</span> <span class="pre">n</span> <span class="pre">-</span> <span class="pre">2</span></code>)
+and <span class="math notranslate nohighlight">\(n\)</span> otherwise; <code class="docutils literal notranslate"><span class="pre">conditional_variance</span></code>, <code class="docutils literal notranslate"><span class="pre">resid</span></code> and
+<code class="docutils literal notranslate"><span class="pre">fittedvalues</span></code> are aligned with the last <code class="docutils literal notranslate"><span class="pre">nobs</span></code> observations, and
+<code class="docutils literal notranslate"><span class="pre">compare</span></code> refuses to rank fits with different <code class="docutils literal notranslate"><span class="pre">nobs</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.html#module-cultivars.exceptions"><span class="nn">cultivars.exceptions</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><span class="n">DimensionError</span></a>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">garch</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">plain</span><span class="p">)</span>
+<span class="k">except</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><span class="n">DimensionError</span></a> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>information criteria are only comparable across a common sample; got differing observation counts [1998, 2000].
+</pre></div>
+</div>
+</li>
+<li><p><strong>The first conditional variance is a backcast</strong>, not
+<code class="docutils literal notranslate"><span class="pre">unconditional_variance</span></code>; <code class="docutils literal notranslate"><span class="pre">conditional_variance[0]</span></code> comes from an
+exponentially weighted mean square of the residuals.</p></li>
+<li><p><strong>FIGARCH.</strong> The order is fixed at (1, d, 1);
+<code class="docutils literal notranslate"><span class="pre">has_long_memory</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> for nearly every fit because <code class="docutils literal notranslate"><span class="pre">d</span></code> cannot
+reach zero; <code class="docutils literal notranslate"><span class="pre">half_life</span></code> is <code class="docutils literal notranslate"><span class="pre">inf</span></code> and <code class="docutils literal notranslate"><span class="pre">simulate</span></code> raises. The
+ARMA mean is <code class="docutils literal notranslate"><span class="pre">ARMAFIGARCH</span></code>; <code class="docutils literal notranslate"><span class="pre">FIGARCH</span></code> itself accepts no <code class="docutils literal notranslate"><span class="pre">ar_lags</span></code>.</p></li>
+<li><p><strong>SV: the QML likelihood is not the SV likelihood.</strong> Under
+<code class="docutils literal notranslate"><span class="pre">method="qml"</span></code> <code class="docutils literal notranslate"><span class="pre">llf</span></code> is the Gaussian likelihood of the linearized
+model; information criteria compare only within one method (the
+comparison label includes the method). QML cannot identify leverage
+(<code class="docutils literal notranslate"><span class="pre">SV(y,</span> <span class="pre">leverage=True).fit()</span></code> returns <code class="docutils literal notranslate"><span class="pre">rho</span> <span class="pre">=</span> <span class="pre">0.0</span></code>) and identifies
+<code class="docutils literal notranslate"><span class="pre">nu</span></code> weakly (on Gaussian data it drifted to about 500); use
+<code class="docutils literal notranslate"><span class="pre">fit(method="particle")</span></code> or <code class="docutils literal notranslate"><span class="pre">sample()</span></code> for either.</p></li>
+<li><p><strong>SV sizes and cost.</strong> <code class="docutils literal notranslate"><span class="pre">SV</span></code> needs at least 50 observations and
+<code class="docutils literal notranslate"><span class="pre">UCSV</span></code> at least 40. QML runs a generic Kalman filter inside a
+numerical-gradient optimizer and takes several seconds on a few hundred
+observations; the particle methods are much slower.</p></li>
+<li><p><strong>Sampler bookkeeping.</strong> <code class="docutils literal notranslate"><span class="pre">n_draws</span></code> includes <code class="docutils literal notranslate"><span class="pre">n_burn</span></code>;
+<code class="docutils literal notranslate"><span class="pre">sample(n_draws=100,</span> <span class="pre">n_burn=200)</span></code> raises. <code class="docutils literal notranslate"><span class="pre">UCSV.fit</span></code> is a sampler
+(its signature is <code class="docutils literal notranslate"><span class="pre">fit(n_draws=3000,</span> <span class="pre">n_burn=1000,</span> <span class="pre">thin=1,</span> <span class="pre">prior=None,</span>
+<span class="pre">seed=None)</span></code>), and its result has no <code class="docutils literal notranslate"><span class="pre">llf</span></code> or information criteria.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LongMemorySV</span></code> <strong>lives in a multivariate module.</strong> Import it from
+<a class="reference internal" href="../api/generated/cultivars.multivariate.structural.stochastic_volatility.html#module-cultivars.multivariate.structural.stochastic_volatility" title="cultivars.multivariate.structural.stochastic_volatility"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.multivariate.structural.stochastic_volatility</span></code></a>, even
+though it is a single-series model.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">See also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="univariate_linear.html"><span class="doc">Univariate linear models</span></a> – constant-variance mean models (AR, ARIMA,
+ARFIMA, unobserved components).</p></li>
+<li><p><a class="reference internal" href="bayesian_vars.html"><span class="doc">Bayesian VARs</span></a> and <a class="reference internal" href="large_dimensional.html"><span class="doc">Large and high-dimensional systems</span></a> – multivariate
+stochastic volatility.</p></li>
+<li><p><a class="reference internal" href="structural_identification.html"><span class="doc">Structural identification</span></a> – identification through
+heteroskedasticity.</p></li>
+<li><p><a class="reference internal" href="forecasting.html"><span class="doc">Forecasting and forecast evaluation</span></a> – quantile and density scoring, backtests.</p></li>
+<li><p><a class="reference internal" href="bayesian_workflow.html"><span class="doc">The Bayesian workflow</span></a> – convergence diagnostics and predictive
+checks for the SV posteriors.</p></li>
+<li><p><a class="reference internal" href="state_space.html"><span class="doc">State-space models and filtering</span></a> – the nonlinear and linear substrates behind SV.</p></li>
+<li><p>API: <a class="reference internal" href="../api/generated/cultivars.univariate.conditional_variance.html#module-cultivars.univariate.conditional_variance" title="cultivars.univariate.conditional_variance"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.conditional_variance</span></code></a>,
+<a class="reference internal" href="../api/generated/cultivars.univariate.stochastic_volatility.html#module-cultivars.univariate.stochastic_volatility" title="cultivars.univariate.stochastic_volatility"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.stochastic_volatility</span></code></a>.</p></li>
+</ul>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="univariate_linear.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Univariate linear models</p>
+</div>
+</a>
+<a class="right-next" href="univariate_nonlinear.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Nonlinear and regime-switching univariate models</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-family-at-a-glance">The family at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#garch-type-models">GARCH-type models</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asymmetry-gjr-and-egarch">Asymmetry: <code class="docutils literal notranslate"><span class="pre">GJR</span></code> and <code class="docutils literal notranslate"><span class="pre">EGARCH</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arma-means-argarch-to-armafigarch">ARMA means: <code class="docutils literal notranslate"><span class="pre">ARGARCH</span></code> to <code class="docutils literal notranslate"><span class="pre">ARMAFIGARCH</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#long-memory-figarch">Long memory: <code class="docutils literal notranslate"><span class="pre">FIGARCH</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#innovation-distributions">Innovation distributions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persistence-and-stationarity">Persistence and stationarity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-volatility-sv">Stochastic volatility: <code class="docutils literal notranslate"><span class="pre">SV</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trend-with-stochastic-volatility-ucsv">Trend with stochastic volatility: <code class="docutils literal notranslate"><span class="pre">UCSV</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-forecasts-and-var-style-use">Variance forecasts and VaR-style use</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-from-a-fit">Simulating from a fit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-pieces-connect">How the pieces connect</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nuances-and-gotchas">Nuances and gotchas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="tocsection editthispage">
+<a href="https://github.com/nikhilxsunder/cultivars/edit/v0.0.2/docs/source/user_guide/volatility.rst">
+<i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+</div>
+</div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item"><div class="cv-footer">
+<section aria-label="Documentation sections" class="cv-footer__band cv-footer__band--guide">
+<div class="cv-footer__inner cv-footer__columns">
+<div class="cv-footer__column">
+<h2>API reference</h2>
+<p>
+          Every public model, test and result, with the mathematics it
+          implements and a runnable example.
+        </p>
+<a class="cv-footer__cta" href="../api/index.html">View the API<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Examples</h2>
+<p>
+          Research workflows on live FRED data, from identification to forecast
+          evaluation, as scripts and notebooks.
+        </p>
+<a class="cv-footer__cta" href="../auto_examples/index.html">View the examples<span aria-hidden="true"> ›</span></a>
+</div>
+<div class="cv-footer__column">
+<h2>Engine</h2>
+<p>
+          The numerical core and internal layers the public surface is built on,
+          for contributors and the curious.
+        </p>
+<a class="cv-footer__cta" href="../engine/index.html">View the engine<span aria-hidden="true"> ›</span></a>
+</div>
+</div>
+</section>
+<section aria-label="Project links" class="cv-footer__band cv-footer__band--site">
+<div class="cv-footer__inner">
+<div class="cv-footer__grid">
+<div class="cv-footer__install">
+<h2>Get cultivars</h2>
+<p>
+            Pre-releases are published to PyPI and announced on GitHub Releases.
+            Pin the exact version in anything that must not move.
+          </p>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a4</code></pre>
+</div>
+<nav aria-label="Resources" class="cv-footer__links">
+<h2>Resources</h2>
+<ul>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/releases">Releases</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CHANGELOG.md">Changelog</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/issues">Issues</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CONTRIBUTING.md">Contributing</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/SECURITY.md">Security</a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CODE_OF_CONDUCT.md">Code of conduct</a>
+</li>
+</ul>
+</nav>
+<nav aria-label="Related projects" class="cv-footer__links">
+<h2>Related</h2>
+<ul>
+<li>
+<a href="https://nikhilxsunder.github.io/fedfred/">fedfred</a><span class="cv-footer__muted"> FRED client</span>
+</li>
+<li>
+<a href="https://nikhilxsunder.github.io/edgar-sec/">edgar-sec</a><span class="cv-footer__muted"> SEC EDGAR client</span>
+</li>
+</ul>
+</nav>
+</div>
+<ul aria-label="Project pages" class="cv-footer__social">
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github"></i><span class="visually-hidden">GitHub</span></a>
+</li>
+<li>
+<a href="https://pypi.org/project/cultivars/" title="PyPI"><i aria-hidden="true" class="fa-brands fa-python"></i><span class="visually-hidden">PyPI</span></a>
+</li>
+<li>
+<a href="https://app.codecov.io/gh/nikhilxsunder/cultivars" title="Codecov"><i aria-hidden="true" class="fa-solid fa-umbrella"></i><span class="visually-hidden">Codecov</span></a>
+</li>
+<li>
+<a href="https://github.com/nikhilxsunder/cultivars/blob/dev/CITATION.cff" title="Cite"><i aria-hidden="true" class="fa-solid fa-quote-left"></i><span class="visually-hidden">Cite</span></a>
+</li>
+</ul>
+<div class="cv-footer__legal">
+<p>
+          © 2026, Nikhil Sunder. Released under the
+          <a href="https://github.com/nikhilxsunder/cultivars/blob/dev/LICENSE">MIT License</a>. cultivars is an independent open-source project and is not
+          affiliated with the Federal Reserve Bank of St. Louis; FRED® is a
+          registered trademark of the Federal Reserve Bank of St. Louis.
+        </p>
+<p class="cv-footer__build">
+          cultivars 1.0.0a4 · updated 2026-10-13 · built with
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
+          and the
+          <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
+</p>
+</div>
+</div>
+</section>
+</div></div>
+</div>
+</div>
+</footer>
+</body>
+</html>
