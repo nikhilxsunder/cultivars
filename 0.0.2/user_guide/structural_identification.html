@@ -15,7 +15,7 @@
 <meta content="en_US" property="og:locale"/>
 <meta content="cultivars Documentation" property="og:site_name"/>
 <meta content="cultivars Logo" property="og:image:alt"/>
-<meta content="2026-10-13T21:01:40+00:00" property="article:modified_time"/>
+<meta content="2026-10-12T19:40:35+00:00" property="article:modified_time"/>
 <title>Structural identification — cultivars</title>
 <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
@@ -50,7 +50,7 @@
 <!-- Pre-loaded scripts that we'll load fully later -->
 <link as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" rel="preload"/>
 <link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" rel="preload"/>
-<script src="../_static/documentation_options.js?v=fc897e8e"></script>
+<script src="../_static/documentation_options.js?v=e3a6060d"></script>
 <script src="../_static/doctools.js?v=fd6eb6e6"></script>
 <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -76,7 +76,7 @@
             </script>
 <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
 <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-<script defer="defer" src="../_static/tippy/user_guide/structural_identification.02598ccb-25d7-4066-a1f7-6d1e21504c86.js"></script>
+<script defer="defer" src="../_static/tippy/user_guide/structural_identification.064fc2d4-c18c-4881-8232-6cddb5e9b5b6.js"></script>
 <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
 <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
 <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/structural_identification';</script>
@@ -98,8 +98,8 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="light dark" name="color-scheme"/>
 <meta content="en" name="docsearch:language"/>
-<meta content="1.0" name="docsearch:version"/>
-<meta content="2026-10-13" name="docbuild:last-update"/>
+<meta content="0.0" name="docsearch:version"/>
+<meta content="2026-10-12" name="docbuild:last-update"/>
 <script src="../_static/searchtools.js"></script>
 <script src="../_static/language_data.js"></script>
 <script src="../searchindex.js"></script>
@@ -459,7 +459,7 @@ by maximum likelihood, Amisano and Giannini (1997)</p></td>
 <td><p>Signs of responses at chosen horizons, Uhlig (2005)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">SignRestrictedSVARResult</span></code> (a set of rotations)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR.html#cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR" title="cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">NarrativeSignRestrictedSVAR</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NarrativeSignRestrictedSVAR</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">sign_restrictions</span></code></p></td>
 <td><p>Signs plus dated events, Antolín-Díaz and Rubio-Ramírez (2018)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">SignRestrictedSVARResult</span></code></p></td>
@@ -1036,7 +1036,7 @@ shocks can coexist in this reduced form.</p>
 </section>
 <section id="narrative-sign-restrictions">
 <h3>Narrative sign restrictions<a class="headerlink" href="#narrative-sign-restrictions" title="Link to this heading">#</a></h3>
-<p><a class="reference internal" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR.html#cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR" title="cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR"><code class="xref py py-class docutils literal notranslate"><span class="pre">NarrativeSignRestrictedSVAR</span></code></a>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">NarrativeSignRestrictedSVAR</span></code>
 filters the same Haar draws by declared history, checked through each
 candidate’s own shocks <span class="math notranslate nohighlight">\(\varepsilon_{t^\ast} = B^{-1}u_{t^\ast}\)</span>:</p>
 <ul class="simple">
@@ -1051,7 +1051,7 @@ others combined).</p></li>
 event is required. <strong>Periods index the effective sample</strong>: period <code class="docutils literal notranslate"><span class="pre">t</span></code> is
 residual row <code class="docutils literal notranslate"><span class="pre">t</span></code>, which is data row <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">+</span> <span class="pre">p</span></code> for a VAR(<span class="math notranslate nohighlight">\(p\)</span>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.html#module-cultivars.multivariate.structural.sign_restrictions"><span class="nn">cultivars.multivariate.structural.sign_restrictions</span></a><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR.html#cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR" title="cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR"><span class="n">NarrativeSignRestrictedSVAR</span></a><span class="p">,</span>
+    <span class="n">NarrativeSignRestrictedSVAR</span><span class="p">,</span>
 <span class="p">)</span>
 
 <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">var_s</span><span class="o">.</span><span class="n">resid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#bool"><span class="nb">bool</span></a><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">var_s</span><span class="o">.</span><span class="n">resid</span> <span class="o">+</span> <span class="n">var_s</span><span class="o">.</span><span class="n">fittedvalues</span><span class="p">,</span> <span class="n">y_s</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
@@ -1059,14 +1059,14 @@ residual row <code class="docutils literal notranslate"><span class="pre">t</spa
 <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">eps_s</span><span class="p">[</span><span class="n">period</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>      <span class="c1"># data row period + 1</span>
 
 <span class="n">plain</span> <span class="o">=</span> <span class="n">SignRestrictedSVAR</span><span class="p">(</span><span class="n">var_s</span><span class="p">,</span> <span class="n">demand</span><span class="p">,</span> <span class="n">draws</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">identify</span><span class="p">()</span>
-<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.html#cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult" title="cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult"><span class="n">story</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR.html#cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR" title="cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR"><span class="n">NarrativeSignRestrictedSVAR</span></a><span class="p">(</span>
+<a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.html#cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult" title="cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult"><span class="n">story</span></a> <span class="o">=</span> <span class="n">NarrativeSignRestrictedSVAR</span><span class="p">(</span>
     <span class="n">var_s</span><span class="p">,</span>
     <span class="n">demand</span><span class="p">,</span>
     <span class="n">shock_signs</span><span class="o">=</span><span class="p">((</span><span class="s2">"demand"</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">),),</span>
     <span class="n">contributions</span><span class="o">=</span><span class="p">((</span><span class="s2">"demand"</span><span class="p">,</span> <span class="s2">"gdp"</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="s2">"overwhelming"</span><span class="p">),),</span>
     <span class="n">draws</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-<span class="p">)</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR.identify.html#cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR.identify" title="cultivars.multivariate.structural.sign_restrictions.NarrativeSignRestrictedSVAR.identify"><span class="n">identify</span></a><span class="p">()</span>
+<span class="p">)</span><span class="o">.</span><span class="n">identify</span><span class="p">()</span>
 <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">plain</span><span class="o">.</span><span class="n">acceptance_rate</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.acceptance_rate.html#cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.acceptance_rate" title="cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.acceptance_rate"><span class="n">story</span><span class="o">.</span><span class="n">acceptance_rate</span></a><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">plain</span><span class="o">.</span><span class="n">irf</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.irf.html#cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.irf" title="cultivars.multivariate.structural.sign_restrictions.SignRestrictedSVARResult.irf"><span class="n">story</span><span class="o">.</span><span class="n">irf</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 </pre></div>
@@ -1810,7 +1810,7 @@ VARs.</p></li>
             Pre-releases are published to PyPI and announced on GitHub Releases.
             Pin the exact version in anything that must not move.
           </p>
-<pre class="cv-footer__code"><code>pip install --pre cultivars==1.0.0a4</code></pre>
+<pre class="cv-footer__code"><code>pip install --pre cultivars==0.0.2</code></pre>
 </div>
 <nav aria-label="Resources" class="cv-footer__links">
 <h2>Resources</h2>
@@ -1869,7 +1869,7 @@ VARs.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
 <p class="cv-footer__build">
-          cultivars 1.0.0a4 · updated 2026-10-13 · built with
+          cultivars 0.0.2 · updated 2026-10-12 · built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a>
