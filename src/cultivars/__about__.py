@@ -51,7 +51,7 @@ __description__ = (
     " identification, Bayesian and spectral methods."
 )
 __summary__ = "Research-grade time series econometrics."
-__version__ = "1.0.0a4"
+__version__ = "0.0.2"
 __copyright__ = "Copyright (c) 2026 Nikhil Sunder"
 __author__ = "Nikhil Sunder"
 __email__ = "nsunder724@gmail.com"

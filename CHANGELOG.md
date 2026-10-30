@@ -9,6 +9,12 @@ listed under Changed.
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-10-29
+
+First release on the stable channel: 1.0.0a4 plus the fixes below.
+`pip install cultivars` resolves to it without `--pre`; pre-release
+installs keep resolving to 1.0.0a4 until 1.0.0a5.
+
 ### Fixed
 
 - `VECMResult.normalized_alpha` raises `SpecificationError` for an
@@ -205,7 +211,8 @@ placeholder.
 
 - Initial file dump.
 
-[Unreleased]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...HEAD
+[Unreleased]: https://github.com/nikhilxsunder/cultivars/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...v0.0.2
 [1.0.0a4]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a3...v1.0.0a4
 [1.0.0a3]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a2...v1.0.0a3
 [1.0.0a2]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a1...v1.0.0a2
