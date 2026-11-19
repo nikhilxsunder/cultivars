@@ -10,15 +10,15 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/engine/generated/cultivars.engine._internals.html" />
 <meta property="og:site_name" content="cultivars" />
-<meta property="og:description" content="Constants and defaults:" />
+<meta property="og:description" content="The model layer of the engine: records, substrates, objectives, and estimation bases. engine._core holds the numerical primitives, which know nothing about any model. This package holds everything that does: the state-space substrates the models are written on, the objectives their optimizers min..." />
 <meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
 <meta property="og:image:alt" content="cultivars" />
-<meta name="description" content="Constants and defaults:" />
+<meta name="description" content="The model layer of the engine: records, substrates, objectives, and estimation bases. engine._core holds the numerical primitives, which know nothing about any model. This package holds everything that does: the state-space substrates the models are written on, the objectives their optimizers min..." />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>cultivars.engine._internals &#8212; cultivars</title>
   
   
@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals.50e0465c-fbad-4bf8-95d2-8167d1e2a0d8.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals.ea641b6e-5f99-49e6-8340-1b395f90ecc5.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1559,42 +1559,94 @@
                   
   <section id="module-cultivars.engine._internals">
 <span id="cultivars-engine-internals"></span><h1>cultivars.engine._internals<a class="headerlink" href="#module-cultivars.engine._internals" title="Link to this heading">#</a></h1>
+<p>The model layer of the engine: records, substrates, objectives, and estimation bases.</p>
+<p><code class="docutils literal notranslate"><span class="pre">engine._core</span></code> holds the numerical primitives, which know nothing about
+any model. This package holds everything that does: the state-space
+substrates the models are written on, the objectives their optimizers
+minimize, the samplers, the estimation base classes the public fronts
+subclass, and the records that carry results between those layers. Nothing
+here is public by name. The public packages subclass or re-export what
+they need under public names.</p>
+<p>The modules, by role.</p>
+<p>Records, frozen dataclasses that carry state between layers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_parameters</span></code>: parameter records, the meeting point of a flat
+optimization vector and a model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_fits</span></code>: raw output of estimators and samplers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_results</span></code>: filter and smoother output, and the shared result bases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_posteriors</span></code>: packed sampler output with its derived quantities.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_moments</span></code>, <code class="docutils literal notranslate"><span class="pre">_coefficients</span></code>, <code class="docutils literal notranslate"><span class="pre">_levels</span></code>, <code class="docutils literal notranslate"><span class="pre">_layouts</span></code>, <code class="docutils literal notranslate"><span class="pre">_states</span></code>,
+<code class="docutils literal notranslate"><span class="pre">_solutions</span></code>: smaller intermediate records.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_assessments</span></code>, <code class="docutils literal notranslate"><span class="pre">_selections</span></code>, <code class="docutils literal notranslate"><span class="pre">_tests</span></code>: verdicts (stability, lag
+order and model weights, hypothesis and convergence tests).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_covariances</span></code>: coefficient uncertainty, sampling or posterior, behind
+the <code class="docutils literal notranslate"><span class="pre">_inferences</span></code> protocol.</p></li>
+</ul>
+<p>Interfaces that outside code implements:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_priors</span></code>: the coefficient-prior interface and the volatility
+hyperpriors.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_predictors</span></code> and <code class="docutils literal notranslate"><span class="pre">_engines</span></code>: the fitted mean map and the training
+backend of the neural mean-function models.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_specifications</span></code>: what a perturbation model must supply.</p></li>
+</ul>
+<p>Machinery:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_substrates</span></code>: the state-space models with their filters and smoothers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_filters</span></code> and <code class="docutils literal notranslate"><span class="pre">_smoothers</span></code>: the Hamilton filter and the Kim smoother
+for a discrete regime chain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_systems</span></code> and <code class="docutils literal notranslate"><span class="pre">_emitters</span></code>: parameter records turned into state-space
+systems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_objectives</span></code> and <code class="docutils literal notranslate"><span class="pre">_means</span></code>: the functions the optimizers minimize and
+the conditional-mean layers they share.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_solvers</span></code>: optimizers, posterior updates, and the perturbation solver.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_simulators</span></code>: data generation from fitted or stated parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_chains</span></code>: particle marginal Metropolis-Hastings.</p></li>
+</ul>
+<p>Bases:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_models</span></code>: the estimation engines the public model classes subclass.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_mixins</span></code>: behavior shared by result records (summaries, series,
+comparison, inference, convergence, replication).</p></li>
+</ul>
+<p>Every submodule is imported here so that the package is fully loaded on
+first import and the import order is fixed in one place.</p>
 <section id="constants-and-defaults">
 <h2>Constants and defaults<a class="headerlink" href="#constants-and-defaults" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._assessments.html#cultivars.engine._internals._assessments" title="cultivars.engine._internals._assessments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_assessments</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Assessment records: the companion-eigenvalue verdict on stability and invertibility.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._chains.html#cultivars.engine._internals._chains" title="cultivars.engine._internals._chains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_chains</span></code></a></p></td>
 <td><p>Markov chains over the parameters of a nonlinear state-space model.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._coefficients.html#cultivars.engine._internals._coefficients" title="cultivars.engine._internals._coefficients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_coefficients</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Mean coefficients: a conditional-mean draw on its natural scale.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._covariances.html#cultivars.engine._internals._covariances" title="cultivars.engine._internals._covariances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_covariances</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Coefficient covariances: the uncertainty behind a coefficient matrix, two ways.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._emitters.html#cultivars.engine._internals._emitters" title="cultivars.engine._internals._emitters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emitters</span></code></a></p></td>
 <td><p>Emitters: parameter records to state-space systems on the nonlinear substrate.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._engines.html#cultivars.engine._internals._engines" title="cultivars.engine._internals._engines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_engines</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Engines: the training backends that turn features and a target into a predictor.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._filters.html#cultivars.engine._internals._filters" title="cultivars.engine._internals._filters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_filters</span></code></a></p></td>
-<td><p></p></td>
+<td><p>The Hamilton filter: forward regime probabilities for a discrete Markov chain.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._fits.html#cultivars.engine._internals._fits" title="cultivars.engine._internals._fits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_fits</span></code></a></p></td>
 <td><p>Fit records: the raw numeric output of an estimator, before result assembly.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._inferences.html#cultivars.engine._internals._inferences" title="cultivars.engine._internals._inferences"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_inferences</span></code></a></p></td>
-<td><p></p></td>
+<td><p>The inference protocol: what a result asks of its coefficient uncertainty.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._layouts.html#cultivars.engine._internals._layouts" title="cultivars.engine._internals._layouts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_layouts</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Parameter layout: which design column serves which regime in a switching regression.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._levels.html#cultivars.engine._internals._levels" title="cultivars.engine._internals._levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_levels</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Conditional levels: one unit of a global system, written in levels.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._means.html#cultivars.engine._internals._means" title="cultivars.engine._internals._means"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_means</span></code></a></p></td>
 <td><p>Mean layers: how a conditional-variance model turns a draw into residuals.</p></td>
@@ -1606,55 +1658,55 @@
 <td><p>Protected base classes for model specifications and fitted results.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._moments.html#cultivars.engine._internals._moments" title="cultivars.engine._internals._moments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_moments</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Moment records: what a multivariate regression yields before a family names it.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives.html#cultivars.engine._internals._objectives" title="cultivars.engine._internals._objectives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_objectives</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._parameters.html#cultivars.engine._internals._parameters" title="cultivars.engine._internals._parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_parameters</span></code></a></p></td>
 <td><p>Optimizer surfaces: the estimation context an objective function closes over.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._parameters.html#cultivars.engine._internals._parameters" title="cultivars.engine._internals._parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_parameters</span></code></a></p></td>
+<td><p>Parameter records: a flat optimizer vector, named and on its natural scale.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._posteriors.html#cultivars.engine._internals._posteriors" title="cultivars.engine._internals._posteriors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_posteriors</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Posterior records: what a sampler returns once its draws are packed.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._predictors.html#cultivars.engine._internals._predictors" title="cultivars.engine._internals._predictors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_predictors</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Predictors: the fitted conditional-mean maps that training engines hand back.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._priors.html#cultivars.engine._internals._priors" title="cultivars.engine._internals._priors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_priors</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Priors: the moment-and-dummy interface for VAR coefficients, and the volatility hyperpriors.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._results.html#cultivars.engine._internals._results" title="cultivars.engine._internals._results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_results</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Result records: what filters, smoothers, and estimators hand back.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._selections.html#cultivars.engine._internals._selections" title="cultivars.engine._internals._selections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_selections</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Selection records: the verdicts that choose among models, with their evidence.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._simulators.html#cultivars.engine._internals._simulators" title="cultivars.engine._internals._simulators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_simulators</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Simulators: sample paths generated from stated parameters.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._smoothers.html#cultivars.engine._internals._smoothers" title="cultivars.engine._internals._smoothers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_smoothers</span></code></a></p></td>
-<td><p></p></td>
+<td><p>The Kim smoother: full-sample regime probabilities from a Hamilton-filter pass.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._solutions.html#cultivars.engine._internals._solutions" title="cultivars.engine._internals._solutions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_solutions</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Perturbation solutions: the policy functions of a solved equilibrium model.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._solvers.html#cultivars.engine._internals._solvers" title="cultivars.engine._internals._solvers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_solvers</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Solvers: the routines that turn a stated problem into its solution.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._specifications.html#cultivars.engine._internals._specifications" title="cultivars.engine._internals._specifications"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_specifications</span></code></a></p></td>
-<td><p>Perturbation solution of rational-expectations models, to second order.</p></td>
+<td><p>Model specifications: what a user-written model must supply to the engine.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._states.html#cultivars.engine._internals._states" title="cultivars.engine._internals._states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_states</span></code></a></p></td>
-<td><p></p></td>
+<td><p>EM state records: what one run of a Markov-switching EM leaves behind.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._substrates.html#cultivars.engine._internals._substrates" title="cultivars.engine._internals._substrates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_substrates</span></code></a></p></td>
 <td><p>State-space substrates: the linear-Gaussian and nonlinear engines.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._systems.html#cultivars.engine._internals._systems" title="cultivars.engine._internals._systems"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_systems</span></code></a></p></td>
-<td><p>Parametric state-space system builders: structural and Nelson-Siegel.</p></td>
+<td><p>Parametric state-space system builders: Harvey's structural components.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._tests.html#cultivars.engine._internals._tests" title="cultivars.engine._internals._tests"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_tests</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Test records: hypothesis-test verdicts and the convergence report.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1886,7 +1938,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

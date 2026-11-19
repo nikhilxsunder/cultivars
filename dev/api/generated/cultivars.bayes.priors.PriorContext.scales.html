@@ -84,7 +84,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.bayes.priors.PriorContext.scales.82d75fdb-805a-4ec7-aaa2-f85d3e633640.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.bayes.priors.PriorContext.scales.79229cb3-dc99-4087-949e-13fc6ead9328.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.bayes.priors.PriorContext.scales';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -3097,7 +3097,12 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="cultivars.bayes.priors.PriorContext.scales">
 <span class="sig-prename descclassname"><span class="pre">PriorContext.</span></span><span class="sig-name descname"><span class="pre">scales</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><span class="pre">NDArray</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#cultivars.bayes.priors.PriorContext.scales" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Per-variable residual standard deviation <code class="docutils literal notranslate"><span class="pre">s_i</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(k_endog,)</span></code>.</p>
+<p>Taken from univariate autoregressions, so the scale a prior is written
+against does not depend on the system it regularizes. The ratio
+<code class="docutils literal notranslate"><span class="pre">s_i</span> <span class="pre">/</span> <span class="pre">s_j</span></code> is what makes a cross-variable coefficient unit-free. The
+entries must be strictly positive: a zero makes that ratio infinite.</p>
+</dd></dl>
 
 </section>
 

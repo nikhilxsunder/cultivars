@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_smoothers &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._smoothers.9e608d03-c2ab-46e9-9265-c20047f4805c.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._smoothers.52297765-93f1-4f65-9c8d-b496284686fc.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._smoothers';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,8 +1562,25 @@
 <h1>_smoothers<a class="headerlink" href="#smoothers" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._smoothers">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_smoothers</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._smoothers'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_smoothers.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_smoothers.py#L0-L91"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._smoothers" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_smoothers</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._smoothers'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_smoothers.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_smoothers.py#L0-L107"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._smoothers" title="Link to this definition">#</a></dt>
+<dd><p>full-sample regime probabilities from a Hamilton-filter pass.</p>
+<p>One function, <code class="xref py py-func docutils literal notranslate"><span class="pre">_kim_smoother()</span></code>, the backward recursion that turns
+filtered regime probabilities into smoothed ones. Along the way it produces
+the joint probabilities of consecutive regimes, which are what an EM update
+of the transition matrix is computed from. Like the filter it reads
+probabilities and a transition matrix and nothing else, so it serves every
+model with a discrete regime chain.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>Kim, C.-J. (1994). Dynamic linear models with Markov-switching.</dt><dd><p><em>Journal of Econometrics</em>, 60(1-2), 1-22.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The Kim smoother</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -1791,7 +1808,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

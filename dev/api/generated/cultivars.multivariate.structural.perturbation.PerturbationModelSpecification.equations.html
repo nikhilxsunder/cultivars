@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>PerturbationModelSpecification.equations &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.structural.perturbation.PerturbationModelSpecification.equations.6544e4f5-c365-4cc3-be0d-3fe8c56b697b.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.structural.perturbation.PerturbationModelSpecification.equations.3b396684-7c00-40d8-b02d-180e954c5f22.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.multivariate.structural.perturbation.PerturbationModelSpecification.equations';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -3101,11 +3101,27 @@
 <h1>PerturbationModelSpecification.equations<a class="headerlink" href="#perturbationmodelspecification-equations" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.multivariate.structural.perturbation.PerturbationModelSpecification.equations">
-<span class="sig-prename descclassname"><span class="pre">PerturbationModelSpecification.</span></span><span class="sig-name descname"><span class="pre">equations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_next</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_next</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_specifications.py#L105-L114"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.structural.perturbation.PerturbationModelSpecification.equations" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">PerturbationModelSpecification.</span></span><span class="sig-name descname"><span class="pre">equations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_next</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_next</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_specifications.py#L134-L159"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.structural.perturbation.PerturbationModelSpecification.equations" title="Link to this definition">#</a></dt>
 <dd><p>Residuals of <code class="docutils literal notranslate"><span class="pre">E_t</span> <span class="pre">f(y',</span> <span class="pre">y,</span> <span class="pre">x',</span> <span class="pre">x)</span> <span class="pre">=</span> <span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">n_states</span> <span class="pre">+</span> <span class="pre">n_controls</span></code> of them.</p>
+<p>Called many times with perturbed arguments to build numerical
+derivatives, so it must be smooth near the steady state and free
+of side effects.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Structural parameters in the constrained space.</p></li>
+<li><p><strong>y_next</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Controls next period, <code class="docutils literal notranslate"><span class="pre">(n_controls,)</span></code>.</p></li>
+<li><p><strong>y</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Controls this period, <code class="docutils literal notranslate"><span class="pre">(n_controls,)</span></code>.</p></li>
+<li><p><strong>x_next</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – States next period, <code class="docutils literal notranslate"><span class="pre">(n_states,)</span></code>.</p></li>
+<li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – States this period, <code class="docutils literal notranslate"><span class="pre">(n_states,)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The residual vector, <code class="docutils literal notranslate"><span class="pre">(n_states</span> <span class="pre">+</span> <span class="pre">n_controls,)</span></code>; zero at the
+steady state.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3336,7 +3352,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

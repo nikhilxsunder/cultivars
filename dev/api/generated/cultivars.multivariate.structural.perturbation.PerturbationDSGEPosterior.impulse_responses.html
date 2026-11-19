@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>PerturbationDSGEPosterior.impulse_responses &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.impulse_responses.98018971-ca8a-4f75-ba52-f771f8dfe7c3.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.impulse_responses.118cdc90-9384-4245-9080-fa3c9ac04af3.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.impulse_responses';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -3101,13 +3101,17 @@
 <h1>PerturbationDSGEPosterior.impulse_responses<a class="headerlink" href="#perturbationdsgeposterior-impulse-responses" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.impulse_responses">
-<span class="sig-prename descclassname"><span class="pre">PerturbationDSGEPosterior.</span></span><span class="sig-name descname"><span class="pre">impulse_responses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_draws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_posteriors.py#L759-L791"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.impulse_responses" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">PerturbationDSGEPosterior.</span></span><span class="sig-name descname"><span class="pre">impulse_responses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_draws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_posteriors.py#L1327-L1368"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.impulse_responses" title="Link to this definition">#</a></dt>
 <dd><p>Posterior draws of the responses.</p>
 <p>Returns <code class="docutils literal notranslate"><span class="pre">(states,</span> <span class="pre">controls)</span></code> of shapes <code class="docutils literal notranslate"><span class="pre">(n_draws,</span> <span class="pre">n_eps,</span> <span class="pre">horizon,</span> <span class="pre">n_x)</span></code>
 and <code class="docutils literal notranslate"><span class="pre">(n_draws,</span> <span class="pre">n_eps,</span> <span class="pre">horizon,</span> <span class="pre">n_y)</span></code>.</p>
 <p>Each draw resolves the model at one kept parameter draw, so the
 band is the posterior of the response and not the response at the
 posterior mean.</p>
+<p>At most <code class="docutils literal notranslate"><span class="pre">n_kept</span></code> draws are used, chosen without replacement, so
+the leading dimension is <code class="docutils literal notranslate"><span class="pre">min(n_draws,</span> <span class="pre">n_kept)</span></code>. <code class="docutils literal notranslate"><span class="pre">n_draws</span></code> is
+not otherwise validated: zero or a negative value raises NumPy’s
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3117,11 +3121,15 @@ posterior mean.</p>
 <li><p><strong>seed</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <span class="highlight sphinx_autodoc_typehints-value"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="kc"><span class="pre">None</span></span></code></a></span></span>) – Seed for the draw selection.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>], <a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The state responses and the control responses, indexed by draw,
+shock, period, and variable.</p>
+</dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><strong>SpecificationError</strong></a> – If the horizon is not positive.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>], <a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3352,7 +3360,7 @@ posterior mean.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_systems &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._systems.ee0a144a-c181-4bbc-8dbf-7985e7482db8.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._systems.8734d601-ed42-4834-807a-d455cbec6935.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._systems';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,18 +1562,26 @@
 <h1>_systems<a class="headerlink" href="#systems" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._systems">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_systems</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._systems'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_systems.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_systems.py#L0-L175"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._systems" title="Link to this definition">#</a></dt>
-<dd><p>structural and Nelson-Siegel.</p>
-<p>These assemble specific parametric families – Harvey’s structural
-components and the dynamic Nelson-Siegel term structure – into the
-linear-Gaussian substrate. They sit one layer above
-<code class="xref py py-mod docutils literal notranslate"><span class="pre">_state_space</span></code>, which stays a leaf: the substrate knows how to
-filter and smooth any linear-Gaussian system, and this module knows how
-to construct the particular systems those two model families need. Each
-parameter record here is the single meeting point between an objective’s
-flat optimization vector and the system matrices, so the objectives, the
-fits, and the public results all speak in these records rather than in
-raw arrays.</p>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_systems</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._systems'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_systems.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_systems.py#L0-L218"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._systems" title="Link to this definition">#</a></dt>
+<dd><p>Harvey’s structural components.</p>
+<p>Assembles one parametric family, Harvey’s structural time-series
+components, into the system matrices of the linear-Gaussian substrate. It
+sits one layer above <code class="docutils literal notranslate"><span class="pre">_substrates</span></code>, which stays a leaf: the substrate
+knows how to filter and smooth any linear-Gaussian system, and this module
+knows how to construct the particular system a structural model needs. The
+parameter record it reads is the single meeting point between an
+objective’s flat optimization vector and the system matrices, so the
+objectives, the fits, and the public results all speak in that record and
+not in raw arrays.</p>
+<p>The dynamic Nelson-Siegel counterpart is built by the substrate’s own
+<code class="docutils literal notranslate"><span class="pre">_from_nelson_siegel_system</span></code> constructor.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>Harvey, A. C. (1989). <a href="#id1"><span class="problematic" id="id2">*</span></a>Forecasting, Structural Time Series Models and</dt><dd><p>the Kalman Filter*. Cambridge University Press.</p>
+</dd>
+<dt>Durbin, J., &amp; Koopman, S. J. (2012). <a href="#id3"><span class="problematic" id="id4">*</span></a>Time Series Analysis by State</dt><dd><p>Space Methods* (2nd ed.). Oxford University Press.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Parametric state-space system builders</p>
@@ -1807,7 +1815,7 @@ raw arrays.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_assessments &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments.66ffa3e6-c385-4f3f-87c1-6bcb13fe6b43.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments.f06e3988-2aa2-4f7a-a923-bc79fcaa0bf6.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._assessments';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,8 +1562,65 @@
 <h1>_assessments<a class="headerlink" href="#assessments" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._assessments">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_assessments</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._assessments'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_assessments.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L0-L179"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_assessments</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._assessments'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_assessments.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L0-L499"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments" title="Link to this definition">#</a></dt>
+<dd><p>the companion-eigenvalue verdict on stability and invertibility.</p>
+<p>A linear recursion <code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">A_1</span> <span class="pre">y_{t-1}</span> <span class="pre">+</span> <span class="pre">...</span> <span class="pre">+</span> <span class="pre">A_p</span> <span class="pre">y_{t-p}</span> <span class="pre">+</span> <span class="pre">u_t</span></code> is stable
+exactly when every eigenvalue of its companion matrix lies strictly inside
+the unit circle, which is the same statement as
+<code class="docutils literal notranslate"><span class="pre">det(I</span> <span class="pre">-</span> <span class="pre">A_1</span> <span class="pre">z</span> <span class="pre">-</span> <span class="pre">...</span> <span class="pre">-</span> <span class="pre">A_p</span> <span class="pre">z^p)</span></code> having no root with <code class="docutils literal notranslate"><span class="pre">|z|</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code>. This
+module holds the one record that carries that reading,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">_StabilityAssessment</span></code>, together with the class methods that produce
+it. Every stationarity, invertibility, and transition-stability check in the
+package routes through here, so the classification rule and the tolerance
+that decides it are defined once rather than per model family.</p>
+<p>The rule is a three-way partition of the eigenvalue moduli by a band of
+half-width <code class="docutils literal notranslate"><span class="pre">tol</span></code> around the circle:</p>
+<ul class="simple">
+<li><p>inside: <code class="docutils literal notranslate"><span class="pre">|lambda|</span> <span class="pre">&lt;</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">tol</span></code>;</p></li>
+<li><p>unit: <code class="docutils literal notranslate"><span class="pre">abs(|lambda|</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">&lt;=</span> <span class="pre">tol</span></code>;</p></li>
+<li><p>explosive: <code class="docutils literal notranslate"><span class="pre">|lambda|</span> <span class="pre">&gt;</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">tol</span></code>.</p></li>
+</ul>
+<p>The strict verdict (<code class="docutils literal notranslate"><span class="pre">allow_unit_roots=False</span></code>) requires every modulus to be
+inside; the permissive verdict (<code class="docutils literal notranslate"><span class="pre">allow_unit_roots=True</span></code>) requires only
+that none be explosive. The strict verdict is therefore conservative: a
+root that is inside the circle but within <code class="docutils literal notranslate"><span class="pre">tol</span></code> of it is counted as a unit
+root and fails. The permissive verdict is the one a VECM asks for, since it
+carries <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">-</span> <span class="pre">r</span></code> unit roots by construction, and the one a state-space
+transition with random-walk states asks for.</p>
+<p>Two conventions are fixed here and assumed by every caller.</p>
+<p>Sign. All four entry points read their argument in the autoregressive
+convention, testing <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">c_1</span> <span class="pre">z</span> <span class="pre">-</span> <span class="pre">...</span> <span class="pre">-</span> <span class="pre">c_q</span> <span class="pre">z^q</span></code>. A moving-average
+polynomial stored as <code class="docutils literal notranslate"><span class="pre">theta(L)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">theta_1</span> <span class="pre">L</span> <span class="pre">+</span> <span class="pre">...</span> <span class="pre">+</span> <span class="pre">theta_q</span> <span class="pre">L^q</span></code> must be
+negated before it is passed, <code class="xref py py-meth docutils literal notranslate"><span class="pre">_StabilityAssessment.is_invertible()</span></code>
+included. The fitted results do this in <code class="docutils literal notranslate"><span class="pre">_InvertibilityMixin</span></code>; a direct
+caller has to do it by hand.</p>
+<p>Accuracy. The eigenvalues are those of a general real matrix
+(<code class="docutils literal notranslate"><span class="pre">numpy.linalg.eigvals</span></code>), and a defective eigenvalue of multiplicity <code class="docutils literal notranslate"><span class="pre">m</span></code>
+is recovered only to about <code class="docutils literal notranslate"><span class="pre">eps</span> <span class="pre">**</span> <span class="pre">(1</span> <span class="pre">/</span> <span class="pre">m)</span></code>. Simple and double unit roots
+land inside the default band of <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>. A triple unit root does not: the
+companion of <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">L)^3</span></code> returns moduli about <code class="docutils literal notranslate"><span class="pre">7e-6</span></code> from one, so at the
+default tolerance two of its three roots are classified as explosive. Models
+that carry higher-order integration by design should pass a wider <code class="docutils literal notranslate"><span class="pre">tol</span></code>.</p>
+<p>Layout. The record is a frozen dataclass and is re-exported under its public
+name as <code class="docutils literal notranslate"><span class="pre">cultivars.diagnostics.stability.StabilityAssessment</span></code>. The
+companion is built by <code class="xref py py-func docutils literal notranslate"><span class="pre">_companion_matrix()</span></code>;
+<code class="docutils literal notranslate"><span class="pre">_assess</span></code> is the single classification kernel, and <code class="docutils literal notranslate"><span class="pre">_trivial</span></code> is the
+record of a recursion with no lags.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>Lütkepohl, H. (2005). <a href="#id1"><span class="problematic" id="id2">*</span></a>New Introduction to Multiple Time Series</dt><dd><p>Analysis*. Springer. Section 2.1.1.</p>
+</dd>
+<dt>Hamilton, J. D. (1994). <em>Time Series Analysis</em>. Princeton University</dt><dd><p>Press. Sections 1.2 and 10.1.</p>
+</dd>
+<dt>Golub, G. H., &amp; Van Loan, C. F. (2013). <em>Matrix Computations</em> (4th</dt><dd><p>ed.). Johns Hopkins University Press. Section 7.2.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Assessment records</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -1791,7 +1848,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

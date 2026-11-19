@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>SVPosterior._from_gibbs &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.univariate.stochastic_volatility.SVPosterior._from_gibbs.72bdc43d-84c9-4be5-93e2-e532b79dd6d6.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.univariate.stochastic_volatility.SVPosterior._from_gibbs.ed28f742-3453-4f8d-b6f1-69fad1abc68c.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.univariate.stochastic_volatility.SVPosterior._from_gibbs';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1568,11 +1568,25 @@
 <h1>SVPosterior._from_gibbs<a class="headerlink" href="#svposterior-from-gibbs" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.univariate.stochastic_volatility.SVPosterior._from_gibbs">
-<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SVPosterior.</span></span><span class="sig-name descname"><span class="pre">_from_gibbs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_posteriors.py#L134-L156"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.univariate.stochastic_volatility.SVPosterior._from_gibbs" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SVPosterior.</span></span><span class="sig-name descname"><span class="pre">_from_gibbs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_posteriors.py#L363-L399"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.univariate.stochastic_volatility.SVPosterior._from_gibbs" title="Link to this definition">#</a></dt>
 <dd><p>Assemble from the Gibbs sampler’s output.</p>
+<p>The draw arrays are taken from the fit as they are, without copying.
+<code class="docutils literal notranslate"><span class="pre">rho_draws</span></code> and <code class="docutils literal notranslate"><span class="pre">loglik_draws</span></code> are <code class="docutils literal notranslate"><span class="pre">None</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">acceptance_rate</span></code> is the fit’s acceptance rate for the
+degrees-of-freedom step.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">_SVPosterior</span></code></span></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fit</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">_VolatilityDrawsFit</span></code></span>) – The packed Gibbs output.</p></li>
+<li><p><strong>model</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">_StochasticVolatilityModel</span></code>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span>) – The engine that ran the sampler; supplies the series and
+the mean specification.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">_SVPosterior</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The posterior record with <code class="docutils literal notranslate"><span class="pre">method=&quot;gibbs&quot;</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1803,7 +1817,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

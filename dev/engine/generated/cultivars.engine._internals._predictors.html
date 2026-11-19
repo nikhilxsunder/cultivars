@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_predictors &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._predictors.19f868de-f610-4b90-8d3c-9f81c54bfbcd.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._predictors.5620a5b1-f29e-424b-a0c0-8ee3877302c3.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._predictors';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,9 +1562,49 @@
 <h1>_predictors<a class="headerlink" href="#predictors" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._predictors">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_predictors</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._predictors'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_predictors.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_predictors.py#L0-L106"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._predictors" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_predictors</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._predictors'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_predictors.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_predictors.py#L0-L336"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._predictors" title="Link to this definition">#</a></dt>
+<dd><p>the fitted conditional-mean maps that training engines hand back.</p>
+<p>A nonlinear mean-function model (a neural autoregression, or its threshold
+variant) splits into two roles. An <em>engine</em> owns training: it takes a design
+matrix of lagged values and a target and fits some learner. A <em>predictor</em>
+is what training leaves behind, a frozen map from features to conditional
+means that the model then treats as given. The model evaluates it for the
+fitted values, counts its parameters for the information criteria, and
+wraps it in a nonlinear state space, where it is called on whole batches of
+particle states. This module defines the second role.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">MeanPredictor</span></code> is the contract, held to the two members the
+consuming models use, so that a learner written against torch, jax, or
+scikit-learn can satisfy it without inheriting from anything here. The
+contract is structural and shallow: it is a <code class="docutils literal notranslate"><span class="pre">runtime_checkable</span></code> protocol,
+so <code class="docutils literal notranslate"><span class="pre">isinstance</span></code> asks only whether an object has attributes named
+<code class="docutils literal notranslate"><span class="pre">n_parameters</span></code> and <code class="docutils literal notranslate"><span class="pre">predict</span></code>. Signatures, shapes, and return types are
+not checked, and the models that consume a predictor do not run even that
+check on what an engine returns.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">_FittedMLP</span></code> is the one predictor the package ships, the output of
+the reference NumPy engine. It is a single-hidden-layer perceptron with a
+linear output, evaluated on standardized inputs and mapped back to the
+scale of the target:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">x_scale</span>
+<span class="n">m</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">y_mean</span> <span class="o">+</span> <span class="n">y_scale</span> <span class="o">*</span> <span class="p">(</span><span class="n">act</span><span class="p">(</span><span class="n">z</span> <span class="o">@</span> <span class="n">w1</span> <span class="o">+</span> <span class="n">b1</span><span class="p">)</span> <span class="o">@</span> <span class="n">w2</span> <span class="o">+</span> <span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The standardization constants are those of the training sample and travel
+with the record, which is what makes a prediction on new data use exactly
+the scaling the weights were trained under. The activation and its
+derivative are static methods on the record, not helpers of the engine,
+because the engine’s analytic gradient must differentiate the same function
+the forward pass evaluates.</p>
+<p>Layout. Engines, <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyMLPEngine</span></code>
+among them, live in <code class="docutils literal notranslate"><span class="pre">_engines</span></code> and return predictors; the fit records in
+<code class="docutils literal notranslate"><span class="pre">_fits</span></code> carry them; the mean-function models in <code class="docutils literal notranslate"><span class="pre">_models</span></code> consume them.
+<code class="docutils literal notranslate"><span class="pre">MeanPredictor</span></code> has a public name because it appears in the signatures of
+<a class="reference internal" href="../../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function" title="cultivars.univariate.mean_function"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.mean_function</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Predictors</p>
+</dd>
+</dl>
+</dd></dl>
 </section>
 
 
@@ -1791,7 +1831,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

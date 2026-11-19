@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>PriorContext &#8212; cultivars</title>
   
   
@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.bayes.priors.PriorContext.912bdb78-0cff-4f72-9363-c7e4cad8c177.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.bayes.priors.PriorContext.1e00501e-1734-47a1-a524-3a0ac9379cc3.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.bayes.priors.PriorContext';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -3097,7 +3097,7 @@
 <h1>PriorContext<a class="headerlink" href="#priorcontext" title="Link to this heading">#</a></h1>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="cultivars.bayes.priors.PriorContext">
-<span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">PriorContext</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L51-L102"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.bayes.priors.PriorContext" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">PriorContext</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L108-L237"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.bayes.priors.PriorContext" title="Link to this definition">#</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">_PriorContext</span></code></p>
 </dd></dl>
 
@@ -3106,25 +3106,25 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.k_endog.html#cultivars.bayes.priors.PriorContext.k_endog" title="cultivars.bayes.priors.PriorContext.k_endog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">k_endog</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Number of modelled variables <code class="docutils literal notranslate"><span class="pre">k</span></code>, which is also the number of equations.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.order.html#cultivars.bayes.priors.PriorContext.order" title="cultivars.bayes.priors.PriorContext.order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">order</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Autoregressive order <code class="docutils literal notranslate"><span class="pre">p</span></code>; the lag block is <code class="docutils literal notranslate"><span class="pre">k_endog</span> <span class="pre">*</span> <span class="pre">order</span></code> columns wide.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.scales.html#cultivars.bayes.priors.PriorContext.scales" title="cultivars.bayes.priors.PriorContext.scales"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scales</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Per-variable residual standard deviation <code class="docutils literal notranslate"><span class="pre">s_i</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(k_endog,)</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.presample_mean.html#cultivars.bayes.priors.PriorContext.presample_mean" title="cultivars.bayes.priors.PriorContext.presample_mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">presample_mean</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Mean of the first <code class="docutils literal notranslate"><span class="pre">order</span></code> observations of each variable, shape <code class="docutils literal notranslate"><span class="pre">(k_endog,)</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.k_exog.html#cultivars.bayes.priors.PriorContext.k_exog" title="cultivars.bayes.priors.PriorContext.k_exog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">k_exog</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Number of exogenous regressors, whose columns follow the lag block.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.n_deterministic.html#cultivars.bayes.priors.PriorContext.n_deterministic" title="cultivars.bayes.priors.PriorContext.n_deterministic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_deterministic</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Width of the deterministic block that leads the design.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.include_constant.html#cultivars.bayes.priors.PriorContext.include_constant" title="cultivars.bayes.priors.PriorContext.include_constant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">include_constant</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Whether the design carries a leading intercept column.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.bayes.priors.PriorContext.lag_offset.html#cultivars.bayes.priors.PriorContext.lag_offset" title="cultivars.bayes.priors.PriorContext.lag_offset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lag_offset</span></code></a></p></td>
 <td><p>Design columns ahead of the endogenous lag block.</p></td>
@@ -3363,7 +3363,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

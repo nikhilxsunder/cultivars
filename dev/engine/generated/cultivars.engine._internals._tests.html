@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_tests &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._tests.24a1c17a-e172-4534-9d4e-03b109443a35.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._tests.ed258278-03c2-4030-adee-3c1f1cc459ae.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._tests';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,8 +1562,50 @@
 <h1>_tests<a class="headerlink" href="#tests" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._tests">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_tests</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._tests'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_tests.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_tests.py#L0-L793"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._tests" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_tests</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._tests'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_tests.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_tests.py#L0-L928"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._tests" title="Link to this definition">#</a></dt>
+<dd><p>hypothesis-test verdicts and the convergence report.</p>
+<p>Every test in the package returns a frozen record from this module and not
+a bare statistic. A record carries the statistic, what it was referred to,
+the p-value where one exists, and enough of its construction to render
+itself as a table and to say what was tested.</p>
+<p>The records and how they relate:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_HypothesisTest</span></code> is the base: a scalar statistic, an optional
+p-value, <code class="docutils literal notranslate"><span class="pre">reject(alpha)</span></code>, and the renderers. A study that collects
+verdicts handles this one type.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_ChiSquaredTest</span></code> is a test referred to a chi-squared law.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">_LikelihoodRatioTest</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">_WaldTest</span></code> are siblings under
+it: the first is named by its construction, the second by the null it
+was aimed at.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_ForecastComparisonTest</span></code> is a test on aligned forecast errors
+from a rolling evaluation, with the header those tests share.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_TabulatedTest</span></code> is a test with a non-standard limit law, read
+against tabulated critical values, with or without a p-value.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_JohansenRankTest</span></code> stands apart. It holds two sequences of
+statistics over candidate ranks, not one scalar, so it is not a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">_HypothesisTest</span></code>.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_ConvergenceTest</span></code> is not a hypothesis test at all: it is the
+per-quantity convergence report of a Markov chain Monte Carlo run, with
+a verdict against the thresholds it carries.</p></li>
+</ul>
+<p>The records are re-exported by the public modules under names without the
+leading underscore, and each <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> prints a public name.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>Johansen, S. (1991). Estimation and hypothesis testing of cointegration</dt><dd><p>vectors in Gaussian vector autoregressive models. <em>Econometrica</em>,
+59(6), 1551-1580.</p>
+</dd>
+<dt>Vehtari, A., Gelman, A., Simpson, D., Carpenter, B., &amp; Burkner, P.-C.</dt><dd><p>(2021). Rank-normalization, folding, and localization: An improved
+R-hat for assessing convergence of MCMC. <em>Bayesian Analysis</em>,
+16(2), 667-718.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Test records</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -1791,7 +1833,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

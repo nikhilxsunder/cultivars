@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_chains &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains.92131ef5-3b31-4e6c-a0a7-2f960e1d1f62.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains.ef7993b6-4a5c-4100-aea6-f9829e5bd0cd.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._chains';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,7 +1562,7 @@
 <h1>_chains<a class="headerlink" href="#chains" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._chains">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_chains</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._chains'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_chains.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L0-L222"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_chains</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._chains'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_chains.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L0-L464"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains" title="Link to this definition">#</a></dt>
 <dd><p>Markov chains over the parameters of a nonlinear state-space model.</p>
 <p>The particle filter returns an unbiased <em>estimate</em> of the likelihood, and
 Andrieu, Doucet, and Holenstein (2010) showed that plugging that estimate
@@ -1580,6 +1580,30 @@ with a Gaussian random walk whose covariance adapts during burn-in
 (Haario, Saksman, and Tamminen, 2001) and whose global scale is tuned
 toward a target acceptance rate. Adaptation stops at the end of burn-in,
 so the kept draws come from a fixed-kernel chain.</p>
+<p>Admissibility is enforced by rejection rather than by exception. A proposal
+whose prior is not finite, whose system cannot be built, or whose particle
+cloud degenerates is given a log likelihood of <code class="docutils literal notranslate"><span class="pre">-inf</span></code> and rejected, so a
+long run is not lost to one bad draw and the chain never leaves the region
+where the model is defined. The cost is that a misconfigured filter is
+indistinguishable from an inadmissible point: it fails at the starting
+point, and the run refuses to begin.</p>
+<p>Two tuning facts follow from the likelihood being an estimate. The number
+of particles does not change what the chain converges to, only how well it
+mixes, and Pitt et al. (2012) put the efficient choice where the standard
+deviation of the log-likelihood estimate is about one. And the acceptance
+rate has a ceiling below one that no step size can lift, set by that same
+noise. The tuning target of <code class="docutils literal notranslate"><span class="pre">0.234</span></code> (Roberts, Gelman, and Gilks, 1997) is
+the optimum for an exactly evaluated likelihood, so it is reachable only
+when the estimate is reasonably tight; Sherlock et al. (2015) find the
+efficient rate for a pseudo-marginal random walk to be far lower, near 7%.</p>
+<p>Layout. <code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleMarginalChain</span></code> is the sampler: a frozen record of
+the data, the two callables, and the filter settings, with <code class="docutils literal notranslate"><span class="pre">run</span></code> as its
+one entry point and <code class="docutils literal notranslate"><span class="pre">_estimate</span></code> as the likelihood kernel. It returns the
+raw draws as a <code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleChainFit</span></code>;
+the posterior records that summarize them live in <code class="docutils literal notranslate"><span class="pre">_posteriors</span></code>. The
+filter is <code class="xref py py-meth docutils literal notranslate"><span class="pre">_NonlinearStateSpace.particle_filter()</span></code> in <code class="docutils literal notranslate"><span class="pre">_substrates</span></code>.
+The stochastic-volatility and perturbation-DSGE engines in <code class="docutils literal notranslate"><span class="pre">_models</span></code> are
+the two callers.</p>
 <p class="rubric">References</p>
 <dl class="simple">
 <dt>Andrieu, C., Doucet, A., &amp; Holenstein, R. (2010). Particle Markov</dt><dd><p>chain Monte Carlo methods. <em>Journal of the Royal Statistical
@@ -1590,6 +1614,12 @@ Society B</em>, 72(3), 269-342.</p>
 <dt>Pitt, M. K., dos Santos Silva, R., Giordani, P., &amp; Kohn, R. (2012). On</dt><dd><p>some properties of Markov chain Monte Carlo simulation methods
 based on the particle filter. <em>Journal of Econometrics</em>, 171(2),
 134-151.</p>
+</dd>
+<dt>Roberts, G. O., Gelman, A., &amp; Gilks, W. R. (1997). Weak convergence</dt><dd><p>and optimal scaling of random walk Metropolis algorithms. <em>The
+Annals of Applied Probability</em>, 7(1), 110-120.</p>
+</dd>
+<dt>Sherlock, C., Thiery, A. H., Roberts, G. O., &amp; Rosenthal, J. S. (2015).</dt><dd><p>On the efficiency of pseudo-marginal random walk Metropolis
+algorithms. <em>The Annals of Statistics</em>, 43(1), 238-275.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1820,7 +1850,7 @@ based on the particle filter. <em>Journal of Econometrics</em>, 171(2),
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

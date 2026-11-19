@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_selections &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._selections.0350f441-e36b-4d27-adf0-468ed1043a82.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._selections.aa394a39-3103-4781-a4be-092ff48eb4be.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._selections';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,8 +1562,40 @@
 <h1>_selections<a class="headerlink" href="#selections" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._selections">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_selections</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._selections'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_selections.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_selections.py#L0-L582"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._selections" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_selections</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._selections'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_selections.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_selections.py#L0-L733"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._selections" title="Link to this definition">#</a></dt>
+<dd><p>the verdicts that choose among models, with their evidence.</p>
+<p>Four records, each the outcome of asking which of several candidates the
+data prefer and each carrying the evidence along with the answer:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_LagOrderSelection</span></code>: information-criterion curves over lag
+orders, all scored on one common sample.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_MarginalLikelihoodSelection</span></code>: one model’s log marginal
+likelihood with how it was computed, comparable against others as Bayes
+factors and posterior model probabilities.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_ModelCombinationSelection</span></code>: weights over models, from
+marginal likelihoods or from held-out predictive scores, and the mixture
+predictive those weights imply.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_ModelConfidenceSetSelection</span></code>: the set of forecasters that a
+sequence of equal-accuracy tests could not eliminate.</p></li>
+</ul>
+<p>None of them estimates anything. The procedures that fill them are on the
+model and result classes and in <a class="reference internal" href="../../api/generated/cultivars.forecast.html#module-cultivars.forecast" title="cultivars.forecast"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.forecast</span></code></a> and
+<a class="reference internal" href="../../api/generated/cultivars.bayes.html#module-cultivars.bayes" title="cultivars.bayes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes</span></code></a>; these records hold the numbers, render them, and
+answer questions about them. They are re-exported under public names
+without the leading underscore, which is the name each <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> prints.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>Hansen, P. R., Lunde, A., &amp; Nason, J. M. (2011). The model confidence</dt><dd><p>set. <em>Econometrica</em>, 79(2), 453-497.</p>
+</dd>
+<dt>Kass, R. E., &amp; Raftery, A. E. (1995). Bayes factors. <a href="#id1"><span class="problematic" id="id2">*</span></a>Journal of the</dt><dd><p>American Statistical Association*, 90(430), 773-795.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Selection records</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -1791,7 +1823,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

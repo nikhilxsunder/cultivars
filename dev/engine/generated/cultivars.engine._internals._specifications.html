@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
     <title>_specifications &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._specifications.bee5285c-45db-4124-9fd9-4747ae6a63a5.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._specifications.0109106a-c28c-47e8-961e-7e0da711c0cf.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._specifications';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-19"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -1562,8 +1562,20 @@
 <h1>_specifications<a class="headerlink" href="#specifications" title="Link to this heading">#</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="cultivars.engine._internals._specifications">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_specifications</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._specifications'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_specifications.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_specifications.py#L0-L133"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._specifications" title="Link to this definition">#</a></dt>
-<dd><p>Perturbation solution of rational-expectations models, to second order.</p>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals.</span></span><span class="sig-name descname"><span class="pre">_specifications</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'cultivars.engine._internals._specifications'</span> <span class="pre">from</span> <span class="pre">'/home/runner/work/cultivars/cultivars/src/cultivars/engine/_internals/_specifications.py'&gt;</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_specifications.py#L0-L211"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._specifications" title="Link to this definition">#</a></dt>
+<dd><p>what a user-written model must supply to the engine.</p>
+<p>One protocol, <code class="xref py py-class docutils literal notranslate"><span class="pre">_PerturbationModelSpecification</span></code>, the contract a
+rational-expectations model satisfies to be solved by perturbation and
+estimated. The user writes the equilibrium conditions, the steady state,
+the shock loading, the measurement equation, and the prior as plain methods
+on a class; the engine differentiates, solves, filters, and samples. The
+protocol is structural, so the class inherits from nothing.</p>
+<p>The solver that consumes a specification is <code class="docutils literal notranslate"><span class="pre">_solve_perturbation</span></code> in
+<code class="docutils literal notranslate"><span class="pre">_solvers</span></code>, the estimation engine is <code class="docutils literal notranslate"><span class="pre">_PerturbationModel</span></code> in
+<code class="docutils literal notranslate"><span class="pre">_models</span></code>, and the public front is
+<a class="reference internal" href="../../api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGE.html#cultivars.multivariate.structural.perturbation.PerturbationDSGE" title="cultivars.multivariate.structural.perturbation.PerturbationDSGE"><code class="xref py py-class docutils literal notranslate"><span class="pre">cultivars.multivariate.structural.perturbation.PerturbationDSGE</span></code></a>.</p>
+<p>Background: perturbation solution of rational-expectations models, to
+second order.</p>
 <p>A model is a system of equilibrium conditions <code class="docutils literal notranslate"><span class="pre">E_t</span> <span class="pre">f(y',</span> <span class="pre">y,</span> <span class="pre">x',</span> <span class="pre">x)</span> <span class="pre">=</span> <span class="pre">0</span></code>
 with <code class="docutils literal notranslate"><span class="pre">x</span></code> the predetermined states (including any exogenous driving
 processes) and <code class="docutils literal notranslate"><span class="pre">y</span></code> the controls, closed by <code class="docutils literal notranslate"><span class="pre">x'</span> <span class="pre">=</span> <span class="pre">h(x,</span> <span class="pre">sigma)</span> <span class="pre">+</span> <span class="pre">sigma</span>
@@ -1604,6 +1616,11 @@ Studies</em>, 85(1), 1-49.</p>
 </dd>
 <dt>Fernandez-Villaverde, J., &amp; Rubio-Ramirez, J. F. (2007). Estimating</dt><dd><p>macroeconomic models: A likelihood approach. <em>Review of Economic
 Studies</em>, 74(4), 1059-1087.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Model specifications</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1834,7 +1851,7 @@ Studies</em>, 74(4), 1059-1087.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a4 &middot; updated 2026-11-19 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"
