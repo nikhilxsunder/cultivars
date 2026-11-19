@@ -19,6 +19,23 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Coefficient covariances: the uncertainty behind a coefficient matrix, two ways.
+
+Two records answer the same questions about a ``(width, k)`` coefficient
+matrix from different theories. :class:`_CoefficientCovariance` is the
+sampling covariance of unrestricted least squares, held as its two
+Kronecker factors. :class:`_PosteriorCovariance` is the posterior covariance
+of an equation-by-equation fit under a prior, held as one block per
+equation. Both satisfy the protocol in ``_inferences``, which is all a
+result ever sees: standard errors, ratios, tail areas, intervals, and Wald
+tests come out of either the same way.
+
+The conventions they share: ``coefficients`` is indexed design column by
+equation; a Wald cell is an ``(equation, regressor)`` pair; and ``vec(B)``
+is equation-major, so equation ``i`` occupies positions ``i * width``
+through ``(i + 1) * width - 1``. All tail areas are normal or chi-squared,
+never ``t`` or ``F``.
+"""
 
 from __future__ import annotations
 
@@ -57,22 +74,46 @@ class _CoefficientCovariance:
         sigma_u: The ``(k, k)`` residual covariance, degrees-of-freedom
             corrected.
         xtx_inv: The ``(width, width)`` inverse cross-product of the design.
+
+    Example:
+        >>> import numpy as np
+        >>> cov = _CoefficientCovariance(
+        ...     coefficients=np.array([[1.0, 2.0], [0.5, -0.5]]),
+        ...     sigma_u=np.eye(2),
+        ...     xtx_inv=0.1 * np.eye(2),
+        ... )
+        >>> cov.stderr.shape, cov.to_matrix().shape
+        ((2, 2), (4, 4))
+        >>> test = cov.wald([(0, 1)], null="first equation, second regressor is zero")
+        >>> round(test.statistic, 3), test.df
+        (2.5, 1)
     """
 
     coefficients: npt.NDArray[np.float64]
+    """The estimate, ``(width, k)``: design columns by equations."""
     sigma_u: npt.NDArray[np.float64]
+    """Residual covariance, ``(k, k)``, degrees-of-freedom corrected."""
     xtx_inv: npt.NDArray[np.float64]
-
+    """Inverse cross-product of the design, ``(width, width)``, shared by every equation."""
     _IS_POSTERIOR: ClassVar[bool] = False
+    """``False``: these are sampling moments, and summaries head the columns accordingly."""
 
     @property
     def k_endog(self) -> int:
-        """Number of equations."""
+        """Number of equations.
+
+        Returns:
+            The dimension ``k``, read from ``sigma_u``.
+        """
         return int(self.sigma_u.shape[0])
 
     @property
     def width(self) -> int:
-        """Regressors per equation."""
+        """Regressors per equation.
+
+        Returns:
+            The design width, read from ``xtx_inv``.
+        """
         return int(self.xtx_inv.shape[0])
 
     @property
@@ -98,7 +139,11 @@ class _CoefficientCovariance:
 
     @property
     def pvalue(self) -> npt.NDArray[np.float64]:
-        """Two-sided normal p-values for the hypothesis that a coefficient is zero."""
+        """Two-sided normal p-values for the hypothesis that a coefficient is zero.
+
+        Returns:
+            An array shaped like :attr:`coefficients`.
+        """
         return 2.0 * np.asarray(norm.sf(np.abs(self.tstat)), dtype=np.float64)
 
     def conf_int(self, *, alpha: float = 0.05) -> tuple[npt.NDArray[np.float64], ...]:
@@ -125,6 +170,9 @@ class _CoefficientCovariance:
         Provided for the caller who genuinely needs the whole thing -- a
         restriction spanning several equations, a delta-method transform. Every
         method above avoids it deliberately.
+
+        Returns:
+            ``kron(sigma_u, xtx_inv)``, in equation-major order.
         """
         return np.asarray(np.kron(self.sigma_u, self.xtx_inv), dtype=np.float64)
 
@@ -146,6 +194,9 @@ class _CoefficientCovariance:
         Raises:
             SpecificationError: If no cells are given.
             DimensionError: If any index is out of range.
+            numpy.linalg.LinAlgError: If the restricted covariance is
+                singular, for instance when a cell is repeated. Unlike
+                :meth:`wald_restriction`, this method does not convert it.
         """
         if not cells:
             raise SpecificationError("a Wald test needs at least one restriction.")
@@ -218,6 +269,9 @@ class _CoefficientCovariance:
         equation. The property exists so that a caller can ask the same
         question of a shrunk fit and an unshrunk one without first asking which
         it has.
+
+        Returns:
+            ``k * width`` as a float.
         """
         return float(self.k_endog * self.width)
 
@@ -251,25 +305,45 @@ class _PosteriorCovariance:
     """
 
     coefficients: npt.NDArray[np.float64]
+    """The posterior mean, ``(width, k)``: design columns by equations."""
     blocks: npt.NDArray[np.float64]
+    """Posterior covariance of each equation's coefficients, ``(k, width, width)``."""
     effective_parameters: float
+    """Trace of the smoother matrix summed over equations.
 
+    The parameter count shrinkage spends, at most ``k * width``, and what an
+    information criterion should charge in place of the nominal width.
+    """
     #: These are posterior moments, not sampling moments.
     _IS_POSTERIOR: ClassVar[bool] = True
+    """``True``: these are posterior moments, and summaries head the columns accordingly."""
 
     @property
     def k_endog(self) -> int:
-        """Number of equations."""
+        """Number of equations.
+
+        Returns:
+            The dimension ``k``, read from ``blocks``.
+        """
         return int(self.blocks.shape[0])
 
     @property
     def width(self) -> int:
-        """Regressors per equation."""
+        """Regressors per equation.
+
+        Returns:
+            The design width, read from ``blocks``.
+        """
         return int(self.blocks.shape[1])
 
     @property
     def stderr(self) -> npt.NDArray[np.float64]:
-        """Posterior standard deviations, shaped like :attr:`coefficients`."""
+        """Posterior standard deviations, shaped like :attr:`coefficients`.
+
+        Returns:
+            Square roots of the block diagonals, with a negative diagonal
+            entry from rounding clipped to zero first.
+        """
         return np.sqrt(np.clip(np.diagonal(self.blocks, axis1=1, axis2=2), 0.0, None)).T
 
     @property
@@ -286,7 +360,12 @@ class _PosteriorCovariance:
 
     @property
     def pvalue(self) -> npt.NDArray[np.float64]:
-        """Two-sided normal tail area for :attr:`tstat`."""
+        """Two-sided normal tail area for :attr:`tstat`.
+
+        Returns:
+            An array shaped like :attr:`coefficients`. It inherits the
+            caveat on :attr:`tstat`: it is not a sampling p-value.
+        """
         return 2.0 * np.asarray(norm.sf(np.abs(self.tstat)), dtype=np.float64)
 
     def conf_int(self, *, alpha: float = 0.05) -> tuple[npt.NDArray[np.float64], ...]:
@@ -307,7 +386,12 @@ class _PosteriorCovariance:
         return self.coefficients - half, self.coefficients + half
 
     def to_matrix(self) -> npt.NDArray[np.float64]:
-        """The full ``(k * width)`` square covariance, which is block diagonal."""
+        """The full ``(k * width)`` square covariance, which is block diagonal.
+
+        Returns:
+            The blocks laid along the diagonal in equation order, zero
+            elsewhere.
+        """
         size = self.k_endog * self.width
         out = np.zeros((size, size), dtype=np.float64)
         for index in range(self.k_endog):

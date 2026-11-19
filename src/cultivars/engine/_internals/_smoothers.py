@@ -19,6 +19,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""The Kim smoother: full-sample regime probabilities from a Hamilton-filter pass.
+
+One function, :func:`_kim_smoother`, the backward recursion that turns
+filtered regime probabilities into smoothed ones. Along the way it produces
+the joint probabilities of consecutive regimes, which are what an EM update
+of the transition matrix is computed from. Like the filter it reads
+probabilities and a transition matrix and nothing else, so it serves every
+model with a discrete regime chain.
+
+References:
+    Kim, C.-J. (1994). Dynamic linear models with Markov-switching.
+        *Journal of Econometrics*, 60(1-2), 1-22.
+"""
 
 import numpy as np
 import numpy.typing as npt
@@ -53,11 +66,14 @@ def _kim_smoother(
             for filtering.
 
     Returns:
-        A :class:`KimSmootherResult` with smoothed marginal and consecutive-pair
-        regime probabilities.
+        A :class:`_KimSmootherResult` with smoothed marginal and consecutive-pair
+        regime probabilities. The pair array has ``T - 1`` entries, entry
+        ``t`` joining period ``t`` with period ``t + 1``. The last period's
+        smoothed probabilities are its filtered ones.
 
     Raises:
         DimensionError: If ``transition`` is not conformable with the filter.
+        IndexError: If the filter pass covers no periods.
 
     Example:
         >>> from cultivars.engine._internals._filters import _hamilton_filter

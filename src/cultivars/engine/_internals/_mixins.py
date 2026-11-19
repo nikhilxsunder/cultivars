@@ -107,6 +107,7 @@ class _StationarityMixin:
     __slots__ = ()
 
     ar_params: npt.NDArray[np.float64]
+    """Autoregressive coefficients of the host record, which the stationarity check reads."""
 
     def _stationarity_ar(self) -> npt.NDArray[np.float64]:
         """The polynomial whose roots determine stationarity."""
@@ -135,6 +136,7 @@ class _ConditionalVarianceMixin:
     __slots__ = ()
 
     conditional_variance: npt.NDArray[np.float64]
+    """Fitted conditional variance path of the host record."""
 
     @property
     def conditional_volatility(self) -> npt.NDArray[np.float64]:
@@ -202,8 +204,11 @@ class _SeriesMixin:
     __slots__ = ()
 
     endog: npt.NDArray[np.float64]
+    """The observed series of the host record."""
     fittedvalues: npt.NDArray[np.float64]
+    """Fitted values of the host record."""
     resid: npt.NDArray[np.float64]
+    """Residuals of the host record."""
 
     def _series(self) -> dict[str, npt.NDArray[np.float64]]:
         """The aligned per-observation outputs, keyed by column name.
@@ -262,8 +267,11 @@ class _ComparisonMixin:
     __slots__ = ()
 
     llf: float
+    """Maximized log likelihood of the host record."""
     nobs: int
+    """Observations the likelihood was evaluated on."""
     n_params: float
+    """Free parameters charged by the information criteria."""
 
     def _comparison_label(self) -> str:
         """Short specification label for this result in a comparison table.
@@ -336,7 +344,7 @@ class _ComparisonMixin:
             unrestricted: The nesting model, with at least as many parameters.
 
         Returns:
-            The :class:`_LikelihoodRatioResult` verdict.
+            The :class:`_LikelihoodRatioTest` verdict.
 
         Raises:
             SpecificationError: If ``unrestricted`` does not have strictly more
@@ -391,7 +399,7 @@ class _InvertibilityMixin:
 
     Note the sign. The fits store ``ma_params`` as the coefficients of
     ``theta(L) = 1 + theta_1 L + ...``, while
-    :meth:`_StabilityResult.assess_stability` tests
+    :meth:`_StabilityAssessment.assess_stability` tests
     ``1 - c_1 z - c_2 z^2 - ...``. The argument is therefore negated. Getting
     that wrong is not a cosmetic error: across 500 random draws from the
     reparameterized region, passing ``ma_params`` unnegated reports only 181
@@ -407,6 +415,9 @@ class _InvertibilityMixin:
     __slots__ = ()
 
     ma_params: npt.NDArray[np.float64]
+    """Moving-average coefficients of the host record, in the convention ``theta(L) =
+    1 + theta_1 L + ...``.
+    """
 
     def _invertibility_ma(self) -> npt.NDArray[np.float64]:
         """The MA block in the sign convention the companion test expects."""
@@ -470,17 +481,43 @@ class _VectorInferenceMixin:
     __slots__ = ()
 
     endog: npt.NDArray[np.float64]
+    """The full observed panel, shape ``(n, k)``."""
     names: tuple[str, ...]
+    """Variable names in column order; every method that reports per variable takes
+    and returns these rather than integer positions.
+    """
     order: int
+    """Autoregressive order ``p``."""
     trend: str
+    """Deterministic specification, ``"n"``, ``"c"`` or ``"ct"``."""
     coefficients: npt.NDArray[np.float64]
+    """Autoregressive matrices ``A_1, ..., A_p``, shape ``(p, k, k)``."""
     deterministic: npt.NDArray[np.float64]
+    """Coefficients on the deterministic block, shape ``(d, k)``; zero rows when
+    ``trend == "n"``.
+    """
     sigma_u: npt.NDArray[np.float64]
+    """Degrees-of-freedom-adjusted innovation covariance.
+
+    Used for every *inferential* quantity -- Wald tests, the impact matrix --
+    because the maximum-likelihood estimator is biased downward by the estimated
+    coefficients.
+    """
     sigma_ml: npt.NDArray[np.float64]
+    """The ``1/T`` estimator.
+
+    Used for the likelihood and the information criteria, where the adjustment does
+    not belong. Both are stored deliberately: substituting one for the other biases
+    either the criteria or the standard errors, and nothing raises when it happens.
+    """
     resid: npt.NDArray[np.float64]
+    """Residuals over the effective sample, shape ``(nobs, k)``."""
     design: npt.NDArray[np.float64]
+    """The regressor matrix the fit solved against, shape ``(nobs, d + k * p)``."""
     nobs: int
+    """Effective sample size."""
     posterior: _CoefficientInference | None
+    """Coefficient uncertainty under a prior when one was applied, else ``None``."""
 
     # -- structure ---------------------------------------------------------
 
@@ -702,6 +739,13 @@ class _VectorInferenceMixin:
         deviations, which the ratio column already says, and restating it in
         probability units invites the frequentist reading that shrinkage makes
         wrong.
+
+        Args:
+            alpha: Two-sided level of the interval columns.
+
+        Returns:
+            One tuple of cells per coefficient, in equation order and then
+            regressor order.
         """
         inference = self.coefficient_covariance
         stack = self._coefficient_stack()
@@ -963,14 +1007,28 @@ class _VectorPropagationMixin:
     __slots__ = ()
 
     coefficients: npt.NDArray[np.float64]
+    """``(p, k, k)`` autoregressive matrices of the closed system.
+
+    A family that reparameterizes -- an error-correction model -- supplies the
+    levels representation here, which is why its impulse responses need no separate
+    implementation.
+    """
     deterministic: npt.NDArray[np.float64]
+    """Deterministic coefficients of the host record, one row per term."""
     endog: npt.NDArray[np.float64]
+    """The observed sample of the host record, ``(T, k)``."""
     names: tuple[str, ...]
+    """Variable labels, length ``k``."""
     order: int
+    """Autoregressive order ``p``."""
     trend: str
+    """Deterministic specification of the host record."""
     sigma_u: npt.NDArray[np.float64]
+    """Residual covariance, ``(k, k)``."""
     resid: npt.NDArray[np.float64]
+    """Residuals of the host record, one row per effective observation."""
     nobs: int
+    """Effective sample size."""
 
     _PROPAGATION_MEMBERS: ClassVar[frozenset[str]] = frozenset(
         {
@@ -987,6 +1045,9 @@ class _VectorPropagationMixin:
             "stability_check",
         }
     )
+    """Names of the members that need a closed system.
+    :class:`_ConditionalSystemMixin` refuses exactly these.
+    """
 
     @property
     def k_endog(self) -> int:
@@ -1100,7 +1161,7 @@ class _VectorPropagationMixin:
                 so on. Permuting ``names`` changes the answer. An orthogonalized
                 impulse response reported from a reduced-form VAR is a recursive
                 SVAR whose identifying restriction happens to be undeclared;
-                :mod:`cultivars.var.structural` is where that restriction gets
+                :mod:`cultivars.multivariate.structural` is where that restriction gets
                 stated rather than assumed. With ``False`` you get the raw
                 ``Psi_h``, whose columns are responses to correlated
                 innovations and are therefore not interpretable one at a time.
@@ -1324,6 +1385,7 @@ class _ConditionalSystemMixin:
     __slots__ = ()
 
     names: tuple[str, ...]
+    """Variable labels of the host record."""
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         """Verify this family accounts for every propagation member.
@@ -1374,31 +1436,69 @@ class _ConditionalSystemMixin:
         raise AssertionError  # pragma: no cover
 
     def ma_representation(self, horizon: int) -> npt.NDArray[np.float64]:
-        """Unavailable: propagation needs the exogenous block's law of motion."""
+        """Unavailable: propagation needs the exogenous block's law of motion.
+
+        Args:
+            horizon: Ignored.
+
+        Raises:
+            SpecificationError: Always, with the reason.
+        """
         self._no_closed_system("a moving-average representation")
         raise AssertionError  # pragma: no cover
 
     def irf(
         self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
     ) -> npt.NDArray[np.float64]:
-        """Unavailable: propagation needs the exogenous block's law of motion."""
+        """Unavailable: propagation needs the exogenous block's law of motion.
+
+        Args:
+            horizon: Ignored.
+            orthogonalized: Ignored.
+            cumulative: Ignored.
+
+        Raises:
+            SpecificationError: Always, with the reason.
+        """
         self._no_closed_system("an impulse response")
         raise AssertionError  # pragma: no cover
 
     def generalized_irf(
         self, horizon: int = 20, *, cumulative: bool = False
     ) -> npt.NDArray[np.float64]:
-        """Unavailable: propagation needs the exogenous block's law of motion."""
+        """Unavailable: propagation needs the exogenous block's law of motion.
+
+        Args:
+            horizon: Ignored.
+            cumulative: Ignored.
+
+        Raises:
+            SpecificationError: Always, with the reason.
+        """
         self._no_closed_system("a generalized impulse response")
         raise AssertionError  # pragma: no cover
 
     def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
-        """Unavailable: propagation needs the exogenous block's law of motion."""
+        """Unavailable: propagation needs the exogenous block's law of motion.
+
+        Args:
+            horizon: Ignored.
+
+        Raises:
+            SpecificationError: Always, with the reason.
+        """
         self._no_closed_system("a variance decomposition")
         raise AssertionError  # pragma: no cover
 
     def identify(self, strategy: object) -> None:
-        """Unavailable: propagation needs the exogenous block's law of motion."""
+        """Unavailable: propagation needs the exogenous block's law of motion.
+
+        Args:
+            strategy: Ignored.
+
+        Raises:
+            SpecificationError: Always, with the reason.
+        """
         self._no_closed_system("a structural identification")
         raise AssertionError  # pragma: no cover
 
@@ -1413,6 +1513,12 @@ class _ConditionalSystemMixin:
         Present so the coverage check passes, and so a family that has no
         conditional forecast either still fails with an explanation rather than
         an attribute error.
+
+        Args:
+            steps: Ignored.
+
+        Raises:
+            SpecificationError: Always, with the reason.
         """
         self._no_closed_system("an unconditional forecast")
         raise AssertionError  # pragma: no cover
@@ -1465,7 +1571,21 @@ class _ConvergenceMixin:
     def _labelled_columns(
         self, key: str, value: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], tuple[str, ...]]:
-        """Flatten trailing axes of a ``(S, ...)`` array into ``(S, m)`` with labels."""
+        """Flatten trailing axes of a ``(S, ...)`` array into ``(S, m)`` with labels.
+
+        Args:
+            key: Name of the draw array, without the ``_draws`` suffix.
+            value: The draw array, kept draws on the leading axis.
+
+        Returns:
+            The array flattened to ``(S, m)`` and ``m`` labels: those from
+            :meth:`_draw_labels` when the result names them, otherwise the key
+            itself for a vector and ``key[i,j,...]`` for anything wider.
+
+        Raises:
+            DimensionError: If the result supplies labels whose count does not
+                match the flattened width.
+        """
         flat = value.reshape(value.shape[0], -1)
         labels = self._draw_labels().get(key)
         if labels is not None:
@@ -1561,19 +1681,28 @@ class _ReplicationMixin:
     __slots__ = ()
 
     endog: npt.NDArray[np.float64]
+    """The observed sample of the host record, ``(T, k)``."""
     order: int
+    """Autoregressive order ``p``."""
     trend: str
+    """Deterministic specification of the host record."""
     beta_mean: npt.NDArray[np.float64]
+    """Posterior mean coefficient matrix, design columns by equations."""
     sigma_u: npt.NDArray[np.float64]
+    """Posterior mean of the innovation covariance, ``(k, k)``."""
     beta_draws: npt.NDArray[np.float64]
+    """Kept coefficient draws, draws on the leading axis."""
     sigma_draws: npt.NDArray[np.float64]
+    """Kept innovation-covariance draws, draws on the leading axis."""
 
     @property
     def n_kept(self) -> int:  # pragma: no cover - declared by the concrete result
+        """Posterior draws retained; supplied by the concrete result."""
         raise NotImplementedError
 
     @property
     def k_endog(self) -> int:  # pragma: no cover - declared by the concrete result
+        """Number of modelled variables; supplied by the concrete result."""
         raise NotImplementedError
 
     @property
@@ -1586,6 +1715,13 @@ class _ReplicationMixin:
 
         The base law is i.i.d. Gaussian from the draw's covariance, exact
         for every homoskedastic member of the family.
+
+        Args:
+            draw: Index of the kept draw whose covariance is used.
+            rng: Random generator.
+
+        Returns:
+            The innovations, one row per effective observation.
         """
         chol = np.linalg.cholesky(self.sigma_draws[draw])
         n = self.endog.shape[0] - self.order
@@ -1602,6 +1738,14 @@ class _ReplicationMixin:
 
         The base law is i.i.d. Gaussian from the draw's covariance (or the
         posterior-mean covariance); a heavy-tailed member overrides it.
+
+        Args:
+            draw: Index of a kept draw, or ``None`` for the posterior mean.
+            n: Number of periods.
+            rng: Random generator.
+
+        Returns:
+            The innovations, ``(n, k)``.
         """
         sigma = self.sigma_u if draw is None else self.sigma_draws[draw]
         chol = np.linalg.cholesky(0.5 * (sigma + sigma.T))

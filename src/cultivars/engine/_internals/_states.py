@@ -19,6 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""EM state records: what one run of a Markov-switching EM leaves behind.
+
+Two records, one for the switching autoregression and one for the switching
+VAR. Each holds the parameters at the last iteration, the three sets of
+regime probabilities from the final E-step, the log likelihood, and whether
+the run converged. The estimation engines run several starts and compare
+these records to choose among them.
+"""
 
 from __future__ import annotations
 
@@ -35,30 +43,56 @@ __all__ = [
 
 @dataclass(frozen=True, slots=True)
 class _ExpectationMaximizationState:
-    """Internal state carried between EM restarts."""
+    """Internal state carried between EM restarts.
+
+    The end point of one EM run for a Markov-switching autoregression with
+    ``K`` regimes, order ``p``, and an effective sample of ``T`` periods.
+    """
 
     transition: npt.NDArray[np.float64]
+    """Row-stochastic transition matrix, ``(K, K)``."""
     intercepts: npt.NDArray[np.float64]
+    """Regime intercepts, ``(K,)``; equal across regimes when the mean does not switch."""
     ar_params: npt.NDArray[np.float64]
+    """Regime autoregressive coefficients, ``(K, p)``; equal rows when they do not switch."""
     sigma2: npt.NDArray[np.float64]
+    """Regime innovation variances, ``(K,)``; equal when the variance does not switch."""
     filtered_prob: npt.NDArray[np.float64]
+    """Filtered regime probabilities ``Pr(S_t | y_1..t)``, ``(T, K)``."""
     predicted_prob: npt.NDArray[np.float64]
+    """One-step-predicted regime probabilities ``Pr(S_t | y_1..t-1)``, ``(T, K)``."""
     smoothed_prob: npt.NDArray[np.float64]
+    """Smoothed regime probabilities ``Pr(S_t | y_1..T)``, ``(T, K)``."""
     llf: float
+    """Log likelihood at the last completed iteration."""
     n_iter: int
+    """EM iterations run."""
     converged: bool
+    """Whether the run met its convergence tolerance before the iteration cap."""
 
 
 @dataclass(frozen=True, kw_only=True)
 class _VectorExpectationMaximizationState:
-    """Internal state carried between EM restarts of a switching VAR."""
+    """Internal state carried between EM restarts of a switching VAR.
+
+    The end point of one EM run with ``M`` regimes and ``k`` variables.
+    """
 
     transition: npt.NDArray[np.float64]
+    """Row-stochastic transition matrix, ``(M, M)``."""
     coefficients: npt.NDArray[np.float64]
+    """Regime coefficient matrices, regimes on the leading axis."""
     sigmas: npt.NDArray[np.float64]
+    """Regime innovation covariances, ``(M, k, k)``."""
     filtered_prob: npt.NDArray[np.float64]
+    """Filtered regime probabilities, ``(T, M)``."""
     predicted_prob: npt.NDArray[np.float64]
+    """One-step-predicted regime probabilities, ``(T, M)``."""
     smoothed_prob: npt.NDArray[np.float64]
+    """Smoothed regime probabilities, ``(T, M)``."""
     llf: float
+    """Log likelihood at the last completed iteration."""
     n_iter: int
+    """EM iterations run."""
     converged: bool
+    """Whether the run met its convergence tolerance before the iteration cap."""

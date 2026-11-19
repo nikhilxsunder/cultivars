@@ -19,6 +19,25 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Optimizer surfaces: the estimation context an objective function closes over.
+
+An objective function is a closure over the estimation context — the data, the
+design blocks, the pre-sample constants, the specification orders. This module
+makes that context an object instead of a lexical scope, so the criterion, the
+parameter map, and the intermediate quantities every fit method needs after
+convergence are all reachable by name rather than trapped inside a ``def``
+nested in a classmethod.
+
+Each concrete objective is a frozen, slotted dataclass whose fields are exactly
+the variables the old closures captured, and whose methods are exactly the old
+closures. ``__call__`` makes the instance directly passable to
+:func:`scipy.optimize.minimize` with no ``functools.partial`` and no ``args=``.
+
+The optimizer configuration lives on the objective, not at the call site,
+because the choice of algorithm is a property of the surface: a concentrated
+sum of squares that is non-smooth in the threshold wants Nelder-Mead, while a
+reparameterized Gaussian likelihood wants L-BFGS-B.
+"""
 
 from __future__ import annotations
 
@@ -144,7 +163,12 @@ class _Objective[P](ABC):
     """
 
     method: ClassVar[OptimizerMethod] = "L-BFGS-B"
+    """The :func:`scipy.optimize.minimize` algorithm this surface wants.
+
+    Overridden by objectives whose criterion is not smooth.
+    """
     options: ClassVar[OptimizerOptions | None] = None
+    """Algorithm options passed through to the optimizer, or ``None`` for the scipy defaults."""
 
     __slots__ = ()
 
@@ -201,11 +225,19 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
     """
 
     y: npt.NDArray[np.float64]
+    """The endogenous series, used at full length."""
     order: int
+    """Autoregressive order ``p``."""
     has_const: bool
+    """Whether a mean intercept is estimated."""
     state_unit: npt.NDArray[np.float64]
+    """The first unit vector ``e_1`` of length ``p``."""
     identity: npt.NDArray[np.float64]
+    """The ``p`` by ``p`` identity, used to solve for the stationary mean of the state
+    when a constant is present.
+    """
     theta0: npt.NDArray[np.float64]
+    """The warm start, from the CSS fit."""
 
     @property
     def design(self) -> npt.NDArray[np.float64]:
@@ -274,7 +306,16 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Return the negative exact log-likelihood."""
+        """Return the negative exact log-likelihood.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         try:
             return -self.state_space(self.unpack(theta)).loglikelihood(self.y)
         except (NumericalError, np.linalg.LinAlgError):
@@ -299,10 +340,15 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
     """
 
     w: npt.NDArray[np.float64]
+    """The differenced modeling series."""
     design_x: npt.NDArray[np.float64]
+    """The deterministic and exogenous block, differenced alongside ``w``; may have zero columns."""
     order: tuple[int, int, int]
+    """Non-seasonal ``(p, d, q)``."""
     seasonal_order: tuple[int, int, int, int]
+    """Seasonal ``(P, D, Q, s)``."""
     theta0: npt.NDArray[np.float64]
+    """The warm start."""
 
     @property
     def k_beta(self) -> int:
@@ -382,7 +428,16 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Return the negative exact log-likelihood on the differenced series."""
+        """Return the negative exact log-likelihood on the differenced series.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         try:
             return -self.state_space(self.unpack(theta)).loglikelihood(self.w)
         except (NumericalError, np.linalg.LinAlgError):
@@ -407,11 +462,17 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
     """
 
     y: npt.NDArray[np.float64]
+    """The series, at full length."""
     p: int
+    """Short-memory AR order."""
     q: int
+    """Short-memory MA order."""
     estimate_mean: bool
+    """Whether a mean is estimated."""
     truncation: int
+    """Length of the fractional-difference filter."""
     theta0: npt.NDArray[np.float64]
+    """The warm start, with ``d`` seeded from a local Whittle estimate."""
 
     @property
     def offset(self) -> int:
@@ -461,7 +522,14 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
     def state_space(
         self, parameters: _FractionalIntegrationParameters
     ) -> _LinearGaussianStateSpace:
-        """Build the ARMA state-space form for the short-memory block."""
+        """Build the ARMA state-space form for the short-memory block.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The state-space model at those parameters.
+        """
         return _LinearGaussianStateSpace._from_arma(
             parameters.ar_params,
             parameters.ma_params,
@@ -470,7 +538,16 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Return the negative log-likelihood of the differenced series."""
+        """Return the negative log-likelihood of the differenced series.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         parameters = self.unpack(theta)
         try:
             w = self.differenced(parameters)
@@ -500,8 +577,14 @@ class _VarianceObjective[P: _VarianceParameters](_Objective[P]):
     """
 
     mean: _MeanLayer
+    """The conditional-mean layer, which owns its own data and turns a parameter block
+    into residuals. Delegating rather than holding a design matrix is what lets one
+    criterion serve a regression mean and a moving-average recursion alike.
+    """
     backcast: float
+    """Pre-sample variance, an exponentially weighted mean square."""
     theta0: npt.NDArray[np.float64]
+    """The warm start."""
 
     @property
     def target(self) -> npt.NDArray[np.float64]:
@@ -518,11 +601,26 @@ class _VarianceObjective[P: _VarianceParameters](_Objective[P]):
         return (self.theta0,)
 
     def residuals(self, parameters: P) -> npt.NDArray[np.float64]:
-        """Mean residuals the variance recursion is driven by."""
+        """Mean residuals the variance recursion is driven by.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The residuals of the mean equation, aligned with the mean layer's
+            target.
+        """
         return self.mean.residuals(parameters.mean)
 
     def fitted(self, parameters: P) -> npt.NDArray[np.float64]:
-        """Conditional means implied by the mean block."""
+        """Conditional means implied by the mean block.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The conditional means, aligned with the mean layer's target.
+        """
         return self.mean.fitted(parameters.mean)
 
     @abstractmethod
@@ -551,7 +649,16 @@ class _VarianceObjective[P: _VarianceParameters](_Objective[P]):
         """
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Return the joint negative Gaussian log-likelihood."""
+        """Return the joint negative Gaussian log-likelihood.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         parameters = self.unpack(theta)
         if not self.is_admissible(parameters):
             return _PENALTY
@@ -571,9 +678,13 @@ class _ConditionalVarianceObjective(_VarianceObjective[_ConditionalVarianceParam
     """
 
     vol: str
+    """Family key selecting the recursion and the reparameterization."""
     p: int
+    """Order of the shock-magnitude block."""
     o: int
+    """Order of the asymmetry block."""
     q: int
+    """Order of the persistence block."""
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _ConditionalVarianceParameters:
         """Split the vector into the mean block and the variance block.
@@ -662,9 +773,18 @@ class _FractionalVarianceObjective(_VarianceObjective[_FractionalVarianceParamet
     """
 
     truncation: int
+    """Number of infinite-order weights retained."""
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _FractionalVarianceParameters:
-        """Split the vector into the mean block, intercept, and three weights."""
+        """Split the vector into the mean block, intercept, and three weights.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         k = self.k_mean
         return _FractionalVarianceParameters(
             mean=theta[:k],
@@ -679,7 +799,15 @@ class _FractionalVarianceObjective(_VarianceObjective[_FractionalVarianceParamet
         resid: npt.NDArray[np.float64],
         parameters: _FractionalVarianceParameters,
     ) -> npt.NDArray[np.float64]:
-        """Run the truncated infinite-order variance recursion."""
+        """Run the truncated infinite-order variance recursion.
+
+        Args:
+            resid: Residuals of the mean equation.
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The conditional variance at each observation.
+        """
         return _arch_infinity_variance(
             resid,
             parameters.omega,
@@ -734,25 +862,42 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
     """
 
     method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    """Nelder-Mead simplex search, the algorithm chosen for this concentrated sum of squares.
+    """
     options: ClassVar[OptimizerOptions | None] = {
         "xatol": 1e-4,
         "fatol": 1e-7,
         "maxiter": 2000,
     }
+    """Simplex tolerances and iteration cap for this surface."""
 
     target: npt.NDArray[np.float64]
+    """The series the model explains, trimmed by the lag and the delay."""
     design: npt.NDArray[np.float64]
+    """The per-regime regressor block, intercept first."""
     z: npt.NDArray[np.float64]
+    """The transition variable, aligned with ``target``."""
     scale: float
+    """Standard deviation of ``z``."""
     transition: str
+    """``"logistic"`` or ``"exponential"``."""
     seeds: tuple[npt.NDArray[np.float64], ...]
+    """Starting points, crossed over a grid of transition speeds and two candidate thresholds."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """Return the multi-start grid."""
         return self.seeds
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _SmoothTransitionParameters:
-        """Map ``[log gamma, c]`` to the transition parameters."""
+        """Map ``[log gamma, c]`` to the transition parameters.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return _SmoothTransitionParameters(gamma=float(np.exp(theta[0])), threshold=float(theta[1]))
 
     def weights(self, parameters: _SmoothTransitionParameters) -> npt.NDArray[np.float64]:
@@ -773,7 +918,15 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
         return 1.0 - np.exp(-np.clip(parameters.gamma * u**2, 0.0, 50.0))
 
     def regressors(self, parameters: _SmoothTransitionParameters) -> npt.NDArray[np.float64]:
-        """Stack the two weighted regime blocks side by side."""
+        """Stack the two weighted regime blocks side by side.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The design repeated twice, columns of the lower regime first, each
+            block weighted by its regime's transition weight.
+        """
         g = self.weights(parameters)
         return np.column_stack([self.design * (1.0 - g)[:, None], self.design * g[:, None]])
 
@@ -794,7 +947,14 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
         return ssr, beta, self.target - regressors @ beta
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Return the concentrated sum of squared residuals."""
+        """Return the concentrated sum of squared residuals.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize.
+        """
         return self.least_squares(self.unpack(theta))[0]
 
 
@@ -824,36 +984,68 @@ class _VectorSmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
     """
 
     method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    """Nelder-Mead simplex search, the algorithm chosen for this concentrated criterion.
+    """
     options: ClassVar[OptimizerOptions | None] = {
         "xatol": 1e-4,
         "fatol": 1e-7,
         "maxiter": 2000,
     }
+    """Simplex tolerances and iteration cap for this surface."""
 
     target: npt.NDArray[np.float64]
+    """``(nobs, k)`` block being explained, trimmed for lags and delay."""
     design: npt.NDArray[np.float64]
+    """The per-regime regressor block, deterministic terms first."""
     z: npt.NDArray[np.float64]
+    """The transition variable, aligned with ``target``."""
     scale: float
+    """Standard deviation of ``z``; ``gamma`` is per unit of it."""
     transition: str
+    """``"logistic"`` or ``"exponential"``."""
     seeds: tuple[npt.NDArray[np.float64], ...]
+    """Starting points over ``[log gamma, c]``."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """Return the multi-start grid."""
         return self.seeds
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _SmoothTransitionParameters:
-        """Map ``[log gamma, c]`` to the transition parameters."""
+        """Map ``[log gamma, c]`` to the transition parameters.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return _SmoothTransitionParameters(gamma=float(np.exp(theta[0])), threshold=float(theta[1]))
 
     def weights(self, parameters: _SmoothTransitionParameters) -> npt.NDArray[np.float64]:
-        """Evaluate the transition function, exponent clipped against overflow."""
+        """Evaluate the transition function, exponent clipped against overflow.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The weight of the upper regime at each observation, in ``[0, 1]``.
+        """
         u = (self.z - parameters.threshold) / self.scale
         if self.transition == "logistic":
             return 1.0 / (1.0 + np.exp(-np.clip(parameters.gamma * u, -50.0, 50.0)))
         return 1.0 - np.exp(-np.clip(parameters.gamma * u**2, 0.0, 50.0))
 
     def regressors(self, parameters: _SmoothTransitionParameters) -> npt.NDArray[np.float64]:
-        """Stack the two weighted regime blocks side by side, lower first."""
+        """Stack the two weighted regime blocks side by side, lower first.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The design repeated twice, columns of the lower regime first, each
+            block weighted by its regime's transition weight.
+        """
         g = self.weights(parameters)
         return np.column_stack([self.design * (1.0 - g)[:, None], self.design * g[:, None]])
 
@@ -878,7 +1070,14 @@ class _VectorSmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
         return (float(logdet) if sign > 0 else np.inf), coef, resid
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Return the concentrated negative log-likelihood, up to constants."""
+        """Return the concentrated negative log-likelihood, up to constants.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize.
+        """
         return self.concentrated(self.unpack(theta))[0]
 
 
@@ -903,23 +1102,39 @@ class _MidasProfileObjective(_Objective[npt.NDArray[np.float64]]):
     """
 
     method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    """Nelder-Mead, a derivative-free search over the profiled weight parameters."""
     options: ClassVar[OptimizerOptions | None] = {
         "xatol": 1e-6,
         "fatol": 1e-9,
         "maxiter": 5000,
     }
+    """Simplex tolerances and iteration cap for this surface."""
 
     target: npt.NDArray[np.float64]
+    """``(nobs, k)`` low-frequency block being explained."""
     base_design: npt.NDArray[np.float64]
+    """``(nobs, d + k p)`` deterministic and endogenous-lag columns, fixed across the search."""
     windows: npt.NDArray[np.float64]
+    """``(nobs, lags, m)`` high-frequency history behind each low-frequency row, most
+    recent sub-period first.
+    """
     seeds: tuple[npt.NDArray[np.float64], ...]
+    """Starting points, two polynomial parameters per series."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """Return the multi-start grid over the polynomial parameters."""
         return self.seeds
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Map the flat vector to one ``(theta_1, theta_2)`` row per series."""
+        """Map the flat vector to one ``(theta_1, theta_2)`` row per series.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return np.asarray(theta, dtype=np.float64).reshape(-1, 2)
 
     def compressed(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
@@ -936,11 +1151,28 @@ class _MidasProfileObjective(_Objective[npt.NDArray[np.float64]]):
         return np.einsum("tjm,jm->tm", self.windows, weights)
 
     def design(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Assemble the full regressor matrix at these parameters."""
+        """Assemble the full regressor matrix at these parameters.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The base regressors followed by the compressed high-frequency
+            columns.
+        """
         return np.column_stack([self.base_design, self.compressed(theta)])
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Negative log-likelihood with coefficients and covariance concentrated out."""
+        """Negative log-likelihood with coefficients and covariance concentrated out.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)):
             return _PENALTY
         design = self.design(theta)
@@ -978,16 +1210,30 @@ class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[n
     """
 
     sigma: npt.NDArray[np.float64]
+    """The ``(k, k)`` estimated innovation covariance."""
     nobs: int
+    """Effective sample size behind ``sigma``."""
     a_base: npt.NDArray[np.float64]
+    """Fixed values of ``A``, zeros in the free cells."""
     a_free: tuple[tuple[int, int], ...]
+    """Free cell coordinates of ``A``."""
     b_base: npt.NDArray[np.float64]
+    """Fixed values of ``B``, zeros in the free cells."""
     b_free: tuple[tuple[int, int], ...]
+    """Free cell coordinates of ``B``."""
 
     def build(
         self, theta: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Fill the free cells of ``A`` and ``B`` from the flat vector."""
+        """Fill the free cells of ``A`` and ``B`` from the flat vector.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The contemporaneous matrices ``A`` and ``B`` with their free cells
+            filled.
+        """
         values = np.asarray(theta, dtype=np.float64)
         a = self.a_base.copy()
         for position, (i, j) in enumerate(self.a_free):
@@ -1012,11 +1258,28 @@ class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[n
     def unpack(
         self, theta: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Map the flat vector back to the ``(A, B)`` pair."""
+        """Map the flat vector back to the ``(A, B)`` pair.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return self.build(theta)
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Exact negative log-likelihood at these contemporaneous matrices."""
+        """Exact negative log-likelihood at these contemporaneous matrices.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)):
             return _PENALTY
         a, b = self.build(theta)
@@ -1064,11 +1327,19 @@ class _MixedHorizonObjective(_Objective[npt.NDArray[np.float64]]):
         "ftol": 1e-18,
         "gtol": 1e-14,
     }
+    """Algorithm options passed through to the optimizer for this surface."""
 
     impact_factor: npt.NDArray[np.float64]
+    """``(k, k)`` Cholesky factor of the innovation covariance, possibly sign-flipped
+    in its last column when the caller explores the reflection component of the
+    orthogonal group.
+    """
     long_factor: npt.NDArray[np.float64]
+    """``(k, k)`` long-run matrix times the same factor."""
     impact_cells: tuple[tuple[int, int, float], ...]
+    """``(row, column, value)`` restrictions on the impact matrix."""
     long_cells: tuple[tuple[int, int, float], ...]
+    """``(row, column, value)`` restrictions on the long-run matrix."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """A small deterministic fan across the rotation group."""
@@ -1082,11 +1353,28 @@ class _MixedHorizonObjective(_Objective[npt.NDArray[np.float64]]):
         )
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Map the angles to the rotation they compose."""
+        """Map the angles to the rotation they compose.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return _orthogonal_from_angles(theta, self.impact_factor.shape[0])
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Sum of squared restriction violations at this rotation."""
+        """Sum of squared restriction violations at this rotation.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)):
             return _PENALTY
         rotation = _orthogonal_from_angles(theta, self.impact_factor.shape[0])
@@ -1122,8 +1410,10 @@ class _CoDiagonalObjective(_Objective[npt.NDArray[np.float64]]):
         "ftol": 1e-18,
         "gtol": 1e-14,
     }
+    """Algorithm options passed through to the optimizer for this surface."""
 
     targets: tuple[npt.NDArray[np.float64], ...]
+    """The whitened regime covariances to diagonalize jointly, each ``(k, k)`` symmetric."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """Start at the warm point the caller built into the targets."""
@@ -1136,11 +1426,28 @@ class _CoDiagonalObjective(_Objective[npt.NDArray[np.float64]]):
         )
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Map the angles to the rotation they compose."""
+        """Map the angles to the rotation they compose.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return _orthogonal_from_angles(theta, self.targets[0].shape[0])
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Total squared off-diagonal energy across regimes at this rotation."""
+        """Total squared off-diagonal energy across regimes at this rotation.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)):
             return _PENALTY
         rotation = _orthogonal_from_angles(theta, self.targets[0].shape[0])
@@ -1169,9 +1476,13 @@ class _StructuralObjective(_Objective[_StructuralParameters]):
     """
 
     endog: npt.NDArray[np.float64]
+    """The observed series."""
     trend: str
+    """``"level"``, ``"lltrend"``, or ``"smooth"``."""
     cycle: bool
+    """Whether the damped stochastic cycle is present."""
     seasonal: int | None
+    """Trigonometric seasonal period, or ``None``."""
 
     def _scale(self) -> float:
         """A positive variance scale read off the data."""
@@ -1197,7 +1508,15 @@ class _StructuralObjective(_Objective[_StructuralParameters]):
         )
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _StructuralParameters:
-        """Map the flat vector to the structural parameter record."""
+        """Map the flat vector to the structural parameter record.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         at = 0
         sigma2_irregular = float(np.exp(theta[at]))
         at += 1
@@ -1229,7 +1548,16 @@ class _StructuralObjective(_Objective[_StructuralParameters]):
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Negative log-likelihood at this draw."""
+        """Negative log-likelihood at this draw.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
             return _PENALTY
         params = self.unpack(theta)
@@ -1263,8 +1591,13 @@ class _NelsonSiegelObjective(_Objective[_NelsonSiegelParameters]):
     """
 
     panel: npt.NDArray[np.float64]
+    """The ``(nobs, p)`` yield panel; ``numpy.nan`` entries are missing and skipped
+    element-wise by the filter.
+    """
     maturities: npt.NDArray[np.float64]
+    """Strictly positive maturities, shape ``(p,)``."""
     fixed_decay: float | None
+    """A decay to hold fixed, or ``None`` to estimate it."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """The Diebold-Li two-step warm start."""
@@ -1306,7 +1639,15 @@ class _NelsonSiegelObjective(_Objective[_NelsonSiegelParameters]):
         return (np.asarray(pieces, dtype=np.float64),)
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _NelsonSiegelParameters:
-        """Map the flat vector to the Nelson-Siegel parameter record."""
+        """Map the flat vector to the Nelson-Siegel parameter record.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         at = 0
         if self.fixed_decay is not None:
             decay = float(self.fixed_decay)
@@ -1324,7 +1665,16 @@ class _NelsonSiegelObjective(_Objective[_NelsonSiegelParameters]):
         return _NelsonSiegelParameters(decay=decay, mu=mu, ar=ar, state_chol=chol, obs_var=obs_var)
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Negative log-likelihood at this draw."""
+        """Negative log-likelihood at this draw.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
             return _PENALTY
         params = self.unpack(theta)
@@ -1355,17 +1705,33 @@ class _NonlinearLikelihoodObjective[P](_Objective[P]):
     __slots__ = ()
 
     filter_name: str
+    """``"extended"`` or ``"unscented"``."""
 
     @abstractmethod
     def state_space(self, parameters: P) -> _NonlinearStateSpace:
-        """The nonlinear system at a parameter record."""
+        """The nonlinear system at a parameter record.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The state-space model at those parameters.
+        """
 
     @abstractmethod
     def data(self) -> npt.NDArray[np.float64]:
         """The observations the surface is evaluated on."""
 
     def _loglikelihood(self, model: _NonlinearStateSpace) -> float:
-        """Run the chosen filter and return its log-likelihood."""
+        """Run the chosen filter and return its log-likelihood.
+
+        Args:
+            model: The nonlinear system at one draw.
+
+        Returns:
+            The log likelihood reported by the filter this objective was
+            configured with.
+        """
         if self.filter_name == "extended":
             return float(model.extended_filter(self.data()).loglikelihood)
         if self.filter_name == "unscented":
@@ -1375,7 +1741,16 @@ class _NonlinearLikelihoodObjective[P](_Objective[P]):
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Negative approximate log-likelihood at this draw."""
+        """Negative approximate log-likelihood at this draw.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
             return _PENALTY
         try:
@@ -1397,7 +1772,7 @@ class _ParticleLikelihoodObjective(_Objective[npt.NDArray[np.float64]]):
     quasi-Newton method. The maximizer is a *simulated* maximum-likelihood
     estimator whose error shrinks with the particle count; the
     research-grade alternative on the same likelihood estimate is the
-    particle chain in :mod:`cultivars._internals._chains`, and the
+    particle chain in :mod:`cultivars.engine._internals._chains`, and the
     docstrings of every public model that offers this path point there.
 
     Attributes:
@@ -1412,25 +1787,55 @@ class _ParticleLikelihoodObjective(_Objective[npt.NDArray[np.float64]]):
     """
 
     method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    """Nelder-Mead simplex search, which needs no derivative of the particle likelihood estimate.
+    """
     options: ClassVar[OptimizerOptions | None] = {"maxiter": 2000, "xatol": 1e-4, "fatol": 1e-3}
+    """Simplex tolerances and iteration cap for this surface."""
 
     data: npt.NDArray[np.float64]
+    """The observations."""
     build: Callable[[npt.NDArray[np.float64]], _NonlinearStateSpace]
+    """Map from the unconstrained vector to the system.
+
+    May raise :class:`SpecificationError` or :class:`NumericalError`, which the
+    criterion reports as the penalty.
+    """
     theta0: npt.NDArray[np.float64]
+    """The single warm start, in the unconstrained space."""
     n_particles: int
+    """Particles per evaluation."""
     filter_method: str
+    """Particle filter flavor."""
     seed: int
+    """The common seed."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """The supplied warm start."""
         return (np.asarray(self.theta0, dtype=np.float64),)
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """The unconstrained vector itself; the caller owns the mapping."""
+        """The unconstrained vector itself; the caller owns the mapping.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return np.asarray(theta, dtype=np.float64)
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Negative particle log-likelihood at this draw, common random numbers."""
+        """Negative particle log-likelihood at this draw, common random numbers.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
             return _PENALTY
         try:
@@ -1464,8 +1869,13 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
     """
 
     endog: npt.NDArray[np.float64]
+    """The observed series."""
     mean: float
+    """The observation mean ``c`` used to demean, already resolved (the sample mean or zero)."""
     heavy_tailed: bool = False
+    """Whether the observation noise is Student-t, which adds the degrees of freedom
+    to the parameter vector.
+    """
 
     def _log_squared(self) -> npt.NDArray[np.float64]:
         """``log((y - c)**2 + offset)``, the linearized observation."""
@@ -1491,7 +1901,15 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
         )
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _StochasticVolatilityParameters:
-        """Map the flat vector to the parameter record."""
+        """Map the flat vector to the parameter record.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return _StochasticVolatilityParameters(
             mu=float(theta[0]),
             phi=float(np.tanh(theta[1])),
@@ -1501,7 +1919,16 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Negative quasi-log-likelihood at this draw."""
+        """Negative quasi-log-likelihood at this draw.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
             return _PENALTY
         params = self.unpack(theta)
@@ -1537,9 +1964,15 @@ class _DecayNelsonSiegelObjective(_NonlinearLikelihoodObjective[_DecayNelsonSieg
     """
 
     panel: npt.NDArray[np.float64]
+    """The ``(nobs, p)`` yield panel; a row with any missing entry is treated as
+    wholly missing by the nonlinear substrate.
+    """
     maturities: npt.NDArray[np.float64]
+    """Strictly positive maturities, shape ``(p,)``."""
     warm: _NelsonSiegelParameters
+    """The constant-decay parameter record used as the warm start."""
     filter_name: str
+    """``"extended"`` or ``"unscented"``."""
 
     def data(self) -> npt.NDArray[np.float64]:
         """The panel."""
@@ -1557,7 +1990,15 @@ class _DecayNelsonSiegelObjective(_NonlinearLikelihoodObjective[_DecayNelsonSieg
         return (np.asarray(pieces, dtype=np.float64),)
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _DecayNelsonSiegelParameters:
-        """Map the flat vector to the parameter record."""
+        """Map the flat vector to the parameter record.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         p = self.maturities.shape[0]
         mu = np.asarray(theta[0:3], dtype=np.float64)
         ar = np.tanh(np.asarray(theta[3:6], dtype=np.float64))
@@ -1577,7 +2018,14 @@ class _DecayNelsonSiegelObjective(_NonlinearLikelihoodObjective[_DecayNelsonSieg
         )
 
     def state_space(self, parameters: _DecayNelsonSiegelParameters) -> _NonlinearStateSpace:
-        """The nonlinear system at a parameter record."""
+        """The nonlinear system at a parameter record.
+
+        Args:
+            parameters: The parameter record of a draw.
+
+        Returns:
+            The state-space model at those parameters.
+        """
         return _decay_nelson_siegel_state_space(parameters, self.maturities)
 
 
@@ -1596,19 +2044,39 @@ class _PerturbationObjective(_Objective[npt.NDArray[np.float64]]):
     """
 
     engine: _PerturbationModel[object]
+    """The perturbation engine."""
     theta0: npt.NDArray[np.float64]
+    """The warm start, unconstrained."""
     filter_name: str
+    """``"kalman"``, ``"extended"``, or ``"unscented"``."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """The supplied warm start."""
         return (np.asarray(self.theta0, dtype=np.float64),)
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """The unconstrained vector; the engine owns the mapping."""
+        """The unconstrained vector; the engine owns the mapping.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return np.asarray(theta, dtype=np.float64)
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """Negative log-likelihood at this draw."""
+        """Negative log-likelihood at this draw.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
             return _PENALTY
         try:
@@ -1655,11 +2123,16 @@ class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
     """
 
     method: ClassVar[OptimizerMethod] = "Nelder-Mead"
+    """Nelder-Mead, a derivative-free search over the Whittle criterion."""
     options: ClassVar[OptimizerOptions | None] = {"maxiter": 4000, "xatol": 1e-6, "fatol": 1e-8}
+    """Simplex tolerances and iteration cap for this surface."""
 
     endog: npt.NDArray[np.float64]
+    """The observed series."""
     mean: float
+    """The observation mean ``c`` used to demean, already resolved."""
     short_memory: bool = False
+    """Whether the log variance carries the AR(1) factor."""
 
     def _log_squared(self) -> npt.NDArray[np.float64]:
         """``log((y - c)**2 + offset)``, the linearized observation."""
@@ -1687,7 +2160,15 @@ class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
         return (np.array([*head, *tail]),)
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _LongMemoryVolatilityParameters:
-        """Map the flat vector to the parameter record."""
+        """Map the flat vector to the parameter record.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The draw on its natural scale, in the form this objective's
+            consumers read.
+        """
         return _LongMemoryVolatilityParameters(
             mu=self._level(),
             d=0.5 * float(np.tanh(theta[0])),
@@ -1697,7 +2178,16 @@ class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
         )
 
     def __call__(self, theta: npt.NDArray[np.float64]) -> float:
-        """The Whittle criterion at this draw."""
+        """The Whittle criterion at this draw.
+
+        Args:
+            theta: The flat parameter vector, in search coordinates.
+
+        Returns:
+            The value to minimize. A draw that is not admissible, or at which
+            the evaluation fails, scores a large finite penalty and does not
+            raise.
+        """
         if not np.all(np.isfinite(theta)) or float(np.abs(theta).max()) > 60.0:
             return _PENALTY
         params = self.unpack(theta)

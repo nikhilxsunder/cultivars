@@ -19,6 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Parameter layout: which design column serves which regime in a switching regression.
+
+One record, :class:`_ParameterLayout`. The M-step of a Markov-switching
+autoregression is a weighted least-squares regression on a design matrix
+whose intercept block and autoregressive block may each be shared across
+regimes or repeated once per regime. The layout says where each block
+sits, so the code that builds the design and the code that reads the
+coefficients back cannot disagree.
+"""
 
 from __future__ import annotations
 
@@ -36,34 +45,86 @@ class _ParameterLayout:
     Switching and non-switching blocks share one design matrix; this object
     is the single source of truth for which column belongs to which regime,
     so the M-step never has to recompute offsets inline.
+
+    The intercept block comes first and the autoregressive block second.
+    A switching block is regime-major: all of regime zero's columns, then
+    all of regime one's.
+
+    Note:
+        Nothing is validated. A ``regime`` outside ``0 .. n_regimes - 1``
+        passed to :meth:`intercept_col` or :meth:`ar_slice` returns an
+        index beyond the design.
+
+    Example:
+        Switching intercepts over a shared AR(3) block:
+
+        >>> layout = _ParameterLayout(
+        ...     n_regimes=2, order=3, switching_mean=True, switching_ar=False
+        ... )
+        >>> layout.n_intercept, layout.n_ar, layout.width
+        (2, 3, 5)
+        >>> layout.intercept_col(1), layout.ar_slice(1)
+        (1, slice(2, 5, None))
     """
 
     n_regimes: int
+    """Number of regimes ``K``."""
     order: int
+    """Autoregressive order ``p``."""
     switching_mean: bool
+    """Whether each regime has its own intercept column; otherwise one column is shared."""
     switching_ar: bool
+    """Whether each regime has its own block of ``order`` AR columns; otherwise one is shared."""
 
     @property
     def n_intercept(self) -> int:
-        """Number of intercept columns."""
+        """Number of intercept columns.
+
+        Returns:
+            ``n_regimes`` when the mean switches, otherwise ``1``.
+        """
         return self.n_regimes if self.switching_mean else 1
 
     @property
     def n_ar(self) -> int:
-        """Number of autoregressive columns."""
+        """Number of autoregressive columns.
+
+        Returns:
+            ``n_regimes * order`` when the AR block switches, otherwise
+            ``order``.
+        """
         return self.n_regimes * self.order if self.switching_ar else self.order
 
     @property
     def width(self) -> int:
-        """Total design width."""
+        """Total design width.
+
+        Returns:
+            ``n_intercept + n_ar``.
+        """
         return self.n_intercept + self.n_ar
 
     def intercept_col(self, regime: int) -> int:
-        """Index of the intercept column serving ``regime``."""
+        """Index of the intercept column serving ``regime``.
+
+        Args:
+            regime: Regime index, counted from zero.
+
+        Returns:
+            ``regime`` when the mean switches, otherwise ``0``.
+        """
         return regime if self.switching_mean else 0
 
     def ar_slice(self, regime: int) -> slice:
-        """Column slice of the AR block serving ``regime``."""
+        """Column slice of the AR block serving ``regime``.
+
+        Args:
+            regime: Regime index, counted from zero.
+
+        Returns:
+            A slice of ``order`` columns: the regime's own block when the
+            AR coefficients switch, otherwise the shared block.
+        """
         base = self.n_intercept
         if self.switching_ar:
             return slice(base + regime * self.order, base + (regime + 1) * self.order)

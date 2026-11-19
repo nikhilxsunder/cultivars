@@ -26,7 +26,7 @@ Every class here is a frozen, slotted dataclass and nothing else. A fit carries
 what an estimator produced -- coefficients, residuals, a likelihood, a
 parameter count -- together with the quantities derivable from those alone. It
 carries no estimation logic: how a fit is produced belongs to the model that
-owns the specification, in :mod:`cultivars._internals._models`.
+owns the specification, in :mod:`cultivars.engine._internals._models`.
 
 That separation is what keeps this module a leaf. It imports numpy, the
 dataclass machinery, and one predictor protocol; nothing else in the package
@@ -120,10 +120,15 @@ class _BaseFit(ABC):
     """
 
     fittedvalues: npt.NDArray[np.float64]
+    """In-sample fitted values, aligned with the effective sample."""
     resid: npt.NDArray[np.float64]
+    """Residuals, the observations minus ``fittedvalues``."""
     llf: float
+    """Maximized log-likelihood."""
     nobs: int
+    """Observations the likelihood was evaluated on."""
     n_params: float
+    """Free parameter count, including the innovation variance."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -142,9 +147,13 @@ class _AutoRegressionFit(_BaseFit):
     """
 
     const: float | None
+    """Intercept, or ``None`` when ``trend == "n"``."""
     trend_coeff: float | None
+    """Linear-trend slope, or ``None`` unless ``trend == "ct"``."""
     ar_params: npt.NDArray[np.float64]
+    """Autoregressive coefficients."""
     sigma2: float
+    """Innovation variance."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -152,11 +161,21 @@ class _BoxJenkinsFit(_BaseFit):
     """Raw outputs of a seasonal ARIMA-with-regressors fit."""
 
     ar_params: npt.NDArray[np.float64]
+    """Non-seasonal autoregressive coefficients, ``(p,)``."""
     ma_params: npt.NDArray[np.float64]
+    """Non-seasonal moving-average coefficients, ``(q,)``, in the sign convention
+    ``theta(L) = 1 + theta_1 L + ...``.
+    """
     seasonal_ar_params: npt.NDArray[np.float64]
+    """Seasonal autoregressive coefficients, ``(P,)``."""
     seasonal_ma_params: npt.NDArray[np.float64]
+    """Seasonal moving-average coefficients, ``(Q,)``, in the same sign convention as
+    ``ma_params``.
+    """
     beta: npt.NDArray[np.float64]
+    """Coefficients on the deterministic and exogenous regressors."""
     sigma2: float
+    """Innovation variance."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -164,10 +183,15 @@ class _FractionalIntegrationFit(_BaseFit):
     """Raw outputs of a fractionally integrated ARMA fit."""
 
     d: float
+    """Fractional integration order."""
     mean: float | None
+    """Estimated mean, or ``None`` when the mean is not estimated."""
     ar_params: npt.NDArray[np.float64]
+    """Short-memory autoregressive coefficients, ``(p,)``."""
     ma_params: npt.NDArray[np.float64]
+    """Short-memory moving-average coefficients, ``(q,)``."""
     sigma2: float
+    """Innovation variance."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -193,10 +217,20 @@ class _ConditionalVarianceFit(_BaseFit):
     """
 
     const: float | None
+    """Mean intercept, or ``None`` when ``mean == "zero"``."""
     ar_params: npt.NDArray[np.float64]
+    """Conditional-mean autoregressive coefficients; empty when the order is zero."""
     ma_params: npt.NDArray[np.float64]
+    """Conditional-mean moving-average coefficients; empty when the order is zero.
+
+    Present on the shared base rather than on one subclass because the mean layer
+    is orthogonal to the variance family -- every member of the group can carry an
+    ARMA mean.
+    """
     omega: float
+    """Variance intercept."""
     conditional_variance: npt.NDArray[np.float64]
+    """The fitted variance path."""
 
     @property
     def conditional_volatility(self) -> npt.NDArray[np.float64]:
@@ -222,9 +256,15 @@ class _ShortMemoryVarianceFit(_ConditionalVarianceFit):
     """
 
     vol: str
+    """The family that produced the fit, needed because persistence is not the same
+    functional of the coefficients across the three.
+    """
     alpha: npt.NDArray[np.float64]
+    """Coefficients on the shock magnitude."""
     gamma: npt.NDArray[np.float64]
+    """Asymmetry coefficients; empty for the symmetric family."""
     beta: npt.NDArray[np.float64]
+    """Persistence coefficients."""
 
     @property
     def persistence(self) -> float:
@@ -252,8 +292,11 @@ class _FractionalVarianceFit(_ConditionalVarianceFit):
     """
 
     phi: float
+    """Short-memory numerator weight of the fractional polynomial."""
     d: float
+    """Fractional integration order."""
     beta: float
+    """Denominator weight."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -261,6 +304,7 @@ class _MeanFunctionFit(_BaseFit):
     """Raw outputs of a neural mean-function fit."""
 
     sigma2: float
+    """Innovation variance, concentrated out of the Gaussian likelihood."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -268,6 +312,7 @@ class _NeuralAutoRegressionFit(_MeanFunctionFit):
     """Raw outputs of an autoregressive neural mean-function fit."""
 
     predictor: MeanPredictor
+    """The fitted conditional-mean map returned by the engine."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -275,14 +320,25 @@ class _NeuralThresholdFit(_MeanFunctionFit):
     """Raw outputs of a threshold neural mean-function fit."""
 
     delay: int
+    """Delay of the threshold variable, in periods."""
     threshold: float
+    """The selected threshold."""
     lower_predictor: MeanPredictor
+    """Fitted conditional-mean map of the lower regime."""
     upper_predictor: MeanPredictor
+    """Fitted conditional-mean map of the upper regime."""
     threshold_variable: npt.NDArray[np.float64] | None
+    """External threshold variable aligned with the effective sample, or ``None`` when
+    the model is self-exciting.
+    """
     self_exciting: bool
+    """Whether the threshold variable is a lag of the series itself."""
     ssr: float
+    """Sum of squared residuals at the selected threshold."""
     n_lower: int
+    """Observations assigned to the lower regime."""
     n_upper: int
+    """Observations assigned to the upper regime."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -290,16 +346,27 @@ class _MarkovSwitchingFit(_BaseFit):
     """Raw outputs of a Markov-switching autoregression fit."""
 
     transition: npt.NDArray[np.float64]
+    """Row-stochastic transition matrix, ``(K, K)``."""
     intercepts: npt.NDArray[np.float64]
+    """Regime intercepts, ``(K,)``."""
     ar_params: npt.NDArray[np.float64]
+    """Regime autoregressive coefficients, ``(K, p)``."""
     variances: npt.NDArray[np.float64]
+    """Regime innovation variances, ``(K,)``."""
     filtered_prob: npt.NDArray[np.float64]
+    """Filtered regime probabilities, ``(T, K)``."""
     predicted_prob: npt.NDArray[np.float64]
+    """One-step-predicted regime probabilities, ``(T, K)``."""
     smoothed_prob: npt.NDArray[np.float64]
+    """Smoothed regime probabilities, ``(T, K)``."""
     ergodic_prob: npt.NDArray[np.float64]
+    """Stationary distribution of the regime chain, ``(K,)``."""
     expected_durations: npt.NDArray[np.float64]
+    """Expected duration of each regime in periods, ``(K,)``."""
     n_iter: int
+    """EM iterations run by the reported fit."""
     converged: bool
+    """Whether the EM run met its convergence tolerance."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -307,13 +374,21 @@ class _ThresholdFit(_BaseFit):
     """Raw outputs of a two-regime threshold grid search."""
 
     delay: int
+    """Delay of the threshold variable, in periods."""
     threshold: float
+    """The selected threshold."""
     lower_params: npt.NDArray[np.float64]
+    """Lower-regime coefficients, the intercept first and then the autoregressive coefficients."""
     upper_params: npt.NDArray[np.float64]
+    """Upper-regime coefficients, in the same layout as ``lower_params``."""
     sigma2: float
+    """Innovation variance."""
     ssr: float
+    """Sum of squared residuals at the selected threshold."""
     n_lower: int
+    """Observations assigned to the lower regime."""
     n_upper: int
+    """Observations assigned to the upper regime."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -321,12 +396,19 @@ class _SmoothTransitionFit(_BaseFit):
     """Raw outputs of a smooth-transition autoregression fit."""
 
     delay: int
+    """Delay of the transition variable, in periods."""
     threshold: float
+    """Transition location, on the scale of the transition variable."""
     gamma: float
+    """Transition speed, strictly positive."""
     lower_params: npt.NDArray[np.float64]
+    """Coefficients of the lower regime, the intercept first."""
     upper_params: npt.NDArray[np.float64]
+    """Coefficients of the upper regime, in the same layout as ``lower_params``."""
     sigma2: float
+    """Innovation variance."""
     ssr: float
+    """Sum of squared residuals at the optimum."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -361,21 +443,41 @@ class _TimeVaryingFit:
     """
 
     beta_mean: npt.NDArray[np.float64]
+    """``(n, D)`` posterior mean coefficient path."""
     beta_low: npt.NDArray[np.float64]
+    """``(n, D)`` posterior 16th percentile path."""
     beta_high: npt.NDArray[np.float64]
+    """``(n, D)`` posterior 84th percentile path."""
     beta_draws: npt.NDArray[np.float64]
+    """``(S, n, D)`` kept coefficient-path draws."""
     state_cov: npt.NDArray[np.float64]
+    """``(D, D)`` posterior mean of the drift covariance ``Q``."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` posterior mean innovation covariance -- constant for the
+    homoskedastic model, the time average under stochastic volatility.
+    """
     impact_draws: npt.NDArray[np.float64] | None
+    """``(S, k, k)`` draws of the inverse contemporaneous matrix ``A^{-1}``, or
+    ``None`` for the homoskedastic model.
+    """
     h_draws: npt.NDArray[np.float64] | None
+    """``(S, n, k)`` kept log-variance path draws, or ``None``."""
     vol_of_vol: npt.NDArray[np.float64] | None
+    """``(k,)`` posterior mean random-walk variances of the log volatilities, or ``None``."""
     resid: npt.NDArray[np.float64]
+    """Residuals at the posterior mean path."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step means at the posterior mean path."""
     nobs: int
+    """Estimation sample after the training split."""
     training: int
+    """Rows consumed by the training prior."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in iterations discarded."""
     thin: int
+    """Keep-every-``thin`` thinning applied after burn-in."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -397,16 +499,27 @@ class _VectorMarkovSwitchingFit(_BaseFit):
     """
 
     transition: npt.NDArray[np.float64]
+    """Row-stochastic ``(M, M)`` matrix."""
     coefficients: npt.NDArray[np.float64]
+    """``(M, p, k, k)`` per-regime lag stacks."""
     deterministics: npt.NDArray[np.float64]
+    """``(M, d, k)`` per-regime deterministic coefficients."""
     sigmas: npt.NDArray[np.float64]
+    """``(M, k, k)`` per-regime innovation covariances."""
     filtered_prob: npt.NDArray[np.float64]
+    """``Pr(S_t = m | y_1..t)``, shape ``(nobs, M)``."""
     predicted_prob: npt.NDArray[np.float64]
+    """``Pr(S_t = m | y_1..t-1)``, shape ``(nobs, M)``."""
     smoothed_prob: npt.NDArray[np.float64]
+    """``Pr(S_t = m | y_1..T)``, shape ``(nobs, M)``."""
     ergodic_prob: npt.NDArray[np.float64]
+    """Stationary distribution of ``transition``."""
     expected_durations: npt.NDArray[np.float64]
+    """``1 / (1 - P_mm)``, in periods."""
     n_iter: int
+    """EM iterations used by the refining run."""
     converged: bool
+    """Whether the refining run met its tolerance."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -424,12 +537,19 @@ class _VectorObservedRegimeFit(_BaseFit):
     """
 
     delay: int
+    """Delay of the transition variable."""
     threshold: float
+    """The regime split point, in the transition variable's units."""
     threshold_values: npt.NDArray[np.float64]
+    """The transition variable, aligned with ``resid``."""
     lower_coefficients: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack of the lower regime."""
     upper_coefficients: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack of the upper regime."""
     lower_deterministic: npt.NDArray[np.float64]
+    """Lower-regime deterministic coefficients."""
     upper_deterministic: npt.NDArray[np.float64]
+    """Upper-regime deterministic coefficients."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -444,9 +564,13 @@ class _VectorThresholdFit(_VectorObservedRegimeFit):
     """
 
     lower_sigma_u: npt.NDArray[np.float64]
+    """Lower-regime innovation covariance, dof-corrected."""
     upper_sigma_u: npt.NDArray[np.float64]
+    """Upper-regime innovation covariance, dof-corrected."""
     n_lower: int
+    """Observations assigned to the lower regime."""
     n_upper: int
+    """Observations assigned to the upper regime."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -465,8 +589,16 @@ class _VectorSmoothTransitionFit(_VectorObservedRegimeFit):
     """
 
     gamma: float
+    """Transition speed, per standard deviation of the transition variable."""
     transition_scale: float
+    """The standard deviation ``gamma`` is expressed against."""
     sigma_u: npt.NDArray[np.float64]
+    """Common innovation covariance, dof-corrected.
+
+    One covariance rather than two, because smooth weights never partition the
+    sample: every observation is a blend of both regimes, so a per-regime
+    covariance has no subsample to be estimated from.
+    """
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -484,12 +616,19 @@ class _VectorAutoRegressionFit(_BaseFit):
     """
 
     coefficients: npt.NDArray[np.float64]
+    """``(p, k, k)`` stack of ``A_1, ..., A_p``."""
     deterministic: npt.NDArray[np.float64]
+    """Deterministic coefficients, one row per term."""
     sigma_u: npt.NDArray[np.float64]
+    """Residual covariance with the degrees-of-freedom correction."""
     sigma_ml: npt.NDArray[np.float64]
+    """Residual covariance divided by the effective sample."""
     design: npt.NDArray[np.float64]
+    """The regressor matrix as estimated."""
     posterior: _CoefficientInference | None = None
+    """Posterior covariance when a prior was applied, else ``None``."""
     prior_label: str = "none"
+    """What the prior was, for the summary."""
 
     @property
     def k_endog(self) -> int:
@@ -518,6 +657,10 @@ class _ExogenousVectorAutoRegressionFit(_VectorAutoRegressionFit):
     """
 
     exog_coefficients: npt.NDArray[np.float64]
+    """``(s + 1, k, m)`` stack of ``B_0, ..., B_s``, laid out so that
+    ``exog_coefficients[j]`` is the ``(k, m)`` matrix on ``x_{t-j}`` and index
+    ``0`` is the contemporaneous term.
+    """
 
     @property
     def exog_order(self) -> int:
@@ -562,11 +705,23 @@ class _VectorErrorCorrectionFit(_VectorAutoRegressionFit):
     """
 
     alpha: npt.NDArray[np.float64]
+    """``(k_y, r)`` adjustment loadings."""
     beta: npt.NDArray[np.float64]
+    """``(k_y + k_x [+ 1], r)`` cointegrating vectors, the extra row present when the
+    case restricts a deterministic term to the cointegrating space.
+    """
     gamma: npt.NDArray[np.float64]
+    """``(p - 1, k_y, k_y + k_x)`` short-run coefficients on lagged differences of
+    every integrated variable.
+    """
     short_run_deterministic: npt.NDArray[np.float64]
+    """``(d_s, k_y)`` unrestricted deterministic terms, as they entered the regression."""
     impact: npt.NDArray[np.float64]
+    """``(k_y, k_x)`` contemporaneous response to the weakly exogenous differences,
+    zero-width for a closed system.
+    """
     eigenvalues: npt.NDArray[np.float64]
+    """The squared canonical correlations, descending."""
 
     @property
     def rank(self) -> int:
@@ -607,13 +762,23 @@ class _VectorQuantileFit:
     """
 
     quantiles: tuple[float, ...]
+    """The estimated quantile levels, ascending."""
     coefficient_stacks: npt.NDArray[np.float64]
+    """``(Q, p, k, k)`` lag stacks, one per quantile."""
     deterministics: npt.NDArray[np.float64]
+    """``(Q, n_det, k)`` deterministic coefficients."""
     fittedvalues: npt.NDArray[np.float64]
+    """``(Q, n, k)`` conditional quantile paths."""
     resid: npt.NDArray[np.float64]
+    """``(Q, n, k)`` quantile residuals ``y - fitted``."""
     loss: npt.NDArray[np.float64]
+    """``(Q, k)`` total check loss per equation at the optimum."""
     loss_location: npt.NDArray[np.float64]
+    """``(Q, k)`` check loss of the unconditional quantile, the intercept-only
+    benchmark the pseudo-``R``:sup:`1` is read against (Koenker & Machado 1999).
+    """
     nobs: int
+    """Effective sample size."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -643,17 +808,31 @@ class _VectorFunctionalFit:
     """
 
     delay: int
+    """Delay of the state variable."""
     state_values: npt.NDArray[np.float64]
+    """The delayed state ``z_t``, aligned with ``resid``."""
     grid: npt.NDArray[np.float64]
+    """``(G,)`` state values the coefficient curves are evaluated on."""
     curves: npt.NDArray[np.float64]
+    """``(G, w, k)`` local-linear level coefficients, design-major: ``curves[g, :,
+    i]`` is equation ``i``'s coefficient vector at ``grid[g]``.
+    """
     curve_se: npt.NDArray[np.float64]
+    """``(G, w, k)`` pointwise standard errors of ``curves``."""
     bandwidth: float
+    """The bandwidth the curves were estimated at."""
     bandwidth_searched: bool
+    """Whether the bandwidth came from cross-validation."""
     effective_params: float
+    """Trace of the smoother matrix at that bandwidth."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` innovation covariance, corrected by the effective degrees of freedom."""
     resid: npt.NDArray[np.float64]
+    """Residuals of the local fits at the observed states."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step conditional means at the observed states."""
     nobs: int
+    """Effective sample size."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -682,17 +861,31 @@ class _VectorConjugateFit:
     """
 
     coefficient_stack: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack at the posterior mean."""
     deterministic: npt.NDArray[np.float64]
+    """``(n_det, k)`` deterministic block at the posterior mean."""
     beta_mean: npt.NDArray[np.float64]
+    """``(w, k)`` full posterior mean coefficient matrix."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` posterior mean innovation covariance."""
     beta_draws: npt.NDArray[np.float64]
+    """``(S, w, k)`` coefficient draws."""
     sigma_draws: npt.NDArray[np.float64]
+    """``(S, k, k)`` covariance draws."""
     log_marginal_likelihood: float
+    """Log marginal likelihood of the *sample*, with the dummy-observation
+    contribution divided out.
+    """
     posterior_df: float
+    """Inverse-Wishart posterior degrees of freedom."""
     resid: npt.NDArray[np.float64]
+    """Residuals at the posterior mean, over the sample rows only."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step means at the posterior mean."""
     nobs: int
+    """Effective sample size, dummy rows excluded."""
     n_dummy: int
+    """Artificial rows the prior contributed."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -717,10 +910,15 @@ class _VectorHierarchicalFit(_VectorConjugateFit):
     """
 
     hyper_names: tuple[str, ...]
+    """One label per hyperparameter, in draw-column order."""
     hyper_mode: npt.NDArray[np.float64]
+    """Posterior-mode hyperparameter vector."""
     hyper_draws: npt.NDArray[np.float64]
+    """``(S, d)`` kept hyperparameter draws -- empty under empirical Bayes."""
     acceptance: float
+    """Metropolis acceptance rate over the kept span; ``nan`` under empirical Bayes."""
     method: str
+    """``"full"`` or ``"empirical"``."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -755,21 +953,41 @@ class _VectorStudentFit:
     """
 
     coefficient_stack: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack at the posterior mean."""
     deterministic: npt.NDArray[np.float64]
+    """``(n_det, k)`` deterministic block at the posterior mean."""
     beta_mean: npt.NDArray[np.float64]
+    """``(w, k)`` posterior mean coefficient matrix."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` posterior mean *scale* matrix -- the innovation covariance is
+    ``sigma_u * df / (df - 2)``.
+    """
     beta_draws: npt.NDArray[np.float64]
+    """``(S, w, k)`` kept coefficient draws."""
     sigma_draws: npt.NDArray[np.float64]
+    """``(S, k, k)`` kept scale draws."""
     df: float
+    """Posterior mean degrees of freedom (the stated value when fixed)."""
     df_draws: npt.NDArray[np.float64]
+    """``(S,)`` kept degrees-of-freedom draws; empty when fixed."""
     weight_mean: npt.NDArray[np.float64]
+    """``(n,)`` posterior mean latent precision weights -- small values mark the dates
+    the t distribution treats as outliers.
+    """
     resid: npt.NDArray[np.float64]
+    """Residuals at the posterior mean."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step means at the posterior mean."""
     nobs: int
+    """Effective sample size."""
     n_dummy: int
+    """Artificial rows the prior contributed."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -797,20 +1015,35 @@ class _VectorVolatilityFit:
     """
 
     coefficient_stack: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack at the posterior mean."""
     deterministic: npt.NDArray[np.float64]
+    """``(n_det, k)`` deterministic block at the posterior mean."""
     beta_mean: npt.NDArray[np.float64]
+    """``(w, k)`` posterior mean coefficient matrix."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` posterior mean *end-of-sample* covariance."""
     beta_draws: npt.NDArray[np.float64]
+    """``(S, w, k)`` kept coefficient draws."""
     sigma_draws: npt.NDArray[np.float64]
+    """``(S, k, k)`` kept end-of-sample covariance draws."""
     h_draws: npt.NDArray[np.float64]
+    """``(S, n, k)`` kept log-variance path draws."""
     impact_draws: npt.NDArray[np.float64]
+    """``(S, k, k)`` kept draws of ``A^{-1}``."""
     vol_of_vol: npt.NDArray[np.float64]
+    """``(k,)`` posterior mean random-walk variances of the log volatilities."""
     resid: npt.NDArray[np.float64]
+    """Residuals at the posterior mean."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step means at the posterior mean."""
     nobs: int
+    """Effective sample size."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -840,16 +1073,29 @@ class _VectorSparseFit:
     """
 
     coefficient_stack: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack at the selected penalty."""
     deterministic: npt.NDArray[np.float64]
+    """``(n_det, k)`` unpenalized deterministic block."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` residual covariance, corrected by the average per-equation nonzero count."""
     resid: npt.NDArray[np.float64]
+    """Residuals over the effective sample."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step means over the effective sample."""
     penalty: str
+    """The penalty family estimated under."""
     lam: float
+    """The penalty level estimated at."""
     lambda_path: npt.NDArray[np.float64]
+    """The candidate path, descending; empty when the caller stated ``lam``."""
     cv_errors: npt.NDArray[np.float64]
+    """Rolling one-step squared forecast error summed over the validation span,
+    aligned with ``lambda_path``; empty when the caller stated ``lam``.
+    """
     n_nonzero: int
+    """Nonzero penalized coefficients at the solution."""
     nobs: int
+    """Effective sample size."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -866,8 +1112,11 @@ class _VectorGraphicalFit(_VectorSparseFit):
     """
 
     precision: npt.NDArray[np.float64]
+    """``(k, k)`` sparse residual precision from symmetrized nodewise regressions."""
     partial_correlations: npt.NDArray[np.float64]
+    """``(k, k)`` partial correlations implied by the precision, unit diagonal."""
     lam_nodes: npt.NDArray[np.float64]
+    """``(k,)`` the per-node penalty levels cross-validation selected."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -903,20 +1152,38 @@ class _VectorGibbsFit:
     """
 
     coefficient_stack: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack at the posterior mean."""
     deterministic: npt.NDArray[np.float64]
+    """``(n_det, k)`` deterministic block at the posterior mean."""
     beta_mean: npt.NDArray[np.float64]
+    """``(w, k)`` posterior mean coefficient matrix."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` posterior mean innovation covariance."""
     beta_draws: npt.NDArray[np.float64]
+    """``(S, w, k)`` kept coefficient draws."""
     sigma_draws: npt.NDArray[np.float64]
+    """``(S, k, k)`` kept covariance draws."""
     shrinkage: npt.NDArray[np.float64]
+    """``(w, k)`` posterior mean of the adaptive prior's per-coefficient diagnostic --
+    inclusion probabilities for a selection prior, local-global scales for a
+    global-local one -- empty for a static prior.
+    """
     shrinkage_label: str
+    """What ``shrinkage`` is; empty for a static prior."""
     resid: npt.NDArray[np.float64]
+    """Residuals at the posterior mean, over the sample rows only."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step means at the posterior mean."""
     nobs: int
+    """Effective sample size, dummy rows excluded."""
     n_dummy: int
+    """Artificial rows the prior contributed."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -935,12 +1202,21 @@ class _StructuralFit:
     """
 
     params: _StructuralParameters
+    """The maximized parameter record."""
     llf: float
+    """Exact Gaussian log-likelihood under the approximate-diffuse initialization the
+    system builder documents.
+    """
     n_params: int
+    """Free parameters the likelihood was maximized over."""
     nobs: int
+    """Observations."""
     smoothed_state: npt.NDArray[np.float64]
+    """Full-sample state means, ``(n, m)``."""
     smoothed_state_cov: npt.NDArray[np.float64]
+    """Full-sample state covariances, ``(n, m, m)``."""
     slices: dict[str, slice]
+    """Component name to state index range."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -957,11 +1233,17 @@ class _NelsonSiegelFit:
     """
 
     params: _NelsonSiegelParameters
+    """The maximized parameter record."""
     llf: float
+    """Exact Gaussian log-likelihood."""
     n_params: int
+    """Free parameters the likelihood was maximized over."""
     nobs: int
+    """Observations (curve dates)."""
     factors: npt.NDArray[np.float64]
+    """Smoothed factor paths, ``(n, 3)``."""
     factor_cov: npt.NDArray[np.float64]
+    """Smoothed factor covariances, ``(n, 3, 3)``."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -982,12 +1264,22 @@ class _StochasticVolatilityFit:
     """
 
     params: _StochasticVolatilityParameters
+    """The maximized parameter record."""
     llf: float
+    """The criterion at the optimum: the exact quasi-likelihood of the linearized
+    model under ``method="qml"``, or a particle *estimate* of the exact likelihood
+    under ``method="particle"``.
+    """
     method: str
+    """``"qml"`` or ``"particle"``."""
     n_params: int
+    """Free parameters the criterion was maximized over."""
     nobs: int
+    """Observations."""
     log_variance: npt.NDArray[np.float64]
+    """Smoothed log-variance path, ``(n,)``."""
     log_variance_std: npt.NDArray[np.float64]
+    """Smoothed log-variance standard deviations, ``(n,)``."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -1009,16 +1301,29 @@ class _VolatilityDrawsFit:
     """
 
     mu_draws: npt.NDArray[np.float64]
+    """``(S,)`` kept draws of the log-variance mean."""
     phi_draws: npt.NDArray[np.float64]
+    """``(S,)`` kept draws of the persistence."""
     sigma2_draws: npt.NDArray[np.float64]
+    """``(S,)`` kept draws of the log-variance innovation variance."""
     mean_draws: npt.NDArray[np.float64]
+    """``(S,)`` kept draws of the observation mean (all zero when the mean is fixed)."""
     h_draws: npt.NDArray[np.float64]
+    """``(S, n)`` kept log-variance paths."""
     nu_draws: npt.NDArray[np.float64] | None
+    """``(S,)`` kept draws of the Student-t degrees of freedom, or ``None`` under Gaussian noise."""
     nu_acceptance: float | None
+    """Acceptance rate of the Metropolis step for the degrees of freedom, or ``None``
+    under Gaussian noise.
+    """
     nobs: int
+    """Observations."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""
 
     @property
     def params(self) -> _StochasticVolatilityParameters:
@@ -1054,14 +1359,23 @@ class _ParticleChainFit:
     """
 
     theta_draws: npt.NDArray[np.float64]
+    """``(S, d)`` kept draws in the *unconstrained* space the chain moved in."""
     loglik_draws: npt.NDArray[np.float64]
+    """``(S,)`` particle log-likelihood estimates carried with each kept draw."""
     log_posterior_draws: npt.NDArray[np.float64]
+    """``(S,)`` the log-prior plus log-likelihood estimate at each kept draw."""
     acceptance_rate: float
+    """Fraction of proposals accepted over the whole run, burn-in included."""
     proposal_cov: npt.NDArray[np.float64]
+    """The ``(d, d)`` proposal covariance the chain ended with, after adaptation."""
     n_particles: int
+    """Particles per likelihood estimate."""
     n_draws: int
+    """Total iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""
 
     @property
     def n_kept(self) -> int:
@@ -1088,15 +1402,25 @@ class _TrendVolatilityFit:
     """
 
     trend_draws: npt.NDArray[np.float64]
+    """``(S, n)`` kept trend paths ``tau_t``."""
     h_draws: npt.NDArray[np.float64]
+    """``(S, n)`` kept log variances of the irregular."""
     q_draws: npt.NDArray[np.float64]
+    """``(S, n)`` kept log variances of the trend innovation."""
     gamma2_irregular_draws: npt.NDArray[np.float64]
+    """``(S,)`` vol-of-vol draws of ``h`` (constant across draws when fixed)."""
     gamma2_trend_draws: npt.NDArray[np.float64]
+    """``(S,)`` vol-of-vol draws of ``q``."""
     gamma_fixed: bool
+    """Whether the vol-of-vol parameters were held fixed."""
     nobs: int
+    """Observations."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""
 
     @property
     def params(self) -> _TrendVolatilityParameters:
@@ -1128,14 +1452,25 @@ class _DecayNelsonSiegelFit:
     """
 
     params: _DecayNelsonSiegelParameters
+    """The maximized parameter record."""
     llf: float
+    """The Gaussian-approximation log-likelihood of the chosen filter (extended or
+    unscented); *not* an exact likelihood.
+    """
     filter: str
+    """``"extended"`` or ``"unscented"``."""
     n_params: int
+    """Free parameters the likelihood was maximized over."""
     nobs: int
+    """Curve dates."""
     factors: npt.NDArray[np.float64]
+    """Smoothed factor paths, ``(n, 3)``."""
     factor_cov: npt.NDArray[np.float64]
+    """Smoothed factor covariances, ``(n, 3, 3)``."""
     log_decay: npt.NDArray[np.float64]
+    """Smoothed log-decay path, ``(n,)``."""
     log_decay_std: npt.NDArray[np.float64]
+    """Smoothed log-decay standard deviations, ``(n,)``."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -1158,12 +1493,24 @@ class _PerturbationFit:
     """
 
     theta: npt.NDArray[np.float64]
+    """The structural parameter vector at the optimum, in the model's own (constrained) space."""
     solution: _PerturbationSolution
+    """The perturbation solution at ``theta``."""
     llf: float
+    """The criterion at the optimum: exact under ``filter="kalman"`` (first order
+    only), a Gaussian approximation under the extended/unscented filters, a
+    particle estimate under ``filter="particle"``.
+    """
     filter: str
+    """Which filter produced ``llf``."""
     n_params: int
+    """Free structural parameters."""
     nobs: int
+    """Observations."""
     filtered_state: npt.NDArray[np.float64]
+    """Filtered state means (pruned state, ``(n, 2 n_x)`` at second order, ``(n,
+    n_x)`` at first).
+    """
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -1194,14 +1541,29 @@ class _VolatilityStructuralFit:
     """
 
     impact_draws: npt.NDArray[np.float64]
+    """``(S, k, k)`` kept impact matrices ``B = A**-1``."""
     h_draws: npt.NDArray[np.float64]
+    """``(S, T, k)`` kept structural log-variance paths, one column per shock, each
+    with zero sample mean; the level sits in the matching column of
+    ``impact_draws``.
+    """
     phi_draws: npt.NDArray[np.float64]
+    """``(S, k)`` kept log-variance persistences."""
     sigma2_draws: npt.NDArray[np.float64]
+    """``(S, k)`` kept log-variance innovation variances."""
     relabel_rate: float
+    """Fraction of kept draws whose column order had to be permuted to match the
+    reference -- near zero when the shocks are well separated, and the first thing
+    to read when they are not.
+    """
     nobs: int
+    """Observations."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -1224,12 +1586,24 @@ class _LongMemoryVolatilityFit:
     """
 
     params: _LongMemoryVolatilityParameters
+    """The maximized parameter record."""
     llf: float
+    """The Whittle criterion at the optimum, sign-flipped to read as a log-likelihood:
+    the frequency-domain quasi-likelihood of the linearized model, comparable only
+    with other Whittle fits.
+    """
     n_params: int
+    """Free parameters the criterion was maximized over."""
     nobs: int
+    """Observations."""
     n_frequencies: int
+    """Fourier ordinates the criterion summed over."""
     log_variance: npt.NDArray[np.float64]
+    """Smoothed log-variance path, ``(n,)``, from the spectral (Wiener-Kolmogorov)
+    smoother under a circular approximation.
+    """
     log_variance_std: npt.NDArray[np.float64]
+    """The smoother's stationary root mean squared error, one value repeated ``(n,)`` times."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -1257,17 +1631,34 @@ class _FactorVolatilityFit:
     """
 
     loading_draws: npt.NDArray[np.float64]
+    """``(S, k, r)`` kept loading matrices, lower triangular with unit diagonal in the
+    leading ``r`` rows.
+    """
     factor_draws: npt.NDArray[np.float64]
+    """``(S, T, r)`` kept factor paths."""
     h_factor_draws: npt.NDArray[np.float64]
+    """``(S, T, r)`` kept factor log-variance paths."""
     h_idio_draws: npt.NDArray[np.float64]
+    """``(S, T, k)`` kept idiosyncratic log-variance paths."""
     mu_factor_draws: npt.NDArray[np.float64]
+    """``(S, r)`` factor log-variance means."""
     phi_factor_draws: npt.NDArray[np.float64]
+    """``(S, r)`` factor log-variance persistences."""
     sigma2_factor_draws: npt.NDArray[np.float64]
+    """``(S, r)`` factor log-variance innovation variances."""
     mu_idio_draws: npt.NDArray[np.float64]
+    """``(S, k)`` idiosyncratic log-variance means."""
     phi_idio_draws: npt.NDArray[np.float64]
+    """``(S, k)`` idiosyncratic persistences."""
     sigma2_idio_draws: npt.NDArray[np.float64]
+    """``(S, k)`` idiosyncratic innovation variances."""
     means: npt.NDArray[np.float64]
+    """``(k,)`` series means removed before sampling."""
     nobs: int
+    """Observations."""
     n_draws: int
+    """Total sampler iterations."""
     n_burn: int
+    """Burn-in discarded."""
     thin: int
+    """Post-burn thinning."""

@@ -1,3 +1,40 @@
+# filepath: /src/cultivars/engine/_internals/_simulators.py
+#
+# Copyright (c) 2026 Nikhil Sunder
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+"""Simulators: sample paths generated from stated parameters.
+
+Each function produces data from one model family, given its parameters
+and either a random generator or an array of shocks drawn by the caller:
+perturbation solutions through the pruned system, vector autoregressions,
+the log-AR(1) stochastic-volatility model, ARMA processes and their
+integration, the conditional-variance families, and Markov-switching and
+two-regime autoregressions. They back the ``simulate`` methods of the
+result records, the prior and posterior replication checks, and the
+impulse responses of the perturbation models.
+
+The functions take parameters, not result objects. The same routine
+therefore serves a fitted model, a draw from a prior, and a test fixture,
+and nothing here depends on how the parameters were obtained.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -134,6 +171,18 @@ def _impulse_responses(
     until its second-order state settles, then a one-time impulse of
     ``size`` standard deviations is added, and the difference from the
     unshocked continuation is reported.
+
+    The settling run is 500 periods long. ``horizon`` and ``size`` are not
+    validated here; the callers check them.
+
+    Args:
+        solution: The perturbation solution to shock.
+        horizon: Periods reported, the impulse period first.
+        size: Impulse size in standard deviations of the shock.
+
+    Returns:
+        The state responses, ``(n_eps, horizon, n_x)``, and the control
+        responses, ``(n_eps, horizon, n_y)``, one leading entry per shock.
     """
     n_x, n_y, n_eps = solution.n_states, solution.n_controls, solution.n_shocks
     settle = 500
@@ -182,7 +231,7 @@ def _simulate_vector_autoregression(
         presample: ``(order, k)`` initial values, oldest first; ignored
             when the order is zero.
         start: Time index of the first simulated row, in the convention of
-            :func:`~cultivars._core.deterministic_columns`, so that a
+            :func:`~cultivars.engine._core._matrices._deterministic_columns`, so that a
             replication of the effective sample carries the trend values
             the sample had.
 
@@ -345,6 +394,16 @@ def _integrate(
 
     Seasonal integration is undone first, then the non-seasonal, so the
     order matches the differencing that produced ``w``.
+
+    Args:
+        w: The differenced series.
+        d: Non-seasonal differences to undo.
+        capital_d: Seasonal differences to undo.
+        s: Seasonal period.
+
+    Returns:
+        The integrated series, the same length as ``w``, with every
+        pre-sample level taken as zero.
 
     Example:
         >>> _integrate(np.array([1.0, 1.0, 1.0]), 1, 0, 1)

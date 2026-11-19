@@ -19,6 +19,22 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""The Hamilton filter: forward regime probabilities for a discrete Markov chain.
+
+One function, :func:`_hamilton_filter`. It takes the per-regime log
+conditional densities of the observations as a ``(T, K)`` array, with the
+transition matrix, and returns the filtered and one-step-predicted regime
+probabilities and the log likelihood. It knows nothing about what produced
+the densities. A switching autoregression and a switching VAR both reduce
+to that array, which is why the filter is written once here and not inside
+either model. The backward pass is
+:func:`~cultivars.engine._internals._smoothers._kim_smoother`.
+
+References:
+    Hamilton, J. D. (1989). A new approach to the economic analysis of
+        nonstationary time series and the business cycle. *Econometrica*,
+        57(2), 357-384.
+"""
 
 import numpy as np
 import numpy.typing as npt
@@ -59,7 +75,9 @@ def _hamilton_filter(
         log_conditional_density: Log conditional densities
             ``log Pr(y_t | S_t = j, past)``, shape ``(T, K)``. ``-inf`` entries
             (a regime that assigns zero density) are permitted as long as some
-            regime is finite at every period.
+            regime is finite at every period. ``+inf`` is not: it is
+            reported with the same error as a period in which every density
+            vanished.
         transition: Row-stochastic ``(K, K)`` transition matrix.
         initial_prob: Optional initial regime distribution ``Pr(S_1 = j)``,
             length ``K``. Defaults to the ergodic distribution of ``transition``.

@@ -19,6 +19,23 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Engines: the training backends that turn features and a target into a predictor.
+
+The neural mean-function models split training from prediction. An engine
+owns training: given a design matrix of lagged values and a target it fits
+a learner and returns a predictor, which the model then treats as given
+(``_predictors``). :class:`MeanFunctionEngine` is the contract, one method
+wide, so that a learner from another library can be adapted to it.
+:class:`NumpyMLPEngine` is the reference implementation, a
+single-hidden-layer perceptron trained by L-BFGS with an analytic gradient
+and no dependency beyond NumPy and SciPy.
+
+The reference objective, on standardized inputs and target, is::
+
+    L = (1 / 2n) * sum_i (m(x_i) - y_i)^2 + (alpha / 2) * (|w1|^2 + |w2|^2)
+
+with the biases left unpenalized.
+"""
 
 from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
@@ -49,7 +66,17 @@ class MeanFunctionEngine(Protocol):
     def fit(
         self, features: npt.NDArray[np.float64], target: npt.NDArray[np.float64]
     ) -> MeanPredictor:
-        """Fit the learner and return a :class:`MeanPredictor`."""
+        """Fit the learner and return a :class:`MeanPredictor`.
+
+        Args:
+            features: Design matrix, ``(n, k)``.
+            target: Response, ``(n,)``, aligned with the rows of
+                ``features``.
+
+        Returns:
+            A fitted predictor. The models that call this do not check the
+            return against the :class:`MeanPredictor` protocol.
+        """
         ...
 
 
@@ -74,17 +101,46 @@ class NumpyMLPEngine:
     Raises:
         SpecificationError: If ``hidden_units < 1``, ``n_restarts < 1``, or the
             activation is unrecognized.
+
+    Note:
+        ``alpha`` and ``max_iter`` are not validated, and the optimizer's
+        convergence flag is not consulted: a restart that stops at the
+        iteration cap is accepted like any other.
+
+    Example:
+        >>> import numpy as np
+        >>> rng = np.random.default_rng(0)
+        >>> x = rng.standard_normal((80, 2))
+        >>> y = np.tanh(x[:, 0]) + 0.1 * rng.standard_normal(80)
+        >>> predictor = NumpyMLPEngine(hidden_units=3).fit(x, y)
+        >>> predictor.n_parameters, predictor.predict(x).shape
+        (13, (80,))
     """
 
     hidden_units: int = 8
+    """Number of hidden units ``h``; at least 1."""
     activation: str = "tanh"
+    """Hidden activation, ``"tanh"`` or ``"relu"``."""
     alpha: float = 1e-4
+    """L2 penalty on both weight blocks; the biases are not penalized."""
     max_iter: int = _DEFAULT_MAX_ITER
+    """Maximum L-BFGS iterations per restart."""
     n_restarts: int = 3
+    """Number of random initializations; the lowest final loss is kept."""
     seed: int | None = 0
+    """Seed of the initialization generator.
+
+    The default of ``0`` makes a fit reproducible; ``None`` draws fresh
+    entropy on every call.
+    """
 
     def __post_init__(self) -> None:
-        """Validate the engine configuration."""
+        """Validate the engine configuration.
+
+        Raises:
+            SpecificationError: If ``hidden_units < 1``, ``n_restarts < 1``,
+                or the activation is unrecognized.
+        """
         if self.hidden_units < 1:
             raise SpecificationError(f"hidden_units must be >= 1; got {self.hidden_units}.")
         if self.n_restarts < 1:
@@ -97,6 +153,11 @@ class NumpyMLPEngine:
     def fit(self, features: npt.NDArray[np.float64], target: npt.NDArray[np.float64]) -> _FittedMLP:
         """Train the MLP and return a fitted predictor.
 
+        Standardizes the features column by column and the target, with a
+        scale of one substituted for a column or target that does not vary,
+        then minimizes the penalized squared error from ``n_restarts``
+        random starts and keeps the lowest loss.
+
         Args:
             features: Design matrix of shape ``(n, k)``.
             target: Response of shape ``(n,)``.
@@ -106,7 +167,8 @@ class NumpyMLPEngine:
 
         Raises:
             DimensionError: If the shapes are not conformable.
-            NumericalError: If inputs are non-finite, or no restart converges.
+            NumericalError: If inputs are non-finite, or no restart returns
+                a finite loss. Reaching the iteration cap is not an error.
         """
         x = np.asarray(features, dtype=np.float64)
         y = np.asarray(target, dtype=np.float64)
@@ -140,6 +202,7 @@ class NumpyMLPEngine:
             npt.NDArray[np.float64],
             float,
         ]:
+            """Split a flat parameter vector into ``(w1, b1, w2, b2)``."""
             return (
                 theta[:n_w1].reshape(k, h),
                 theta[n_w1 : n_w1 + n_b1],
@@ -150,6 +213,7 @@ class NumpyMLPEngine:
         def loss_and_grad(
             theta: npt.NDArray[np.float64],
         ) -> tuple[float, npt.NDArray[np.float64]]:
+            """Penalized half mean squared error and its gradient at ``theta``."""
             w1, b1, w2, b2 = unpack(theta)
             z1 = xs @ w1 + b1
             a1 = _FittedMLP._activation(z1, self.activation)

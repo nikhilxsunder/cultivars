@@ -77,6 +77,12 @@ def _log_scale_mixture_moments(nu: float) -> tuple[float, float]:
     so the linearized measurement noise of the quasi-likelihood shifts by
     these two moments: ``E[log lambda] = log(nu/2) - psi(nu/2)`` and
     ``Var[log lambda] = psi'(nu/2)``.
+
+    Args:
+        nu: Degrees of freedom of the Student-t observation noise.
+
+    Returns:
+        The mean and the variance of ``log(lambda)``.
     """
     half = 0.5 * nu
     return float(np.log(half) - digamma(half)), float(polygamma(1, half))
@@ -125,9 +131,11 @@ def _volatility_state_space(
         )
 
     def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Mean-reverting step of the log variance for a batch of states, ``(n, 1) -> (n, 1)``."""
         return mu + phi * (np.asarray(states, dtype=np.float64) - mu)
 
     def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The constant observation mean for every particle, ``(n, 1) -> (n, 1)``."""
         return np.full((np.asarray(states).shape[0], 1), mean)
 
     if nu is None:
@@ -135,6 +143,7 @@ def _volatility_state_space(
         def observation_loglik(
             y: npt.NDArray[np.float64], states: npt.NDArray[np.float64]
         ) -> npt.NDArray[np.float64]:
+            """Gaussian log density of ``y`` given each particle's log variance."""
             h = np.asarray(states, dtype=np.float64)[:, 0]
             residual = float(y[0]) - mean
             return -0.5 * (_LOG_2PI + h + residual**2 * np.exp(-h))
@@ -145,6 +154,7 @@ def _volatility_state_space(
         def observation_loglik(
             y: npt.NDArray[np.float64], states: npt.NDArray[np.float64]
         ) -> npt.NDArray[np.float64]:
+            """Student-t log density of ``y`` given each particle's log variance."""
             h = np.asarray(states, dtype=np.float64)[:, 0]
             residual = float(y[0]) - mean
             return constant - 0.5 * h - 0.5 * (nu + 1.0) * np.log1p(residual**2 * np.exp(-h) / nu)
@@ -158,6 +168,10 @@ def _volatility_state_space(
         def observed_transition(
             states: npt.NDArray[np.float64], y_prev: npt.NDArray[np.float64]
         ) -> npt.NDArray[np.float64]:
+            """Next log-variance mean given the previous return, which carries the leverage.
+
+            A missing previous observation falls back to the unconditional step.
+            """
             h = np.asarray(states, dtype=np.float64)
             previous = float(y_prev[0])
             if not np.isfinite(previous):
@@ -250,11 +264,13 @@ def _trend_volatility_state_space(
     g_h, g_q = float(params.gamma2_irregular), float(params.gamma2_trend)
 
     def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The state mean under the random-walk law: the states themselves."""
         return np.asarray(states, dtype=np.float64)
 
     def transition_sampler(
         states: npt.NDArray[np.float64], rng: np.random.Generator
     ) -> npt.NDArray[np.float64]:
+        """Draw the next ``(tau, h, q)`` per particle; the trend step uses the current ``q``."""
         block = np.asarray(states, dtype=np.float64)
         count = block.shape[0]
         out = np.empty_like(block)
@@ -264,11 +280,13 @@ def _trend_volatility_state_space(
         return out
 
     def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The trend, the first state column, as the observation mean."""
         return np.asarray(states, dtype=np.float64)[:, :1]
 
     def observation_loglik(
         y: npt.NDArray[np.float64], states: npt.NDArray[np.float64]
     ) -> npt.NDArray[np.float64]:
+        """Gaussian log density of ``y`` around each particle's trend with variance ``exp(h)``."""
         block = np.asarray(states, dtype=np.float64)
         gap = float(y[0]) - block[:, 0]
         return -0.5 * (_LOG_2PI + block[:, 1] + gap**2 * np.exp(-block[:, 1]))
@@ -317,10 +335,16 @@ def _decay_nelson_siegel_state_space(
     state_cov[3, 3] = params.decay_sd**2
 
     def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Diagonal AR(1) step of the three factors and the log decay about their means."""
         block = np.asarray(states, dtype=np.float64)
         return mu[None, :] + (block - mu[None, :]) * ar[None, :]
 
     def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Yields at every maturity from each particle's factors and its own decay.
+
+        The slope loading takes its limit of one where ``decay * maturity``
+        is below ``1e-10``.
+        """
         block = np.asarray(states, dtype=np.float64)
         decay = np.exp(block[:, 3])[:, None]
         x = decay * grid[None, :]
@@ -353,6 +377,18 @@ def _linear_state_space(
 
     The state is the deviation ``x - x_ss``; observables are ``design @
     [x; y] + intercept + measurement error``.
+
+    Args:
+        solution: The perturbation solution; only its first-order blocks are
+            read.
+        design: Measurement design over the stacked states and controls,
+            ``(p, n_x + n_y)``.
+        intercept: Measurement intercept, ``(p,)``.
+        obs_cov: Measurement-error covariance, ``(p, p)``.
+
+    Returns:
+        The linear-Gaussian state space with transition ``h_x`` and state
+        noise covariance ``eta @ eta.T``.
     """
     n_x = solution.n_states
     z_full = design @ np.vstack([np.eye(n_x), solution.g_x])
@@ -382,6 +418,16 @@ def _pruned_state_space(
     second-order deviation. Noise enters only ``x_f``, so the state
     covariance is singular and the form is additive-Gaussian, which
     every filter on the substrate accepts.
+
+    Args:
+        solution: The second-order perturbation solution.
+        design: Measurement design over the stacked states and controls,
+            ``(p, n_x + n_y)``.
+        intercept: Measurement intercept, ``(p,)``.
+        obs_cov: Measurement-error covariance, ``(p, p)``.
+
+    Returns:
+        The nonlinear state space over the ``2 * n_x`` pruned states.
     """
     n_x = solution.n_states
     h_x, h_xx, h_ss = solution.h_x, solution.h_xx, solution.h_ss
@@ -389,9 +435,11 @@ def _pruned_state_space(
     x_ss, y_ss = solution.x_ss, solution.y_ss
 
     def kron_square(block: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Row-wise ``x kron x`` for a batch of states, ``(n, n_x) -> (n, n_x * n_x)``."""
         return np.einsum("nj,nk->njk", block, block).reshape(block.shape[0], n_x * n_x)
 
     def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """One pruned step: ``x_f`` by ``h_x``; ``x_s`` by ``h_x`` plus the square of ``x_f``."""
         block = np.asarray(states, dtype=np.float64)
         x_f = block[:, :n_x]
         x_s = block[:, n_x:]
@@ -400,6 +448,7 @@ def _pruned_state_space(
         return np.hstack([next_f, next_s])
 
     def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """Observables implied by the pruned states through the second-order control policy."""
         block = np.asarray(states, dtype=np.float64)
         x_f = block[:, :n_x]
         x_s = block[:, n_x:]

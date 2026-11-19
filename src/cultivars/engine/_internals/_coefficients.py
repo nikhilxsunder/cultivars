@@ -19,6 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Mean coefficients: a conditional-mean draw on its natural scale.
+
+One record, :class:`_MeanCoefficients`. The mean layers in ``_means``
+optimize in search coordinates that need not be the coefficients
+themselves, and they need one shape in which to hand the implied intercept,
+autoregressive, and moving-average coefficients to the objectives, the fit
+records, and the summaries. This is that shape.
+"""
 
 from __future__ import annotations
 
@@ -45,8 +53,20 @@ class _MeanCoefficients:
         const: Intercept, or ``None`` when no intercept is estimated.
         ar: Autoregressive coefficients; empty when the order is zero.
         ma: Moving-average coefficients; empty when the order is zero.
+
+    Example:
+        >>> import numpy as np
+        >>> mean = _MeanCoefficients(const=0.1, ar=np.array([0.5]), ma=np.empty(0))
+        >>> mean.ar.size, mean.ma.size
+        (1, 0)
     """
 
     const: float | None
+    """Intercept of the mean equation, or ``None`` when none is estimated."""
     ar: npt.NDArray[np.float64]
+    """Autoregressive coefficients, shape ``(p,)``; empty when ``p == 0``."""
     ma: npt.NDArray[np.float64]
+    """Moving-average coefficients, shape ``(q,)``; empty when ``q == 0``.
+
+    Present and empty for a pure autoregression, never ``None``.
+    """

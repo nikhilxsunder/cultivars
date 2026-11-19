@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/engine/_internals/_solvers.py
+# filepath: /src/cultivars/engine/_internals/_specifications.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -20,7 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Perturbation solution of rational-expectations models, to second order.
+"""Model specifications: what a user-written model must supply to the engine.
+
+One protocol, :class:`_PerturbationModelSpecification`, the contract a
+rational-expectations model satisfies to be solved by perturbation and
+estimated. The user writes the equilibrium conditions, the steady state,
+the shock loading, the measurement equation, and the prior as plain methods
+on a class; the engine differentiates, solves, filters, and samples. The
+protocol is structural, so the class inherits from nothing.
+
+The solver that consumes a specification is ``_solve_perturbation`` in
+``_solvers``, the estimation engine is ``_PerturbationModel`` in
+``_models``, and the public front is
+:class:`cultivars.multivariate.structural.perturbation.PerturbationDSGE`.
+
+Background: perturbation solution of rational-expectations models, to
+second order.
 
 A model is a system of equilibrium conditions ``E_t f(y', y, x', x) = 0``
 with ``x`` the predetermined states (including any exogenous driving
@@ -95,12 +110,26 @@ class _PerturbationModelSpecification(Protocol):
             ``-inf`` / ``inf`` for an unbounded side.
         n_states: Predetermined variables, exogenous processes included.
         n_controls: Non-predetermined variables.
+
+    Note:
+        The protocol is not ``runtime_checkable``, and nothing here checks
+        an implementation against it. A method with the wrong signature or
+        a return of the wrong shape surfaces where the engine first uses
+        it.
     """
 
     parameter_names: Sequence[str]
+    """One label per structural parameter, in the order of ``theta``."""
     bounds: Sequence[tuple[float, float]]
+    """``(lower, upper)`` per parameter; ``-inf`` or ``inf`` for an unbounded side.
+
+    The engine maps each bounded parameter to an unconstrained coordinate,
+    so the bounds define the space the optimizer and the chain move in.
+    """
     n_states: int
+    """Number of predetermined variables ``n_x``, exogenous processes included."""
     n_controls: int
+    """Number of non-predetermined variables ``n_y``."""
 
     def equations(
         self,
@@ -110,25 +139,74 @@ class _PerturbationModelSpecification(Protocol):
         x_next: npt.NDArray[np.float64],
         x: npt.NDArray[np.float64],
     ) -> npt.NDArray[np.float64]:
-        """Residuals of ``E_t f(y', y, x', x) = 0``, ``n_states + n_controls`` of them."""
+        """Residuals of ``E_t f(y', y, x', x) = 0``, ``n_states + n_controls`` of them.
+
+        Called many times with perturbed arguments to build numerical
+        derivatives, so it must be smooth near the steady state and free
+        of side effects.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+            y_next: Controls next period, ``(n_controls,)``.
+            y: Controls this period, ``(n_controls,)``.
+            x_next: States next period, ``(n_states,)``.
+            x: States this period, ``(n_states,)``.
+
+        Returns:
+            The residual vector, ``(n_states + n_controls,)``; zero at the
+            steady state.
+        """
         ...
 
     def steady_state(
         self, theta: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """``(x_ss, y_ss)`` solving the equations with expectations removed."""
+        """``(x_ss, y_ss)`` solving the equations with expectations removed.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+
+        Returns:
+            The steady-state states, ``(n_states,)``, and controls,
+            ``(n_controls,)``.
+        """
         ...
 
     def shock_loading(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """``(n_states, n_shocks)`` loading of standard-normal shocks on the states."""
+        """``(n_states, n_shocks)`` loading of standard-normal shocks on the states.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+
+        Returns:
+            The loading matrix ``eta``. A row of zeros marks a state no
+            shock hits directly.
+        """
         ...
 
     def observation(
         self, theta: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """``(design, intercept, obs_cov)``: observables ``= design @ [x; y] + intercept + e``."""
+        """``(design, intercept, obs_cov)``: observables ``= design @ [x; y] + intercept + e``.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+
+        Returns:
+            The ``(p, n_states + n_controls)`` design over the stacked
+            states and controls, the ``(p,)`` intercept, and the ``(p, p)``
+            covariance of the measurement error ``e``.
+        """
         ...
 
     def log_prior(self, theta: npt.NDArray[np.float64]) -> float:
-        """Log prior density in the constrained space; ``-inf`` outside support."""
+        """Log prior density in the constrained space; ``-inf`` outside support.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+
+        Returns:
+            The log density, which need not be normalized. The engine adds
+            the log-Jacobian of its own reparameterization.
+        """
         ...

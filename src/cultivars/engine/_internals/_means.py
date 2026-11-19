@@ -43,7 +43,7 @@ Two layers cover the group:
    product and the coefficients are unconstrained, since a mean that is
    estimated jointly with a variance does not need its autoregressive roots
    pinned inside the unit circle for the recursion to be evaluable.
-2. :class:`_ArmaMean` is the recursion case. Residuals are produced one period
+2. :class:`_ARMAMean` is the recursion case. Residuals are produced one period
    at a time, so an explosive draw would feed itself and overflow -- which is
    why this layer reparameterizes both blocks through the partial
    autocorrelations. Stationarity and invertibility then hold by construction
@@ -88,12 +88,20 @@ class _MeanLayer(ABC):
     @property
     @abstractmethod
     def target(self) -> npt.NDArray[np.float64]:
-        """The observations the variance recursion is evaluated over."""
+        """The observations the variance recursion is evaluated over.
+
+        Returns:
+            The trimmed target, ``(n,)``.
+        """
 
     @property
     @abstractmethod
     def n_parameters(self) -> int:
-        """Width of this layer's slice of the parameter vector."""
+        """Width of this layer's slice of the parameter vector.
+
+        Returns:
+            The number of parameters the layer consumes.
+        """
 
     @abstractmethod
     def residuals(self, params: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
@@ -109,7 +117,11 @@ class _MeanLayer(ABC):
 
     @abstractmethod
     def start(self) -> npt.NDArray[np.float64]:
-        """A warm start for this layer's block, in search coordinates."""
+        """A warm start for this layer's block, in search coordinates.
+
+        Returns:
+            A vector of length :attr:`n_parameters`.
+        """
 
     @abstractmethod
     def unpack(self, params: npt.NDArray[np.float64]) -> _MeanCoefficients:
@@ -143,7 +155,11 @@ class _MeanLayer(ABC):
         return self.target - self.residuals(params)
 
     def initial_residuals(self) -> npt.NDArray[np.float64]:
-        """Residuals at the warm start, used to seed the variance backcast."""
+        """Residuals at the warm start, used to seed the variance backcast.
+
+        Returns:
+            ``residuals(start())``, aligned with :attr:`target`.
+        """
         return self.residuals(self.start())
 
 
@@ -159,8 +175,18 @@ class _LinearMean(_MeanLayer):
     """
 
     endog_target: npt.NDArray[np.float64]
+    """The trimmed series the design explains, ``(n,)``."""
     design: npt.NDArray[np.float64]
+    """Columns of the mean regression, ``(n, m)``, intercept first when present.
+
+    Zero columns is the zero-mean specification.
+    """
     include_const: bool
+    """Whether the first design column is the intercept.
+
+    Read only by :meth:`unpack`, to decide whether the first coefficient is
+    reported as the constant.
+    """
 
     @property
     def target(self) -> npt.NDArray[np.float64]:
@@ -169,29 +195,60 @@ class _LinearMean(_MeanLayer):
 
     @property
     def n_parameters(self) -> int:
-        """Number of design columns."""
+        """Number of design columns.
+
+        Returns:
+            The width ``m`` of this layer's parameter block.
+        """
         return int(self.design.shape[1])
 
     def residuals(self, params: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Residuals from one matrix product; the zero-column case is the series."""
+        """Residuals from one matrix product; the zero-column case is the series.
+
+        Args:
+            params: The ``(m,)`` regression coefficients.
+
+        Returns:
+            ``endog_target - design @ params``. With no columns the stored
+            series itself is returned, not a copy.
+        """
         if not self.n_parameters:
             return self.endog_target
         return self.endog_target - self.design @ params
 
     def fitted(self, params: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """The design times the coefficients, computed rather than differenced."""
+        """The design times the coefficients, computed rather than differenced.
+
+        Args:
+            params: The ``(m,)`` regression coefficients.
+
+        Returns:
+            ``design @ params``, or zeros when there are no columns.
+        """
         if not self.n_parameters:
             return np.zeros(self.endog_target.shape[0], dtype=np.float64)
         return self.design @ params
 
     def start(self) -> npt.NDArray[np.float64]:
-        """Ordinary least squares on the design, or an empty block."""
+        """Ordinary least squares on the design, or an empty block.
+
+        Returns:
+            The ``(m,)`` least-squares coefficients.
+        """
         if not self.n_parameters:
             return np.zeros(0, dtype=np.float64)
         return _ols(self.design, self.endog_target)[0]
 
     def unpack(self, params: npt.NDArray[np.float64]) -> _MeanCoefficients:
-        """Split the coefficient vector into an intercept and lag weights."""
+        """Split the coefficient vector into an intercept and lag weights.
+
+        Args:
+            params: The ``(m,)`` regression coefficients.
+
+        Returns:
+            The constant (``None`` without one), the remaining coefficients
+            as the autoregressive block, and an empty moving-average block.
+        """
         if self.include_const:
             return _MeanCoefficients(
                 const=float(params[0]),
@@ -227,32 +284,67 @@ class _ARMAMean(_MeanLayer):
         p: Autoregressive order.
         q: Moving-average order.
         include_const: Whether an intercept is estimated.
+
+    Warning:
+        The claim above about the moving-average roots holds only for
+        ``q <= 1``. The recursion adds ``ma[j] * eps[t - j - 1]``, so the
+        moving-average polynomial is ``1 + ma_1 L + ... + ma_q L^q``, while
+        the reparameterization returns coefficients for which
+        ``1 - ma_1 L - ... - ma_q L^q`` has its roots outside the unit
+        circle. For ``q >= 2`` those are different regions: some searched
+        draws are not invertible and make the recursion explode, and some
+        invertible moving averages cannot be reached.
     """
 
     endog: npt.NDArray[np.float64]
+    """The untrimmed series, ``(n,)``; the recursion reads levels before the first target."""
     p: int
+    """Autoregressive order."""
     q: int
+    """Moving-average order."""
     include_const: bool
+    """Whether an intercept is estimated; it leads the parameter block when present."""
 
     @property
     def burn(self) -> int:
-        """Leading observations the recursion conditions on."""
+        """Leading observations the recursion conditions on.
+
+        Returns:
+            ``max(p, q)``.
+        """
         return max(self.p, self.q)
 
     @property
     def target(self) -> npt.NDArray[np.float64]:
-        """The series past the conditioning block."""
+        """The series past the conditioning block.
+
+        Returns:
+            ``endog[burn:]``, a view.
+        """
         return self.endog[self.burn :]
 
     @property
     def n_parameters(self) -> int:
-        """Intercept plus both blocks."""
+        """Intercept plus both blocks.
+
+        Returns:
+            ``include_const + p + q``.
+        """
         return int(self.include_const) + self.p + self.q
 
     def _split(
         self, params: npt.NDArray[np.float64]
     ) -> tuple[float, npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Map search coordinates to an intercept and two natural-scale blocks."""
+        """Map search coordinates to an intercept and two natural-scale blocks.
+
+        Args:
+            params: ``[const?, psi_ar, psi_ma]`` in unconstrained coordinates.
+
+        Returns:
+            The constant (``0.0`` without one), the autoregressive
+            coefficients, and the moving-average coefficients, each block
+            mapped through the same partial-autocorrelation transform.
+        """
         offset = int(self.include_const)
         const = float(params[0]) if self.include_const else 0.0
         ar = _unpack_stationary(np.asarray(params[offset : offset + self.p], dtype=np.float64))
@@ -288,6 +380,11 @@ class _ARMAMean(_MeanLayer):
         the search at an ARMA whose MA polynomial is the identity, which is the
         nested autoregression, so the first optimizer steps improve on a model
         that is already sensible instead of on a random one.
+
+        Returns:
+            ``[const?, psi_ar, zeros(q)]`` in search coordinates. Without
+            autoregressive lags the constant starts at the mean of the
+            target.
         """
         blocks: list[npt.NDArray[np.float64]] = []
         y, burn = self.endog, self.burn
@@ -306,7 +403,14 @@ class _ARMAMean(_MeanLayer):
         return np.concatenate(blocks) if blocks else np.zeros(0, dtype=np.float64)
 
     def unpack(self, params: npt.NDArray[np.float64]) -> _MeanCoefficients:
-        """Report the intercept and both blocks on their natural scale."""
+        """Report the intercept and both blocks on their natural scale.
+
+        Args:
+            params: ``[const?, psi_ar, psi_ma]`` in unconstrained coordinates.
+
+        Returns:
+            The constant (``None`` without one) and both coefficient blocks.
+        """
         const, ar, ma = self._split(params)
         return _MeanCoefficients(
             const=const if self.include_const else None,

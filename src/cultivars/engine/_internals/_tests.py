@@ -19,6 +19,45 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Test records: hypothesis-test verdicts and the convergence report.
+
+Every test in the package returns a frozen record from this module and not
+a bare statistic. A record carries the statistic, what it was referred to,
+the p-value where one exists, and enough of its construction to render
+itself as a table and to say what was tested.
+
+The records and how they relate:
+
+* :class:`_HypothesisTest` is the base: a scalar statistic, an optional
+  p-value, ``reject(alpha)``, and the renderers. A study that collects
+  verdicts handles this one type.
+* :class:`_ChiSquaredTest` is a test referred to a chi-squared law.
+  :class:`_LikelihoodRatioTest` and :class:`_WaldTest` are siblings under
+  it: the first is named by its construction, the second by the null it
+  was aimed at.
+* :class:`_ForecastComparisonTest` is a test on aligned forecast errors
+  from a rolling evaluation, with the header those tests share.
+* :class:`_TabulatedTest` is a test with a non-standard limit law, read
+  against tabulated critical values, with or without a p-value.
+* :class:`_JohansenRankTest` stands apart. It holds two sequences of
+  statistics over candidate ranks, not one scalar, so it is not a
+  :class:`_HypothesisTest`.
+* :class:`_ConvergenceTest` is not a hypothesis test at all: it is the
+  per-quantity convergence report of a Markov chain Monte Carlo run, with
+  a verdict against the thresholds it carries.
+
+The records are re-exported by the public modules under names without the
+leading underscore, and each ``__repr__`` prints a public name.
+
+References:
+    Johansen, S. (1991). Estimation and hypothesis testing of cointegration
+        vectors in Gaussian vector autoregressive models. *Econometrica*,
+        59(6), 1551-1580.
+    Vehtari, A., Gelman, A., Simpson, D., Carpenter, B., & Burkner, P.-C.
+        (2021). Rank-normalization, folding, and localization: An improved
+        R-hat for assessing convergence of MCMC. *Bayesian Analysis*,
+        16(2), 667-718.
+"""
 
 from __future__ import annotations
 
@@ -86,15 +125,29 @@ class _JohansenRankTest:
     """
 
     eigenvalues: npt.NDArray[np.float64]
+    """The squared canonical correlations, descending.
+
+    One per modelled equation, since a conditional system cannot support more
+    cointegrating relations than it has equations.
+    """
     trace_statistic: npt.NDArray[np.float64]
+    """One entry per null ``rank <= r``, ``r = 0 .. k - 1``."""
     max_eigenvalue_statistic: npt.NDArray[np.float64]
+    """One entry per null ``rank = r``."""
     trace_pvalue: npt.NDArray[np.float64]
+    """Empirical p-values from the simulated null."""
     max_eigenvalue_pvalue: npt.NDArray[np.float64]
+    """Empirical p-values from the simulated null."""
     nobs: int
+    """Effective sample the statistics were computed on."""
     deterministic: str
+    """The Johansen case the null was simulated under."""
     k_exog: int
+    """Weakly exogenous integrated regressors the null accounted for."""
     simulations: int
+    """Replications behind each p-value, so its resolution is visible rather than implied."""
     small_sample: bool
+    """Whether the Reinsel-Ahn degrees-of-freedom scaling was applied to the statistics."""
 
     @property
     def k_endog(self) -> int:
@@ -137,7 +190,19 @@ class _JohansenRankTest:
         return self.k_endog
 
     def to_table(self, *, alpha: float = 0.05) -> _SummaryTable:
-        """Render both sequences with the rank each one selects."""
+        """Render both sequences with the rank each one selects.
+
+        Args:
+            alpha: Level at which both sequences are read to select a rank.
+
+        Returns:
+            A :class:`_SummaryTable` with one row per null rank: the eigenvalue,
+            both statistics, and both p-values, with notes on the sequential
+            reading and on how the p-values were simulated.
+
+        Raises:
+            SpecificationError: If ``alpha`` is not strictly inside ``(0, 1)``.
+        """
         chosen = self.selected_rank(alpha=alpha)
         notes = [
             f"Read down from r = 0 and stop at the first row not rejected: trace selects "
@@ -215,7 +280,9 @@ class _HypothesisTest:
     """
 
     statistic: float
+    """The test statistic."""
     pvalue: float | None
+    """Its p-value, or ``None`` for a test known only through tabulated critical values."""
 
     def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
         """Whether the null is rejected at level ``alpha``.
@@ -281,7 +348,9 @@ class _ChiSquaredTest(_HypothesisTest):
     """
 
     df: int
+    """Degrees of freedom."""
     pvalue: float
+    """Upper-tail probability under the chi-squared null."""
 
     def _label(self) -> str:
         """The row label naming what was tested."""
@@ -318,8 +387,11 @@ class _ForecastComparisonTest(_HypothesisTest):
     """
 
     pvalue: float
+    """Its p-value."""
     horizon: int
+    """Forecast horizon behind the series."""
     nobs: int
+    """Evaluation origins."""
 
     def _frame(
         self,
@@ -330,7 +402,19 @@ class _ForecastComparisonTest(_HypothesisTest):
         rows: tuple[tuple[str, ...], ...],
         notes: tuple[str, ...],
     ) -> _SummaryTable:
-        """Assemble the family's table around its common header."""
+        """Assemble the family's table around its common header.
+
+        Args:
+            title: Table title.
+            verdict: One-line verdict shown in the header.
+            columns: Column headings.
+            rows: Table rows, one tuple of cells each.
+            notes: Notes printed under the table.
+
+        Returns:
+            The table, with the number of origins, the horizon, and the verdict
+            as its metadata.
+        """
         return _SummaryTable(
             title=title,
             metadata=(
@@ -371,11 +455,17 @@ class _TabulatedTest(_HypothesisTest):
     """
 
     name: str
+    """The test."""
     critical_values: dict[str, float]
+    """``{"1%", "5%", "10%"}`` critical values."""
     null: str
+    """The hypothesis under test."""
     nobs: int
+    """Observations the statistic was computed on."""
     lower_tail: bool = False
+    """Whether rejection lies in the lower tail."""
     companions: tuple[_TabulatedTest, ...] = ()
+    """Further statistics of the same test on the same sample."""
 
     def reject(self, *, alpha: float = _DEFAULT_ALPHA) -> bool:
         """Whether the null is rejected at level ``alpha``.
@@ -466,9 +556,11 @@ class _LikelihoodRatioTest(_ChiSquaredTest):
     """
 
     def _label(self) -> str:
+        """What the test is of, for its one-line repr: always a nested restriction."""
         return "nested restriction"
 
     def _title(self) -> str:
+        """Title of the summary table."""
         return "Likelihood-Ratio Test"
 
     def __repr__(self) -> str:
@@ -483,7 +575,7 @@ class _LikelihoodRatioTest(_ChiSquaredTest):
 class _WaldTest(_ChiSquaredTest):
     """Verdict of a chi-squared restriction test on a fitted model.
 
-    Carries the same three numbers as :class:`_LikelihoodRatioResult` and one
+    Carries the same three numbers as :class:`_LikelihoodRatioTest` and one
     more, and that one is the reason they are separate classes. A
     likelihood-ratio test is named by its construction: two nested fits, one
     statistic, and the restriction is whatever distinguishes them, so the
@@ -509,12 +601,18 @@ class _WaldTest(_ChiSquaredTest):
     """
 
     statistic: float
+    """The chi-squared statistic."""
     null: str
+    """The hypothesis being tested, phrased so it reads as a sentence in a diagnostics
+    table -- ``"gdp does not Granger-cause infl"``, not ``"granger"``.
+    """
 
     def _label(self) -> str:
+        """What the test is of, for its one-line repr: the stated null."""
         return self.null
 
     def _title(self) -> str:
+        """Title of the summary table."""
         return "Wald Test"
 
     def __repr__(self) -> str:
@@ -571,18 +669,35 @@ class _ConvergenceTest:
     """
 
     names: tuple[str, ...]
+    """Label of every scalar quantity, in row order."""
     mean: npt.NDArray[np.float64] = field(repr=False)
+    """``(d,)`` posterior means."""
     sd: npt.NDArray[np.float64] = field(repr=False)
+    """``(d,)`` posterior standard deviations."""
     mcse: npt.NDArray[np.float64] = field(repr=False)
+    """``(d,)`` Monte Carlo standard errors of the means."""
     ess_bulk: npt.NDArray[np.float64] = field(repr=False)
+    """``(d,)`` bulk effective sample sizes."""
     ess_tail: npt.NDArray[np.float64] = field(repr=False)
+    """``(d,)`` tail effective sample sizes."""
     rhat: npt.NDArray[np.float64] = field(repr=False)
+    """``(d,)`` split-R-hat statistics."""
     geweke: npt.NDArray[np.float64] = field(repr=False)
+    """``(d,)`` signed Geweke scores, the one of largest magnitude across chains;
+    ``nan`` when the chains are too short for the default segments.
+    """
     n_chains: int
+    """Independent chains the diagnostics pooled."""
     n_draws: int
+    """Kept draws per chain."""
     rhat_tol: float
+    """R-hat above which a parameter is flagged."""
     min_ess: float
+    """Effective draws per chain below which a parameter is flagged, so the floor
+    applied is ``min_ess * n_chains``.
+    """
     source: str
+    """What was assessed, for the summary title."""
 
     @classmethod
     def _assess(
@@ -669,6 +784,13 @@ class _ConvergenceTest:
 
     @property
     def _failing(self) -> npt.NDArray[np.bool_]:
+        """Mask of the quantities that fail a threshold.
+
+        Returns:
+            A boolean array, ``True`` where R-hat exceeds its tolerance or
+            either effective sample size is below the floor. A degenerate
+            quantity, whose R-hat is ``nan``, is never flagged.
+        """
         assessed = ~np.isnan(self.rhat)
         bad = (
             (self.rhat > self.rhat_tol)
@@ -692,7 +814,14 @@ class _ConvergenceTest:
         return not bool(self._failing.any())
 
     def worst(self, n: int = 5) -> tuple[str, ...]:
-        """The ``n`` quantities with the largest R-hat, degenerate ones last."""
+        """The ``n`` quantities with the largest R-hat, degenerate ones last.
+
+        Args:
+            n: How many quantity names to return.
+
+        Returns:
+            Up to ``n`` names, in decreasing order of R-hat.
+        """
         order = np.argsort(np.nan_to_num(self.rhat, nan=-np.inf))[::-1]
         return tuple(np.asarray(self.names)[order[:n]].tolist())
 
@@ -783,6 +912,12 @@ class _ConvergenceTest:
         )
 
     def __repr__(self) -> str:
+        """One-line verdict: the size of the run, the worst R-hat, the least bulk ESS.
+
+        Returns:
+            A string of the form ``ConvergenceReport(...)``, the name under
+            which the record is shown to users.
+        """
         assessed = self.rhat[~np.isnan(self.rhat)]
         worst = f"{assessed.max():.4f}" if assessed.size else "nan"
         bulk = self.ess_bulk[~np.isnan(self.ess_bulk)]

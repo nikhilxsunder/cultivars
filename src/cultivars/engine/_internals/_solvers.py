@@ -19,6 +19,30 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Solvers: the routines that turn a stated problem into its solution.
+
+Eight routines of three kinds.
+
+Optimizers. ``_solve`` minimizes an objective from every starting point the
+objective supplies and keeps the best; ``_maximize_likelihood`` is the same
+call with the sign flipped, for objectives that are negative log
+likelihoods. The algorithm and its options belong to the objective, so
+these two contain no model-specific choices.
+
+Estimators. ``_solve_global`` stacks conditional unit models into one
+closed global autoregression. ``_posterior_coefficients`` computes the
+equation-by-equation posterior of a coefficient matrix under a
+moment-and-dummy prior. ``_conjugate_posterior`` is the
+Normal-inverse-Wishart update with its exact log marginal likelihood.
+``_fista_penalized`` solves a penalized least-squares problem by
+accelerated proximal gradient.
+
+Factorizations. ``_spectral_factor`` computes the canonical factor of a
+spectral density by Wilson's algorithm, and ``_solve_perturbation`` solves
+a rational-expectations model to first or second order around its steady
+state. The background to the perturbation method is in the module
+docstring of ``_specifications``.
+"""
 
 from __future__ import annotations
 
@@ -457,6 +481,7 @@ def _spectral_factor(
         ) from error
 
     def causal_part(values: npt.NDArray[np.complex128]) -> npt.NDArray[np.complex128]:
+        """Project onto the causal part: halve lag zero and drop the second half of the lags."""
         coefficients = np.fft.ifft(values, axis=0)
         coefficients[0] *= 0.5
         coefficients[half:] = 0.0
@@ -529,6 +554,7 @@ def _solve_perturbation(
     point = _stack_point(y_ss, y_ss, x_ss, x_ss)
 
     def stacked(v: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        """The residuals as a function of one stacked point ``[y', y, x', x]``."""
         return np.asarray(
             equations(v[:n_y], v[n_y : 2 * n_y], v[2 * n_y : 2 * n_y + n_x], v[2 * n_y + n_x :]),
             dtype=np.float64,

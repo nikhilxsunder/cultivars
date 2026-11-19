@@ -19,6 +19,22 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Moment records: what a multivariate regression yields before a family names it.
+
+Two records. :class:`_VectorMoments` is the output of a multivariate
+least-squares fit: coefficients, residuals, both residual covariances, and
+the concentrated Gaussian log likelihood. Every reduced-form vector family
+passes through it between building its design and slicing its coefficients
+apart. :class:`_CointegrationMoments` is the output of the reduced-rank
+eigenvalue problem behind Johansen's procedure, held apart from any fit
+because it does not depend on the cointegrating rank.
+
+References:
+    Johansen, S. (1991). Estimation and hypothesis testing of cointegration
+        vectors in Gaussian vector autoregressive models. *Econometrica*,
+        59(6), 1551-1580.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -53,13 +69,21 @@ class _VectorMoments:
     """
 
     coef: npt.NDArray[np.float64]
+    """Coefficient matrix as estimated, ``(width, k)``: design columns by equations."""
     resid: npt.NDArray[np.float64]
+    """Residuals, ``(nobs, k)``, aligned with the design rows."""
     fittedvalues: npt.NDArray[np.float64]
+    """Fitted values ``design @ coef``, ``(nobs, k)``."""
     sigma_u: npt.NDArray[np.float64]
+    """Residual covariance with the degrees-of-freedom correction, ``(k, k)``."""
     sigma_ml: npt.NDArray[np.float64]
+    """Residual covariance divided by the sample size, ``(k, k)``; the maximum-likelihood one."""
     llf: float
+    """Gaussian log likelihood, concentrated over ``sigma_ml``."""
     nobs: int
+    """Number of design rows."""
     width: int
+    """Number of design columns, the regressors of each equation."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -85,9 +109,19 @@ class _CointegrationMoments:
     """
 
     eigenvalues: npt.NDArray[np.float64]
+    """Squared canonical correlations between differences and lagged levels, descending."""
     eigenvectors: npt.NDArray[np.float64]
+    """Candidate cointegrating vectors, one per column, in the order of ``eigenvalues``.
+
+    Normalized so that ``beta' S11 beta`` is the identity.
+    """
     levels: npt.NDArray[np.float64]
+    """The lagged-levels block, with any restricted deterministic column appended."""
     differences: npt.NDArray[np.float64]
+    """The contemporaneous differences being explained."""
     short_run: npt.NDArray[np.float64]
+    """Unrestricted deterministic terms and lagged differences."""
     s00: npt.NDArray[np.float64]
+    """Residual second-moment matrix of the differences."""
     nobs: int
+    """Effective sample size."""

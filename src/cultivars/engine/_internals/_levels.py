@@ -19,6 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Conditional levels: one unit of a global system, written in levels.
+
+One record, :class:`_ConditionalLevels`, the form in which a unit model is
+handed to the solve that links units into a global system. A VARX estimated
+in levels and a conditional error-correction model estimated in differences
+both convert to it, so the linkage reads one shape whatever estimated the
+unit.
+"""
 
 from __future__ import annotations
 
@@ -52,26 +60,55 @@ class _ConditionalLevels:
         deterministic: ``(d, k)`` deterministic coefficients.
         names: The unit's own variable labels.
         exog_names: The unit's foreign-aggregate labels.
+
+    Read as an equation, with ``x`` the unit's ``k`` variables, ``f`` its
+    ``m`` foreign aggregates, and ``d`` the deterministic terms::
+
+        x_t = sum_l phi[l] x_{t-l} + impact f_t + sum_l exog_lags[l] f_{t-l}
+              + deterministic' d_t + u_t
+
+    with the lag index ``l`` running from one to ``order``.
     """
 
     phi: npt.NDArray[np.float64]
+    """Coefficients on the unit's own lagged levels, ``(p, k, k)``, lag on the leading axis."""
     impact: npt.NDArray[np.float64]
+    """Contemporaneous response to the foreign levels, ``(k, m)``."""
     exog_lags: npt.NDArray[np.float64]
+    """Coefficients on the lagged foreign levels, ``(p, k, m)``.
+
+    Padded with zeros to the depth of ``phi``, so the two stack lag by lag.
+    """
     deterministic: npt.NDArray[np.float64]
+    """Deterministic coefficients, ``(d, k)``, one row per deterministic term."""
     names: tuple[str, ...]
+    """Labels of the unit's own variables, length ``k``."""
     exog_names: tuple[str, ...]
+    """Labels of the unit's foreign aggregates, length ``m``."""
 
     @property
     def order(self) -> int:
-        """Lags of the unit's own levels."""
+        """Lags of the unit's own levels.
+
+        Returns:
+            The leading dimension ``p`` of ``phi``.
+        """
         return int(self.phi.shape[0])
 
     @property
     def k_endog(self) -> int:
-        """Variables the unit models."""
+        """Variables the unit models.
+
+        Returns:
+            The dimension ``k`` of the unit, read from ``phi``.
+        """
         return int(self.phi.shape[1])
 
     @property
     def k_exog(self) -> int:
-        """Foreign aggregates the unit reads."""
+        """Foreign aggregates the unit reads.
+
+        Returns:
+            The number ``m`` of foreign aggregates, read from ``impact``.
+        """
         return int(self.impact.shape[1])

@@ -101,16 +101,52 @@ class _StateSpace[F: _FilterResult, S: _SmootherResult](ABC):
 
     @property
     @abstractmethod
-    def k_endog(self) -> int: ...
+    def k_endog(self) -> int:
+        """Number of observed variables."""
+        ...
+
     @property
     @abstractmethod
-    def k_states(self) -> int: ...
+    def k_states(self) -> int:
+        """Number of states."""
+        ...
+
     @abstractmethod
-    def filter(self, y: npt.ArrayLike) -> F: ...
+    def filter(self, y: npt.ArrayLike) -> F:
+        """Run the forward pass over the data and return its result.
+
+        Args:
+            y: The observations.
+
+        Returns:
+            The implementation's filter result.
+        """
+        ...
+
     @abstractmethod
-    def smooth(self, y: npt.ArrayLike) -> S: ...
+    def smooth(self, y: npt.ArrayLike) -> S:
+        """Run the forward and backward passes and return the smoothed result.
+
+        Args:
+            y: The observations.
+
+        Returns:
+            The implementation's smoother result.
+        """
+        ...
+
     @abstractmethod
-    def loglikelihood(self, y: npt.ArrayLike) -> float: ...
+    def loglikelihood(self, y: npt.ArrayLike) -> float:
+        """The log likelihood of the data under the model.
+
+        Args:
+            y: The observations.
+
+        Returns:
+            The log likelihood, exact or approximate as the implementation
+            states.
+        """
+        ...
 
 
 class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanSmootherResult]):
@@ -216,6 +252,21 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
     def _validate_matrix(
         value: npt.ArrayLike, name: str, *, ndim_static: int
     ) -> npt.NDArray[np.float64]:
+        """Coerce a system matrix and check that its rank is time-invariant or time-varying.
+
+        Args:
+            value: The matrix, or a stack of matrices with time on the leading
+                axis.
+            name: Argument name, for the error message.
+            ndim_static: Rank of the time-invariant form.
+
+        Returns:
+            The matrix as a float array.
+
+        Raises:
+            DimensionError: If the rank is neither ``ndim_static`` nor
+                ``ndim_static + 1``.
+        """
         arr = np.asarray(value, dtype=np.float64)
         if arr.ndim not in (ndim_static, ndim_static + 1):
             raise DimensionError(
@@ -229,6 +280,21 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
     def _validate_vector(
         self, value: npt.ArrayLike | None, name: str, dim: int
     ) -> npt.NDArray[np.float64]:
+        """Coerce an intercept, defaulting to zeros.
+
+        Args:
+            value: The intercept, ``(dim,)``, or ``(n, dim)`` when it varies
+                over time, or ``None``.
+            name: Argument name, for the error message.
+            dim: Required trailing dimension.
+
+        Returns:
+            The intercept as a float array; zeros of length ``dim`` for
+            ``None``.
+
+        Raises:
+            DimensionError: If the rank or the trailing dimension is wrong.
+        """
         if value is None:
             return np.zeros(dim, dtype=np.float64)
         arr = np.asarray(value, dtype=np.float64)
@@ -241,6 +307,15 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
         return arr
 
     def _default_initial_cov(self) -> npt.NDArray[np.float64]:
+        """Initial state covariance used when none is given.
+
+        Returns:
+            The stationary covariance, solved from the discrete Lyapunov
+            equation, when the system is time-invariant and every eigenvalue
+            of the transition is inside the unit circle by more than
+            ``1e-10``. Otherwise ``1e6`` times the identity, as an
+            approximately diffuse start.
+        """
         if self._T.ndim == 2 and self._R.ndim == 2 and self._Q.ndim == 2:
             eig = np.abs(np.linalg.eigvals(self._T))
             if float(eig.max(initial=0.0)) < 1.0 - 1e-10:
@@ -267,10 +342,32 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
 
     @staticmethod
     def _at(matrix: npt.NDArray[np.float64], t: int, static_ndim: int) -> npt.NDArray[np.float64]:
-        """Return the system matrix at time ``t`` (broadcasting invariant ones)."""
+        """Return the system matrix at time ``t`` (broadcasting invariant ones).
+
+        Args:
+            matrix: A system matrix, time-invariant or with time on the leading
+                axis.
+            t: Period.
+            static_ndim: Rank of the time-invariant form.
+
+        Returns:
+            ``matrix`` itself when it is time-invariant, otherwise its slice at
+            ``t``.
+        """
         return matrix if matrix.ndim == static_ndim else matrix[t]
 
     def _prepare_data(self, y: npt.ArrayLike) -> npt.NDArray[np.float64]:
+        """Coerce observations to ``(n, p)``, promoting a 1-D series to one column.
+
+        Args:
+            y: The observations.
+
+        Returns:
+            The observations as a float array of shape ``(n, p)``.
+
+        Raises:
+            DimensionError: If the data cannot match the observation dimension.
+        """
         arr = np.asarray(y, dtype=np.float64)
         if arr.ndim == 1:
             arr = arr.reshape(-1, 1)
@@ -281,6 +378,15 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
     # -- forward pass ------------------------------------------------------
 
     def _forward(self, y: npt.NDArray[np.float64]) -> _ForwardPass:
+        """One pass of the Kalman recursions, shared by the filter, likelihood, and smoother.
+
+        Args:
+            y: Prepared observations, ``(n, p)``.
+
+        Returns:
+            The predicted and filtered moments and the per-period
+            log-likelihood contributions.
+        """
         n, m = y.shape[0], self._m
         pred_a = np.zeros((n, m))
         pred_P = np.zeros((n, m, m))
@@ -380,12 +486,32 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
         )
 
     def loglikelihood(self, y: npt.ArrayLike) -> float:
-        """Return the total Gaussian log-likelihood of the data."""
+        """Return the total Gaussian log-likelihood of the data.
+
+        Args:
+            y: The observations, ``(n, p)`` or ``(n,)`` for one observable.
+
+        Returns:
+            The sum of the per-period contributions of the forward pass.
+
+        Raises:
+            DimensionError: If the data cannot match the observation dimension.
+        """
         data = self._prepare_data(y)
         return float(self._forward(data).loglik_contrib.sum())
 
     def smooth(self, y: npt.ArrayLike) -> _DurbinKoopmanSmootherResult:
-        """Run the Durbin-Koopman state smoother."""
+        """Run the Durbin-Koopman state smoother.
+
+        Args:
+            y: The observations, ``(n, p)`` or ``(n,)`` for one observable.
+
+        Returns:
+            The smoothed states and their covariances.
+
+        Raises:
+            DimensionError: If the data cannot match the observation dimension.
+        """
         data = self._prepare_data(y)
         fwd = self._forward(data)
         n, m = data.shape[0], self._m
@@ -423,6 +549,15 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
     def _simulate_forward(
         self, n: int, rng: np.random.Generator
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Simulate states and observations forward from a draw of the initial state.
+
+        Args:
+            n: Number of periods.
+            rng: Random generator.
+
+        Returns:
+            The state path, ``(n, m)``, and the observation path, ``(n, p)``.
+        """
         alpha = np.zeros((n, self._m))
         obs = np.zeros((n, self._p))
         p1_sqrt = _psd_sqrt(self._P1)
@@ -443,7 +578,18 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
     def simulate(
         self, n: int, *, seed: int | np.random.Generator | None = None
     ) -> npt.NDArray[np.float64]:
-        """Draw a length-``n`` observation path from the model."""
+        """Draw a length-``n`` observation path from the model.
+
+        Args:
+            n: Number of periods, at least 1.
+            seed: Seed or generator.
+
+        Returns:
+            The simulated observations, ``(n, p)``.
+
+        Raises:
+            DimensionError: If ``n`` is below 1.
+        """
         if n < 1:
             raise DimensionError(f"simulate requires n >= 1; got {n}.")
         rng = np.random.default_rng(seed)
@@ -897,15 +1043,38 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
         trimmed target and lag block -- an EM loop, which rebuilds them once and
         reuses them across every iteration -- can skip re-deriving them from the
         raw series on each pass.
+
+        Args:
+            target: The trimmed target, ``(T_eff,)``.
+            lags: The matching lag block, ``(T_eff, p)``.
+
+        Returns:
+            The log conditional density of each observation under each regime.
         """
         return self.log_densities(target, self.conditional_means(lags))
 
     def filter_densities(self, log_density: npt.NDArray[np.float64]) -> _HamiltonFilterResult:
-        """Run the Hamilton filter over an already-built density matrix."""
+        """Run the Hamilton filter over an already-built density matrix.
+
+        Args:
+            log_density: Log conditional densities, ``(T_eff, K)``.
+
+        Returns:
+            The filtered and predicted regime probabilities and the log
+            likelihood.
+        """
         return _hamilton_filter(log_density, self._transition, initial_prob=self._pi0)
 
     def smooth_densities(self, filtered: _HamiltonFilterResult) -> _KimSmootherResult:
-        """Run the Kim smoother over a completed forward pass."""
+        """Run the Kim smoother over a completed forward pass.
+
+        Args:
+            filtered: A forward pass produced with this system's transition
+                matrix.
+
+        Returns:
+            The smoothed marginal and consecutive-pair regime probabilities.
+        """
         return _kim_smoother(filtered, self._transition)
 
     def filter(self, y: npt.ArrayLike) -> _HamiltonFilterResult:
@@ -938,11 +1107,27 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
         return self.filter_densities(self.density_matrix(target, lags))
 
     def smooth(self, y: npt.ArrayLike) -> _KimSmootherResult:
-        """Filter, then smooth, returning full-sample regime probabilities."""
+        """Filter, then smooth, returning full-sample regime probabilities.
+
+        Args:
+            y: The series.
+
+        Returns:
+            The smoothed marginal and consecutive-pair regime probabilities
+            over the effective sample.
+        """
         return self.smooth_densities(self.filter(y))
 
     def loglikelihood(self, y: npt.ArrayLike) -> float:
-        """The exact log-likelihood of a series under this system."""
+        """The exact log-likelihood of a series under this system.
+
+        Args:
+            y: The series.
+
+        Returns:
+            The log likelihood from the Hamilton filter over the effective
+            sample.
+        """
         return self.filter(y).loglikelihood
 
 
@@ -1138,7 +1323,19 @@ class _NonlinearStateSpace:
         point: npt.NDArray[np.float64],
         out_dim: int,
     ) -> npt.NDArray[np.float64]:
-        """Central-difference Jacobian of a batched map at one point."""
+        """Central-difference Jacobian of a batched map at one point.
+
+        Args:
+            func: A batched map taking ``(n, m)`` states to ``(n, out_dim)``
+                rows.
+            point: The ``(m,)`` point to differentiate at.
+            out_dim: Output dimension of ``func``.
+
+        Returns:
+            The ``(out_dim, m)`` Jacobian. Each coordinate is stepped by
+            ``sqrt(eps) * max(abs(x), 1)``, and all the steps are evaluated in
+            two batched calls.
+        """
         m = self._m
         steps = np.sqrt(np.finfo(np.float64).eps) * np.maximum(np.abs(point), 1.0)
         forward = np.tile(point, (m, 1)) + np.diag(steps)
@@ -1236,7 +1433,17 @@ class _NonlinearStateSpace:
     def _sigma_points(
         self, mean: npt.NDArray[np.float64], cov: npt.NDArray[np.float64], scale: float
     ) -> npt.NDArray[np.float64]:
-        """The ``2m + 1`` unscented points around one moment pair."""
+        """The ``2m + 1`` unscented points around one moment pair.
+
+        Args:
+            mean: The ``(m,)`` mean.
+            cov: The ``(m, m)`` covariance.
+            scale: The unscented scaling parameter added to ``m``.
+
+        Returns:
+            A ``(2m + 1, m)`` array: the mean, then the mean plus and minus
+            each column of the scaled square root.
+        """
         root = _psd_sqrt((self._m + scale) * cov)
         return np.vstack([mean[None, :], mean + root.T, mean - root.T])
 
@@ -1352,7 +1559,18 @@ class _NonlinearStateSpace:
         cross_at: Callable[[int], npt.NDArray[np.float64]],
         method: str,
     ) -> _RtsSmootherResult:
-        """Rauch's backward recursion from a forward pass and a gain rule."""
+        """Rauch's backward recursion from a forward pass and a gain rule.
+
+        Args:
+            outcome: The forward pass to smooth.
+            cross_at: Maps a period ``t`` to the ``(m, m)`` cross covariance
+                between the state at ``t`` and its one-step prediction, which is
+                where the extended and unscented smoothers differ.
+            method: Label recorded on the result.
+
+        Returns:
+            The smoothed states and covariances.
+        """
         n, m = outcome.filtered_state.shape
         smoothed = np.empty((n, m))
         smoothed_cov = np.empty((n, m, m))
@@ -1395,6 +1613,7 @@ class _NonlinearStateSpace:
         outcome = self.extended_filter(y)
 
         def cross_at(t: int) -> npt.NDArray[np.float64]:
+            """Cross covariance of the state at ``t`` with its prediction, from the Jacobian."""
             jac = self._jacobian(self._f, outcome.filtered_state[t], self._m)
             return np.asarray(outcome.filtered_state_cov[t] @ jac.T, dtype=np.float64)
 
@@ -1436,6 +1655,7 @@ class _NonlinearStateSpace:
         outcome = self.unscented_filter(y, alpha=alpha, beta=beta, kappa=kappa)
 
         def cross_at(t: int) -> npt.NDArray[np.float64]:
+            """Cross covariance of the state at ``t`` with its prediction, from sigma points."""
             points = self._sigma_points(
                 outcome.filtered_state[t], outcome.filtered_state_cov[t], lam
             )
@@ -1452,7 +1672,16 @@ class _NonlinearStateSpace:
     def _predict(
         self, particles: npt.NDArray[np.float64], y_prev: npt.NDArray[np.float64]
     ) -> npt.NDArray[np.float64]:
-        """The state mean map, conditioned on the previous row when the model says so."""
+        """The state mean map, conditioned on the previous row when the model says so.
+
+        Args:
+            particles: Current states, ``(n, m)``.
+            y_prev: The previous observation, ``(p,)``; read only when the
+                model has an ``observed_transition``.
+
+        Returns:
+            The mean of the next state for each particle, ``(n, m)``.
+        """
         if self._observed_f is not None:
             return np.asarray(self._observed_f(particles, y_prev), dtype=np.float64)
         return np.asarray(self._f(particles), dtype=np.float64)
@@ -1463,7 +1692,17 @@ class _NonlinearStateSpace:
         rng: np.random.Generator,
         y_prev: npt.NDArray[np.float64],
     ) -> npt.NDArray[np.float64]:
-        """One transition draw per particle."""
+        """One transition draw per particle.
+
+        Args:
+            particles: Current states, ``(n, m)``.
+            rng: Random generator.
+            y_prev: The previous observation, ``(p,)``.
+
+        Returns:
+            The next states, ``(n, m)``: from ``transition_sampler`` when the
+            model has one, otherwise the predicted mean plus ``N(0, Q)`` noise.
+        """
         if self._sampler is not None:
             return np.asarray(self._sampler(particles, rng), dtype=np.float64)
         noise = rng.standard_normal(particles.shape) @ _psd_sqrt(self._Q).T
@@ -1472,7 +1711,21 @@ class _NonlinearStateSpace:
     def _measure(
         self, y_row: npt.NDArray[np.float64], particles: npt.NDArray[np.float64]
     ) -> npt.NDArray[np.float64]:
-        """Per-particle measurement log-density."""
+        """Per-particle measurement log-density.
+
+        Args:
+            y_row: One observation, ``(p,)``.
+            particles: States, ``(n, m)``.
+
+        Returns:
+            The log density of the observation under each particle, ``(n,)``:
+            from ``observation_loglik`` when the model has one, otherwise
+            Gaussian with covariance ``obs_cov``.
+
+        Raises:
+            numpy.linalg.LinAlgError: If the Gaussian density is used and
+                ``obs_cov`` is not positive definite.
+        """
         if self._obs_loglik is not None:
             return np.asarray(self._obs_loglik(y_row, particles), dtype=np.float64)
         residual = y_row[None, :] - np.asarray(self._g(particles), dtype=np.float64)
@@ -1492,7 +1745,15 @@ class _NonlinearStateSpace:
     def _systematic_resample(
         weights: npt.NDArray[np.float64], rng: np.random.Generator
     ) -> npt.NDArray[np.intp]:
-        """Systematic resampling indices for normalized weights."""
+        """Systematic resampling indices for normalized weights.
+
+        Args:
+            weights: Normalized weights, ``(n,)``.
+            rng: Random generator; one uniform draw is used.
+
+        Returns:
+            ``n`` particle indices, in nondecreasing order.
+        """
         count = weights.shape[0]
         positions = (rng.random() + np.arange(count)) / count
         return np.asarray(np.searchsorted(np.cumsum(weights), positions), dtype=np.intp).clip(
@@ -1811,6 +2072,7 @@ class _NonlinearStateSpace:
             )
 
         def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            """Shift the lag stack: the new head is the mean map of the current stack."""
             block = np.asarray(states, dtype=np.float64)
             head = np.asarray(mean_map(block), dtype=np.float64).reshape(-1, 1)
             if order == 1:
@@ -1818,6 +2080,7 @@ class _NonlinearStateSpace:
             return np.hstack([head, block[:, : order - 1]])
 
         def observation(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            """The head of the lag stack, which is the current value of the series."""
             return np.asarray(states, dtype=np.float64)[:, :1]
 
         state_cov = np.zeros((order, order))
@@ -2108,5 +2371,13 @@ class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmoothe
         return _kim_smoother(record, self._P)
 
     def loglikelihood(self, y: npt.ArrayLike) -> float:
-        """The collapse-approximate log-likelihood."""
+        """The collapse-approximate log-likelihood.
+
+        Args:
+            y: The observations.
+
+        Returns:
+            The log likelihood from the Kim filter, which is approximate
+            because the regime-conditional posteriors are collapsed each period.
+        """
         return self.filter(y).loglikelihood

@@ -36,12 +36,12 @@ so no public constructor re-implements either.
 A family base also owns its estimation: ``_build_objective`` assembles the
 optimizer surface from the validated specification, and ``_fit_family`` runs it
 and packs the raw outputs into a record from
-:mod:`cultivars._internals._fits`. The fit records carry no estimation logic of
+:mod:`cultivars.engine._internals._fits`. The fit records carry no estimation logic of
 their own, so the specification is never destructured into a foreign call
 signature.
 
 These bases implement the structural contracts in
-:mod:`cultivars._core._protocols` without importing them: the protocols are
+:mod:`cultivars.engine._core._protocols` without importing them: the protocols are
 duck-typed, so the relationship is checked by ``isinstance`` at runtime and by
 ``mypy`` statically, with no import edge in either direction.
 """
@@ -1129,6 +1129,15 @@ class _MeanFunctionModel[R](_UnivariateModel[R]):
 
 
 class _NeuralAutoRegressionModel[R](_MeanFunctionModel[R]):
+    """Estimation engine of the neural autoregression.
+
+    Regresses the series on its own ``order`` lags through a plug-in
+    learner: the engine fits a conditional-mean map on the lag matrix, and
+    the innovation variance is concentrated out of the Gaussian likelihood.
+    The specification and its validation live on
+    :class:`_MeanFunctionModel`; this class adds the fit.
+    """
+
     __slots__ = ()
 
     def _fit_family(self) -> _NeuralAutoRegressionFit:
@@ -1602,6 +1611,11 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         def cluster_sigma2(
             intercepts: npt.NDArray[np.float64],
         ) -> npt.NDArray[np.float64]:
+            """Regime variances implied by assigning each observation to its nearest intercept.
+
+            A regime with fewer than two observations takes the overall
+            variance, and the variances are pooled when they do not switch.
+            """
             assign = np.argmin(np.abs(target[:, None] - intercepts[None, :]), axis=1)
             sig = np.empty(k, dtype=np.float64)
             for j in range(k):
@@ -1619,6 +1633,12 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
             npt.NDArray[np.float64],
             npt.NDArray[np.float64],
         ]:
+            """Starting values for EM start ``index``: fixed for the first, random after it.
+
+            Start zero places the intercepts at evenly spaced quantiles with a
+            ``0.9`` diagonal in the transition matrix. Later starts draw the
+            intercepts from the sample and the diagonal from ``U(0.8, 0.95)``.
+            """
             if index == 0:
                 intercepts = np.quantile(y, np.linspace(0.5 / k, 1.0 - 0.5 / k, k))
                 diagonal = 0.9
@@ -2196,7 +2216,16 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
     def _least_squares(
         target: npt.NDArray[np.float64], design: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Solve the multivariate regression and return coefficients and residuals."""
+        """Solve the multivariate regression and return coefficients and residuals.
+
+        Args:
+            target: The stacked left-hand side, ``(n, k)``.
+            design: The regressor matrix, ``(n, width)``.
+
+        Returns:
+            The ``(width, k)`` least-squares coefficients and the ``(n, k)``
+            residuals. A rank-deficient design gives the minimum-norm solution.
+        """
         coef: npt.NDArray[np.float64] = np.linalg.lstsq(design, target, rcond=None)[0]
         return coef, target - design @ coef
 
@@ -2482,7 +2511,14 @@ class _PanelVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         return self.n_units if self._effects == "unit" else _n_deterministic(self._trend)
 
     def _rows_lost(self, order: int) -> int:
-        """Rows lost across the stack: ``order`` from each unit."""
+        """Rows lost across the stack: ``order`` from each unit.
+
+        Args:
+            order: Autoregressive order.
+
+        Returns:
+            The number of rows lost to lags over the whole stacked panel.
+        """
         return self.n_units * order
 
     def _max_supported_lags(self) -> int:
@@ -2629,7 +2665,14 @@ class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         return super().n_regressors + self.k_exog * (self._exog_order + 1)
 
     def _burn_for(self, order: int) -> int:
-        """Leading observations lost, which the longer of the two orders sets."""
+        """Leading observations lost, which the longer of the two orders sets.
+
+        Args:
+            order: Autoregressive order of the endogenous block.
+
+        Returns:
+            ``max(order, exog_order)``.
+        """
         return max(order, self._exog_order)
 
     def _max_supported_lags(self) -> int:
@@ -2643,7 +2686,16 @@ class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         return max(free // (self.k_endog + 1), 0)
 
     def _exog_block(self, exog: npt.NDArray[np.float64], burn: int) -> npt.NDArray[np.float64]:
-        """Stack ``x_t, x_{t-1}, ..., x_{t-s}`` for rows ``burn`` onward."""
+        """Stack ``x_t, x_{t-1}, ..., x_{t-s}`` for rows ``burn`` onward.
+
+        Args:
+            exog: The exogenous series, ``(T, m)``.
+            burn: Leading observations dropped.
+
+        Returns:
+            The contemporaneous and lagged exogenous regressors side by side,
+            ``(T - burn, m * (exog_order + 1))``.
+        """
         nobs = exog.shape[0]
         return np.column_stack([exog[burn - j : nobs - j] for j in range(self._exog_order + 1)])
 
@@ -3087,6 +3139,14 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         not a default, and not something a caller should propagate. Closing the
         system requires a model for the exogenous block, which is what a global
         vector autoregression supplies by stacking units.
+
+        Args:
+            alpha: Adjustment loadings.
+            beta: Cointegrating vectors.
+            gamma: Short-run coefficient matrices on the lagged differences.
+
+        Returns:
+            The autoregressive matrices of the levels representation.
         """
         k, p = self.k_endog, self._order
         if self.k_exog:
@@ -3114,6 +3174,14 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         Johansen case produced the model. A conditional specification has no
         levels representation to fold into, and says so with a zero-length
         block.
+
+        Args:
+            alpha: Adjustment loadings.
+            beta: Cointegrating vectors, with any restricted deterministic row.
+            short_run: Coefficients of the short-run regression.
+
+        Returns:
+            The deterministic coefficients of the levels representation.
         """
         k = self.k_endog
         case = self._trend_case
@@ -3656,7 +3724,14 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
 
     @staticmethod
     def _epanechnikov(scaled: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """The Epanechnikov kernel on already-bandwidth-scaled distances."""
+        """The Epanechnikov kernel on already-bandwidth-scaled distances.
+
+        Args:
+            scaled: Distances divided by the bandwidth.
+
+        Returns:
+            ``0.75 * (1 - u**2)`` where ``abs(u) < 1`` and zero elsewhere.
+        """
         return np.where(np.abs(scaled) < 1.0, 0.75 * (1.0 - scaled**2), 0.0)
 
     @property
@@ -3686,6 +3761,13 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
         The intercept column is excluded when the state is a design column
         (see :attr:`_state_in_design`); its coefficient is then fitted
         local-constant while every other coefficient stays local-linear.
+
+        Args:
+            design: The regressor matrix.
+
+        Returns:
+            The design without its first column when the state variable is
+            itself a design column, otherwise the design unchanged.
         """
         return design[:, 1:] if self._state_in_design else design
 
@@ -3951,7 +4033,15 @@ class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
 
     @staticmethod
     def _check_loss(resid: npt.NDArray[np.float64], quantile: float) -> npt.NDArray[np.float64]:
-        """Total check loss per column of a residual block."""
+        """Total check loss per column of a residual block.
+
+        Args:
+            resid: Residuals, one column per equation.
+            quantile: The quantile level, in ``(0, 1)``.
+
+        Returns:
+            The summed check loss of each column.
+        """
         return np.where(resid >= 0.0, quantile * resid, (quantile - 1.0) * resid).sum(axis=0)
 
     @staticmethod
@@ -4423,6 +4513,12 @@ class _SparseVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         because shrinkage arrives through the penalty, not through a
         Gaussian prior; offering both would make one silently modify the
         other.
+
+        Args:
+            endog: The observed sample, ``(T, k)``.
+            order: Autoregressive order.
+            trend: Deterministic specification.
+            names: Variable labels, or ``None`` for the defaults.
         """
         super().__init__(endog, order=order, trend=trend, names=names)
 
@@ -4446,6 +4542,16 @@ class _SparseVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         The derivative of the SCAD (``a = 3.7``) or MCP (``gamma = 3``)
         penalty at each coefficient's magnitude, scaled to the unit-weight
         convention of the solver, and masked so free rows stay free.
+
+        Args:
+            beta: The current coefficient matrix.
+            lam: Penalty level.
+            penalty: ``"scad"`` or the minimax concave penalty.
+            mask: Ones on penalized coefficients and zeros on free ones.
+
+        Returns:
+            Per-coefficient weights for the next weighted-lasso solve, shaped
+            like ``beta``.
         """
         magnitude = np.abs(beta)
         if penalty == "scad":
@@ -4747,6 +4853,9 @@ class _IdentificationModel[R](ABC):
         "coefficients",
         "ma_representation",
     )
+    """Attributes a reduced-form result must expose to be identified; a result lacking
+    any is refused.
+    """
 
     def __init__(self, result: ClosedSystemResult) -> None:
         """Validate that the source result is a closed system and store it.
@@ -5080,7 +5189,16 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
         coefficients: npt.NDArray[np.float64],
         sigmas: npt.NDArray[np.float64],
     ) -> npt.NDArray[np.intp]:
-        """The regime ordering :attr:`label_ordering` names, as a permutation."""
+        """The regime ordering :attr:`label_ordering` names, as a permutation.
+
+        Args:
+            coefficients: Regime coefficient matrices, regimes on the leading
+                axis.
+            sigmas: Regime innovation covariances, regimes on the leading axis.
+
+        Returns:
+            The indices that put the regimes in the reported order.
+        """
         if self._sw_mean:
             keys = coefficients[:, 0, 0]
         elif self._sw_var:
@@ -5135,6 +5253,7 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
         def start(
             index: int,
         ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+            """Starting values for EM start ``index``: the base fit first, perturbations after."""
             if index == 0:
                 return (
                     _MarkovSwitchingModel.initial_transition(m, rng, 0.9),
@@ -5267,7 +5386,15 @@ class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         return self._training
 
     def _stacked_design(self, design: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """The ``(n, k, D)`` observation matrices ``I_k (x) x_t'``."""
+        """The ``(n, k, D)`` observation matrices ``I_k (x) x_t'``.
+
+        Args:
+            design: The regressor matrix, ``(n, w)``.
+
+        Returns:
+            One ``(k, D)`` observation matrix per period, stacked on the
+            leading axis.
+        """
         n, w = design.shape
         k = self.k_endog
         z = np.zeros((n, k, k * w), dtype=np.float64)
@@ -5709,6 +5836,7 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
 
         def gaussian(n: int, sigma: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            """Draw ``n`` Gaussian innovation vectors with covariance ``sigma``."""
             chol = np.linalg.cholesky(sigma)
             return np.asarray(rng.standard_normal((n, sigma.shape[0])) @ chol.T, dtype=np.float64)
 
@@ -5813,11 +5941,16 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         d = len(hyper_names)
 
         def pieces(theta: npt.NDArray[np.float64]) -> tuple[_ConjugatePosterior, float, int]:
+            """Conjugate posterior, log marginal likelihood, and dummy-row count at ``theta``."""
             return self._conjugate_pieces(target, design, factory(theta))
 
         def log_posterior(
             theta: npt.NDArray[np.float64],
         ) -> tuple[float, _ConjugatePosterior | None, int]:
+            """Log marginal likelihood plus the log gamma hyperprior at ``theta``.
+
+            ``-inf`` where the conjugate update fails.
+            """
             try:
                 posterior, log_ml, n_dummy = pieces(theta)
             except NumericalError:
@@ -5826,6 +5959,10 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             return log_ml + log_hyper, posterior, n_dummy
 
         def negative(log_theta: npt.NDArray[np.float64]) -> float:
+            """Negative log posterior in log hyperparameters, for the optimizer.
+
+            A point where it is undefined scores ``1e12``.
+            """
             value, _, _ = log_posterior(np.exp(log_theta))
             return -value if np.isfinite(value) else 1e12
 
@@ -5985,6 +6122,11 @@ class _StudentBayesianVectorAutoRegressionModel[R](_BayesianVectorAutoRegression
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
 
         def student(n: int, sigma: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+            """Draw ``n`` Student-t innovation vectors with scale matrix ``sigma``.
+
+            A Gaussian scale mixture. The degrees of freedom are the stated
+            ``df``, or one draw from the prior grid when none is stated.
+            """
             nu = float(df) if df is not None else float(rng.choice(_STUDENT_DF_GRID))
             chol = np.linalg.cholesky(sigma)
             mixing = rng.gamma(0.5 * nu, 2.0 / nu, size=n)
@@ -6503,7 +6645,15 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
 
     @staticmethod
     def _unpack(theta: npt.NDArray[np.float64], mean: float) -> _StochasticVolatilityParameters:
-        """``(mu, arctanh phi, log sigma2)`` to the parameter record."""
+        """``(mu, arctanh phi, log sigma2)`` to the parameter record.
+
+        Args:
+            theta: The unconstrained vector.
+            mean: The observation mean, which is not part of the vector.
+
+        Returns:
+            The parameter record on its natural scale.
+        """
         return _StochasticVolatilityParameters(
             mu=float(theta[0]),
             phi=float(np.tanh(theta[1])),
@@ -6513,7 +6663,15 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
 
     @staticmethod
     def _pack(params: _StochasticVolatilityParameters) -> npt.NDArray[np.float64]:
-        """The parameter record to ``(mu, arctanh phi, log sigma2)``."""
+        """The parameter record to ``(mu, arctanh phi, log sigma2)``.
+
+        Args:
+            params: The parameter record.
+
+        Returns:
+            The unconstrained vector. The persistence is clipped to ``0.999``
+            in absolute value before the inverse transform.
+        """
         return np.array(
             [params.mu, np.arctanh(np.clip(params.phi, -0.999, 0.999)), np.log(params.sigma2)]
         )
@@ -6525,6 +6683,13 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         Gaussian on ``mu``, Beta on ``(phi + 1) / 2``, inverse-gamma on
         ``sigma2``, with the Jacobians of ``tanh`` and ``exp`` so that the
         chain and the Gibbs sampler target the same posterior.
+
+        Args:
+            theta: ``(mu, arctanh phi, log sigma2)``.
+            prior: The hyperparameters.
+
+        Returns:
+            The log prior density at ``theta``, up to an additive constant.
         """
         mu, z_phi, z_sig = float(theta[0]), float(theta[1]), float(theta[2])
         phi = np.tanh(z_phi)
@@ -6562,7 +6727,20 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
     def _fit_particle(
         self, *, n_particles: int, seed: int | None, filter_method: str
     ) -> _StochasticVolatilityFit:
-        """Simulated maximum likelihood under common random numbers."""
+        """Simulated maximum likelihood under common random numbers.
+
+        Args:
+            n_particles: Particles per likelihood evaluation, at least 50.
+            seed: The common seed that fixes the random numbers across
+                evaluations.
+            filter_method: Particle filter flavor.
+
+        Returns:
+            The packed fit.
+
+        Raises:
+            SpecificationError: If ``n_particles`` is below 50.
+        """
         if n_particles < 50:
             raise SpecificationError(f"n_particles must be at least 50; got {n_particles}.")
         mean = self._resolved_mean()
@@ -6782,6 +6960,15 @@ class _TrendVolatilityModel[R](_UnivariateModel[R]):
         the scalar forward-filter backward-sampler the volatility draws
         share; the substrate's simulation smoother gives the same law at
         two orders of magnitude the cost.
+
+        Args:
+            y: The observed series.
+            h: Log variance path of the irregular.
+            q: Log variance path of the trend innovation.
+            rng: Random generator.
+
+        Returns:
+            One draw of the trend path, the same length as ``y``.
         """
         return _scalar_ffbs(
             y,
@@ -6952,7 +7139,17 @@ class _DecayNelsonSiegelModel[R](ABC):
         """Estimate the specification and return the public result."""
 
     def _fit_decay(self, *, filter_name: str) -> _DecayNelsonSiegelFit:
-        """Maximize the approximate likelihood from the constant-decay fit."""
+        """Maximize the approximate likelihood from the constant-decay fit.
+
+        Args:
+            filter_name: ``"extended"`` or ``"unscented"``.
+
+        Returns:
+            The packed fit.
+
+        Raises:
+            SpecificationError: If the filter name is not one of the two.
+        """
         if filter_name not in ("extended", "unscented"):
             raise SpecificationError(
                 f"filter must be 'extended' or 'unscented'; got {filter_name!r}."
@@ -7107,7 +7304,20 @@ class _PerturbationModel[R](ABC):
     # -- reparameterization -------------------------------------------------
 
     def _to_unconstrained(self, theta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Constrained structural parameters to the optimizer's space."""
+        """Constrained structural parameters to the optimizer's space.
+
+        Args:
+            theta: Structural parameters, each inside its bounds.
+
+        Returns:
+            The same point in the unconstrained space the optimizer and the
+            chain move in.
+
+        Raises:
+            DimensionError: If ``theta`` has the wrong number of entries.
+            SpecificationError: If a parameter is not strictly inside its
+                bounds.
+        """
         theta = np.asarray(theta, dtype=np.float64).ravel()
         if theta.shape[0] != self.n_params:
             raise DimensionError(f"theta must have {self.n_params} entries; got {theta.shape[0]}.")
@@ -7139,7 +7349,14 @@ class _PerturbationModel[R](ABC):
         return out
 
     def _to_constrained(self, z: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """The optimizer's space back to structural parameters."""
+        """The optimizer's space back to structural parameters.
+
+        Args:
+            z: A point in the unconstrained space.
+
+        Returns:
+            The structural parameters, each inside its bounds.
+        """
         lo, hi = self._bounds[:, 0], self._bounds[:, 1]
         out = np.empty_like(z)
         for j in range(z.shape[0]):
@@ -7154,7 +7371,15 @@ class _PerturbationModel[R](ABC):
         return out
 
     def _log_jacobian(self, z: npt.NDArray[np.float64]) -> float:
-        """``log |d theta / d z|`` of the reparameterization."""
+        """``log |d theta / d z|`` of the reparameterization.
+
+        Args:
+            z: A point in the unconstrained space.
+
+        Returns:
+            The log absolute determinant of the map from ``z`` to the
+            structural parameters, which is diagonal.
+        """
         lo, hi = self._bounds[:, 0], self._bounds[:, 1]
         total = 0.0
         for j in range(z.shape[0]):
@@ -7168,7 +7393,14 @@ class _PerturbationModel[R](ABC):
     # -- solution and likelihood ---------------------------------------------
 
     def _solve(self, theta: npt.NDArray[np.float64]) -> _PerturbationSolution:
-        """Solve the model at a structural parameter point."""
+        """Solve the model at a structural parameter point.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+
+        Returns:
+            The perturbation solution at the order the model was built with.
+        """
         theta = np.asarray(theta, dtype=np.float64).ravel()
         x_ss, y_ss = self._spec.steady_state(theta)
         eta = np.asarray(self._spec.shock_loading(theta), dtype=np.float64)
@@ -7179,6 +7411,7 @@ class _PerturbationModel[R](ABC):
             x_next: npt.NDArray[np.float64],
             x: npt.NDArray[np.float64],
         ) -> npt.NDArray[np.float64]:
+            """The specification's residuals at the fixed ``theta``, as the solver's callable."""
             return np.asarray(self._spec.equations(theta, y_next, y, x_next, x), dtype=np.float64)
 
         return _solve_perturbation(
@@ -7192,7 +7425,20 @@ class _PerturbationModel[R](ABC):
     def _measurement(
         self, theta: npt.NDArray[np.float64], solution: _PerturbationSolution
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """The measurement equation, validated against the solution and data."""
+        """The measurement equation, validated against the solution and data.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+            solution: The solution at ``theta``.
+
+        Returns:
+            The measurement design, intercept, and error covariance as float
+            arrays.
+
+        Raises:
+            DimensionError: If the specification's measurement blocks do not
+                match the solution or the data.
+        """
         design, intercept, obs_cov = self._spec.observation(theta)
         design = np.asarray(design, dtype=np.float64)
         intercept = np.asarray(intercept, dtype=np.float64).ravel()
@@ -7214,7 +7460,15 @@ class _PerturbationModel[R](ABC):
     def _state_space(
         self, theta: npt.NDArray[np.float64]
     ) -> _LinearGaussianStateSpace | _NonlinearStateSpace:
-        """The solution at ``theta`` on the substrate its order calls for."""
+        """The solution at ``theta`` on the substrate its order calls for.
+
+        Args:
+            theta: Structural parameters in the constrained space.
+
+        Returns:
+            A linear-Gaussian state space at first order and the pruned
+            nonlinear one at second order.
+        """
         solution = self._solve(theta)
         design, intercept, obs_cov = self._measurement(theta, solution)
         if self._order == 1:
@@ -7222,7 +7476,14 @@ class _PerturbationModel[R](ABC):
         return _pruned_state_space(solution, design, intercept, obs_cov)
 
     def _nonlinear_state_space(self, theta: npt.NDArray[np.float64]) -> _NonlinearStateSpace:
-        """The pruned system regardless of order (a first-order pruned system is exact)."""
+        """The pruned system regardless of order (a first-order pruned system is exact).
+
+        Args:
+            theta: Structural parameters in the constrained space.
+
+        Returns:
+            The pruned nonlinear state space.
+        """
         solution = self._solve(theta)
         design, intercept, obs_cov = self._measurement(theta, solution)
         return _pruned_state_space(solution, design, intercept, obs_cov)
@@ -7279,7 +7540,18 @@ class _PerturbationModel[R](ABC):
         n_particles: int,
         seed: int | None,
     ) -> _PerturbationFit:
-        """Maximize one filter's likelihood from a starting point."""
+        """Maximize one filter's likelihood from a starting point.
+
+        Args:
+            theta0: Starting structural parameters.
+            filter_name: The filter whose likelihood is maximized.
+            n_particles: Particles per evaluation, read by the particle filter
+                only.
+            seed: Seed of the particle filter's common random numbers.
+
+        Returns:
+            The packed point fit.
+        """
         z0 = self._to_unconstrained(theta0)
         if filter_name == "particle":
             objective: _Objective[npt.NDArray[np.float64]] = _ParticleLikelihoodObjective(
@@ -7328,10 +7600,25 @@ class _PerturbationModel[R](ABC):
         proposal_scale: npt.ArrayLike | None,
         seed: int | np.random.Generator | None,
     ) -> _ParticleChainFit:
-        """Particle marginal Metropolis-Hastings under the specification's prior."""
+        """Particle marginal Metropolis-Hastings under the specification's prior.
+
+        Args:
+            theta0: Starting structural parameters.
+            n_particles: Particles per likelihood estimate.
+            n_draws: Total iterations.
+            n_burn: Burn-in discarded.
+            thin: Keep every ``thin``-th post-burn draw.
+            proposal_scale: Initial proposal scale in the unconstrained space,
+                or ``None`` for the chain's default.
+            seed: Seed or generator.
+
+        Returns:
+            The chain's packed output, draws in the unconstrained space.
+        """
         z0 = self._to_unconstrained(theta0)
 
         def log_prior(z: npt.NDArray[np.float64]) -> float:
+            """Log prior in the chain's unconstrained space, log-Jacobian included."""
             theta = self._to_constrained(z)
             value = float(self._spec.log_prior(theta))
             return value + self._log_jacobian(z) if np.isfinite(value) else -np.inf
@@ -7527,6 +7814,10 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
         signed so that each matched pair has positive inner product. Returns
         ``(order, signs)`` such that ``impact[:, order] * signs`` is the
         relabelled matrix; ``order`` also relabels anything indexed by shock.
+
+        Args:
+            impact: The impact matrix to relabel.
+            reference: The matrix whose column order and signs are the target.
         """
         unit = impact / np.maximum(np.linalg.norm(impact, axis=0, keepdims=True), 1e-300)
         ref = reference / np.maximum(np.linalg.norm(reference, axis=0, keepdims=True), 1e-300)

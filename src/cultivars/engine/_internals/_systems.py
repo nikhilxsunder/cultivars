@@ -20,18 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Parametric state-space system builders: structural and Nelson-Siegel.
+"""Parametric state-space system builders: Harvey's structural components.
 
-These assemble specific parametric families -- Harvey's structural
-components and the dynamic Nelson-Siegel term structure -- into the
-linear-Gaussian substrate. They sit one layer above
-:mod:`._state_space`, which stays a leaf: the substrate knows how to
-filter and smooth any linear-Gaussian system, and this module knows how
-to construct the particular systems those two model families need. Each
-parameter record here is the single meeting point between an objective's
-flat optimization vector and the system matrices, so the objectives, the
-fits, and the public results all speak in these records rather than in
-raw arrays.
+Assembles one parametric family, Harvey's structural time-series
+components, into the system matrices of the linear-Gaussian substrate. It
+sits one layer above ``_substrates``, which stays a leaf: the substrate
+knows how to filter and smooth any linear-Gaussian system, and this module
+knows how to construct the particular system a structural model needs. The
+parameter record it reads is the single meeting point between an
+objective's flat optimization vector and the system matrices, so the
+objectives, the fits, and the public results all speak in that record and
+not in raw arrays.
+
+The dynamic Nelson-Siegel counterpart is built by the substrate's own
+``_from_nelson_siegel_system`` constructor.
+
+References:
+    Harvey, A. C. (1989). *Forecasting, Structural Time Series Models and
+        the Kalman Filter*. Cambridge University Press.
+    Durbin, J., & Koopman, S. J. (2012). *Time Series Analysis by State
+        Space Methods* (2nd ed.). Oxford University Press.
 """
 
 from __future__ import annotations
@@ -66,6 +74,16 @@ def _structural_matrices(
     large approximate-diffuse block; the cycle block is stationary and
     initialized at its stationary covariance.
 
+    The state is ordered level, slope (unless the trend is ``"level"``),
+    the two cycle states, then the seasonal harmonics: two states per
+    harmonic, and one for the Nyquist harmonic of an even period, which is
+    ``seasonal - 1`` states in all. The observation loads on the level, on
+    the first cycle state, and on the first state of each harmonic.
+
+    ``trend`` is not validated here. Any value other than ``"level"``
+    builds the two-state trend, and of those only ``"lltrend"`` gives the
+    level its own noise.
+
     Args:
         params: The parameter record; fields must match the specification.
         trend: ``"level"`` (local level), ``"lltrend"`` (local linear
@@ -77,6 +95,31 @@ def _structural_matrices(
         ``(Z, T, R, Q, H, P1, slices)`` where ``slices`` maps component
         names (``"level"``, ``"slope"``, ``"cycle"``, ``"seasonal"``) to
         their state index ranges and ``P1`` is the initial covariance.
+
+    Raises:
+        AssertionError: If a field of ``params`` that the requested
+            components need is ``None``.
+
+    Example:
+        A local linear trend with a quarterly seasonal has five states:
+
+        >>> from cultivars.engine._internals._parameters import _StructuralParameters
+        >>> params = _StructuralParameters(
+        ...     sigma2_irregular=1.0,
+        ...     sigma2_level=0.1,
+        ...     sigma2_slope=0.01,
+        ...     cycle_rho=None,
+        ...     cycle_freq=None,
+        ...     sigma2_cycle=None,
+        ...     sigma2_seasonal=0.05,
+        ... )
+        >>> Z, T, R, Q, H, P1, slices = _structural_matrices(
+        ...     params, trend="lltrend", cycle=False, seasonal=4
+        ... )
+        >>> Z.shape, T.shape, R.shape, Q.shape
+        ((1, 5), (5, 5), (5, 5), (5, 5))
+        >>> slices["seasonal"]
+        slice(2, 5, None)
     """
     z_parts: list[npt.NDArray[np.float64]] = []
     t_blocks: list[npt.NDArray[np.float64]] = []

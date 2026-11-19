@@ -19,6 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""The inference protocol: what a result asks of its coefficient uncertainty.
+
+One protocol, :class:`_CoefficientInference`. A multivariate result reports
+standard errors, intervals, and Wald tests without knowing whether the
+numbers behind them come from a sampling distribution or from a posterior.
+It holds an object that satisfies this protocol and asks. The two
+implementations are in ``_covariances``.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -72,19 +81,50 @@ class _CoefficientInference(Protocol):
         ...
 
     def conf_int(self, *, alpha: float = 0.05) -> tuple[npt.NDArray[np.float64], ...]:
-        """Symmetric bounds at the given level."""
+        """Symmetric bounds at the given level.
+
+        Args:
+            alpha: Two-sided level; ``0.05`` gives 95 percent bounds.
+
+        Returns:
+            The lower and upper bound arrays, each shaped like
+            :attr:`coefficients`.
+        """
         ...
 
     def to_matrix(self) -> npt.NDArray[np.float64]:
-        """The full covariance over ``vec(B)``."""
+        """The full covariance over ``vec(B)``.
+
+        Returns:
+            A ``(k * width, k * width)`` matrix in equation-major order.
+        """
         ...
 
     def wald(self, cells: Sequence[tuple[int, int]], *, null: str) -> _WaldTest:
-        """Test that a set of coefficients is jointly zero."""
+        """Test that a set of coefficients is jointly zero.
+
+        Args:
+            cells: ``(equation, regressor)`` index pairs into
+                :attr:`coefficients`.
+            null: Plain-language statement of the hypothesis, carried onto
+                the result.
+
+        Returns:
+            The test, with one degree of freedom per cell.
+        """
         ...
 
     def wald_restriction(self, restriction: npt.NDArray[np.float64], *, null: str) -> _WaldTest:
-        """Test a general set of linear restrictions."""
+        """Test a general set of linear restrictions.
+
+        Args:
+            restriction: A ``(q, k * width)`` matrix over ``vec(B)`` in
+                equation-major order.
+            null: Plain-language statement of the hypothesis.
+
+        Returns:
+            The test, with ``q`` degrees of freedom.
+        """
         ...
 
     @property

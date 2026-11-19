@@ -19,6 +19,34 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Selection records: the verdicts that choose among models, with their evidence.
+
+Four records, each the outcome of asking which of several candidates the
+data prefer and each carrying the evidence along with the answer:
+
+* :class:`_LagOrderSelection`: information-criterion curves over lag
+  orders, all scored on one common sample.
+* :class:`_MarginalLikelihoodSelection`: one model's log marginal
+  likelihood with how it was computed, comparable against others as Bayes
+  factors and posterior model probabilities.
+* :class:`_ModelCombinationSelection`: weights over models, from
+  marginal likelihoods or from held-out predictive scores, and the mixture
+  predictive those weights imply.
+* :class:`_ModelConfidenceSetSelection`: the set of forecasters that a
+  sequence of equal-accuracy tests could not eliminate.
+
+None of them estimates anything. The procedures that fill them are on the
+model and result classes and in :mod:`cultivars.forecast` and
+:mod:`cultivars.bayes`; these records hold the numbers, render them, and
+answer questions about them. They are re-exported under public names
+without the leading underscore, which is the name each ``__repr__`` prints.
+
+References:
+    Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence
+        set. *Econometrica*, 79(2), 453-497.
+    Kass, R. E., & Raftery, A. E. (1995). Bayes factors. *Journal of the
+        American Statistical Association*, 90(430), 773-795.
+"""
 
 from __future__ import annotations
 
@@ -80,18 +108,32 @@ class _LagOrderSelection:
     """
 
     max_lags: int
+    """Longest order scored; every curve has ``max_lags + 1`` entries, indexed by order."""
     nobs: int
+    """The common effective sample every order was scored on."""
     aic: npt.NDArray[np.float64]
+    """Akaike criterion by order, ``log det Sigma + 2 m / T``."""
     bic: npt.NDArray[np.float64]
+    """Schwarz criterion by order, ``log det Sigma + log(T) m / T``."""
     hqic: npt.NDArray[np.float64]
+    """Hannan-Quinn criterion by order, ``log det Sigma + 2 log log(T) m / T``."""
     fpe: npt.NDArray[np.float64]
+    """Final prediction error by order.
+
+    On a determinant scale, not a log-determinant one, so it is comparable
+    only with itself.
+    """
 
     _CRITERIA: ClassVar[tuple[str, ...]] = ("aic", "bic", "hqic", "fpe")
     """The criteria scored, in display order."""
 
     @property
     def orders(self) -> tuple[int, ...]:
-        """The orders scored, ``0`` through ``max_lags``."""
+        """The orders scored, ``0`` through ``max_lags``.
+
+        Returns:
+            A tuple of ``max_lags + 1`` integers.
+        """
         return tuple(range(self.max_lags + 1))
 
     def curve(self, criterion: str) -> npt.NDArray[np.float64]:
@@ -130,7 +172,12 @@ class _LagOrderSelection:
 
     @property
     def selected(self) -> dict[str, int]:
-        """Each criterion's chosen order, keyed by criterion name."""
+        """Each criterion's chosen order, keyed by criterion name.
+
+        Returns:
+            A mapping with the keys ``"aic"``, ``"bic"``, ``"hqic"``, and
+            ``"fpe"``, in that order.
+        """
         return {criterion: self.best(criterion) for criterion in self._CRITERIA}
 
     @property
@@ -142,6 +189,10 @@ class _LagOrderSelection:
         and the choice belongs to whoever knows what the model is for. A
         property that voted, or that quietly preferred one criterion, would
         hide exactly that.
+
+        Returns:
+            The common order, or ``None`` when the four picks are not all
+            equal.
         """
         picks = set(self.selected.values())
         return picks.pop() if len(picks) == 1 else None
@@ -181,7 +232,12 @@ class _LagOrderSelection:
         )
 
     def __repr__(self) -> str:
-        """One-line summary naming each criterion's pick."""
+        """One-line summary naming each criterion's pick.
+
+        Returns:
+            A string of the form
+            ``LagOrderSelection(max_lags=..., nobs=..., AIC=..., ...)``.
+        """
         picks = ", ".join(f"{c.upper()}={order}" for c, order in self.selected.items())
         return f"LagOrderSelection(max_lags={self.max_lags}, nobs={self.nobs}, {picks})"
 
@@ -208,18 +264,38 @@ class _MarginalLikelihoodSelection:
     """
 
     log_value: float
+    """The log marginal likelihood of the sample."""
     mcse: float
+    """Monte Carlo standard error of ``log_value``.
+
+    ``0.0`` for an analytic value and ``nan`` when the estimator could not
+    assess it.
+    """
     method: str
+    """How the value was obtained, for example ``"analytic"`` or ``"chib"``."""
     n_draws: int
+    """Posterior draws the estimate used; ``0`` for an analytic value."""
     source: str
+    """The model the value belongs to, used as its row label."""
     nobs: int = 0
+    """Observations the likelihood scored; ``0`` when unknown.
+
+    Two records are comparable only when this agrees.
+    """
     notes: tuple[str, ...] = ()
+    """Caveats that qualify the number; :meth:`compare` carries them into its table."""
 
     def log_bayes_factor(self, other: _MarginalLikelihoodSelection) -> float:
         """``log m_self(y) - log m_other(y)``: positive favours ``self``.
 
         Meaningful only when both were computed on the same sample; the
         record cannot check that, and the caller must.
+
+        Args:
+            other: The record to compare against.
+
+        Returns:
+            The log Bayes factor of ``self`` against ``other``.
         """
         return self.log_value - other.log_value
 
@@ -347,6 +423,12 @@ class _MarginalLikelihoodSelection:
         )
 
     def __repr__(self) -> str:
+        """One-line summary: the model, its log marginal likelihood, and the method.
+
+        Returns:
+            A string of the form ``MarginalLikelihood(source: log ML=...)``,
+            with the Monte Carlo error when it is positive and finite.
+        """
         error = f" (mcse {self.mcse:.3f})" if np.isfinite(self.mcse) and self.mcse > 0.0 else ""
         return (
             f"MarginalLikelihood({self.source}: log ML={self.log_value:.3f}{error}, {self.method})"
@@ -379,16 +461,31 @@ class _ModelCombinationSelection:
     """
 
     names: tuple[str, ...]
+    """Model labels, aligned with ``weights``, ``scores``, and ``results``."""
     weights: npt.NDArray[np.float64] = field(repr=False)
+    """Non-negative model weights summing to one, ``(M,)``."""
     method: str
+    """How the weights were formed, ``"bayesian model average"`` or ``"stacking"``."""
     scores: npt.NDArray[np.float64] = field(repr=False)
+    """The per-model number the weights came from, ``(M,)``.
+
+    Log marginal likelihoods for averaging, and mean held-out log
+    predictive densities for stacking.
+    """
     results: tuple[PredictiveResult, ...] = field(repr=False)
+    """The fitted results, each exposing ``forecast_paths``."""
     n_origins: int = 0
+    """Evaluation origins behind stacking weights; ``0`` for averaging."""
     notes: tuple[str, ...] = ()
+    """Caveats that qualify the weights, shown under the summary table."""
 
     @property
     def n_models(self) -> int:
-        """Models combined."""
+        """Models combined.
+
+        Returns:
+            The number ``M`` of models.
+        """
         return len(self.names)
 
     def forecast_paths(
@@ -441,8 +538,19 @@ class _ModelCombinationSelection:
     ) -> npt.NDArray[np.float64]:
         """The mixture predictive's ``(16th percentile, mean, 84th percentile)``.
 
+        Args:
+            steps: Horizons ahead.
+            n_draws: Mixed paths to summarize; default the largest number
+                of paths any one model supplies.
+            seed: Seed or generator.
+
         Returns:
             ``(steps, k, 3)``, the family convention.
+
+        Raises:
+            DimensionError: If the models' predictive paths disagree in
+                horizon or dimension.
+            SpecificationError: If ``steps`` or ``n_draws`` is not positive.
         """
         paths = self.forecast_paths(steps, n_draws=n_draws, seed=seed)
         return np.stack(
@@ -455,7 +563,12 @@ class _ModelCombinationSelection:
         )
 
     def summary(self) -> _SummaryTable:
-        """Weights and the number each came from, heaviest first."""
+        """Weights and the number each came from, heaviest first.
+
+        Returns:
+            A :class:`_SummaryTable` with one row per model: its weight and
+            its log marginal likelihood or mean log score.
+        """
         order = np.argsort(self.weights)[::-1]
         score_label = "log ML" if self.method == "bayesian model average" else "mean log score"
         rows = tuple(
@@ -473,6 +586,11 @@ class _ModelCombinationSelection:
         )
 
     def __repr__(self) -> str:
+        """One-line summary: the number of models, the method, and the heaviest model.
+
+        Returns:
+            A string of the form ``ModelCombinationSelection(...)``.
+        """
         top = int(np.argmax(self.weights))
         return (
             f"ModelCombinationSelection({self.n_models} models, {self.method}, "
@@ -506,34 +624,61 @@ class _ModelConfidenceSetSelection:
     """
 
     names: tuple[str, ...]
+    """Model labels, in the order the losses were given."""
     pvalues: npt.NDArray[np.float64] = field(repr=False)
+    """MCS p-values, ``(M,)``; a model is in the set when its p-value is at least ``alpha``."""
     mean_losses: npt.NDArray[np.float64] = field(repr=False)
+    """Mean loss of each model over the evaluation origins, ``(M,)``."""
     elimination_order: tuple[int, ...]
+    """Model indices from the first eliminated to the survivor."""
     alpha: float
+    """Level of the set; it contains the best model with probability at least ``1 - alpha``."""
     statistic: str
+    """Equivalence statistic used, ``"range"`` or ``"max"``."""
     n_bootstrap: int
+    """Bootstrap replications behind the p-values."""
     block_length: float
+    """Expected block length of the stationary bootstrap."""
     nobs: int
+    """Number of evaluation origins."""
 
     @property
     def included(self) -> tuple[str, ...]:
-        """The models in the set, best mean loss first."""
+        """The models in the set, best mean loss first.
+
+        Returns:
+            The labels of the models whose p-value is at least ``alpha``.
+        """
         kept = [i for i in range(len(self.names)) if self.pvalues[i] >= self.alpha]
         kept.sort(key=lambda i: float(self.mean_losses[i]))
         return tuple(self.names[i] for i in kept)
 
     @property
     def excluded(self) -> tuple[str, ...]:
-        """The models eliminated, in elimination order."""
+        """The models eliminated, in elimination order.
+
+        Returns:
+            The labels of the models whose p-value is below ``alpha``.
+        """
         return tuple(self.names[i] for i in self.elimination_order if self.pvalues[i] < self.alpha)
 
     @property
     def best(self) -> str:
-        """The survivor of the elimination sequence."""
+        """The survivor of the elimination sequence.
+
+        Returns:
+            The label of the last model left, which is always in the set.
+        """
         return self.names[self.elimination_order[-1]]
 
     def pvalue(self, name: str) -> float:
         """One model's MCS p-value.
+
+        Args:
+            name: A label from ``names``.
+
+        Returns:
+            That model's p-value.
 
         Raises:
             SpecificationError: If the name is unknown.
@@ -543,7 +688,12 @@ class _ModelConfidenceSetSelection:
         return float(self.pvalues[self.names.index(name)])
 
     def summary(self) -> _SummaryTable:
-        """Render as a table in elimination order, survivor last."""
+        """Render as a table in elimination order, survivor last.
+
+        Returns:
+            A :class:`_SummaryTable` with one row per model: its mean loss,
+            its p-value, and whether it is in the set.
+        """
         rows = tuple(
             (
                 self.names[i],
@@ -577,6 +727,7 @@ class _ModelConfidenceSetSelection:
         )
 
     def __repr__(self) -> str:
+        """One-line summary: how many models are in the set, and at what level."""
         return (
             f"ModelConfidenceSetSelection({len(self.included)} of {len(self.names)} models at "
             f"{1 - self.alpha:.0%}, best={self.best!r})"

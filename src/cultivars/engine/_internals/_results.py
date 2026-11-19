@@ -19,6 +19,39 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Result records: what filters, smoothers, and estimators hand back.
+
+Two families of record live here.
+
+Filter and smoother output. :class:`_FilterResult` and
+:class:`_SmootherResult` are the common ancestors of every forward and
+backward pass over a state-space model, and each substrate returns its own
+pair: :class:`_KalmanFilterResult` and :class:`_DurbinKoopmanSmootherResult`
+from the linear-Gaussian substrate, :class:`_HamiltonFilterResult` and
+:class:`_KimSmootherResult` from a discrete regime chain,
+:class:`_KimFilterResult` from the regime-switching linear state space,
+:class:`_RtsSmootherResult` from the linearizing passes of the nonlinear
+substrate, and :class:`_ParticleFilterResult` and
+:class:`_ParticleSmootherResult` from sequential Monte Carlo.
+
+Result bases. These are what the public result classes subclass, one per
+group of model families, and they hold the surface a group shares so that
+each family adds only what is its own. :class:`_FittedResult` is the root,
+carrying the likelihood summary. :class:`_MeanResult`,
+:class:`_ConditionalVarianceResult`, :class:`_MeanFunctionResult`, and
+:class:`_ObservedRegimeResult` serve the univariate groups.
+:class:`_VectorResult`, :class:`_ErrorCorrectionResult`,
+:class:`_VectorObservedRegimeResult`, and
+:class:`_VectorPosteriorDrawsResult` serve the multivariate ones, and
+:class:`_RegimeSystemResult` presents one regime of a regime model as a
+closed linear system so that the propagation tools can read it.
+
+The raw output of an estimator, before it becomes a result, is in
+``_fits``; the behavior that result records share across groups (summaries,
+series, comparison, inference, convergence) is in ``_mixins``; the posterior
+records of the samplers are in ``_posteriors``.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -102,9 +135,17 @@ class _FittedResult:
     """
 
     llf: float
+    """Maximized log-likelihood."""
     nobs: int
+    """Observations the likelihood was evaluated on."""
     n_params: float = field(repr=False)
+    """Free parameters, including the innovation variance.
+
+    Not necessarily an integer: a shrunk fit spends effective rather than nominal
+    freedom, and the criteria must charge what was actually used.
+    """
     schema_version: int = field(default=_SCHEMA_VERSION, repr=False)
+    """Serialization schema version."""
 
     @property
     def information_criteria(self) -> _InformationCriteria:
@@ -143,7 +184,9 @@ class _FilterResult:
     """
 
     loglikelihood: float
+    """Total log-likelihood of the data under the model."""
     loglikelihood_contributions: npt.NDArray[np.float64]
+    """Per-period contributions, shape ``(n,)``."""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -153,7 +196,7 @@ class _SmootherResult:
     Deliberately empty of fields: smoothed states and smoothed regime
     probabilities share no data, only the fact that both condition on the
     full sample. This exists to bound the ``S`` parameter of
-    :class:`StateSpaceModel`, not to factor out shared state.
+    :class:`_StateSpace`, not to factor out shared state.
     """
 
 
@@ -169,8 +212,13 @@ class _MeanResult(_FittedResult):
     """
 
     endog: npt.NDArray[np.float64] = field(repr=False)
+    """The observed series, retained so forecasts can be produced from the result
+    alone without holding a reference to the model.
+    """
     resid: npt.NDArray[np.float64] = field(repr=False)
+    """One-step residuals on the estimation sample."""
     fittedvalues: npt.NDArray[np.float64] = field(repr=False)
+    """One-step fitted values on the estimation sample."""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -185,9 +233,13 @@ class _KalmanFilterResult(_FilterResult):
     """
 
     predicted_state: npt.NDArray[np.float64]
+    """One-step-ahead predicted states ``a_{t|t-1}``, ``(n, m)``."""
     predicted_state_cov: npt.NDArray[np.float64]
+    """Predicted state covariances ``P_{t|t-1}``, ``(n, m, m)``."""
     filtered_state: npt.NDArray[np.float64]
+    """Contemporaneously filtered states ``a_{t|t}``, ``(n, m)``."""
     filtered_state_cov: npt.NDArray[np.float64]
+    """Filtered state covariances ``P_{t|t}``, ``(n, m, m)``."""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -200,7 +252,9 @@ class _DurbinKoopmanSmootherResult(_SmootherResult):
     """
 
     smoothed_state: npt.NDArray[np.float64]
+    """Smoothed states ``a_{t|n}``, shape ``(n, m)``."""
     smoothed_state_cov: npt.NDArray[np.float64]
+    """Smoothed state covariances ``V_{t|n}``, ``(n, m, m)``."""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -217,7 +271,9 @@ class _HamiltonFilterResult(_FilterResult):
     """
 
     filtered_prob: npt.NDArray[np.float64]
+    """Contemporaneous regime probabilities ``Pr(S_t = j | y_{1..t})``, shape ``(T, K)``."""
     predicted_prob: npt.NDArray[np.float64]
+    """One-step-ahead regime probabilities ``Pr(S_t = j | y_{1..t-1})``, shape ``(T, K)``."""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -234,7 +290,12 @@ class _KimSmootherResult(_SmootherResult):
     """
 
     smoothed_prob: npt.NDArray[np.float64]
+    """Full-sample regime probabilities ``Pr(S_t = j | y_{1..T})``, shape ``(T, K)``."""
     smoothed_joint_prob: npt.NDArray[np.float64]
+    """Consecutive-pair probabilities ``Pr(S_t = i, S_{t+1} = j | y_{1..T})``, shape
+    ``(T - 1, K, K)``; entry ``[t]`` links period ``t`` to ``t + 1``. Empty when
+    ``T == 1``. These are the expected-transition weights of the EM M-step.
+    """
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -259,10 +320,18 @@ class _ParticleFilterResult(_FilterResult):
     """
 
     filtered_state: npt.NDArray[np.float64]
+    """Particle-cloud means ``E[alpha_t | y_{1..t}]``, shape ``(n, m)``."""
     filtered_state_std: npt.NDArray[np.float64]
+    """Per-component cloud standard deviations, shape ``(n, m)``."""
     effective_sample_size: npt.NDArray[np.float64]
+    """The weight-degeneracy diagnostic per period, in ``(0, n_particles]``; values
+    collapsing toward one mean the likelihood estimate is untrustworthy at that
+    period.
+    """
     n_particles: int
+    """Particles carried."""
     method: str
+    """``"bootstrap"`` or ``"auxiliary"``."""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -280,10 +349,17 @@ class _KimFilterResult(_FilterResult):
     """
 
     filtered_prob: npt.NDArray[np.float64]
+    """Contemporaneous regime probabilities, ``(n, K)``."""
     predicted_prob: npt.NDArray[np.float64]
+    """One-step-ahead regime probabilities, ``(n, K)``."""
     filtered_state: npt.NDArray[np.float64]
+    """Regime-marginal filtered state means, ``(n, m)``."""
     filtered_state_cov: npt.NDArray[np.float64]
+    """Regime-marginal filtered covariances, ``(n, m, m)`` -- mixture covariances,
+    including the between-regime spread.
+    """
     regime_state: npt.NDArray[np.float64]
+    """Per-regime collapsed state means, ``(n, K, m)``."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -312,15 +388,25 @@ class _ConditionalVarianceResult(
     """
 
     endog: npt.NDArray[np.float64]
+    """The full observed series."""
     fittedvalues: npt.NDArray[np.float64]
+    """Fitted conditional means over the effective sample."""
     resid: npt.NDArray[np.float64]
+    """Mean residuals over the effective sample."""
     llf: float
+    """Maximized joint Gaussian log-likelihood."""
     nobs: int
+    """Effective observations."""
     n_params: float
+    """Free parameter count."""
     mean: str
+    """``"constant"`` or ``"zero"``."""
     const: float | None
+    """Mean intercept, or ``None`` when the mean is zero."""
     omega: float
+    """Variance intercept."""
     conditional_variance: npt.NDArray[np.float64]
+    """The fitted variance path."""
 
     def _series(self) -> dict[str, npt.NDArray[np.float64]]:
         """Aligned per-observation output, widened by the variance surface.
@@ -399,15 +485,31 @@ class _MeanFunctionResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
     """
 
     endog: npt.NDArray[np.float64]
+    """The full input series."""
     fittedvalues: npt.NDArray[np.float64]
+    """In-sample conditional means over the effective sample."""
     resid: npt.NDArray[np.float64]
+    """Residuals against those means."""
     llf: float
+    """Concentrated Gaussian log-likelihood at the fitted mean.
+
+    A goodness-of-fit summary, not a maximized likelihood: the learner is
+    penalized, so the fit does not maximize this.
+    """
     nobs: int
+    """Effective sample size after trimming for lags and delay."""
     n_params: float
+    """Learner parameters plus the concentrated variance, and the threshold where one
+    is estimated.
+    """
     order: int
+    """Number of lagged levels fed to the learner."""
     sigma2: float
+    """Concentrated innovation variance, ``ssr / nobs``."""
     engine: str
+    """Class name of the training backend."""
     engine_config: str
+    """Full repr of the backend, so the fit is reproducible."""
 
     @property
     def n_learner_parameters(self) -> int:
@@ -507,7 +609,15 @@ class _MeanFunctionResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         )
 
     def likelihood_ratio_test(self, unrestricted: _ComparisonMixin) -> _LikelihoodRatioTest:
-        """Refuse the test: a network's weights are unidentified under a linear null."""
+        """Refuse the test: a network's weights are unidentified under a linear null.
+
+        Args:
+            unrestricted: The fit that would have been the alternative. It is
+                not read.
+
+        Raises:
+            SpecificationError: Always.
+        """
         raise SpecificationError(
             "a chi-squared likelihood-ratio test is not valid for a learned mean "
             "function: under the null the input-to-hidden weights are unidentified "
@@ -572,19 +682,33 @@ class _ObservedRegimeResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
     """
 
     endog: npt.NDArray[np.float64]
+    """The full input series."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step fitted values over the effective sample."""
     resid: npt.NDArray[np.float64]
+    """Residuals over the effective sample."""
     llf: float
+    """Gaussian log-likelihood at the least-squares estimate."""
     nobs: int
+    """Effective sample size after trimming for lags and delay."""
     n_params: float
+    """Free parameters, including the innovation variance."""
     order: int
+    """Autoregressive order within each regime."""
     delay: int
+    """Delay of the transition variable."""
     threshold: float
+    """The regime split point, in the units of the transition variable."""
     threshold_values: npt.NDArray[np.float64]
+    """The transition variable, aligned with ``resid``."""
     lower_params: npt.NDArray[np.float64]
+    """Lower-regime coefficients, intercept first."""
     upper_params: npt.NDArray[np.float64]
+    """Upper-regime coefficients, intercept first."""
     sigma2: float
+    """Innovation variance, ``ssr / nobs``."""
     ssr: float
+    """Sum of squared residuals at the optimum."""
 
     @property
     def regime_weight(self) -> npt.NDArray[np.float64]:
@@ -814,19 +938,42 @@ class _VectorResult:
     """
 
     endog: npt.NDArray[np.float64]
+    """The sample the model was fitted to."""
     names: tuple[str, ...]
+    """Variable labels, in the order the columns appear."""
     order: int
+    """Autoregressive order, counted in the family's own convention."""
     trend: str
+    """Deterministic specification."""
     sigma_u: npt.NDArray[np.float64]
+    """Residual covariance with the degrees-of-freedom correction."""
     sigma_ml: npt.NDArray[np.float64]
+    """Residual covariance divided by the effective sample."""
     resid: npt.NDArray[np.float64]
+    """Residuals over the effective sample."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step conditional means over the effective sample."""
     design: npt.NDArray[np.float64]
+    """The regressor matrix as estimated."""
     llf: float
+    """Gaussian log-likelihood."""
     nobs: float
+    """Effective sample size."""
     n_params: float
+    """Parameters the fit spends, covariance included.
+
+    Not an integer under shrinkage, which is the point: a shrunk model uses less
+    freedom than its design has columns and an information criterion must charge it
+    for what it used.
+    """
     posterior: _CoefficientInference | None = None
+    """The posterior covariance when a prior was applied, otherwise ``None``.
+
+    Carried rather than rebuilt because under a prior there is nothing to rebuild
+    it from.
+    """
     prior_label: str = "none"
+    """What the prior was, for the summary."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -850,12 +997,19 @@ class _ErrorCorrectionResult(_VectorResult):
     """
 
     rank: int
+    """Cointegrating rank."""
     cointegration_trend: CointegrationTrend
+    """The Johansen case the model was estimated under."""
     alpha: npt.NDArray[np.float64]
+    """``(k_y, r)`` adjustment loadings."""
     beta: npt.NDArray[np.float64]
+    """``(k_y [+ k_x] [+ 1], r)`` cointegrating vectors."""
     gamma: npt.NDArray[np.float64]
+    """``(p - 1, k_y, ...)`` coefficients on lagged differences."""
     short_run_deterministic: npt.NDArray[np.float64]
+    """``(d_s, k_y)`` unrestricted deterministic terms."""
     eigenvalues: npt.NDArray[np.float64]
+    """The squared canonical correlations, descending."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
@@ -906,23 +1060,48 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
     """
 
     endog: npt.NDArray[np.float64]
+    """The full observed panel."""
     names: tuple[str, ...]
+    """Variable labels, in column order."""
     order: int
+    """Autoregressive order within each regime."""
     trend: str
+    """Deterministic specification."""
     delay: int
+    """Delay of the transition variable."""
     threshold: float
+    """The regime split point, in the transition variable's units."""
     threshold_name: str
+    """The transition variable's label -- a variable name when self-exciting,
+    ``"external"`` otherwise.
+    """
     threshold_values: npt.NDArray[np.float64]
+    """The *delayed* transition variable ``z_t``, aligned with ``resid``; what the
+    regime weight is evaluated on.
+    """
     transition_series: npt.NDArray[np.float64]
+    """The raw transition series, aligned with ``endog`` -- the column of ``endog``
+    when self-exciting, the external variable otherwise. Carried because a forecast
+    needs the last ``delay`` raw values, which the delayed alignment cannot supply.
+    """
     lower_coefficients: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack of the lower regime."""
     upper_coefficients: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack of the upper regime."""
     lower_deterministic: npt.NDArray[np.float64]
+    """Lower-regime deterministic coefficients."""
     upper_deterministic: npt.NDArray[np.float64]
+    """Upper-regime deterministic coefficients."""
     resid: npt.NDArray[np.float64]
+    """Residuals over the effective sample."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step conditional means over the effective sample."""
     llf: float
+    """Gaussian log-likelihood at the optimum."""
     nobs: int
+    """Effective sample size after trimming for lags and delay."""
     n_params: float
+    """Free parameters, covariances and transition included."""
 
     @property
     def k_endog(self) -> int:
@@ -976,7 +1155,17 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
         )
 
     def _regime_stack(self, regime: Regime) -> npt.NDArray[np.float64]:
-        """The named regime's lag stack, after validating the name."""
+        """The named regime's lag stack, after validating the name.
+
+        Args:
+            regime: ``"lower"`` or ``"upper"``.
+
+        Returns:
+            That regime's ``(p, k, k)`` lag stack.
+
+        Raises:
+            SpecificationError: If the name is not one of the two regimes.
+        """
         choice = _validate_choice(regime, Regime, "regime")
         return self.lower_coefficients if choice == "lower" else self.upper_coefficients
 
@@ -1325,15 +1514,27 @@ class _RegimeSystemResult:
     """
 
     index: int
+    """This regime's label under the producing fit's convention."""
     names: tuple[str, ...]
+    """Variable labels, in column order."""
     order: int
+    """Autoregressive order."""
     trend: str
+    """Deterministic specification."""
     coefficients: npt.NDArray[np.float64] = field(repr=False)
+    """``(p, k, k)`` lag stack of this regime."""
     deterministic: npt.NDArray[np.float64] = field(repr=False)
+    """This regime's deterministic coefficients."""
     sigma_u: npt.NDArray[np.float64] = field(repr=False)
+    """This regime's innovation covariance."""
     resid: npt.NDArray[np.float64] = field(repr=False)
+    """Probability-weighted residuals, aligned with the effective sample."""
     weight: npt.NDArray[np.float64] = field(repr=False)
+    """This regime's weights -- smoothed probabilities for a latent chain -- one per
+    effective row.
+    """
     nobs: float
+    """Expected periods governed by this regime."""
 
     @property
     def k_endog(self) -> int:
@@ -1413,18 +1614,33 @@ class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin, _Replication
     """
 
     endog: npt.NDArray[np.float64]
+    """The observed panel."""
     names: tuple[str, ...]
+    """Variable labels, in column order."""
     order: int
+    """Autoregressive order."""
     trend: str
+    """Deterministic specification."""
     coefficients: npt.NDArray[np.float64]
+    """``(p, k, k)`` lag stack at the posterior mean."""
     deterministic: npt.NDArray[np.float64]
+    """``(n_det, k)`` deterministic block at the posterior mean."""
     beta_mean: npt.NDArray[np.float64]
+    """``(w, k)`` full posterior mean coefficient matrix."""
     sigma_u: npt.NDArray[np.float64]
+    """``(k, k)`` posterior mean innovation covariance -- for a heteroskedastic
+    member, the covariance its own docstring names.
+    """
     beta_draws: npt.NDArray[np.float64]
+    """``(S, w, k)`` coefficient draws."""
     sigma_draws: npt.NDArray[np.float64]
+    """``(S, k, k)`` covariance draws, one per kept draw."""
     resid: npt.NDArray[np.float64]
+    """Residuals at the posterior mean."""
     fittedvalues: npt.NDArray[np.float64]
+    """One-step means at the posterior mean."""
     nobs: int
+    """Effective sample size."""
 
     @property
     def k_endog(self) -> int:
@@ -1474,7 +1690,16 @@ class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin, _Replication
         )
 
     def _stack_of(self, beta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Slice one ``(w, k)`` draw into its ``(p, k, k)`` lag stack."""
+        """Slice one ``(w, k)`` draw into its ``(p, k, k)`` lag stack.
+
+        Args:
+            beta: One coefficient draw, design columns by equations, with the
+                deterministic rows first.
+
+        Returns:
+            The lag matrices ``A_1, ..., A_p`` of that draw, each transposed
+            so that rows are equations; an empty stack when the order is zero.
+        """
         k, offset = self.k_endog, self._n_deterministic
         if not self.order:
             return np.zeros((0, k, k))
@@ -1642,6 +1867,18 @@ class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin, _Replication
         The hook a heteroskedastic member overrides: the base draws i.i.d.
         Gaussian innovations from the draw's covariance, which is exact for
         every homoskedastic member of the family.
+
+        Args:
+            draw: Index of the kept draw whose covariance is used.
+            steps: Number of future periods.
+            rng: Random generator.
+
+        Returns:
+            The innovations, ``(steps, k)``.
+
+        Raises:
+            numpy.linalg.LinAlgError: If the draw's covariance is not positive
+                definite.
         """
         chol = np.linalg.cholesky(self.sigma_draws[draw])
         return np.asarray(rng.standard_normal((steps, self.k_endog)) @ chol.T, dtype=np.float64)
@@ -1781,8 +2018,11 @@ class _RtsSmootherResult(_SmootherResult):
     """
 
     smoothed_state: npt.NDArray[np.float64]
+    """Smoothed state means ``a_{t|n}``, shape ``(n, m)``."""
     smoothed_state_cov: npt.NDArray[np.float64]
+    """Smoothed covariances ``V_{t|n}``, ``(n, m, m)``."""
     method: str
+    """``"extended"`` or ``"unscented"``."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -1802,5 +2042,8 @@ class _ParticleSmootherResult(_SmootherResult):
     """
 
     smoothed_state: npt.NDArray[np.float64]
+    """Smoothed cloud means ``E[alpha_t | y_{1..n}]``, shape ``(n, m)``."""
     smoothed_state_std: npt.NDArray[np.float64]
+    """Per-component smoothed cloud standard deviations, shape ``(n, m)``."""
     n_particles: int
+    """Particles carried through the forward pass."""
