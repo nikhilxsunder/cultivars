@@ -9,6 +9,8 @@ listed under Changed.
 
 ## [Unreleased]
 
+## [1.0.0a5] - 2026-11-19
+
 ### Fixed
 
 - `VECMResult.normalized_alpha` raises `SpecificationError` for an

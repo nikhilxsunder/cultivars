@@ -63,23 +63,27 @@ it a well-posed customer of the nonlinear filters.
 
 References:
     Schmitt-Grohe, S., & Uribe, M. (2004). Solving dynamic general
-        equilibrium models using a second-order approximation to the
-        policy function. *Journal of Economic Dynamics and Control*,
-        28(4), 755-775.
+    equilibrium models using a second-order approximation to the
+    policy function. *Journal of Economic Dynamics and Control*,
+    28(4), 755-775.
+
     Klein, P. (2000). Using the generalized Schur form to solve a
-        multivariate linear rational expectations model. *Journal of
-        Economic Dynamics and Control*, 24(10), 1405-1423.
+    multivariate linear rational expectations model. *Journal of
+    Economic Dynamics and Control*, 24(10), 1405-1423.
+
     Kim, J., Kim, S., Schaumburg, E., & Sims, C. A. (2008). Calculating
-        and using second-order accurate solutions of discrete time
-        dynamic equilibrium models. *Journal of Economic Dynamics and
-        Control*, 32(11), 3397-3414.
+    and using second-order accurate solutions of discrete time
+    dynamic equilibrium models. *Journal of Economic Dynamics and
+    Control*, 32(11), 3397-3414.
+
     Andreasen, M. M., Fernandez-Villaverde, J., & Rubio-Ramirez, J. F.
-        (2018). The pruned state-space system for non-linear DSGE
-        models: Theory and empirical applications. *Review of Economic
-        Studies*, 85(1), 1-49.
+    (2018). The pruned state-space system for non-linear DSGE
+    models: Theory and empirical applications. *Review of Economic
+    Studies*, 85(1), 1-49.
+
     Fernandez-Villaverde, J., & Rubio-Ramirez, J. F. (2007). Estimating
-        macroeconomic models: A likelihood approach. *Review of Economic
-        Studies*, 74(4), 1059-1087.
+    macroeconomic models: A likelihood approach. *Review of Economic
+    Studies*, 74(4), 1059-1087.
 """
 
 from __future__ import annotations

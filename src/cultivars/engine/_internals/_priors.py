@@ -61,19 +61,23 @@ adaptive hooks are there too.
 
 References:
     Banbura, M., Giannone, D., & Reichlin, L. (2010). Large Bayesian vector
-        auto regressions. *Journal of Applied Econometrics*, 25(1), 71-92.
+    auto regressions. *Journal of Applied Econometrics*, 25(1), 71-92.
+
     Giannone, D., Lenza, M., & Primiceri, G. E. (2015). Prior selection for
-        vector autoregressions. *The Review of Economics and Statistics*,
-        97(2), 436-451.
+    vector autoregressions. *The Review of Economics and Statistics*,
+    97(2), 436-451.
+
     Kim, S., Shephard, N., & Chib, S. (1998). Stochastic volatility:
-        Likelihood inference and comparison with ARCH models. *The Review
-        of Economic Studies*, 65(3), 361-393.
+    Likelihood inference and comparison with ARCH models. *The Review
+    of Economic Studies*, 65(3), 361-393.
+
     Litterman, R. B. (1986). Forecasting with Bayesian vector
-        autoregressions: Five years of experience. *Journal of Business &
-        Economic Statistics*, 4(1), 25-38.
+    autoregressions: Five years of experience. *Journal of Business &
+    Economic Statistics*, 4(1), 25-38.
+
     Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become
-        harder to forecast? *Journal of Money, Credit and Banking*, 39(s1),
-        3-33.
+    harder to forecast? *Journal of Money, Credit and Banking*, 39(s1),
+    3-33.
 """
 
 from __future__ import annotations
@@ -852,8 +856,8 @@ class _VolatilityPrior:
 
     References:
         Kim, S., Shephard, N., & Chib, S. (1998). Stochastic volatility:
-            Likelihood inference and comparison with ARCH models. *The
-            Review of Economic Studies*, 65(3), 361-393.
+        Likelihood inference and comparison with ARCH models. *The
+        Review of Economic Studies*, 65(3), 361-393.
 
     Example:
         >>> prior = _VolatilityPrior()
@@ -965,8 +969,8 @@ class _RandomWalkVolatilityPrior:
 
     References:
         Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become
-            harder to forecast? *Journal of Money, Credit and Banking*,
-            39(s1), 3-33.
+        harder to forecast? *Journal of Money, Credit and Banking*,
+        39(s1), 3-33.
 
     Example:
         >>> prior = _RandomWalkVolatilityPrior()

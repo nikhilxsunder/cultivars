@@ -37,9 +37,10 @@ The dynamic Nelson-Siegel counterpart is built by the substrate's own
 
 References:
     Harvey, A. C. (1989). *Forecasting, Structural Time Series Models and
-        the Kalman Filter*. Cambridge University Press.
+    the Kalman Filter*. Cambridge University Press.
+
     Durbin, J., & Koopman, S. J. (2012). *Time Series Analysis by State
-        Space Methods* (2nd ed.). Oxford University Press.
+    Space Methods* (2nd ed.). Oxford University Press.
 """
 
 from __future__ import annotations

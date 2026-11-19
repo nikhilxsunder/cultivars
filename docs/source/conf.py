@@ -14,8 +14,10 @@ from pathlib import Path
 from types import FunctionType, MethodType, ModuleType
 from typing import TypeAliasType
 
+import sphinx
 from sphinx.application import Sphinx
 from sphinx.pycode import ModuleAnalyzer
+from sphinx.util import logging as sphinx_logging
 
 # -- Path setup --------------------------------------------------------------
 _ROOT = Path(__file__).resolve().parents[2]
@@ -171,7 +173,7 @@ intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "polars": ("https://docs.pola.rs/api/python/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "fedfred": ("https://nikhilxsunder.github.io/fedfred/", None),
-    "ns-sdn": ("https://nikhilxsunder.github.io/ns-sdn/", None),
+    "ns-sdn": ("https://nikhilxsunder.github.io/ns-sdn/stable/", None),
 }
 intersphinx_timeout: int = 10
 
@@ -428,6 +430,96 @@ def _document_type_alias(
     lines[:] = [f"Alias of ``{value}``.", "", *doc]
 
 
+_ENGINE_PACKAGE: str = "cultivars.engine"
+_LOGGER = sphinx_logging.getLogger(__name__)
+
+
+def _document_reexports_as_classes() -> None:
+    """Document engine classes under their public names as classes, not aliases.
+
+    The public modules re-export their records, results and tests from the
+    engine (``from ..engine._internals._tests import _JohansenRankTest as
+    JohansenRankTest``), so the object autodoc imports for
+    ``cultivars.diagnostics.cointegration.JohansenRankTest`` carries the
+    private ``__name__``. autodoc reads any name mismatch as an alias and
+    renders ``alias of _JohansenRankTest`` with no signature, docstring or
+    members. That is right for ``Short = LongName`` inside one module and
+    wrong here, where the public name is the one a reader is meant to see.
+
+    autodoc exposes no event for that decision, so the two properties that
+    carry it are wrapped. ``doc_as_attr`` answers ``False`` for a top-level
+    class defined under ``cultivars.engine`` and documented outside it.
+    ``canonical_full_name`` answers ``None`` for the same objects: the engine
+    reference documents the private name in its own right, and a
+    ``:canonical:`` alias from each public home would collide when a class
+    has two of them. The classes themselves are not touched, so attribute
+    docstrings and source links keep resolving through the defining module.
+
+    ``_ClassDefProperties`` is private to Sphinx and identical in 9.1.1 and
+    9.2.0, the two versions the lockfile resolves. If a later release moves
+    it, a warning is logged and the pages fall back to ``alias of``; the
+    strict build turns that warning into a failure.
+    """
+    try:
+        from sphinx.ext.autodoc._property_types import _ClassDefProperties
+
+        inherited_alias = _ClassDefProperties.doc_as_attr.fget
+        inherited_canonical = _ClassDefProperties.canonical_full_name.fget
+    except (ImportError, AttributeError):
+        inherited_alias = inherited_canonical = None
+    if inherited_alias is None or inherited_canonical is None:
+        _LOGGER.warning(
+            "autodoc internals moved in Sphinx %s: engine classes re-exported by the "
+            "public modules will render as 'alias of ...'. Update "
+            "_document_reexports_as_classes in conf.py.",
+            sphinx.__version__,
+        )
+        return
+
+    def is_reexport(props: _ClassDefProperties) -> bool:
+        defined_in = props._obj___module__ or ""
+        return (
+            len(props.parts) == 1
+            and props._obj___name__ is not None
+            and defined_in.startswith(f"{_ENGINE_PACKAGE}.")
+            and props.module_name != _ENGINE_PACKAGE
+            and not props.module_name.startswith(f"{_ENGINE_PACKAGE}.")
+        )
+
+    def doc_as_attr(props: _ClassDefProperties) -> bool:
+        return False if is_reexport(props) else inherited_alias(props)
+
+    def canonical_full_name(props: _ClassDefProperties) -> str | None:
+        return None if is_reexport(props) else inherited_canonical(props)
+
+    _ClassDefProperties.doc_as_attr = property(doc_as_attr)
+    _ClassDefProperties.canonical_full_name = property(canonical_full_name)
+
+
+def _skip_foreign_modules(
+    app: Sphinx,
+    what: str,
+    name: str,
+    obj: object,
+    skip: bool,
+    options: object,
+) -> bool | None:
+    """Keep third-party modules re-exported by the public surface out of the reference.
+
+    ``cultivars.data`` re-exports ``fedfred`` as ``economic`` and lists it in
+    ``__all__``. autosummary would otherwise recurse into it as a submodule
+    and write a stub for every fedfred object under a module path
+    (``economic.FredAPI``) that autodoc cannot import, which is one failed
+    page per object. Those packages are documented at their own sites, as the
+    ``cultivars.data`` docstring says.
+    """
+    if isinstance(obj, ModuleType) and obj.__name__.partition(".")[0] != project:
+        return True
+    return None
+
+
 def setup(app: Sphinx) -> None:
     """Setup hook for Sphinx."""
+    _document_reexports_as_classes()
     app.connect("autodoc-process-docstring", _document_type_alias)
+    app.connect("autodoc-skip-member", _skip_foreign_modules)

@@ -71,11 +71,13 @@ record of a recursion with no lags.
 
 References:
     Lütkepohl, H. (2005). *New Introduction to Multiple Time Series
-        Analysis*. Springer. Section 2.1.1.
+    Analysis*. Springer. Section 2.1.1.
+
     Hamilton, J. D. (1994). *Time Series Analysis*. Princeton University
-        Press. Sections 1.2 and 10.1.
+    Press. Sections 1.2 and 10.1.
+
     Golub, G. H., & Van Loan, C. F. (2013). *Matrix Computations* (4th
-        ed.). Johns Hopkins University Press. Section 7.2.
+    ed.). Johns Hopkins University Press. Section 7.2.
 """
 
 from __future__ import annotations

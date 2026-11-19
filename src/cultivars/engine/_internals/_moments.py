@@ -31,8 +31,8 @@ because it does not depend on the cointegrating rank.
 
 References:
     Johansen, S. (1991). Estimation and hypothesis testing of cointegration
-        vectors in Gaussian vector autoregressive models. *Econometrica*,
-        59(6), 1551-1580.
+    vectors in Gaussian vector autoregressive models. *Econometrica*,
+    59(6), 1551-1580.
 """
 
 from __future__ import annotations

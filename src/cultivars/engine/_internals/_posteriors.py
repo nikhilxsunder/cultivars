@@ -74,16 +74,19 @@ state-space emitters are in ``_emitters`` and the simulators in
 
 References:
     Geweke, J. (1999). Using simulation methods for Bayesian econometric
-        models: Inference, development, and communication. *Econometric
-        Reviews*, 18(1), 1-73.
+    models: Inference, development, and communication. *Econometric
+    Reviews*, 18(1), 1-73.
+
     Herbst, E. P., & Schorfheide, F. (2015). *Bayesian Estimation of DSGE
-        Models*. Princeton University Press.
+    Models*. Princeton University Press.
+
     Kim, S., Shephard, N., & Chib, S. (1998). Stochastic volatility:
-        Likelihood inference and comparison with ARCH models. *The Review
-        of Economic Studies*, 65(3), 361-393.
+    Likelihood inference and comparison with ARCH models. *The Review
+    of Economic Studies*, 65(3), 361-393.
+
     Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become
-        harder to forecast? *Journal of Money, Credit and Banking*, 39(s1),
-        3-33.
+    harder to forecast? *Journal of Money, Credit and Banking*, 39(s1),
+    3-33.
 """
 
 from __future__ import annotations

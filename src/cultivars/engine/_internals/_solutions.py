@@ -29,9 +29,9 @@ recomputes it draw by draw.
 
 References:
     Schmitt-Grohe, S., & Uribe, M. (2004). Solving dynamic general
-        equilibrium models using a second-order approximation to the
-        policy function. *Journal of Economic Dynamics and Control*,
-        28(4), 755-775.
+    equilibrium models using a second-order approximation to the
+    policy function. *Journal of Economic Dynamics and Control*,
+    28(4), 755-775.
 """
 
 from __future__ import annotations

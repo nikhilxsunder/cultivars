@@ -3,6 +3,22 @@
 .. automodule:: {{ fullname }}
    :no-members:
 
+{% block modules -%}
+{% if all_modules is defined and all_modules %}
+Modules
+-------
+
+.. autosummary::
+   :toctree:
+   :recursive:
+   :nosignatures:
+   :template: engine/module.rst
+{% for item in all_modules %}
+   {{ item }}
+{%- endfor %}
+{% endif %}
+{%- endblock %}
+
 {% block classes -%}
 {% if all_classes %}
 Classes

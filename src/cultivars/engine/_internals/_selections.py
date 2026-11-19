@@ -43,9 +43,10 @@ without the leading underscore, which is the name each ``__repr__`` prints.
 
 References:
     Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence
-        set. *Econometrica*, 79(2), 453-497.
+    set. *Econometrica*, 79(2), 453-497.
+
     Kass, R. E., & Raftery, A. E. (1995). Bayes factors. *Journal of the
-        American Statistical Association*, 90(430), 773-795.
+    American Statistical Association*, 90(430), 773-795.
 """
 
 from __future__ import annotations

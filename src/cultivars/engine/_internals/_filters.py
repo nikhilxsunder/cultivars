@@ -32,8 +32,8 @@ either model. The backward pass is
 
 References:
     Hamilton, J. D. (1989). A new approach to the economic analysis of
-        nonstationary time series and the business cycle. *Econometrica*,
-        57(2), 357-384.
+    nonstationary time series and the business cycle. *Econometrica*,
+    57(2), 357-384.
 """
 
 import numpy as np

@@ -51,12 +51,13 @@ leading underscore, and each ``__repr__`` prints a public name.
 
 References:
     Johansen, S. (1991). Estimation and hypothesis testing of cointegration
-        vectors in Gaussian vector autoregressive models. *Econometrica*,
-        59(6), 1551-1580.
+    vectors in Gaussian vector autoregressive models. *Econometrica*,
+    59(6), 1551-1580.
+
     Vehtari, A., Gelman, A., Simpson, D., Carpenter, B., & Burkner, P.-C.
-        (2021). Rank-normalization, folding, and localization: An improved
-        R-hat for assessing convergence of MCMC. *Bayesian Analysis*,
-        16(2), 667-718.
+    (2021). Rank-normalization, folding, and localization: An improved
+    R-hat for assessing convergence of MCMC. *Bayesian Analysis*,
+    16(2), 667-718.
 """
 
 from __future__ import annotations
@@ -111,7 +112,7 @@ class _JohansenRankTest:
         eigenvalues: The squared canonical correlations, descending. One per
             modelled equation, since a conditional system cannot support more
             cointegrating relations than it has equations.
-        trace_statistic: One entry per null ``rank <= r``, ``r = 0 .. k - 1``.
+        trace_statistic: One entry per null ``rank <= r``, for ``r = 0, ..., k - 1``.
         max_eigenvalue_statistic: One entry per null ``rank = r``.
         trace_pvalue: Empirical p-values from the simulated null.
         max_eigenvalue_pvalue: Empirical p-values from the simulated null.
@@ -131,7 +132,7 @@ class _JohansenRankTest:
     cointegrating relations than it has equations.
     """
     trace_statistic: npt.NDArray[np.float64]
-    """One entry per null ``rank <= r``, ``r = 0 .. k - 1``."""
+    """One entry per null ``rank <= r``, for ``r = 0, ..., k - 1``."""
     max_eigenvalue_statistic: npt.NDArray[np.float64]
     """One entry per null ``rank = r``."""
     trace_pvalue: npt.NDArray[np.float64]

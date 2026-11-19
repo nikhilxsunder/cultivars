@@ -30,7 +30,7 @@ model with a discrete regime chain.
 
 References:
     Kim, C.-J. (1994). Dynamic linear models with Markov-switching.
-        *Journal of Econometrics*, 60(1-2), 1-22.
+    *Journal of Econometrics*, 60(1-2), 1-22.
 """
 
 import numpy as np

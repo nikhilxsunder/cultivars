@@ -15,6 +15,7 @@ Private layers
 
 .. autosummary::
    :toctree: generated
+   :recursive:
    :nosignatures:
    :template: engine/module.rst
 

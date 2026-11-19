@@ -68,20 +68,24 @@ the two callers.
 
 References:
     Andrieu, C., Doucet, A., & Holenstein, R. (2010). Particle Markov
-        chain Monte Carlo methods. *Journal of the Royal Statistical
-        Society B*, 72(3), 269-342.
+    chain Monte Carlo methods. *Journal of the Royal Statistical
+    Society B*, 72(3), 269-342.
+
     Haario, H., Saksman, E., & Tamminen, J. (2001). An adaptive Metropolis
-        algorithm. *Bernoulli*, 7(2), 223-242.
+    algorithm. *Bernoulli*, 7(2), 223-242.
+
     Pitt, M. K., dos Santos Silva, R., Giordani, P., & Kohn, R. (2012). On
-        some properties of Markov chain Monte Carlo simulation methods
-        based on the particle filter. *Journal of Econometrics*, 171(2),
-        134-151.
+    some properties of Markov chain Monte Carlo simulation methods
+    based on the particle filter. *Journal of Econometrics*, 171(2),
+    134-151.
+
     Roberts, G. O., Gelman, A., & Gilks, W. R. (1997). Weak convergence
-        and optimal scaling of random walk Metropolis algorithms. *The
-        Annals of Applied Probability*, 7(1), 110-120.
+    and optimal scaling of random walk Metropolis algorithms. *The
+    Annals of Applied Probability*, 7(1), 110-120.
+
     Sherlock, C., Thiery, A. H., Roberts, G. O., & Rosenthal, J. S. (2015).
-        On the efficiency of pseudo-marginal random walk Metropolis
-        algorithms. *The Annals of Statistics*, 43(1), 238-275.
+    On the efficiency of pseudo-marginal random walk Metropolis
+    algorithms. *The Annals of Statistics*, 43(1), 238-275.
 """
 
 from __future__ import annotations
