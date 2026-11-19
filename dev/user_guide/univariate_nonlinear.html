@@ -61,7 +61,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=fc897e8e"></script>
+    <script src="../_static/documentation_options.js?v=58f1fa97"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/user_guide/univariate_nonlinear.3dc52faa-6062-4399-9bee-101805495e4e.js"></script>
+    <script defer="defer" src="../_static/tippy/user_guide/univariate_nonlinear.31edc057-808f-43dc-ab0e-f16a4f23f7c4.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/univariate_nonlinear';</script>
@@ -1354,7 +1354,7 @@ regime cannot always be read off the feature columns:</p>
 <code class="docutils literal notranslate"><span class="pre">predict(features)</span></code> and an <code class="docutils literal notranslate"><span class="pre">n_parameters</span></code> attribute satisfies
 <a class="reference internal" href="../api/generated/cultivars.univariate.mean_function.MeanFunctionEngine.html#cultivars.univariate.mean_function.MeanFunctionEngine" title="cultivars.univariate.mean_function.MeanFunctionEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeanFunctionEngine</span></code></a>. A
 least-squares engine reproduces the linear AR and shows the contract:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function"><span class="nn">cultivars.univariate.mean_function</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.MeanFunctionEngine.html#cultivars.univariate.mean_function.MeanFunctionEngine" title="cultivars.engine._internals._engines.MeanFunctionEngine"><span class="n">MeanFunctionEngine</span></a>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.html#module-cultivars.univariate.mean_function"><span class="nn">cultivars.univariate.mean_function</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../engine/generated/cultivars.engine._internals._engines.MeanFunctionEngine.html#cultivars.engine._internals._engines.MeanFunctionEngine" title="cultivars.engine._internals._engines.MeanFunctionEngine"><span class="n">MeanFunctionEngine</span></a>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">LinearEngine</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
@@ -1369,7 +1369,7 @@ least-squares engine reproduces the linear AR and shows the contract:</p>
 
         <span class="k">return</span> <span class="n">Predictor</span><span class="p">()</span>
 
-<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#isinstance"><span class="nb">isinstance</span></a><span class="p">(</span><span class="n">LinearEngine</span><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.univariate.mean_function.MeanFunctionEngine.html#cultivars.univariate.mean_function.MeanFunctionEngine" title="cultivars.engine._internals._engines.MeanFunctionEngine"><span class="n">MeanFunctionEngine</span></a><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#isinstance"><span class="nb">isinstance</span></a><span class="p">(</span><span class="n">LinearEngine</span><span class="p">(),</span> <a class="sphinx-codeautolink-a" href="../engine/generated/cultivars.engine._internals._engines.MeanFunctionEngine.html#cultivars.engine._internals._engines.MeanFunctionEngine" title="cultivars.engine._internals._engines.MeanFunctionEngine"><span class="n">MeanFunctionEngine</span></a><span class="p">))</span>
 <span class="n">ols</span> <span class="o">=</span> <span class="n">ARNN</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="n">LinearEngine</span><span class="p">())</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">ols</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#round"><span class="nb">round</span></a><span class="p">(</span><span class="n">AR</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">llf</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 </pre></div>
@@ -1721,7 +1721,7 @@ comparisons.</p></li>
           </p>
           <pre
             class="cv-footer__code"
-          ><code>pip install --pre cultivars==1.0.0a4</code></pre>
+          ><code>pip install --pre cultivars==1.0.0a5</code></pre>
         </div>
 
         <nav class="cv-footer__links" aria-label="Resources">
@@ -1820,7 +1820,7 @@ comparisons.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a4 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-10-13 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"
