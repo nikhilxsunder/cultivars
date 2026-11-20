@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_ARMAMean &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._means._ARMAMean.f019dfdc-53da-4003-ae3f-ca5e632c5a9f.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._means._ARMAMean.ffc873f4-8da2-43e4-9d42-bc06356ae037.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._means._ARMAMean';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,7 +5522,7 @@
 <h1>_ARMAMean<a class="headerlink" href="#armamean" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._means._ARMAMean">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._means.</span></span><span class="sig-name descname"><span class="pre">_ARMAMean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_const</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_means.py#L265-L419"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._means._ARMAMean" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._means.</span></span><span class="sig-name descname"><span class="pre">_ARMAMean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_const</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_means.py#L273-L427"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._means._ARMAMean" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._means._MeanLayer.html#cultivars.engine._internals._means._MeanLayer" title="cultivars.engine._internals._means._MeanLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">_MeanLayer</span></code></a></p>
 <p>A mean produced by a conditional-sum-of-squares ARMA recursion.</p>
 <p>The recursion conditions on the first <code class="docutils literal notranslate"><span class="pre">max(p,</span> <span class="pre">q)</span></code> observations: lagged
@@ -5548,9 +5550,9 @@ explosive draw does not merely score badly, it overflows.</p>
 <p class="admonition-title">Warning</p>
 <p>The claim above about the moving-average roots holds only for
 <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code>. The recursion adds <code class="docutils literal notranslate"><span class="pre">ma[j]</span> <span class="pre">*</span> <span class="pre">eps[t</span> <span class="pre">-</span> <span class="pre">j</span> <span class="pre">-</span> <span class="pre">1]</span></code>, so the
-moving-average polynomial is <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">ma_1</span> <span class="pre">L</span> <span class="pre">+</span> <span class="pre">...</span> <span class="pre">+</span> <span class="pre">ma_q</span> <span class="pre">L^q</span></code>, while
+moving-average polynomial is <span class="math notranslate nohighlight">\(1 + \mathrm{ma}_1 L + \cdots + \mathrm{ma}_q L^q\)</span>, while
 the reparameterization returns coefficients for which
-<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">ma_1</span> <span class="pre">L</span> <span class="pre">-</span> <span class="pre">...</span> <span class="pre">-</span> <span class="pre">ma_q</span> <span class="pre">L^q</span></code> has its roots outside the unit
+<span class="math notranslate nohighlight">\(1 - \mathrm{ma}_1 L - \cdots - \mathrm{ma}_q L^q\)</span> has its roots outside the unit
 circle. For <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">&gt;=</span> <span class="pre">2</span></code> those are different regions: some searched
 draws are not invertible and make the recursion explode, and some
 invertible moving averages cannot be reached.</p>
@@ -5840,7 +5842,7 @@ invertible moving averages cannot be reached.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_BoxJenkinsParameters &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._BoxJenkinsParameters.9e8ca095-fb1e-40e6-803c-a59f88d5e568.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._BoxJenkinsParameters.011a873e-7a80-4841-a485-e79f44bd077b.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._parameters._BoxJenkinsParameters';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,9 +5522,30 @@
 <h1>_BoxJenkinsParameters<a class="headerlink" href="#boxjenkinsparameters" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._parameters._BoxJenkinsParameters">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_BoxJenkinsParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seasonal_ar_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ma_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seasonal_ma_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L84-L113"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._BoxJenkinsParameters" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_BoxJenkinsParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seasonal_ar_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ma_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seasonal_ma_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L102-L158"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._BoxJenkinsParameters" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Structured parameters of a seasonal ARIMA-with-regressors draw.</p>
+<p>The record is one point of the parameter space of a regression with seasonal
+ARMA errors,</p>
+<div class="math notranslate nohighlight">
+\[\phi(L)\, \Phi(L^s)\, u_t = \theta(L)\, \Theta(L^s)\, \varepsilon_t,
+\qquad u_t = w_t - x_t^\top \beta,
+\qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2),\]</div>
+<p>where <span class="math notranslate nohighlight">\(w_t\)</span> is the series after whatever differencing the specification
+applies and <span class="math notranslate nohighlight">\(x_t\)</span> stacks the deterministic and exogenous columns.
+<a class="reference internal" href="cultivars.engine._internals._parameters._BoxJenkinsParameters.ar_params.html#cultivars.engine._internals._parameters._BoxJenkinsParameters.ar_params" title="cultivars.engine._internals._parameters._BoxJenkinsParameters.ar_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ar_params</span></code></a> and <a class="reference internal" href="cultivars.engine._internals._parameters._BoxJenkinsParameters.seasonal_ar_params.html#cultivars.engine._internals._parameters._BoxJenkinsParameters.seasonal_ar_params" title="cultivars.engine._internals._parameters._BoxJenkinsParameters.seasonal_ar_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">seasonal_ar_params</span></code></a> are the coefficients of
+<span class="math notranslate nohighlight">\(\phi(L)\)</span> and <span class="math notranslate nohighlight">\(\Phi(L^s)\)</span>, <a class="reference internal" href="cultivars.engine._internals._parameters._BoxJenkinsParameters.ma_params.html#cultivars.engine._internals._parameters._BoxJenkinsParameters.ma_params" title="cultivars.engine._internals._parameters._BoxJenkinsParameters.ma_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ma_params</span></code></a> and
+<a class="reference internal" href="cultivars.engine._internals._parameters._BoxJenkinsParameters.seasonal_ma_params.html#cultivars.engine._internals._parameters._BoxJenkinsParameters.seasonal_ma_params" title="cultivars.engine._internals._parameters._BoxJenkinsParameters.seasonal_ma_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">seasonal_ma_params</span></code></a> those of <span class="math notranslate nohighlight">\(\theta(L)\)</span> and <span class="math notranslate nohighlight">\(\Theta(L^s)\)</span>,
+<a class="reference internal" href="cultivars.engine._internals._parameters._BoxJenkinsParameters.beta.html#cultivars.engine._internals._parameters._BoxJenkinsParameters.beta" title="cultivars.engine._internals._parameters._BoxJenkinsParameters.beta"><code class="xref py py-attr docutils literal notranslate"><span class="pre">beta</span></code></a> is <span class="math notranslate nohighlight">\(\beta\)</span> and <a class="reference internal" href="cultivars.engine._internals._parameters._BoxJenkinsParameters.sigma2.html#cultivars.engine._internals._parameters._BoxJenkinsParameters.sigma2" title="cultivars.engine._internals._parameters._BoxJenkinsParameters.sigma2"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sigma2</span></code></a> is <span class="math notranslate nohighlight">\(\sigma^2\)</span>. All six
+are on the natural scale: the stationarity and invertibility maps and the log
+on the variance have already been undone.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The moving-average blocks are stored in the sign convention of the
+observation equation, not of the unconstrained vector they were unpacked
+from. A consumer that rebuilds <span class="math notranslate nohighlight">\(\theta(L)\)</span> should read the attribute
+and not re-derive it from the packed parameters.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5536,6 +5559,12 @@ observation equation.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="cultivars.engine._internals._objectives._BoxJenkinsObjective.unpack.html#cultivars.engine._internals._objectives._BoxJenkinsObjective.unpack" title="cultivars.engine._internals._objectives._BoxJenkinsObjective.unpack"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_BoxJenkinsObjective.unpack()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5791,7 +5820,7 @@ observation equation.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

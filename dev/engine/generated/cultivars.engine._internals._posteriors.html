@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>cultivars.engine._internals._posteriors &#8212; cultivars</title>
   
   
@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._posteriors.8ae41036-3071-42eb-a215-f5b858aac67b.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._posteriors.cc4f11bf-97c6-47c8-a671-662730a94b6d.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._posteriors';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5516,13 +5516,13 @@
   <section id="module-cultivars.engine._internals._posteriors">
 <span id="cultivars-engine-internals-posteriors"></span><h1>cultivars.engine._internals._posteriors<a class="headerlink" href="#module-cultivars.engine._internals._posteriors" title="Link to this heading">#</a></h1>
 <p>Posterior records: what a sampler returns once its draws are packed.</p>
-<p>A sampler in this package produces a <em>fit</em> record of raw draws (<code class="docutils literal notranslate"><span class="pre">_fits</span></code>).
-A posterior record is that fit made usable: the draws under the names a
-user reads, the bookkeeping of the run, and every derived quantity as a
-property or method of the draws. Posterior means, pointwise bands, the
-parameter record at the posterior mean, the state-space model that mean
-implies, replicated and simulated data, and the summary table all live
-here. Nothing in this module runs a sampler.</p>
+<p>A sampler in this package produces a <em>fit</em> record of raw draws
+(<a class="reference internal" href="cultivars.engine._internals._fits.html#module-cultivars.engine._internals._fits" title="cultivars.engine._internals._fits"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_fits</span></code></a>). A posterior record is that fit
+made usable: the draws under the names a user reads, the bookkeeping of the
+run, and every derived quantity as a property or method of the draws. Posterior
+means, pointwise bands, the parameter record at the posterior mean, the
+state-space model that mean implies, replicated and simulated data, and the
+summary table all live here. Nothing in this module runs a sampler.</p>
 <p>There are four records:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="cultivars.engine._internals._posteriors._ConjugatePosterior.html#cultivars.engine._internals._posteriors._ConjugatePosterior" title="cultivars.engine._internals._posteriors._ConjugatePosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ConjugatePosterior</span></code></a>: the Normal-inverse-Wishart posterior of a
@@ -5553,14 +5553,17 @@ The methods that take a draw index, and the replication and
 impulse-response methods that loop over draws, are the ones that carry
 parameter uncertainty.</p>
 <p>Layout. The three draw-based records are re-exported under public names:
-<code class="docutils literal notranslate"><span class="pre">SVPosterior</span></code> and <code class="docutils literal notranslate"><span class="pre">UCSVPosterior</span></code> from
+<a class="reference internal" href="../../api/generated/cultivars.univariate.stochastic_volatility.SVPosterior.html#cultivars.univariate.stochastic_volatility.SVPosterior" title="cultivars.univariate.stochastic_volatility.SVPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVPosterior</span></code></a> and
+<a class="reference internal" href="../../api/generated/cultivars.univariate.stochastic_volatility.UCSVPosterior.html#cultivars.univariate.stochastic_volatility.UCSVPosterior" title="cultivars.univariate.stochastic_volatility.UCSVPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">UCSVPosterior</span></code></a> from
 <a class="reference internal" href="../../api/generated/cultivars.univariate.stochastic_volatility.html#module-cultivars.univariate.stochastic_volatility" title="cultivars.univariate.stochastic_volatility"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.univariate.stochastic_volatility</span></code></a>, and
-<code class="docutils literal notranslate"><span class="pre">PerturbationDSGEPosterior</span></code> from
-<a class="reference internal" href="../../api/generated/cultivars.multivariate.structural.perturbation.html#module-cultivars.multivariate.structural.perturbation" title="cultivars.multivariate.structural.perturbation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.multivariate.structural.perturbation</span></code></a>. The conjugate record
-is built by the Normal-inverse-Wishart update in <code class="docutils literal notranslate"><span class="pre">_solvers</span></code>. The summary,
-series, and convergence behavior comes from the mixins in <code class="docutils literal notranslate"><span class="pre">_mixins</span></code>; the
-state-space emitters are in <code class="docutils literal notranslate"><span class="pre">_emitters</span></code> and the simulators in
-<code class="docutils literal notranslate"><span class="pre">_simulators</span></code>.</p>
+<a class="reference internal" href="../../api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior.html#cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior" title="cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior"><code class="xref py py-class docutils literal notranslate"><span class="pre">PerturbationDSGEPosterior</span></code></a>
+from <a class="reference internal" href="../../api/generated/cultivars.multivariate.structural.perturbation.html#module-cultivars.multivariate.structural.perturbation" title="cultivars.multivariate.structural.perturbation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.multivariate.structural.perturbation</span></code></a>. The conjugate
+record is built by the Normal-inverse-Wishart update in
+<a class="reference internal" href="cultivars.engine._internals._solvers.html#module-cultivars.engine._internals._solvers" title="cultivars.engine._internals._solvers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_solvers</span></code></a>. The summary, series, and
+convergence behavior comes from the mixins in
+<a class="reference internal" href="cultivars.engine._internals._mixins.html#module-cultivars.engine._internals._mixins" title="cultivars.engine._internals._mixins"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_mixins</span></code></a>; the state-space emitters are in
+<a class="reference internal" href="cultivars.engine._internals._emitters.html#module-cultivars.engine._internals._emitters" title="cultivars.engine._internals._emitters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_emitters</span></code></a> and the simulators in
+<a class="reference internal" href="cultivars.engine._internals._simulators.html#module-cultivars.engine._internals._simulators" title="cultivars.engine._internals._simulators"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_simulators</span></code></a>.</p>
 <p class="rubric">References</p>
 <p>Geweke, J. (1999). Using simulation methods for Bayesian econometric
 models: Inference, development, and communication. <em>Econometric
@@ -5819,7 +5822,7 @@ harder to forecast? <em>Journal of Money, Credit and Banking</em>, 39(s1),
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

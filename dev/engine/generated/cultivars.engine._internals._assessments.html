@@ -10,15 +10,15 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/engine/generated/cultivars.engine._internals._assessments.html" />
 <meta property="og:site_name" content="cultivars" />
-<meta property="og:description" content="Assessment records: the companion-eigenvalue verdict on stability and invertibility. A linear recursion y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + u_t is stable exactly when every eigenvalue of its companion matrix lies strictly inside the unit circle, which is the same statement as det(I - A_1 z - ..." />
+<meta property="og:description" content="Assessment records: the companion-eigenvalue verdict on stability and invertibility. A linear recursion y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + u_t is stable exactly when every eigenvalue of its companion matrix lies strictly inside the unit circle, which is the same statement as\det(I - A_1 z..." />
 <meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
 <meta property="og:image:alt" content="cultivars" />
-<meta name="description" content="Assessment records: the companion-eigenvalue verdict on stability and invertibility. A linear recursion y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + u_t is stable exactly when every eigenvalue of its companion matrix lies strictly inside the unit circle, which is the same statement as det(I - A_1 z - ..." />
+<meta name="description" content="Assessment records: the companion-eigenvalue verdict on stability and invertibility. A linear recursion y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + u_t is stable exactly when every eigenvalue of its companion matrix lies strictly inside the unit circle, which is the same statement as\det(I - A_1 z..." />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>cultivars.engine._internals._assessments &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments.6b7418af-2240-4ce9-8c1d-183eb2851774.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments.cb2b2689-855e-456b-a5e1-8507a5e8ce9c.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._assessments';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5516,10 +5518,10 @@
   <section id="module-cultivars.engine._internals._assessments">
 <span id="cultivars-engine-internals-assessments"></span><h1>cultivars.engine._internals._assessments<a class="headerlink" href="#module-cultivars.engine._internals._assessments" title="Link to this heading">#</a></h1>
 <p>Assessment records: the companion-eigenvalue verdict on stability and invertibility.</p>
-<p>A linear recursion <code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">A_1</span> <span class="pre">y_{t-1}</span> <span class="pre">+</span> <span class="pre">...</span> <span class="pre">+</span> <span class="pre">A_p</span> <span class="pre">y_{t-p}</span> <span class="pre">+</span> <span class="pre">u_t</span></code> is stable
+<p>A linear recursion <span class="math notranslate nohighlight">\(y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + u_t\)</span> is stable
 exactly when every eigenvalue of its companion matrix lies strictly inside
 the unit circle, which is the same statement as
-<code class="docutils literal notranslate"><span class="pre">det(I</span> <span class="pre">-</span> <span class="pre">A_1</span> <span class="pre">z</span> <span class="pre">-</span> <span class="pre">...</span> <span class="pre">-</span> <span class="pre">A_p</span> <span class="pre">z^p)</span></code> having no root with <code class="docutils literal notranslate"><span class="pre">|z|</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code>. This
+<span class="math notranslate nohighlight">\(\det(I - A_1 z - \cdots - A_p z^p)\)</span> having no root with <span class="math notranslate nohighlight">\(|z| \le 1\)</span>. This
 module holds the one record that carries that reading,
 <a class="reference internal" href="cultivars.engine._internals._assessments._StabilityAssessment.html#cultivars.engine._internals._assessments._StabilityAssessment" title="cultivars.engine._internals._assessments._StabilityAssessment"><code class="xref py py-class docutils literal notranslate"><span class="pre">_StabilityAssessment</span></code></a>, together with the class methods that produce
 it. Every stationarity, invertibility, and transition-stability check in the
@@ -5528,9 +5530,9 @@ that decides it are defined once rather than per model family.</p>
 <p>The rule is a three-way partition of the eigenvalue moduli by a band of
 half-width <code class="docutils literal notranslate"><span class="pre">tol</span></code> around the circle:</p>
 <ul class="simple">
-<li><p>inside: <code class="docutils literal notranslate"><span class="pre">|lambda|</span> <span class="pre">&lt;</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">tol</span></code>;</p></li>
-<li><p>unit: <code class="docutils literal notranslate"><span class="pre">abs(|lambda|</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">&lt;=</span> <span class="pre">tol</span></code>;</p></li>
-<li><p>explosive: <code class="docutils literal notranslate"><span class="pre">|lambda|</span> <span class="pre">&gt;</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">tol</span></code>.</p></li>
+<li><p>inside: <span class="math notranslate nohighlight">\(|\lambda| &lt; 1 - \mathrm{tol}\)</span>;</p></li>
+<li><p>unit: <span class="math notranslate nohighlight">\(\bigl|\, |\lambda| - 1 \,\bigr| \le \mathrm{tol}\)</span>;</p></li>
+<li><p>explosive: <span class="math notranslate nohighlight">\(|\lambda| &gt; 1 + \mathrm{tol}\)</span>.</p></li>
 </ul>
 <p>The strict verdict (<code class="docutils literal notranslate"><span class="pre">allow_unit_roots=False</span></code>) requires every modulus to be
 inside; the permissive verdict (<code class="docutils literal notranslate"><span class="pre">allow_unit_roots=True</span></code>) requires only
@@ -5541,18 +5543,40 @@ carries <code class="docutils literal notranslate"><span class="pre">k</span> <s
 transition with random-walk states asks for.</p>
 <p>Two conventions are fixed here and assumed by every caller.</p>
 <p>Sign. All four entry points read their argument in the autoregressive
-convention, testing <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">c_1</span> <span class="pre">z</span> <span class="pre">-</span> <span class="pre">...</span> <span class="pre">-</span> <span class="pre">c_q</span> <span class="pre">z^q</span></code>. A moving-average
-polynomial stored as <code class="docutils literal notranslate"><span class="pre">theta(L)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">theta_1</span> <span class="pre">L</span> <span class="pre">+</span> <span class="pre">...</span> <span class="pre">+</span> <span class="pre">theta_q</span> <span class="pre">L^q</span></code> must be
+convention, testing <span class="math notranslate nohighlight">\(1 - c_1 z - \cdots - c_q z^q\)</span>. A moving-average
+polynomial stored as <span class="math notranslate nohighlight">\(\theta(L) = 1 + \theta_1 L + \cdots + \theta_q L^q\)</span> must be
 negated before it is passed, <a class="reference internal" href="cultivars.engine._internals._assessments._StabilityAssessment.is_invertible.html#cultivars.engine._internals._assessments._StabilityAssessment.is_invertible" title="cultivars.engine._internals._assessments._StabilityAssessment.is_invertible"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_StabilityAssessment.is_invertible()</span></code></a>
-included. The fitted results do this in <code class="docutils literal notranslate"><span class="pre">_InvertibilityMixin</span></code>; a direct
+included. The fitted results do this in
+<a class="reference internal" href="cultivars.engine._internals._mixins._InvertibilityMixin.html#cultivars.engine._internals._mixins._InvertibilityMixin" title="cultivars.engine._internals._mixins._InvertibilityMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">_InvertibilityMixin</span></code></a>; a direct
 caller has to do it by hand.</p>
 <p>Accuracy. The eigenvalues are those of a general real matrix
-(<code class="docutils literal notranslate"><span class="pre">numpy.linalg.eigvals</span></code>), and a defective eigenvalue of multiplicity <code class="docutils literal notranslate"><span class="pre">m</span></code>
+(<code class="docutils literal notranslate"><span class="pre">numpy.linalg.eigvals</span></code>), and a defective eigenvalue of multiplicity <span class="math notranslate nohighlight">\(m\)</span>
 is recovered only to about <code class="docutils literal notranslate"><span class="pre">eps</span> <span class="pre">**</span> <span class="pre">(1</span> <span class="pre">/</span> <span class="pre">m)</span></code>. Simple and double unit roots
 land inside the default band of <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>. A triple unit root does not: the
-companion of <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">L)^3</span></code> returns moduli about <code class="docutils literal notranslate"><span class="pre">7e-6</span></code> from one, so at the
+companion of <span class="math notranslate nohighlight">\((1 - L)^3\)</span> returns moduli about <code class="docutils literal notranslate"><span class="pre">7e-6</span></code> from one, so at the
 default tolerance two of its three roots are classified as explosive. Models
 that carry higher-order integration by design should pass a wider <code class="docutils literal notranslate"><span class="pre">tol</span></code>.</p>
+<p>In companion form the recursion is first order in the stacked vector,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{pmatrix} y_t \\ y_{t-1} \\ \vdots \\ y_{t-p+1} \end{pmatrix}
+=
+\underbrace{\begin{pmatrix}
+A_1 &amp; A_2 &amp; \cdots &amp; A_{p-1} &amp; A_p \\
+I &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+\vdots &amp; &amp; \ddots &amp; &amp; \vdots \\
+0 &amp; 0 &amp; \cdots &amp; I &amp; 0
+\end{pmatrix}}_{C}
+\begin{pmatrix} y_{t-1} \\ y_{t-2} \\ \vdots \\ y_{t-p} \end{pmatrix}
++
+\begin{pmatrix} u_t \\ 0 \\ \vdots \\ 0 \end{pmatrix},\end{split}\]</div>
+<p>and the eigenvalues <span class="math notranslate nohighlight">\(\lambda\)</span> of <span class="math notranslate nohighlight">\(C\)</span> are the reciprocals of the
+roots of <span class="math notranslate nohighlight">\(\det(I - A_1 z - \cdots - A_p z^p)\)</span>. The verdict is read off
+their moduli against the tolerance: a root counts as stable when
+<span class="math notranslate nohighlight">\(|\lambda| &lt; 1 - \mathrm{tol}\)</span>, as a unit root when
+<span class="math notranslate nohighlight">\(\bigl|\, |\lambda| - 1 \,\bigr| \le \mathrm{tol}\)</span>, and as explosive when
+<span class="math notranslate nohighlight">\(|\lambda| &gt; 1 + \mathrm{tol}\)</span>. A moving-average polynomial is assessed
+the same way through its own companion matrix, which is why invertibility
+needs no second implementation.</p>
 <p>Layout. The record is a frozen dataclass and is re-exported under its public
 name as <code class="docutils literal notranslate"><span class="pre">cultivars.diagnostics.stability.StabilityAssessment</span></code>. The
 companion is built by <a class="reference internal" href="cultivars.engine._core._matrices._companion_matrix.html#cultivars.engine._core._matrices._companion_matrix" title="cultivars.engine._core._matrices._companion_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">_companion_matrix()</span></code></a>;
@@ -5802,7 +5826,7 @@ ed.). Johns Hopkins University Press. Section 7.2.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

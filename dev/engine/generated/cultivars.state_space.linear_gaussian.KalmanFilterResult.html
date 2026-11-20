@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>KalmanFilterResult &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.1c7a7e59-d81a-418d-bcc7-a923f6533a9b.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.f07d6b67-c53d-4525-95cc-85c627d33c7e.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5514,19 +5516,51 @@
 <h1>KalmanFilterResult<a class="headerlink" href="#kalmanfilterresult" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.state_space.linear_gaussian.</span></span><span class="sig-name descname"><span class="pre">KalmanFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_state_cov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state_cov</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L224-L242"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.state_space.linear_gaussian.</span></span><span class="sig-name descname"><span class="pre">KalmanFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_state_cov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state_cov</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L225-L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._results._FilterResult.html#cultivars.engine._internals._results._FilterResult" title="cultivars.engine._internals._results._FilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_FilterResult</span></code></a></p>
 <p>Output of a linear-Gaussian forward filtering pass.</p>
+<p>For the model of
+<a class="reference internal" href="cultivars.engine._internals._substrates._LinearGaussianStateSpace.html#cultivars.engine._internals._substrates._LinearGaussianStateSpace" title="cultivars.engine._internals._substrates._LinearGaussianStateSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">_LinearGaussianStateSpace</span></code></a>
+the pass carries two conditional laws of the state through the sample, each
+Gaussian and so summarized by a mean and a covariance:</p>
+<div class="math notranslate nohighlight">
+\[a_{t \mid t-1} = \mathbb{E}[\alpha_t \mid y_{1:t-1}], \quad
+P_{t \mid t-1} = \operatorname{Var}[\alpha_t \mid y_{1:t-1}], \qquad
+a_{t \mid t} = \mathbb{E}[\alpha_t \mid y_{1:t}], \quad
+P_{t \mid t} = \operatorname{Var}[\alpha_t \mid y_{1:t}].\]</div>
+<p>They are tied together by the update and prediction steps. With the
+innovation <span class="math notranslate nohighlight">\(v_t = y_t - d_t - Z_t a_{t \mid t-1}\)</span> and its covariance
+<span class="math notranslate nohighlight">\(F_t = Z_t P_{t \mid t-1} Z_t^\top + H_t\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}a_{t \mid t} = a_{t \mid t-1} + P_{t \mid t-1} Z_t^\top F_t^{-1} v_t,
+\qquad
+P_{t \mid t} = P_{t \mid t-1}
+- P_{t \mid t-1} Z_t^\top F_t^{-1} Z_t P_{t \mid t-1},\\a_{t+1 \mid t} = c_t + T_t a_{t \mid t},
+\qquad
+P_{t+1 \mid t} = T_t P_{t \mid t} T_t^\top + R_t Q_t R_t^\top.\end{aligned}\end{align} \]</div>
+<p><a class="reference internal" href="../../api/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.predicted_state.html#cultivars.state_space.linear_gaussian.KalmanFilterResult.predicted_state" title="cultivars.state_space.linear_gaussian.KalmanFilterResult.predicted_state"><code class="xref py py-attr docutils literal notranslate"><span class="pre">predicted_state</span></code></a> and <a class="reference internal" href="../../api/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.predicted_state_cov.html#cultivars.state_space.linear_gaussian.KalmanFilterResult.predicted_state_cov" title="cultivars.state_space.linear_gaussian.KalmanFilterResult.predicted_state_cov"><code class="xref py py-attr docutils literal notranslate"><span class="pre">predicted_state_cov</span></code></a> hold the first pair,
+<a class="reference internal" href="../../api/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.filtered_state.html#cultivars.state_space.linear_gaussian.KalmanFilterResult.filtered_state" title="cultivars.state_space.linear_gaussian.KalmanFilterResult.filtered_state"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filtered_state</span></code></a> and <a class="reference internal" href="../../api/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.filtered_state_cov.html#cultivars.state_space.linear_gaussian.KalmanFilterResult.filtered_state_cov" title="cultivars.state_space.linear_gaussian.KalmanFilterResult.filtered_state_cov"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filtered_state_cov</span></code></a> the second.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>predicted_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – One-step-ahead predicted states <code class="docutils literal notranslate"><span class="pre">a_{t|t-1}</span></code>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
-<li><p><strong>predicted_state_cov</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Predicted state covariances <code class="docutils literal notranslate"><span class="pre">P_{t|t-1}</span></code>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">m)</span></code>.</p></li>
-<li><p><strong>filtered_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Contemporaneously filtered states <code class="docutils literal notranslate"><span class="pre">a_{t|t}</span></code>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
-<li><p><strong>filtered_state_cov</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Filtered state covariances <code class="docutils literal notranslate"><span class="pre">P_{t|t}</span></code>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">m)</span></code>.</p></li>
+<li><p><strong>predicted_state</strong> – One-step-ahead predicted states <span class="math notranslate nohighlight">\(a_{t \mid t-1}\)</span>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
+<li><p><strong>predicted_state_cov</strong> – Predicted state covariances <span class="math notranslate nohighlight">\(P_{t \mid t-1}\)</span>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">m)</span></code>.</p></li>
+<li><p><strong>filtered_state</strong> – Contemporaneously filtered states <span class="math notranslate nohighlight">\(a_{t \mid t}\)</span>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
+<li><p><strong>filtered_state_cov</strong> – Filtered state covariances <span class="math notranslate nohighlight">\(P_{t \mid t}\)</span>, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">m)</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.linear_gaussian.KalmanFilterResult.html#cultivars.state_space.linear_gaussian.KalmanFilterResult" title="cultivars.state_space.linear_gaussian.KalmanFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">KalmanFilterResult</span></code></a> –
+the public name of this class.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.reduced_form.mixed_frequency.MFVAR.filter.html#cultivars.multivariate.reduced_form.mixed_frequency.MFVAR.filter" title="cultivars.multivariate.reduced_form.mixed_frequency.MFVAR.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MFVAR.filter()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.linear_gaussian.LinearGaussianSSM.filter.html#cultivars.state_space.linear_gaussian.LinearGaussianSSM.filter" title="cultivars.state_space.linear_gaussian.LinearGaussianSSM.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LinearGaussianSSM.filter()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.extended_filter.html#cultivars.state_space.nonlinear.NonlinearSSM.extended_filter" title="cultivars.state_space.nonlinear.NonlinearSSM.extended_filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NonlinearSSM.extended_filter()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.unscented_filter.html#cultivars.state_space.nonlinear.NonlinearSSM.unscented_filter" title="cultivars.state_space.nonlinear.NonlinearSSM.unscented_filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NonlinearSSM.unscented_filter()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 </section>
@@ -5737,7 +5771,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

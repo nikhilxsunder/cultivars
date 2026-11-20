@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_KimFilterResult &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._results._KimFilterResult.e00bffc2-5158-4456-93de-7408febcc95a.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._results._KimFilterResult.85072910-e49f-4ad0-81bf-db0d61d1eb3d.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._results._KimFilterResult';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,9 +5522,27 @@
 <h1>_KimFilterResult<a class="headerlink" href="#kimfilterresult" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._results._KimFilterResult">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._results.</span></span><span class="sig-name descname"><span class="pre">_KimFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state_cov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regime_state</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L337-L362"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._results._KimFilterResult" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._results.</span></span><span class="sig-name descname"><span class="pre">_KimFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state_cov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regime_state</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L468-L523"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._results._KimFilterResult" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._results._FilterResult.html#cultivars.engine._internals._results._FilterResult" title="cultivars.engine._internals._results._FilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_FilterResult</span></code></a></p>
 <p>Output of the Kim (1994) regime-switching Kalman forward pass.</p>
+<p>In a state-space model whose system matrices depend on a Markov regime, the
+exact filter would have to track one Gaussian per regime history, which is
+<span class="math notranslate nohighlight">\(K^t\)</span> components after <span class="math notranslate nohighlight">\(t\)</span> periods. Kim’s (1994) filter keeps
+<span class="math notranslate nohighlight">\(K\)</span> of them. At each date it runs the <span class="math notranslate nohighlight">\(K \times K\)</span> Kalman updates
+from every regime-<span class="math notranslate nohighlight">\(i\)</span> posterior into every regime <span class="math notranslate nohighlight">\(j\)</span>, weights
+them by Hamilton’s recursion, and then collapses over the origin regime by
+moment matching,</p>
+<div class="math notranslate nohighlight">
+\[a^{j}_{t \mid t} = \frac{\sum_{i=1}^{K} \Pr(S_{t-1} = i, S_t = j \mid y_{1:t})\,
+a^{(i,j)}_{t \mid t}}{\Pr(S_t = j \mid y_{1:t})},\]</div>
+<p>with the matching expression for the covariance, which adds the spread of the
+<span class="math notranslate nohighlight">\(a^{(i,j)}_{t \mid t}\)</span> around <span class="math notranslate nohighlight">\(a^{j}_{t \mid t}\)</span>. The collapse is
+the approximation: the result is exact only when the regime does not affect
+the state law.</p>
+<p><a class="reference internal" href="cultivars.engine._internals._results._KimFilterResult.filtered_prob.html#cultivars.engine._internals._results._KimFilterResult.filtered_prob" title="cultivars.engine._internals._results._KimFilterResult.filtered_prob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filtered_prob</span></code></a> and <a class="reference internal" href="cultivars.engine._internals._results._KimFilterResult.predicted_prob.html#cultivars.engine._internals._results._KimFilterResult.predicted_prob" title="cultivars.engine._internals._results._KimFilterResult.predicted_prob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">predicted_prob</span></code></a> are the regime probabilities,
+<a class="reference internal" href="cultivars.engine._internals._results._KimFilterResult.regime_state.html#cultivars.engine._internals._results._KimFilterResult.regime_state" title="cultivars.engine._internals._results._KimFilterResult.regime_state"><code class="xref py py-attr docutils literal notranslate"><span class="pre">regime_state</span></code></a> the per-regime collapsed states <span class="math notranslate nohighlight">\(a^{j}_{t \mid t}\)</span>,
+and <a class="reference internal" href="cultivars.engine._internals._results._KimFilterResult.filtered_state.html#cultivars.engine._internals._results._KimFilterResult.filtered_state" title="cultivars.engine._internals._results._KimFilterResult.filtered_state"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filtered_state</span></code></a> with <a class="reference internal" href="cultivars.engine._internals._results._KimFilterResult.filtered_state_cov.html#cultivars.engine._internals._results._KimFilterResult.filtered_state_cov" title="cultivars.engine._internals._results._KimFilterResult.filtered_state_cov"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filtered_state_cov</span></code></a> their mixture over
+regimes, <span class="math notranslate nohighlight">\(\sum_j \Pr(S_t = j \mid y_{1:t})\, a^{j}_{t \mid t}\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5536,6 +5556,16 @@ between-regime spread.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.KimFilterResult.html#cultivars.state_space.regime_switching.KimFilterResult" title="cultivars.state_space.regime_switching.KimFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">KimFilterResult</span></code></a> –
+the public name of this class.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.filter.html#cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.filter" title="cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM.filter()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._substrates._RegimeSwitchingLinearStateSpace.filter.html#cultivars.engine._internals._substrates._RegimeSwitchingLinearStateSpace.filter" title="cultivars.engine._internals._substrates._RegimeSwitchingLinearStateSpace.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_RegimeSwitchingLinearStateSpace.filter()</span></code></a> – returns an
+instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5794,7 +5824,7 @@ between-regime spread.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

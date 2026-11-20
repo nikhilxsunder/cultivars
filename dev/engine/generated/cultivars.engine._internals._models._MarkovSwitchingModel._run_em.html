@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_MarkovSwitchingModel._run_em &#8212; cultivars</title>
   
   
@@ -85,7 +85,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models._MarkovSwitchingModel._run_em.cd949dfe-f166-442e-9333-d801ab98026e.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models._MarkovSwitchingModel._run_em.b1722ede-c72f-453a-9184-97a18c7b0674.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._models._MarkovSwitchingModel._run_em';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +106,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,20 +5521,20 @@
 <h1>_MarkovSwitchingModel._run_em<a class="headerlink" href="#markovswitchingmodel-run-em" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._models._MarkovSwitchingModel._run_em">
-<span class="sig-prename descclassname"><span class="pre">_MarkovSwitchingModel.</span></span><span class="sig-name descname"><span class="pre">_run_em</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intercepts0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma20</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_models.py#L1490-L1577"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._models._MarkovSwitchingModel._run_em" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">_MarkovSwitchingModel.</span></span><span class="sig-name descname"><span class="pre">_run_em</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intercepts0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma20</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_models.py#L1498-L1585"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._models._MarkovSwitchingModel._run_em" title="Link to this definition">#</a></dt>
 <dd><p>Run EM to convergence or <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> from one set of starting values.</p>
 <p>The E-step assembles the current draw into a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">_MarkovSwitchingStateSpace</span></code> and asks it to filter and smooth;
-the M-step updates the transition matrix, the coefficients, and the
-variances in that order, and the conditional means are recomputed
-between the coefficient and variance updates so the variance sees the
-new means.</p>
+<a class="reference internal" href="cultivars.engine._internals._substrates._MarkovSwitchingStateSpace.html#cultivars.engine._internals._substrates._MarkovSwitchingStateSpace" title="cultivars.engine._internals._substrates._MarkovSwitchingStateSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">_MarkovSwitchingStateSpace</span></code></a>
+and asks it to filter and smooth; the M-step updates the transition
+matrix, the coefficients, and the variances in that order, and the
+conditional means are recomputed between the coefficient and variance
+updates so the variance sees the new means.</p>
 <p>The state space is rebuilt each iteration rather than mutated, because
 it is frozen and validating – so the E-step can only ever run on a
 system whose transition matrix is row-stochastic and whose variances
 are positive, which is exactly the invariant an EM loop can lose. It is
 handed the precomputed target and lag block through
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">_MarkovSwitchingStateSpace.density_matrix()</span></code> rather than the raw
+<a class="reference internal" href="cultivars.engine._internals._substrates._MarkovSwitchingStateSpace.density_matrix.html#cultivars.engine._internals._substrates._MarkovSwitchingStateSpace.density_matrix" title="cultivars.engine._internals._substrates._MarkovSwitchingStateSpace.density_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_MarkovSwitchingStateSpace.density_matrix()</span></code></a> rather than the raw
 series, so the trim is paid once for the whole run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -5551,7 +5551,7 @@ series, so the trim is paid once for the whole run.</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="cultivars.engine._internals._states._ExpectationMaximizationState.html#cultivars.engine._internals._states._ExpectationMaximizationState" title="cultivars.engine._internals._states._ExpectationMaximizationState"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ExpectationMaximizationState</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">_ExpectationMaximizationState</span></code> reached.</p>
+<dd class="field-odd"><p>The <a class="reference internal" href="cultivars.engine._internals._states._ExpectationMaximizationState.html#cultivars.engine._internals._states._ExpectationMaximizationState" title="cultivars.engine._internals._states._ExpectationMaximizationState"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ExpectationMaximizationState</span></code></a> reached.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><strong>NumericalError</strong></a> – If the log-likelihood becomes non-finite.</p>
@@ -5785,7 +5785,7 @@ series, so the trim is paid once for the whole run.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

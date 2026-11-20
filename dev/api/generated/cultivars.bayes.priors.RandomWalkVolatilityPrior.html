@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>RandomWalkVolatilityPrior &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.bayes.priors.RandomWalkVolatilityPrior.df5cda59-4be8-4d68-aee9-b781b7eec295.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.bayes.priors.RandomWalkVolatilityPrior.5e9846b6-f4ad-4b39-aa16-f6eec5b0e667.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.bayes.priors.RandomWalkVolatilityPrior';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -2836,24 +2838,31 @@
 <h1>RandomWalkVolatilityPrior<a class="headerlink" href="#randomwalkvolatilityprior" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.bayes.priors.RandomWalkVolatilityPrior">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">RandomWalkVolatilityPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_of_vol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(3.0,</span> <span class="pre">0.04)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L951-L1024"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.bayes.priors.RandomWalkVolatilityPrior" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">RandomWalkVolatilityPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_of_vol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(3.0,</span> <span class="pre">0.04)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L981-L1058"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.bayes.priors.RandomWalkVolatilityPrior" title="Link to this definition">#</a></dt>
 <dd><p>The prior on a random-walk log-variance law with an estimated step variance.</p>
-<p><code class="docutils literal notranslate"><span class="pre">h_{t+1}</span> <span class="pre">=</span> <span class="pre">h_t</span> <span class="pre">+</span> <span class="pre">gamma</span> <span class="pre">eta_t</span></code> carries one hyperparameter, the
+<p><span class="math notranslate nohighlight">\(h_{t+1} = h_t + \gamma \eta_t\)</span> carries one hyperparameter, the
 variance of the step, and the unobserved-components stochastic-
 volatility model states its prior on it through this record: an
-inverse-gamma on <code class="docutils literal notranslate"><span class="pre">gamma**2</span></code> for each of its two volatility paths.
+inverse-gamma on <span class="math notranslate nohighlight">\(\gamma^2\)</span> for each of its two volatility paths.
 The walk has no mean and no persistence to put a prior on; a model
 that fixes <code class="docutils literal notranslate"><span class="pre">gamma</span></code> outright does not read this record at all.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>vol_of_vol</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>) – <code class="docutils literal notranslate"><span class="pre">(shape,</span> <span class="pre">rate)</span></code> of the inverse-gamma prior on the
-step variance <code class="docutils literal notranslate"><span class="pre">gamma**2</span></code>, both positive.</p>
+step variance <span class="math notranslate nohighlight">\(\gamma^2\)</span>, both positive.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><strong>SpecificationError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">vol_of_vol</span></code> is not a pair of finite,
     positive numbers.</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#cultivars.bayes.priors.RandomWalkVolatilityPrior" title="cultivars.bayes.priors.RandomWalkVolatilityPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomWalkVolatilityPrior</span></code></a> – the
+public name of this class.</p></li>
+</ul>
+</div>
 <p class="rubric">References</p>
 <p>Stock, J. H., &amp; Watson, M. W. (2007). Why has U.S. inflation become
 harder to forecast? <em>Journal of Money, Credit and Banking</em>,
@@ -2874,7 +2883,7 @@ harder to forecast? <em>Journal of Money, Credit and Banking</em>,
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.bayes.priors.RandomWalkVolatilityPrior.vol_of_vol.html#cultivars.bayes.priors.RandomWalkVolatilityPrior.vol_of_vol" title="cultivars.bayes.priors.RandomWalkVolatilityPrior.vol_of_vol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vol_of_vol</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(shape,</span> <span class="pre">rate)</span></code> of the inverse-gamma prior on the step variance <code class="docutils literal notranslate"><span class="pre">gamma**2</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(shape,</span> <span class="pre">rate)</span></code> of the inverse-gamma prior on the step variance <span class="math notranslate nohighlight">\(\gamma^2\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.bayes.priors.RandomWalkVolatilityPrior.vol_of_vol_mean.html#cultivars.bayes.priors.RandomWalkVolatilityPrior.vol_of_vol_mean" title="cultivars.bayes.priors.RandomWalkVolatilityPrior.vol_of_vol_mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vol_of_vol_mean</span></code></a></p></td>
 <td><p>Prior mean of <code class="docutils literal notranslate"><span class="pre">gamma2</span></code>, <code class="docutils literal notranslate"><span class="pre">rate</span> <span class="pre">/</span> <span class="pre">(shape</span> <span class="pre">-</span> <span class="pre">1)</span></code>; <code class="docutils literal notranslate"><span class="pre">inf</span></code> for a shape of one or less.</p></td>
@@ -3110,7 +3119,7 @@ harder to forecast? <em>Journal of Money, Credit and Banking</em>,
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

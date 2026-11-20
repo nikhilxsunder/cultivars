@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_StabilityAssessment._assess &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments._StabilityAssessment._assess.75447155-a83d-4138-b4cc-b86f503c2b99.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments._StabilityAssessment._assess.bfbb19fd-952b-4a0b-afa7-81b98920c2b4.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._assessments._StabilityAssessment._assess';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,13 +5523,13 @@
 <h1>_StabilityAssessment._assess<a class="headerlink" href="#stabilityassessment-assess" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._assessments._StabilityAssessment._assess">
-<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">_StabilityAssessment.</span></span><span class="sig-name descname"><span class="pre">_assess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">companion</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unit_roots</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L220-L296"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments._StabilityAssessment._assess" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">_StabilityAssessment.</span></span><span class="sig-name descname"><span class="pre">_assess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">companion</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unit_roots</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L252-L328"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments._StabilityAssessment._assess" title="Link to this definition">#</a></dt>
 <dd><p>Classify the eigenvalues of a square matrix against the unit circle.</p>
 <p>The single kernel behind every public entry point. It takes the
 matrix as given, computes its eigenvalues, and partitions their
 moduli by the band of half-width <code class="docutils literal notranslate"><span class="pre">tol</span></code> around one: <code class="docutils literal notranslate"><span class="pre">n_unit_roots</span></code>
-counts <code class="docutils literal notranslate"><span class="pre">abs(|lambda|</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">&lt;=</span> <span class="pre">tol</span></code> and <code class="docutils literal notranslate"><span class="pre">n_explosive</span></code> counts
-<code class="docutils literal notranslate"><span class="pre">|lambda|</span> <span class="pre">&gt;</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">tol</span></code>. The verdict is <code class="docutils literal notranslate"><span class="pre">n_explosive</span> <span class="pre">==</span> <span class="pre">0</span></code> when unit
+counts <span class="math notranslate nohighlight">\(\bigl|\, |\lambda| - 1 \,\bigr| \le \mathrm{tol}\)</span> and <code class="docutils literal notranslate"><span class="pre">n_explosive</span></code> counts
+<span class="math notranslate nohighlight">\(|\lambda| &gt; 1 + \mathrm{tol}\)</span>. The verdict is <code class="docutils literal notranslate"><span class="pre">n_explosive</span> <span class="pre">==</span> <span class="pre">0</span></code> when unit
 roots are allowed and <code class="docutils literal notranslate"><span class="pre">max_modulus</span> <span class="pre">&lt;</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">tol</span></code> otherwise, so under
 the strict criterion a root inside the circle but within <code class="docutils literal notranslate"><span class="pre">tol</span></code> of
 it fails.</p>
@@ -5804,7 +5806,7 @@ strictly below <code class="docutils literal notranslate"><span class="pre">1</s
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

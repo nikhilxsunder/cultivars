@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>cultivars.engine._internals._smoothers &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._smoothers.9a78548f-04b3-42d1-8e86-79465871b45d.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._smoothers.966e1b84-4921-4e30-accd-94beebc1f77c.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._smoothers';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5522,6 +5524,15 @@ the joint probabilities of consecutive regimes, which are what an EM update
 of the transition matrix is computed from. Like the filter it reads
 probabilities and a transition matrix and nothing else, so it serves every
 model with a discrete regime chain.</p>
+<p>In symbols, with <span class="math notranslate nohighlight">\(\odot\)</span> and <span class="math notranslate nohighlight">\(\oslash\)</span> the elementwise product and
+quotient, the backward step is</p>
+<div class="math notranslate nohighlight">
+\[\xi_{t \mid T} = \xi_{t \mid t} \odot
+\Bigl[ P \bigl( \xi_{t+1 \mid T} \oslash \xi_{t+1 \mid t} \bigr) \Bigr],
+\qquad t = T - 1, \ldots, 1,\]</div>
+<p>started from the last filtered vector <span class="math notranslate nohighlight">\(\xi_{T \mid T}\)</span>. The marginal and
+pairwise probabilities are returned as a
+<a class="reference internal" href="cultivars.engine._internals._results._KimSmootherResult.html#cultivars.engine._internals._results._KimSmootherResult" title="cultivars.engine._internals._results._KimSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_KimSmootherResult</span></code></a>.</p>
 <p class="rubric">References</p>
 <p>Kim, C.-J. (1994). Dynamic linear models with Markov-switching.
 <em>Journal of Econometrics</em>, 60(1-2), 1-22.</p>
@@ -5762,7 +5773,7 @@ model with a discrete regime chain.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

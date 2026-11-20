@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_ParticleMarginalChain &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain.dbf5021e-7c1d-4210-a5bf-123c930c5c23.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain.939eac56-d46b-497e-9899-b41e5091a880.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,11 +5522,11 @@
 <h1>_ParticleMarginalChain<a class="headerlink" href="#particlemarginalchain" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._chains._ParticleMarginalChain">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._chains.</span></span><span class="sig-name descname"><span class="pre">_ParticleMarginalChain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prior</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bootstrap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ess_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L110-L469"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains._ParticleMarginalChain" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._chains.</span></span><span class="sig-name descname"><span class="pre">_ParticleMarginalChain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prior</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bootstrap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ess_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L135-L498"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains._ParticleMarginalChain" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Particle marginal Metropolis-Hastings over a nonlinear state space.</p>
 <p>A random-walk Metropolis chain on an unconstrained parameter vector
-<code class="docutils literal notranslate"><span class="pre">theta</span></code> whose target is the posterior <code class="docutils literal notranslate"><span class="pre">p(theta</span> <span class="pre">|</span> <span class="pre">y)</span></code>, with the
+<code class="docutils literal notranslate"><span class="pre">theta</span></code> whose target is the posterior <span class="math notranslate nohighlight">\(p(\theta \mid y)\)</span>, with the
 intractable likelihood replaced by a particle-filter estimate. The
 estimate at the current point is carried from the iteration that
 accepted it and never refreshed; each proposal gets exactly one fresh
@@ -5544,10 +5546,11 @@ malformed filter setting is first seen by the particle filter inside
 <li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – The observations, <code class="docutils literal notranslate"><span class="pre">(n,)</span></code> or <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">p)</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.nan</span></code> rows
 missing.</p></li>
 <li><p><strong>build</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]], <a class="reference internal" href="cultivars.engine._internals._substrates._NonlinearStateSpace.html#cultivars.engine._internals._substrates._NonlinearStateSpace" title="cultivars.engine._internals._substrates._NonlinearStateSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">_NonlinearStateSpace</span></code></a>]</span>) – Map from an unconstrained parameter vector to the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">_NonlinearStateSpace</span></code> it implies. It may raise
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code> for an
-inadmissible point, which the chain treats as a rejected
-proposal.</p></li>
+<a class="reference internal" href="cultivars.engine._internals._substrates._NonlinearStateSpace.html#cultivars.engine._internals._substrates._NonlinearStateSpace" title="cultivars.engine._internals._substrates._NonlinearStateSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">_NonlinearStateSpace</span></code></a>
+it implies. It may raise
+<a class="reference internal" href="../../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> or
+<a class="reference internal" href="../../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a> for an inadmissible
+point, which the chain treats as a rejected proposal.</p></li>
 <li><p><strong>log_prior</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]], <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>) – Log prior density <em>in the unconstrained space</em>, i.e.
 including the Jacobian of whatever reparameterization
 <code class="docutils literal notranslate"><span class="pre">build</span></code> inverts. <code class="docutils literal notranslate"><span class="pre">-inf</span></code> marks an excluded region.</p></li>
@@ -5566,8 +5569,9 @@ them back to the model’s natural parameters is the caller’s job.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleChainFit</span></code> – the raw draws <a class="reference internal" href="cultivars.engine._internals._chains._ParticleMarginalChain.run.html#cultivars.engine._internals._chains._ParticleMarginalChain.run" title="cultivars.engine._internals._chains._ParticleMarginalChain.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> returns.</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_NonlinearStateSpace.particle_filter()</span></code> – the likelihood
+<li><p><a class="reference internal" href="cultivars.engine._internals._fits._ParticleChainFit.html#cultivars.engine._internals._fits._ParticleChainFit" title="cultivars.engine._internals._fits._ParticleChainFit"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleChainFit</span></code></a> – the
+raw draws <a class="reference internal" href="cultivars.engine._internals._chains._ParticleMarginalChain.run.html#cultivars.engine._internals._chains._ParticleMarginalChain.run" title="cultivars.engine._internals._chains._ParticleMarginalChain.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> returns.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._substrates._NonlinearStateSpace.particle_filter.html#cultivars.engine._internals._substrates._NonlinearStateSpace.particle_filter" title="cultivars.engine._internals._substrates._NonlinearStateSpace.particle_filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_NonlinearStateSpace.particle_filter()</span></code></a> – the likelihood
 estimator, and the meaning of <code class="docutils literal notranslate"><span class="pre">method</span></code> and <code class="docutils literal notranslate"><span class="pre">ess_threshold</span></code>.</p></li>
 </ul>
 </div>
@@ -5883,7 +5887,7 @@ normal prior on the unconstrained coordinate:</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

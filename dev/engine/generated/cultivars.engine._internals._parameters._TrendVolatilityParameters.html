@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_TrendVolatilityParameters &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._TrendVolatilityParameters.260c4d59-55a6-4224-849e-77bfb1f3cb08.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._TrendVolatilityParameters.67f5dc84-6097-4985-b30c-3b97faea2aec.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._parameters._TrendVolatilityParameters';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,19 +5522,19 @@
 <h1>_TrendVolatilityParameters<a class="headerlink" href="#trendvolatilityparameters" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._parameters._TrendVolatilityParameters">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_TrendVolatilityParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma2_irregular</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma2_trend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L336-L363"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._TrendVolatilityParameters" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_TrendVolatilityParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma2_irregular</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma2_trend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L535-L562"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._TrendVolatilityParameters" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The parameter record of the unobserved-components stochastic-volatility model.</p>
 <p>Stock and Watson’s (2007) trend-inflation model: <code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">tau_t</span> <span class="pre">+</span>
-<span class="pre">exp(h_t</span> <span class="pre">/</span> <span class="pre">2)</span> <span class="pre">eps_t</span></code>, <code class="docutils literal notranslate"><span class="pre">tau_{t+1}</span> <span class="pre">=</span> <span class="pre">tau_t</span> <span class="pre">+</span> <span class="pre">exp(q_t</span> <span class="pre">/</span> <span class="pre">2)</span> <span class="pre">eta_t</span></code>, with
+<span class="pre">exp(h_t</span> <span class="pre">/</span> <span class="pre">2)</span> <span class="pre">eps_t</span></code>, <span class="math notranslate nohighlight">\(\tau_{t+1} = \tau_t + \exp(q_t / 2)\, \eta_t\)</span>, with
 the two log variances random walks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>gamma2_irregular</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Random-walk variance of the irregular’s log
-variance <code class="docutils literal notranslate"><span class="pre">h_t</span></code>.</p></li>
+variance <span class="math notranslate nohighlight">\(h_t\)</span>.</p></li>
 <li><p><strong>gamma2_trend</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Random-walk variance of the trend innovation’s log
-variance <code class="docutils literal notranslate"><span class="pre">q_t</span></code>.</p></li>
+variance <span class="math notranslate nohighlight">\(q_t\)</span>.</p></li>
 <li><p><strong>h0</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Initial log variance of the irregular.</p></li>
 <li><p><strong>q0</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Initial log variance of the trend innovation.</p></li>
 <li><p><strong>tau0</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Initial trend level.</p></li>
@@ -5546,10 +5548,10 @@ variance <code class="docutils literal notranslate"><span class="pre">q_t</span>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._parameters._TrendVolatilityParameters.gamma2_irregular.html#cultivars.engine._internals._parameters._TrendVolatilityParameters.gamma2_irregular" title="cultivars.engine._internals._parameters._TrendVolatilityParameters.gamma2_irregular"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gamma2_irregular</span></code></a></p></td>
-<td><p>Random-walk step variance of <code class="docutils literal notranslate"><span class="pre">h_t</span></code>, the irregular's log variance.</p></td>
+<td><p>Random-walk step variance of <span class="math notranslate nohighlight">\(h_t\)</span>, the irregular's log variance.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._parameters._TrendVolatilityParameters.gamma2_trend.html#cultivars.engine._internals._parameters._TrendVolatilityParameters.gamma2_trend" title="cultivars.engine._internals._parameters._TrendVolatilityParameters.gamma2_trend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gamma2_trend</span></code></a></p></td>
-<td><p>Random-walk step variance of <code class="docutils literal notranslate"><span class="pre">q_t</span></code>, the trend innovation's log variance.</p></td>
+<td><p>Random-walk step variance of <span class="math notranslate nohighlight">\(q_t\)</span>, the trend innovation's log variance.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._parameters._TrendVolatilityParameters.h0.html#cultivars.engine._internals._parameters._TrendVolatilityParameters.h0" title="cultivars.engine._internals._parameters._TrendVolatilityParameters.h0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h0</span></code></a></p></td>
 <td><p>Initial log variance of the irregular.</p></td>
@@ -5791,7 +5793,7 @@ variance <code class="docutils literal notranslate"><span class="pre">q_t</span>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

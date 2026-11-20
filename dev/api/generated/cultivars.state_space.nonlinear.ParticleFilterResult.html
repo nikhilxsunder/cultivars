@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>ParticleFilterResult &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.state_space.nonlinear.ParticleFilterResult.dfec3bfc-df85-4093-a11b-a9f14133cbfd.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.state_space.nonlinear.ParticleFilterResult.77852f6c-650a-4eac-bdc7-c1d5091f2886.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.state_space.nonlinear.ParticleFilterResult';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -2836,7 +2838,7 @@
 <h1>ParticleFilterResult<a class="headerlink" href="#particlefilterresult" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.state_space.nonlinear.ParticleFilterResult">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.state_space.nonlinear.</span></span><span class="sig-name descname"><span class="pre">ParticleFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state_std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effective_sample_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L301-L334"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.state_space.nonlinear.ParticleFilterResult" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.state_space.nonlinear.</span></span><span class="sig-name descname"><span class="pre">ParticleFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_state_std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effective_sample_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L426-L465"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.state_space.nonlinear.ParticleFilterResult" title="Link to this definition">#</a></dt>
 <dd><p>Output of a sequential-Monte-Carlo forward pass.</p>
 <p>The state distribution is carried as moments of the particle cloud
 rather than as the cloud itself, which at <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">n_particles,</span> <span class="pre">m)</span></code> would
@@ -2845,7 +2847,7 @@ cloud runs the filter step by step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filtered_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Particle-cloud means <code class="docutils literal notranslate"><span class="pre">E[alpha_t</span> <span class="pre">|</span> <span class="pre">y_{1..t}]</span></code>,
+<li><p><strong>filtered_state</strong> – Particle-cloud means <span class="math notranslate nohighlight">\(\mathbb{E}[\alpha_t \mid y_{1:t}]\)</span>,
 shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
 <li><p><strong>filtered_state_std</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Per-component cloud standard deviations,
 shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
@@ -2857,6 +2859,15 @@ likelihood estimate is untrustworthy at that period.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#cultivars.state_space.nonlinear.ParticleFilterResult" title="cultivars.state_space.nonlinear.ParticleFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleFilterResult</span></code></a> – the
+public name of this class.</p></li>
+<li><p><a class="reference internal" href="cultivars.state_space.nonlinear.NonlinearSSM.particle_filter.html#cultivars.state_space.nonlinear.NonlinearSSM.particle_filter" title="cultivars.state_space.nonlinear.NonlinearSSM.particle_filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NonlinearSSM.particle_filter()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../engine/generated/cultivars.engine._internals._substrates._NonlinearStateSpace.particle_filter.html#cultivars.engine._internals._substrates._NonlinearStateSpace.particle_filter" title="cultivars.engine._internals._substrates._NonlinearStateSpace.particle_filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_NonlinearStateSpace.particle_filter()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -2864,7 +2875,7 @@ likelihood estimate is untrustworthy at that period.</p></li>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.state_space.nonlinear.ParticleFilterResult.filtered_state.html#cultivars.state_space.nonlinear.ParticleFilterResult.filtered_state" title="cultivars.state_space.nonlinear.ParticleFilterResult.filtered_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_state</span></code></a></p></td>
-<td><p>Particle-cloud means <code class="docutils literal notranslate"><span class="pre">E[alpha_t</span> <span class="pre">|</span> <span class="pre">y_{1..t}]</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></td>
+<td><p>Particle-cloud means <span class="math notranslate nohighlight">\(\mathbb{E}[\alpha_t \mid y_{1:t}]\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.state_space.nonlinear.ParticleFilterResult.filtered_state_std.html#cultivars.state_space.nonlinear.ParticleFilterResult.filtered_state_std" title="cultivars.state_space.nonlinear.ParticleFilterResult.filtered_state_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_state_std</span></code></a></p></td>
 <td><p>Per-component cloud standard deviations, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></td>
@@ -3115,7 +3126,7 @@ likelihood estimate is untrustworthy at that period.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

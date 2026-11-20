@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_CoefficientCovariance.wald_restriction &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._covariances._CoefficientCovariance.wald_restriction.f055afbf-822a-4b43-acf9-8b4b4d62b820.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._covariances._CoefficientCovariance.wald_restriction.53ef1d92-adcf-4512-ac6d-ca1bfe181bd8.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._covariances._CoefficientCovariance.wald_restriction';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,7 +5523,7 @@
 <h1>_CoefficientCovariance.wald_restriction<a class="headerlink" href="#coefficientcovariance-wald-restriction" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._covariances._CoefficientCovariance.wald_restriction">
-<span class="sig-prename descclassname"><span class="pre">_CoefficientCovariance.</span></span><span class="sig-name descname"><span class="pre">wald_restriction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">restriction</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">null</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_covariances.py#L219-L262"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._covariances._CoefficientCovariance.wald_restriction" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">_CoefficientCovariance.</span></span><span class="sig-name descname"><span class="pre">wald_restriction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">restriction</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">null</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_covariances.py#L244-L287"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._covariances._CoefficientCovariance.wald_restriction" title="Link to this definition">#</a></dt>
 <dd><p>Test a general set of linear restrictions on <code class="docutils literal notranslate"><span class="pre">vec(B)</span></code>.</p>
 <p>The companion to <a class="reference internal" href="cultivars.engine._internals._covariances._CoefficientCovariance.wald.html#cultivars.engine._internals._covariances._CoefficientCovariance.wald" title="cultivars.engine._internals._covariances._CoefficientCovariance.wald"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wald()</span></code></a>, which handles the common case where each
 restriction sets one coefficient to zero. This one takes an arbitrary
@@ -5533,7 +5535,7 @@ cointegrating space, a linear combination anyone wants a p-value for.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>restriction</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – A <code class="docutils literal notranslate"><span class="pre">(q,</span> <span class="pre">k</span> <span class="pre">*</span> <span class="pre">width)</span></code> matrix over <code class="docutils literal notranslate"><span class="pre">vec(B)</span></code> in
-equation-major order, so equation <code class="docutils literal notranslate"><span class="pre">i</span></code> occupies columns
+equation-major order, so equation <span class="math notranslate nohighlight">\(i\)</span> occupies columns
 <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">*</span> <span class="pre">width</span></code> through <code class="docutils literal notranslate"><span class="pre">(i</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">width</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p></li>
 <li><p><strong>null</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Plain-language statement of the hypothesis.</p></li>
 </ul>
@@ -5542,7 +5544,7 @@ equation-major order, so equation <code class="docutils literal notranslate"><sp
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="cultivars.engine._internals._tests._WaldTest.html#cultivars.engine._internals._tests._WaldTest" title="cultivars.engine._internals._tests._WaldTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">_WaldTest</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">_WaldTest</span></code> with <code class="docutils literal notranslate"><span class="pre">q</span></code> degrees of freedom.</p>
+<dd class="field-odd"><p>A <a class="reference internal" href="cultivars.engine._internals._tests._WaldTest.html#cultivars.engine._internals._tests._WaldTest" title="cultivars.engine._internals._tests._WaldTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">_WaldTest</span></code></a> with <code class="docutils literal notranslate"><span class="pre">q</span></code> degrees of freedom.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -5781,7 +5783,7 @@ equation-major order, so equation <code class="docutils literal notranslate"><sp
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

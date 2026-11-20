@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_ConditionalVarianceParameters &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._ConditionalVarianceParameters.07c23ed6-3ea6-4295-aec1-e9b70c32e2de.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._ConditionalVarianceParameters.12f85ad1-0a99-43b0-9884-ff9c84501c6b.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._parameters._ConditionalVarianceParameters';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,9 +5522,30 @@
 <h1>_ConditionalVarianceParameters<a class="headerlink" href="#conditionalvarianceparameters" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._parameters._ConditionalVarianceParameters">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_ConditionalVarianceParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L158-L173"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._ConditionalVarianceParameters" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_ConditionalVarianceParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L242-L288"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._ConditionalVarianceParameters" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._parameters._VarianceParameters.html#cultivars.engine._internals._parameters._VarianceParameters" title="cultivars.engine._internals._parameters._VarianceParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">_VarianceParameters</span></code></a></p>
 <p>Structured parameters of a finite-order variance draw.</p>
+<p>The three lag blocks enter one of two recursions. The families that recurse in
+levels use</p>
+<div class="math notranslate nohighlight">
+\[\sigma_t^2 = \omega + \sum_{i=1}^{p} \alpha_i \varepsilon_{t-i}^2
++ \sum_{k=1}^{o} \gamma_k \varepsilon_{t-k}^2\, \mathbf{1}[\varepsilon_{t-k} &lt; 0]
++ \sum_{j=1}^{q} \beta_j \sigma_{t-j}^2,\]</div>
+<p>which is the symmetric model when <a class="reference internal" href="cultivars.engine._internals._parameters._ConditionalVarianceParameters.gamma.html#cultivars.engine._internals._parameters._ConditionalVarianceParameters.gamma" title="cultivars.engine._internals._parameters._ConditionalVarianceParameters.gamma"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gamma</span></code></a> is empty and the
+sign-asymmetric one otherwise. The family that recurses in logs uses the
+standardized shock <span class="math notranslate nohighlight">\(z_t = \varepsilon_t / \sigma_t\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\ln \sigma_t^2 = \omega
++ \sum_{i=1}^{p} \alpha_i \bigl( |z_{t-i}| - \sqrt{2/\pi} \bigr)
++ \sum_{k=1}^{o} \gamma_k z_{t-k}
++ \sum_{j=1}^{q} \beta_j \ln \sigma_{t-j}^2,\]</div>
+<p>where the magnitude term is centered by <span class="math notranslate nohighlight">\(\mathbb{E}|z| = \sqrt{2/\pi}\)</span>
+so that a standard-normal shock adds no drift. <a class="reference internal" href="cultivars.engine._internals._parameters._ConditionalVarianceParameters.alpha.html#cultivars.engine._internals._parameters._ConditionalVarianceParameters.alpha" title="cultivars.engine._internals._parameters._ConditionalVarianceParameters.alpha"><code class="xref py py-attr docutils literal notranslate"><span class="pre">alpha</span></code></a> therefore loads
+on the size of a shock, <a class="reference internal" href="cultivars.engine._internals._parameters._ConditionalVarianceParameters.gamma.html#cultivars.engine._internals._parameters._ConditionalVarianceParameters.gamma" title="cultivars.engine._internals._parameters._ConditionalVarianceParameters.gamma"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gamma</span></code></a> on its sign and <a class="reference internal" href="cultivars.engine._internals._parameters._ConditionalVarianceParameters.beta.html#cultivars.engine._internals._parameters._ConditionalVarianceParameters.beta" title="cultivars.engine._internals._parameters._ConditionalVarianceParameters.beta"><code class="xref py py-attr docutils literal notranslate"><span class="pre">beta</span></code></a> on the
+past of the variance in both, but the coefficients are not interchangeable
+between the two recursions. The recursions themselves are
+<a class="reference internal" href="cultivars.engine._core._recursions._linear_variance_recursion.html#cultivars.engine._core._recursions._linear_variance_recursion" title="cultivars.engine._core._recursions._linear_variance_recursion"><code class="xref py py-func docutils literal notranslate"><span class="pre">_linear_variance_recursion()</span></code></a> and
+<a class="reference internal" href="cultivars.engine._core._recursions._log_variance_recursion.html#cultivars.engine._core._recursions._log_variance_recursion" title="cultivars.engine._core._recursions._log_variance_recursion"><code class="xref py py-func docutils literal notranslate"><span class="pre">_log_variance_recursion()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5532,6 +5555,12 @@
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="cultivars.engine._internals._objectives._ConditionalVarianceObjective.unpack.html#cultivars.engine._internals._objectives._ConditionalVarianceObjective.unpack" title="cultivars.engine._internals._objectives._ConditionalVarianceObjective.unpack"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_ConditionalVarianceObjective.unpack()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5784,7 +5813,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

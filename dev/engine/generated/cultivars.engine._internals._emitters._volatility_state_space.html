@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_volatility_state_space &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._emitters._volatility_state_space.a551550f-254f-4a18-a1f7-c333c6b50f12.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._emitters._volatility_state_space.ee02a3d4-eac8-418e-ab1a-581de4b9bd76.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._emitters._volatility_state_space';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5518,10 +5520,10 @@
 <h1>_volatility_state_space<a class="headerlink" href="#volatility-state-space" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="cultivars.engine._internals._emitters._volatility_state_space">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._emitters.</span></span><span class="sig-name descname"><span class="pre">_volatility_state_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_emitters.py#L91-L191"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._emitters._volatility_state_space" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._emitters.</span></span><span class="sig-name descname"><span class="pre">_volatility_state_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_emitters.py#L93-L193"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._emitters._volatility_state_space" title="Link to this definition">#</a></dt>
 <dd><p>The stochastic-volatility model on the nonlinear substrate.</p>
-<p>The state is the log variance <code class="docutils literal notranslate"><span class="pre">h_t</span></code> with a linear-Gaussian
-transition; the measurement <code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">c</span> <span class="pre">+</span> <span class="pre">exp(h_t</span> <span class="pre">/</span> <span class="pre">2)</span> <span class="pre">eps_t</span></code> is
+<p>The state is the log variance <span class="math notranslate nohighlight">\(h_t\)</span> with a linear-Gaussian
+transition; the measurement <span class="math notranslate nohighlight">\(y_t = c + \exp(h_t / 2)\, \varepsilon_t\)</span> is
 <em>multiplicative</em> in the state, so the Gaussian measurement density is
 replaced through <code class="docutils literal notranslate"><span class="pre">observation_loglik</span></code> and the emitted system is
 outside the additive form: the extended and unscented filters refuse
@@ -5530,11 +5532,11 @@ returns the observation mean <code class="docutils literal notranslate"><span cl
 <code class="docutils literal notranslate"><span class="pre">obs_cov</span></code> is a placeholder the particle filter ignores.</p>
 <p>Heavy tails replace the Gaussian measurement density by the Student-t
 one. Leverage enters through <code class="docutils literal notranslate"><span class="pre">observed_transition</span></code>: given the
-return, <code class="docutils literal notranslate"><span class="pre">h_{t+1}</span> <span class="pre">=</span> <span class="pre">mu</span> <span class="pre">+</span> <span class="pre">phi</span> <span class="pre">(h_t</span> <span class="pre">-</span> <span class="pre">mu)</span> <span class="pre">+</span> <span class="pre">sigma</span> <span class="pre">rho</span> <span class="pre">eps_t</span></code> with
-residual noise variance <code class="docutils literal notranslate"><span class="pre">sigma2</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">rho**2)</span></code>, which keeps the
+return, <span class="math notranslate nohighlight">\(h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \rho\, \varepsilon_t\)</span> with
+residual noise variance <span class="math notranslate nohighlight">\(\sigma^2 (1 - \rho^2)\)</span>, which keeps the
 transition density intact for the particle smoother. The two
 departures are not combined: with heavy tails the correlated
-innovation is the Gaussian kernel <code class="docutils literal notranslate"><span class="pre">z_t</span></code> rather than <code class="docutils literal notranslate"><span class="pre">eps_t</span></code>, and
+innovation is the Gaussian kernel <span class="math notranslate nohighlight">\(z_t\)</span> rather than <span class="math notranslate nohighlight">\(\varepsilon_t\)</span>, and
 recovering it from the return needs the mixture variable in the
 state, which this emitter does not carry.</p>
 <dl class="field-list simple">
@@ -5779,7 +5781,7 @@ state, which this emitter does not carry.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_HamiltonFilterResult &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._results._HamiltonFilterResult.5ad7fff6-ce73-4c2f-bda3-22b9b5668d90.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._results._HamiltonFilterResult.464dc287-67ca-4a35-9846-8a5bbfa00d46.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._results._HamiltonFilterResult';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,21 +5522,47 @@
 <h1>_HamiltonFilterResult<a class="headerlink" href="#hamiltonfilterresult" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._results._HamiltonFilterResult">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._results.</span></span><span class="sig-name descname"><span class="pre">_HamiltonFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_prob</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L260-L276"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._results._HamiltonFilterResult" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._results.</span></span><span class="sig-name descname"><span class="pre">_HamiltonFilterResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglikelihood_contributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_prob</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L330-L377"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._results._HamiltonFilterResult" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._results._FilterResult.html#cultivars.engine._internals._results._FilterResult" title="cultivars.engine._internals._results._FilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_FilterResult</span></code></a></p>
 <p>Output of the Hamilton forward filter.</p>
+<p>For a regime <span class="math notranslate nohighlight">\(S_t\)</span> on <span class="math notranslate nohighlight">\(K\)</span> states with transition matrix
+<span class="math notranslate nohighlight">\(P_{ij} = \Pr(S_t = j \mid S_{t-1} = i)\)</span> and regime-conditional
+densities <span class="math notranslate nohighlight">\(f_j(y_t) = p(y_t \mid S_t = j, y_{1:t-1})\)</span>, the filter carries
+two probability vectors,</p>
+<div class="math notranslate nohighlight">
+\[\xi_{t \mid t-1}(j) = \Pr(S_t = j \mid y_{1:t-1}), \qquad
+\xi_{t \mid t}(j) = \Pr(S_t = j \mid y_{1:t}),\]</div>
+<p>held in <a class="reference internal" href="cultivars.engine._internals._results._HamiltonFilterResult.predicted_prob.html#cultivars.engine._internals._results._HamiltonFilterResult.predicted_prob" title="cultivars.engine._internals._results._HamiltonFilterResult.predicted_prob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">predicted_prob</span></code></a> and <a class="reference internal" href="cultivars.engine._internals._results._HamiltonFilterResult.filtered_prob.html#cultivars.engine._internals._results._HamiltonFilterResult.filtered_prob" title="cultivars.engine._internals._results._HamiltonFilterResult.filtered_prob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filtered_prob</span></code></a>. Each step is a
+prediction through the chain followed by Bayes’ rule,</p>
+<div class="math notranslate nohighlight">
+\[\xi_{t \mid t-1} = P^\top \xi_{t-1 \mid t-1}, \qquad
+\xi_{t \mid t}(j) = \frac{\xi_{t \mid t-1}(j)\, f_j(y_t)}
+{\sum_{k=1}^{K} \xi_{t \mid t-1}(k)\, f_k(y_t)},\]</div>
+<p>and the denominator is the one-step predictive density of <span class="math notranslate nohighlight">\(y_t\)</span>, so the
+log likelihood is the sum of its logs over the sample.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filtered_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Contemporaneous regime probabilities
-<code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..t})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></li>
+<span class="math notranslate nohighlight">\(\Pr(S_t = j \mid y_{1:t})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></li>
 <li><p><strong>predicted_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – One-step-ahead regime probabilities
-<code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..t-1})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></li>
-<li><p><strong>loglikelihood</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Total log-likelihood <code class="docutils literal notranslate"><span class="pre">sum_t</span> <span class="pre">log</span> <span class="pre">Pr(y_t</span> <span class="pre">|</span> <span class="pre">y_{1..t-1})</span></code>.</p></li>
+<span class="math notranslate nohighlight">\(\Pr(S_t = j \mid y_{1:t-1})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></li>
+<li><p><strong>loglikelihood</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Total log-likelihood <span class="math notranslate nohighlight">\(\sum_t \log \Pr(y_t \mid y_{1:t-1})\)</span>.</p></li>
 <li><p><strong>loglikelihood_contributions</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Per-period contributions, shape <code class="docutils literal notranslate"><span class="pre">(T,)</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.HamiltonFilterResult.html#cultivars.state_space.regime_switching.HamiltonFilterResult" title="cultivars.state_space.regime_switching.HamiltonFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">HamiltonFilterResult</span></code></a>
+– the public name of this class.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.MarkovSwitchingSSM.filter.html#cultivars.state_space.regime_switching.MarkovSwitchingSSM.filter" title="cultivars.state_space.regime_switching.MarkovSwitchingSSM.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MarkovSwitchingSSM.filter()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.MarkovSwitchingSSM.filter_densities.html#cultivars.state_space.regime_switching.MarkovSwitchingSSM.filter_densities" title="cultivars.state_space.regime_switching.MarkovSwitchingSSM.filter_densities"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MarkovSwitchingSSM.filter_densities()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._filters._hamilton_filter.html#cultivars.engine._internals._filters._hamilton_filter" title="cultivars.engine._internals._filters._hamilton_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">_hamilton_filter()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._substrates._MarkovSwitchingStateSpace.filter.html#cultivars.engine._internals._substrates._MarkovSwitchingStateSpace.filter" title="cultivars.engine._internals._substrates._MarkovSwitchingStateSpace.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_MarkovSwitchingStateSpace.filter()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5542,10 +5570,10 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._results._HamiltonFilterResult.filtered_prob.html#cultivars.engine._internals._results._HamiltonFilterResult.filtered_prob" title="cultivars.engine._internals._results._HamiltonFilterResult.filtered_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_prob</span></code></a></p></td>
-<td><p>Contemporaneous regime probabilities <code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..t})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></td>
+<td><p>Contemporaneous regime probabilities <span class="math notranslate nohighlight">\(\Pr(S_t = j \mid y_{1:t})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._results._HamiltonFilterResult.predicted_prob.html#cultivars.engine._internals._results._HamiltonFilterResult.predicted_prob" title="cultivars.engine._internals._results._HamiltonFilterResult.predicted_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predicted_prob</span></code></a></p></td>
-<td><p>One-step-ahead regime probabilities <code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..t-1})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></td>
+<td><p>One-step-ahead regime probabilities <span class="math notranslate nohighlight">\(\Pr(S_t = j \mid y_{1:t-1})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._results._HamiltonFilterResult.loglikelihood.html#cultivars.engine._internals._results._HamiltonFilterResult.loglikelihood" title="cultivars.engine._internals._results._HamiltonFilterResult.loglikelihood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loglikelihood</span></code></a></p></td>
 <td><p>Total log-likelihood of the data under the model.</p></td>
@@ -5784,7 +5812,7 @@
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

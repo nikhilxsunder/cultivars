@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_QuasiVolatilityObjective &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._objectives._QuasiVolatilityObjective.dd54747c-69db-42d8-be61-8b2f20d44c81.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._objectives._QuasiVolatilityObjective.e0b388ce-d956-48ff-9aba-afe495a20716.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._objectives._QuasiVolatilityObjective';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,14 +5522,14 @@
 <h1>_QuasiVolatilityObjective<a class="headerlink" href="#quasivolatilityobjective" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._objectives._QuasiVolatilityObjective">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._objectives.</span></span><span class="sig-name descname"><span class="pre">_QuasiVolatilityObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">endog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heavy_tailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_objectives.py#L1854-L1943"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._objectives._QuasiVolatilityObjective" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._objectives.</span></span><span class="sig-name descname"><span class="pre">_QuasiVolatilityObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">endog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heavy_tailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_objectives.py#L1885-L1974"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._objectives._QuasiVolatilityObjective" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._objectives._Objective.html#cultivars.engine._internals._objectives._Objective" title="cultivars.engine._internals._objectives._Objective"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Objective</span></code></a>[<a class="reference internal" href="cultivars.engine._internals._parameters._StochasticVolatilityParameters.html#cultivars.engine._internals._parameters._StochasticVolatilityParameters" title="cultivars.engine._internals._parameters._StochasticVolatilityParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">_StochasticVolatilityParameters</span></code></a>]</p>
 <p>Harvey-Ruiz-Shephard quasi-likelihood of the stochastic-volatility model.</p>
 <p>The flat vector holds the log-variance mean, an <code class="docutils literal notranslate"><span class="pre">arctanh</span></code> persistence,
 and a log innovation variance; the observation mean, when estimated,
 is concentrated out as the sample mean, which is the QML estimator of
 a constant under the linearization. The criterion is the exact
-Gaussian likelihood of the <em>linearized</em> model in <code class="docutils literal notranslate"><span class="pre">log((y</span> <span class="pre">-</span> <span class="pre">c)**2)</span></code>,
+Gaussian likelihood of the <em>linearized</em> model in <span class="math notranslate nohighlight">\(\log (y - c)^2\)</span>,
 hence a quasi-likelihood for the true model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
@@ -5568,7 +5570,7 @@ hence a quasi-likelihood for the true model.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._QuasiVolatilityObjective._log_squared.html#cultivars.engine._internals._objectives._QuasiVolatilityObjective._log_squared" title="cultivars.engine._internals._objectives._QuasiVolatilityObjective._log_squared"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_log_squared</span></code></a>()</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">log((y</span> <span class="pre">-</span> <span class="pre">c)**2</span> <span class="pre">+</span> <span class="pre">offset)</span></code>, the linearized observation.</p></td>
+<td><p><span class="math notranslate nohighlight">\(\log\bigl((y - c)^2 + \mathrm{offset}\bigr)\)</span>, the linearized observation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._QuasiVolatilityObjective.starts.html#cultivars.engine._internals._objectives._QuasiVolatilityObjective.starts" title="cultivars.engine._internals._objectives._QuasiVolatilityObjective.starts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">starts</span></code></a>()</p></td>
 <td><p>Moment-based warm starts: two persistence configurations.</p></td>
@@ -5808,7 +5810,7 @@ hence a quasi-likelihood for the true model.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

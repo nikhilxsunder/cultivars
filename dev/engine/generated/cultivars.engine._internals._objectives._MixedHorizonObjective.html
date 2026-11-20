@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_MixedHorizonObjective &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._objectives._MixedHorizonObjective.99f5e57f-fc10-4538-85ed-a8608b19e879.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._objectives._MixedHorizonObjective.2a1518d5-4373-490d-aa1a-1857614a7d02.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._objectives._MixedHorizonObjective';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,16 +5522,16 @@
 <h1>_MixedHorizonObjective<a class="headerlink" href="#mixedhorizonobjective" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._objectives._MixedHorizonObjective">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._objectives.</span></span><span class="sig-name descname"><span class="pre">_MixedHorizonObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_cells</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_objectives.py#L1302-L1388"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._objectives._MixedHorizonObjective" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._objectives.</span></span><span class="sig-name descname"><span class="pre">_MixedHorizonObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_cells</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_objectives.py#L1331-L1417"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._objectives._MixedHorizonObjective" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._objectives._Objective.html#cultivars.engine._internals._objectives._Objective" title="cultivars.engine._internals._objectives._Objective"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Objective</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]]</p>
 <p>Feasibility surface for zero restrictions split across two horizons.</p>
-<p>The candidate impact matrix is <code class="docutils literal notranslate"><span class="pre">chol(Sigma)</span> <span class="pre">Q</span></code> with <code class="docutils literal notranslate"><span class="pre">Q</span></code> a rotation, so
-the covariance is reproduced identically at every point of the search and
-the criterion measures only how far the declared cells of the impact and
-long-run matrices sit from their fixed values. At an exactly identified
-pattern whose rank condition holds, the minimum is zero and the minimizer
-is the identification; a strictly positive minimum is the rank condition
-failing, and the caller reports it as exactly that.</p>
+<p>The candidate impact matrix is <span class="math notranslate nohighlight">\(\operatorname{chol}(\Sigma)\, Q\)</span> with
+<span class="math notranslate nohighlight">\(Q\)</span> a rotation, so the covariance is reproduced identically at every
+point of the search and the criterion measures only how far the declared
+cells of the impact and long-run matrices sit from their fixed values. At
+an exactly identified pattern whose rank condition holds, the minimum is
+zero and the minimizer is the identification; a strictly positive minimum
+is the rank condition failing, and the caller reports it as exactly that.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5814,7 +5816,7 @@ matrix.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

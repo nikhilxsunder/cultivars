@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_LagOrderSelection &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._selections._LagOrderSelection.ebca74d4-7443-43ed-be9c-2664c1313b23.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._selections._LagOrderSelection.12241e7b-29f7-41be-aa16-6b3c0b1209cd.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._selections._LagOrderSelection';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,7 +5522,7 @@
 <h1>_LagOrderSelection<a class="headerlink" href="#lagorderselection" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._selections._LagOrderSelection">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._selections.</span></span><span class="sig-name descname"><span class="pre">_LagOrderSelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hqic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fpe</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_selections.py#L76-L243"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._selections._LagOrderSelection" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._selections.</span></span><span class="sig-name descname"><span class="pre">_LagOrderSelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hqic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fpe</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_selections.py#L76-L249"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._selections._LagOrderSelection" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Lag-order criteria evaluated over a common sample.</p>
 <p>Carries the whole curve for each criterion, not just the winner. The four
@@ -5539,9 +5541,9 @@ reasons that have nothing to do with fit.</p>
 <li><p><strong>max_lags</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Longest order scored; the curves have <code class="docutils literal notranslate"><span class="pre">max_lags</span> <span class="pre">+</span> <span class="pre">1</span></code>
 entries, indexed by order from zero.</p></li>
 <li><p><strong>nobs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – The common effective sample every order was scored on.</p></li>
-<li><p><strong>aic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Akaike criterion, <code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">det</span> <span class="pre">Sigma</span> <span class="pre">+</span> <span class="pre">2</span> <span class="pre">m</span> <span class="pre">/</span> <span class="pre">T</span></code>.</p></li>
-<li><p><strong>bic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Schwarz criterion, <code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">det</span> <span class="pre">Sigma</span> <span class="pre">+</span> <span class="pre">log(T)</span> <span class="pre">m</span> <span class="pre">/</span> <span class="pre">T</span></code>.</p></li>
-<li><p><strong>hqic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Hannan-Quinn criterion, <code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">det</span> <span class="pre">Sigma</span> <span class="pre">+</span> <span class="pre">2</span> <span class="pre">log</span> <span class="pre">log(T)</span> <span class="pre">m</span> <span class="pre">/</span> <span class="pre">T</span></code>.</p></li>
+<li><p><strong>aic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Akaike criterion, <span class="math notranslate nohighlight">\(\log \det \Sigma + 2 m / T\)</span>.</p></li>
+<li><p><strong>bic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Schwarz criterion, <span class="math notranslate nohighlight">\(\log \det \Sigma + m \log(T) / T\)</span>.</p></li>
+<li><p><strong>hqic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Hannan-Quinn criterion, <span class="math notranslate nohighlight">\(\log \det \Sigma + 2 m \log \log(T) / T\)</span>.</p></li>
 <li><p><strong>fpe</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Final prediction error. On a <em>determinant</em> scale rather than a
 log-determinant one, so its values are not comparable with the
 other three – only its own minimum is meaningful.</p></li>
@@ -5550,11 +5552,20 @@ other three – only its own minimum is meaningful.</p></li>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The parameter count <code class="docutils literal notranslate"><span class="pre">m</span></code> here excludes the innovation covariance,
+<p>The parameter count <span class="math notranslate nohighlight">\(m\)</span> here excludes the innovation covariance,
 following Lutkepohl: those terms are common across orders and cancel.
 A fitted result’s <code class="docutils literal notranslate"><span class="pre">information_criteria</span></code> counts them, so the same
 model scores differently in the two places. Both are right in context;
 do not reconcile them.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.large_dim.bayesian.BVAR.lag_order_selection.html#cultivars.multivariate.large_dim.bayesian.BVAR.lag_order_selection" title="cultivars.multivariate.large_dim.bayesian.BVAR.lag_order_selection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BVAR.lag_order_selection()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.large_dim.gibbs.GibbsBVAR.lag_order_selection.html#cultivars.multivariate.large_dim.gibbs.GibbsBVAR.lag_order_selection" title="cultivars.multivariate.large_dim.gibbs.GibbsBVAR.lag_order_selection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GibbsBVAR.lag_order_selection()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.large_dim.graphical.GraphicalVAR.lag_order_selection.html#cultivars.multivariate.large_dim.graphical.GraphicalVAR.lag_order_selection" title="cultivars.multivariate.large_dim.graphical.GraphicalVAR.lag_order_selection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GraphicalVAR.lag_order_selection()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.large_dim.hierarchical.HierarchicalBVAR.lag_order_selection.html#cultivars.multivariate.large_dim.hierarchical.HierarchicalBVAR.lag_order_selection" title="cultivars.multivariate.large_dim.hierarchical.HierarchicalBVAR.lag_order_selection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HierarchicalBVAR.lag_order_selection()</span></code></a> – returns an instance.</p></li>
+</ul>
 </div>
 </dd></dl>
 
@@ -5569,13 +5580,13 @@ do not reconcile them.</p>
 <td><p>The common effective sample every order was scored on.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._selections._LagOrderSelection.aic.html#cultivars.engine._internals._selections._LagOrderSelection.aic" title="cultivars.engine._internals._selections._LagOrderSelection.aic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aic</span></code></a></p></td>
-<td><p>Akaike criterion by order, <code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">det</span> <span class="pre">Sigma</span> <span class="pre">+</span> <span class="pre">2</span> <span class="pre">m</span> <span class="pre">/</span> <span class="pre">T</span></code>.</p></td>
+<td><p>Akaike criterion by order, <span class="math notranslate nohighlight">\(\log \det \Sigma + 2 m / T\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._selections._LagOrderSelection.bic.html#cultivars.engine._internals._selections._LagOrderSelection.bic" title="cultivars.engine._internals._selections._LagOrderSelection.bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bic</span></code></a></p></td>
-<td><p>Schwarz criterion by order, <code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">det</span> <span class="pre">Sigma</span> <span class="pre">+</span> <span class="pre">log(T)</span> <span class="pre">m</span> <span class="pre">/</span> <span class="pre">T</span></code>.</p></td>
+<td><p>Schwarz criterion by order, <span class="math notranslate nohighlight">\(\log \det \Sigma + m \log(T) / T\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._selections._LagOrderSelection.hqic.html#cultivars.engine._internals._selections._LagOrderSelection.hqic" title="cultivars.engine._internals._selections._LagOrderSelection.hqic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hqic</span></code></a></p></td>
-<td><p>Hannan-Quinn criterion by order, <code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">det</span> <span class="pre">Sigma</span> <span class="pre">+</span> <span class="pre">2</span> <span class="pre">log</span> <span class="pre">log(T)</span> <span class="pre">m</span> <span class="pre">/</span> <span class="pre">T</span></code>.</p></td>
+<td><p>Hannan-Quinn criterion by order, <span class="math notranslate nohighlight">\(\log \det \Sigma + 2 m \log \log(T) / T\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._selections._LagOrderSelection.fpe.html#cultivars.engine._internals._selections._LagOrderSelection.fpe" title="cultivars.engine._internals._selections._LagOrderSelection.fpe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpe</span></code></a></p></td>
 <td><p>Final prediction error by order.</p></td>
@@ -5841,7 +5852,7 @@ do not reconcile them.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

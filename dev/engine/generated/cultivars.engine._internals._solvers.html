@@ -10,15 +10,15 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://nikhilxsunder.github.io/cultivars/stable/engine/generated/cultivars.engine._internals._solvers.html" />
 <meta property="og:site_name" content="cultivars" />
-<meta property="og:description" content="Solvers: the routines that turn a stated problem into its solution. Eight routines of three kinds. Optimizers._solve minimizes an objective from every starting point the objective supplies and keeps the best;_maximize_likelihood is the same call with the sign flipped, for objectives that are nega..." />
+<meta property="og:description" content="Solvers: the routines that turn a stated problem into its solution. Eight routines of three kinds. Optimizers._solve() minimizes an objective from every starting point the objective supplies and keeps the best;_maximize_likelihood() is the same call with the sign flipped, for objectives that are ..." />
 <meta property="og:image" content="https://nikhilxsunder.github.io/cultivars/stable/_static/cultivars-logo.png" />
 <meta property="og:image:alt" content="cultivars" />
-<meta name="description" content="Solvers: the routines that turn a stated problem into its solution. Eight routines of three kinds. Optimizers._solve minimizes an objective from every starting point the objective supplies and keeps the best;_maximize_likelihood is the same call with the sign flipped, for objectives that are nega..." />
+<meta name="description" content="Solvers: the routines that turn a stated problem into its solution. Eight routines of three kinds. Optimizers._solve() minimizes an objective from every starting point the objective supplies and keeps the best;_maximize_likelihood() is the same call with the sign flipped, for objectives that are ..." />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>cultivars.engine._internals._solvers &#8212; cultivars</title>
   
   
@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._solvers.03f6e1f3-9599-44cf-8689-8132579e985c.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._solvers.ae9d212b-5677-427c-8073-f971d5e6d53e.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._solvers';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5517,23 +5517,23 @@
 <span id="cultivars-engine-internals-solvers"></span><h1>cultivars.engine._internals._solvers<a class="headerlink" href="#module-cultivars.engine._internals._solvers" title="Link to this heading">#</a></h1>
 <p>Solvers: the routines that turn a stated problem into its solution.</p>
 <p>Eight routines of three kinds.</p>
-<p>Optimizers. <code class="docutils literal notranslate"><span class="pre">_solve</span></code> minimizes an objective from every starting point the
-objective supplies and keeps the best; <code class="docutils literal notranslate"><span class="pre">_maximize_likelihood</span></code> is the same
+<p>Optimizers. <a class="reference internal" href="cultivars.engine._internals._solvers._solve.html#cultivars.engine._internals._solvers._solve" title="cultivars.engine._internals._solvers._solve"><code class="xref py py-func docutils literal notranslate"><span class="pre">_solve()</span></code></a> minimizes an objective from every starting point the
+objective supplies and keeps the best; <a class="reference internal" href="cultivars.engine._internals._solvers._maximize_likelihood.html#cultivars.engine._internals._solvers._maximize_likelihood" title="cultivars.engine._internals._solvers._maximize_likelihood"><code class="xref py py-func docutils literal notranslate"><span class="pre">_maximize_likelihood()</span></code></a> is the same
 call with the sign flipped, for objectives that are negative log
 likelihoods. The algorithm and its options belong to the objective, so
 these two contain no model-specific choices.</p>
-<p>Estimators. <code class="docutils literal notranslate"><span class="pre">_solve_global</span></code> stacks conditional unit models into one
-closed global autoregression. <code class="docutils literal notranslate"><span class="pre">_posterior_coefficients</span></code> computes the
+<p>Estimators. <a class="reference internal" href="cultivars.engine._internals._solvers._solve_global.html#cultivars.engine._internals._solvers._solve_global" title="cultivars.engine._internals._solvers._solve_global"><code class="xref py py-func docutils literal notranslate"><span class="pre">_solve_global()</span></code></a> stacks conditional unit models into one
+closed global autoregression. <a class="reference internal" href="cultivars.engine._internals._solvers._posterior_coefficients.html#cultivars.engine._internals._solvers._posterior_coefficients" title="cultivars.engine._internals._solvers._posterior_coefficients"><code class="xref py py-func docutils literal notranslate"><span class="pre">_posterior_coefficients()</span></code></a> computes the
 equation-by-equation posterior of a coefficient matrix under a
-moment-and-dummy prior. <code class="docutils literal notranslate"><span class="pre">_conjugate_posterior</span></code> is the
+moment-and-dummy prior. <a class="reference internal" href="cultivars.engine._internals._solvers._conjugate_posterior.html#cultivars.engine._internals._solvers._conjugate_posterior" title="cultivars.engine._internals._solvers._conjugate_posterior"><code class="xref py py-func docutils literal notranslate"><span class="pre">_conjugate_posterior()</span></code></a> is the
 Normal-inverse-Wishart update with its exact log marginal likelihood.
-<code class="docutils literal notranslate"><span class="pre">_fista_penalized</span></code> solves a penalized least-squares problem by
+<a class="reference internal" href="cultivars.engine._internals._solvers._fista_penalized.html#cultivars.engine._internals._solvers._fista_penalized" title="cultivars.engine._internals._solvers._fista_penalized"><code class="xref py py-func docutils literal notranslate"><span class="pre">_fista_penalized()</span></code></a> solves a penalized least-squares problem by
 accelerated proximal gradient.</p>
-<p>Factorizations. <code class="docutils literal notranslate"><span class="pre">_spectral_factor</span></code> computes the canonical factor of a
-spectral density by Wilson’s algorithm, and <code class="docutils literal notranslate"><span class="pre">_solve_perturbation</span></code> solves
+<p>Factorizations. <a class="reference internal" href="cultivars.engine._internals._solvers._spectral_factor.html#cultivars.engine._internals._solvers._spectral_factor" title="cultivars.engine._internals._solvers._spectral_factor"><code class="xref py py-func docutils literal notranslate"><span class="pre">_spectral_factor()</span></code></a> computes the canonical factor of a
+spectral density by Wilson’s algorithm, and <a class="reference internal" href="cultivars.engine._internals._solvers._solve_perturbation.html#cultivars.engine._internals._solvers._solve_perturbation" title="cultivars.engine._internals._solvers._solve_perturbation"><code class="xref py py-func docutils literal notranslate"><span class="pre">_solve_perturbation()</span></code></a> solves
 a rational-expectations model to first or second order around its steady
 state. The background to the perturbation method is in the module
-docstring of <code class="docutils literal notranslate"><span class="pre">_specifications</span></code>.</p>
+docstring of <a class="reference internal" href="cultivars.engine._internals._specifications.html#module-cultivars.engine._internals._specifications" title="cultivars.engine._internals._specifications"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_specifications</span></code></a>.</p>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
@@ -5792,7 +5792,7 @@ docstring of <code class="docutils literal notranslate"><span class="pre">_speci
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

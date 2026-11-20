@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_SmoothTransitionParameters &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._SmoothTransitionParameters.160564cf-019d-4268-ae4a-fe57d9866845.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._SmoothTransitionParameters.f2442fea-511f-42f8-a419-b0dd23e81cfe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._parameters._SmoothTransitionParameters';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,11 +5522,25 @@
 <h1>_SmoothTransitionParameters<a class="headerlink" href="#smoothtransitionparameters" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._parameters._SmoothTransitionParameters">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_SmoothTransitionParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L194-L209"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._SmoothTransitionParameters" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_SmoothTransitionParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L330-L368"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._SmoothTransitionParameters" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Structured parameters of a smooth-transition draw.</p>
 <p>The regime coefficients are absent by design: they are concentrated out and
-recovered by <code class="xref py py-meth docutils literal notranslate"><span class="pre">_SmoothTransitionObjective.least_squares()</span></code>.</p>
+recovered by <a class="reference internal" href="cultivars.engine._internals._objectives._SmoothTransitionObjective.least_squares.html#cultivars.engine._internals._objectives._SmoothTransitionObjective.least_squares" title="cultivars.engine._internals._objectives._SmoothTransitionObjective.least_squares"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_SmoothTransitionObjective.least_squares()</span></code></a>.</p>
+<p>With <span class="math notranslate nohighlight">\(u_t = (z_t - c) / s\)</span> the transition variable centered at
+<a class="reference internal" href="cultivars.engine._internals._parameters._SmoothTransitionParameters.threshold.html#cultivars.engine._internals._parameters._SmoothTransitionParameters.threshold" title="cultivars.engine._internals._parameters._SmoothTransitionParameters.threshold"><code class="xref py py-attr docutils literal notranslate"><span class="pre">threshold</span></code></a> (<span class="math notranslate nohighlight">\(c\)</span>) and divided by the scale the objective holds
+fixed, the two parameters define the weight on the upper regime,</p>
+<div class="math notranslate nohighlight">
+\[G(u_t) = \frac{1}{1 + \exp(-\gamma u_t)}
+\quad \text{(logistic)},
+\qquad
+G(u_t) = 1 - \exp(-\gamma u_t^2)
+\quad \text{(exponential)},\]</div>
+<p>with <a class="reference internal" href="cultivars.engine._internals._parameters._SmoothTransitionParameters.gamma.html#cultivars.engine._internals._parameters._SmoothTransitionParameters.gamma" title="cultivars.engine._internals._parameters._SmoothTransitionParameters.gamma"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gamma</span></code></a> as <span class="math notranslate nohighlight">\(\gamma &gt; 0\)</span>. The logistic weight moves
+monotonically from one regime to the other as <span class="math notranslate nohighlight">\(z_t\)</span> crosses the
+threshold; the exponential weight is symmetric about it, so the outer regime
+applies on both sides. A large <span class="math notranslate nohighlight">\(\gamma\)</span> approaches a discrete threshold
+model in the logistic case.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5533,6 +5549,14 @@ recovered by <code class="xref py py-meth docutils literal notranslate"><span cl
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="cultivars.engine._internals._objectives._SmoothTransitionObjective.unpack.html#cultivars.engine._internals._objectives._SmoothTransitionObjective.unpack" title="cultivars.engine._internals._objectives._SmoothTransitionObjective.unpack"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_SmoothTransitionObjective.unpack()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._objectives._VectorSmoothTransitionObjective.unpack.html#cultivars.engine._internals._objectives._VectorSmoothTransitionObjective.unpack" title="cultivars.engine._internals._objectives._VectorSmoothTransitionObjective.unpack"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_VectorSmoothTransitionObjective.unpack()</span></code></a> – returns an
+instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5776,7 +5800,7 @@ recovered by <code class="xref py py-meth docutils literal notranslate"><span cl
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

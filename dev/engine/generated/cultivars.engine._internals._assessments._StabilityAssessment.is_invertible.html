@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_StabilityAssessment.is_invertible &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments._StabilityAssessment.is_invertible.66aa3f88-16b4-4bfa-ab6d-cbe56b2bbbce.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments._StabilityAssessment.is_invertible.408ac5c8-db48-4e93-82dd-b30dfdfa7586.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._assessments._StabilityAssessment.is_invertible';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,15 +5523,15 @@
 <h1>_StabilityAssessment.is_invertible<a class="headerlink" href="#stabilityassessment-is-invertible" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._assessments._StabilityAssessment.is_invertible">
-<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">_StabilityAssessment.</span></span><span class="sig-name descname"><span class="pre">is_invertible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ma_coeffs</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-8</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L454-L502"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments._StabilityAssessment.is_invertible" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">_StabilityAssessment.</span></span><span class="sig-name descname"><span class="pre">is_invertible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ma_coeffs</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-8</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L486-L534"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments._StabilityAssessment.is_invertible" title="Link to this definition">#</a></dt>
 <dd><p>Is an MA/ARMA invertible? (companion of the MA polynomial, roots inside).</p>
 <p>The same strict companion test as <a class="reference internal" href="cultivars.engine._internals._assessments._StabilityAssessment.is_stationary.html#cultivars.engine._internals._assessments._StabilityAssessment.is_stationary" title="cultivars.engine._internals._assessments._StabilityAssessment.is_stationary"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_stationary()</span></code></a>, applied to
 moving-average coefficients. It therefore reads its argument in the
-autoregressive convention and tests <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">M_1</span> <span class="pre">z</span> <span class="pre">-</span> <span class="pre">...</span> <span class="pre">-</span> <span class="pre">M_q</span> <span class="pre">z^q</span></code>.</p>
+autoregressive convention and tests <span class="math notranslate nohighlight">\(1 - M_1 z - \cdots - M_q z^q\)</span>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>A moving-average polynomial written the usual way,
-<code class="docutils literal notranslate"><span class="pre">theta(L)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">theta_1</span> <span class="pre">L</span> <span class="pre">+</span> <span class="pre">...</span> <span class="pre">+</span> <span class="pre">theta_q</span> <span class="pre">L^q</span></code>, must be passed
+<span class="math notranslate nohighlight">\(\theta(L) = 1 + \theta_1 L + \cdots + \theta_q L^q\)</span>, must be passed
 <strong>negated</strong>. Passing <code class="docutils literal notranslate"><span class="pre">theta</span></code> itself tests a different
 polynomial and returns a wrong verdict whenever the two
 disagree; for <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">==</span> <span class="pre">1</span></code> they happen to coincide. The fitted
@@ -5540,7 +5542,7 @@ results negate internally, so this applies only to direct calls.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ma_coeffs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayLike</span></code></a></span>) – MA coefficients <code class="docutils literal notranslate"><span class="pre">M_1,</span> <span class="pre">...,</span> <span class="pre">M_q</span></code> in the same layout as AR
 coefficients; shape <code class="docutils literal notranslate"><span class="pre">(q,)</span></code> or <code class="docutils literal notranslate"><span class="pre">(q,</span> <span class="pre">k,</span> <span class="pre">k)</span></code>. In terms of
-<code class="docutils literal notranslate"><span class="pre">theta(L)</span></code> above, <code class="docutils literal notranslate"><span class="pre">M_j</span> <span class="pre">=</span> <span class="pre">-theta_j</span></code>. Empty coefficients
+<span class="math notranslate nohighlight">\(\theta(L)\)</span> above, <span class="math notranslate nohighlight">\(M_j = -\theta_j\)</span>. Empty coefficients
 are invertible.</p></li>
 <li><p><strong>tol</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Modulus tolerance.</p></li>
 </ul>
@@ -5564,7 +5566,7 @@ are invertible.</p></li>
 </dl>
 <div class="admonition-example admonition">
 <p class="admonition-title">Example</p>
-<p><code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">1.5</span> <span class="pre">L</span> <span class="pre">+</span> <span class="pre">0.6</span> <span class="pre">L^2</span></code> is invertible, which the method reports
+<p><span class="math notranslate nohighlight">\(1 + 1.5 L + 0.6 L^2\)</span> is invertible, which the method reports
 only for the negated coefficients:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">theta</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
@@ -5802,7 +5804,7 @@ only for the negated coefficients:</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

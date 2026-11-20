@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>JohansenRankTest &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.diagnostics.cointegration.JohansenRankTest.671c033c-bace-4567-a16b-89d50c247204.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.diagnostics.cointegration.JohansenRankTest.89514995-9eb6-4524-9475-caede0b54907.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.diagnostics.cointegration.JohansenRankTest';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -2836,22 +2838,39 @@
 <h1>JohansenRankTest<a class="headerlink" href="#johansenranktest" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.diagnostics.cointegration.JohansenRankTest">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.diagnostics.cointegration.</span></span><span class="sig-name descname"><span class="pre">JohansenRankTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eigenvalue_statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_pvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eigenvalue_pvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_exog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_sample</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_tests.py#L100-L261"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.diagnostics.cointegration.JohansenRankTest" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.diagnostics.cointegration.</span></span><span class="sig-name descname"><span class="pre">JohansenRankTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eigenvalue_statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_pvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eigenvalue_pvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_exog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_sample</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_tests.py#L100-L292"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.diagnostics.cointegration.JohansenRankTest" title="Link to this definition">#</a></dt>
 <dd><p>Sequential trace and maximum-eigenvalue tests for the cointegrating rank.</p>
-<p>Both sequences read down from <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">=</span> <span class="pre">0</span></code>. The trace statistic tests
-<code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">&lt;=</span> <span class="pre">r</span></code> against <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">k</span></code>; the maximum-eigenvalue statistic tests
-<code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">r</span></code> against <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">r</span> <span class="pre">+</span> <span class="pre">1</span></code>. The conventional reading stops at the
-first <code class="docutils literal notranslate"><span class="pre">r</span></code> that is not rejected, which <a class="reference internal" href="cultivars.diagnostics.cointegration.JohansenRankTest.selected_rank.html#cultivars.diagnostics.cointegration.JohansenRankTest.selected_rank" title="cultivars.diagnostics.cointegration.JohansenRankTest.selected_rank"><code class="xref py py-meth docutils literal notranslate"><span class="pre">selected_rank()</span></code></a> implements and
-which is a sequential procedure whose overall size is not the nominal level
-of any single step – a caveat the table states rather than hides.</p>
+<p>Both sequences read down from <span class="math notranslate nohighlight">\(r = 0\)</span>. The trace statistic tests
+<span class="math notranslate nohighlight">\(\operatorname{rank} \le r\)</span> against <span class="math notranslate nohighlight">\(\operatorname{rank} = k\)</span>;
+the maximum-eigenvalue statistic tests <span class="math notranslate nohighlight">\(\operatorname{rank} = r\)</span>
+against <span class="math notranslate nohighlight">\(\operatorname{rank} = r + 1\)</span>. The conventional reading stops
+at the first <span class="math notranslate nohighlight">\(r\)</span> that is not rejected, which <a class="reference internal" href="cultivars.diagnostics.cointegration.JohansenRankTest.selected_rank.html#cultivars.diagnostics.cointegration.JohansenRankTest.selected_rank" title="cultivars.diagnostics.cointegration.JohansenRankTest.selected_rank"><code class="xref py py-meth docutils literal notranslate"><span class="pre">selected_rank()</span></code></a>
+implements and which is a sequential procedure whose overall size is not
+the nominal level of any single step – a caveat the table states rather
+than hides.</p>
+<p>With <span class="math notranslate nohighlight">\(\hat\lambda_1 \ge \cdots \ge \hat\lambda_k\)</span> the squared canonical
+correlations and <span class="math notranslate nohighlight">\(T^{\ast}\)</span> the effective sample size, the two
+statistics for the null of at most <span class="math notranslate nohighlight">\(r\)</span> cointegrating relations are</p>
+<div class="math notranslate nohighlight">
+\[\lambda_{\mathrm{trace}}(r) = -T^{\ast} \sum_{i=r+1}^{k} \log(1 - \hat\lambda_i),
+\qquad
+\lambda_{\max}(r) = -T^{\ast} \log(1 - \hat\lambda_{r+1}),
+\qquad r = 0, \ldots, k - 1.\]</div>
+<p>Under the small-sample correction of Reinsel and Ahn (1992),
+<span class="math notranslate nohighlight">\(T^{\ast} = T - (k_y + k_x)\, p\)</span> with <span class="math notranslate nohighlight">\(p\)</span> the lag order;
+otherwise it is <span class="math notranslate nohighlight">\(T\)</span>. Neither statistic has a standard limit law: the reference
+distribution depends on the deterministic case and on the number of weakly
+exogenous regressors, which is why the record carries simulated p-values
+together with the settings they were simulated under.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>eigenvalues</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – The squared canonical correlations, descending. One per
 modelled equation, since a conditional system cannot support more
 cointegrating relations than it has equations.</p></li>
-<li><p><strong>trace_statistic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – One entry per null <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">&lt;=</span> <span class="pre">r</span></code>, for <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">...,</span> <span class="pre">k</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p></li>
-<li><p><strong>max_eigenvalue_statistic</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – One entry per null <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">r</span></code>.</p></li>
+<li><p><strong>trace_statistic</strong> – One entry per null <span class="math notranslate nohighlight">\(\operatorname{rank} \le r\)</span>,
+for <span class="math notranslate nohighlight">\(r = 0, \ldots, k - 1\)</span>.</p></li>
+<li><p><strong>max_eigenvalue_statistic</strong> – One entry per null <span class="math notranslate nohighlight">\(\operatorname{rank} = r\)</span>.</p></li>
 <li><p><strong>trace_pvalue</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Empirical p-values from the simulated null.</p></li>
 <li><p><strong>max_eigenvalue_pvalue</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Empirical p-values from the simulated null.</p></li>
 <li><p><strong>nobs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Effective sample the statistics were computed on.</p></li>
@@ -2864,6 +2883,19 @@ applied to the statistics.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#cultivars.diagnostics.cointegration.JohansenRankTest" title="cultivars.diagnostics.cointegration.JohansenRankTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">JohansenRankTest</span></code></a> – the
+public name of this class.</p></li>
+<li><p><a class="reference internal" href="cultivars.multivariate.reduced_form.error_correction.VECM.rank_test.html#cultivars.multivariate.reduced_form.error_correction.VECM.rank_test" title="cultivars.multivariate.reduced_form.error_correction.VECM.rank_test"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VECM.rank_test()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.multivariate.reduced_form.error_correction.VECMX.rank_test.html#cultivars.multivariate.reduced_form.error_correction.VECMX.rank_test" title="cultivars.multivariate.reduced_form.error_correction.VECMX.rank_test"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VECMX.rank_test()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../engine/generated/cultivars.engine._internals._models._ExogenousVectorErrorCorrectionModel.rank_test.html#cultivars.engine._internals._models._ExogenousVectorErrorCorrectionModel.rank_test" title="cultivars.engine._internals._models._ExogenousVectorErrorCorrectionModel.rank_test"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_ExogenousVectorErrorCorrectionModel.rank_test()</span></code></a> – returns an
+instance.</p></li>
+<li><p><a class="reference internal" href="../../engine/generated/cultivars.engine._internals._models._VectorErrorCorrectionModel.rank_test.html#cultivars.engine._internals._models._VectorErrorCorrectionModel.rank_test" title="cultivars.engine._internals._models._VectorErrorCorrectionModel.rank_test"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_VectorErrorCorrectionModel.rank_test()</span></code></a> – returns an
+instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -2874,10 +2906,10 @@ applied to the statistics.</p></li>
 <td><p>The squared canonical correlations, descending.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.diagnostics.cointegration.JohansenRankTest.trace_statistic.html#cultivars.diagnostics.cointegration.JohansenRankTest.trace_statistic" title="cultivars.diagnostics.cointegration.JohansenRankTest.trace_statistic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trace_statistic</span></code></a></p></td>
-<td><p>One entry per null <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">&lt;=</span> <span class="pre">r</span></code>, for <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">...,</span> <span class="pre">k</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p></td>
+<td><p>One entry per null <span class="math notranslate nohighlight">\(\operatorname{rank} \le r\)</span>, for <span class="math notranslate nohighlight">\(r = 0, \ldots, k - 1\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.diagnostics.cointegration.JohansenRankTest.max_eigenvalue_statistic.html#cultivars.diagnostics.cointegration.JohansenRankTest.max_eigenvalue_statistic" title="cultivars.diagnostics.cointegration.JohansenRankTest.max_eigenvalue_statistic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_eigenvalue_statistic</span></code></a></p></td>
-<td><p>One entry per null <code class="docutils literal notranslate"><span class="pre">rank</span> <span class="pre">=</span> <span class="pre">r</span></code>.</p></td>
+<td><p>One entry per null <span class="math notranslate nohighlight">\(\operatorname{rank} = r\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.diagnostics.cointegration.JohansenRankTest.trace_pvalue.html#cultivars.diagnostics.cointegration.JohansenRankTest.trace_pvalue" title="cultivars.diagnostics.cointegration.JohansenRankTest.trace_pvalue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trace_pvalue</span></code></a></p></td>
 <td><p>Empirical p-values from the simulated null.</p></td>
@@ -3152,7 +3184,7 @@ applied to the statistics.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

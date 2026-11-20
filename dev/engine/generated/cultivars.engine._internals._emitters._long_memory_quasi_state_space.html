@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_long_memory_quasi_state_space &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._emitters._long_memory_quasi_state_space.40c4e5a0-ff05-40a6-8bdc-cd94dd068376.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._emitters._long_memory_quasi_state_space.0292dc14-84bf-49b0-bafe-d05ad90efc19.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._emitters._long_memory_quasi_state_space';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5518,17 +5520,17 @@
 <h1>_long_memory_quasi_state_space<a class="headerlink" href="#long-memory-quasi-state-space" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="cultivars.engine._internals._emitters._long_memory_quasi_state_space">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._emitters.</span></span><span class="sig-name descname"><span class="pre">_long_memory_quasi_state_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_emitters.py#L478-L527"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._emitters._long_memory_quasi_state_space" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._emitters.</span></span><span class="sig-name descname"><span class="pre">_long_memory_quasi_state_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_emitters.py#L484-L533"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._emitters._long_memory_quasi_state_space" title="Link to this definition">#</a></dt>
 <dd><p>The linearized long-memory SV model as a truncated AR(inf) state space.</p>
-<p><code class="docutils literal notranslate"><span class="pre">log((y_t</span> <span class="pre">-</span> <span class="pre">c)**2)</span> <span class="pre">=</span> <span class="pre">mu</span> <span class="pre">+</span> <span class="pre">E[log</span> <span class="pre">eps**2]</span> <span class="pre">+</span> <span class="pre">v_t</span> <span class="pre">+</span> <span class="pre">xi_t</span></code> with <code class="docutils literal notranslate"><span class="pre">v_t</span></code>
+<p><span class="math notranslate nohighlight">\(\log (y_t - c)^2 = \mu + \mathbb{E}[\log \varepsilon^2] + v_t + \xi_t\)</span> with <span class="math notranslate nohighlight">\(v_t\)</span>
 ARFIMA(1, d, 0). The fractional operator has no finite state
-representation, so <code class="docutils literal notranslate"><span class="pre">v_t</span></code> is written in its autoregressive form
-<code class="docutils literal notranslate"><span class="pre">v_t</span> <span class="pre">=</span> <span class="pre">sum_j</span> <span class="pre">pi_j</span> <span class="pre">v_{t-j}</span> <span class="pre">+</span> <span class="pre">eta_t</span></code> and cut at <code class="docutils literal notranslate"><span class="pre">truncation</span></code> lags: a
+representation, so <span class="math notranslate nohighlight">\(v_t\)</span> is written in its autoregressive form
+<span class="math notranslate nohighlight">\(v_t = \sum_j \pi_j v_{t-j} + \eta_t\)</span> and cut at <code class="docutils literal notranslate"><span class="pre">truncation</span></code> lags: a
 companion system of that dimension on the linear substrate, exact for
 the truncated law and an approximation of the long-memory one whose
 error decays like <code class="docutils literal notranslate"><span class="pre">truncation**(-d)</span></code>. The initial state covariance is
 the truncated law’s stationary covariance. Both the truncation and the
-<code class="docutils literal notranslate"><span class="pre">pi**2</span> <span class="pre">/</span> <span class="pre">2</span></code> measurement floor are the linearization’s, so what the
+<span class="math notranslate nohighlight">\(\pi^2 / 2\)</span> measurement floor are the linearization’s, so what the
 Kalman filter returns on this system is a truncated quasi-likelihood.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -5775,7 +5777,7 @@ Kalman filter returns on this system is a truncated quasi-likelihood.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

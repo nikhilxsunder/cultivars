@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_NelsonSiegelParameters &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._NelsonSiegelParameters.41988e56-83b8-4f5e-add5-81d0d91ef852.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._NelsonSiegelParameters.33b13f5a-34c3-4c70-a075-317c63af48cc.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._parameters._NelsonSiegelParameters';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,13 +5522,32 @@
 <h1>_NelsonSiegelParameters<a class="headerlink" href="#nelsonsiegelparameters" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._parameters._NelsonSiegelParameters">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_NelsonSiegelParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">decay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_chol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_var</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L249-L272"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._NelsonSiegelParameters" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_NelsonSiegelParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">decay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_chol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_var</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L412-L466"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._NelsonSiegelParameters" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The parameter record of the dynamic Nelson-Siegel state space.</p>
+<p>The yield at maturity <span class="math notranslate nohighlight">\(\tau\)</span> loads on three latent factors, level,
+slope and curvature,</p>
+<div class="math notranslate nohighlight">
+\[y_t(\tau) = L_t + S_t\, \frac{1 - e^{-\lambda \tau}}{\lambda \tau}
++ C_t \left( \frac{1 - e^{-\lambda \tau}}{\lambda \tau} - e^{-\lambda \tau} \right)
++ e_t(\tau),\]</div>
+<p>and the factor vector <span class="math notranslate nohighlight">\(f_t = (L_t, S_t, C_t)^\top\)</span> follows a first-order
+autoregression with a diagonal coefficient matrix,</p>
+<div class="math notranslate nohighlight">
+\[f_{t+1} - \mu = A\, (f_t - \mu) + \eta_{t+1},
+\qquad \eta_t \sim \mathcal{N}(0, C C^\top).\]</div>
+<p><a class="reference internal" href="cultivars.engine._internals._parameters._NelsonSiegelParameters.decay.html#cultivars.engine._internals._parameters._NelsonSiegelParameters.decay" title="cultivars.engine._internals._parameters._NelsonSiegelParameters.decay"><code class="xref py py-attr docutils literal notranslate"><span class="pre">decay</span></code></a> is <span class="math notranslate nohighlight">\(\lambda\)</span>, <a class="reference internal" href="cultivars.engine._internals._parameters._NelsonSiegelParameters.mu.html#cultivars.engine._internals._parameters._NelsonSiegelParameters.mu" title="cultivars.engine._internals._parameters._NelsonSiegelParameters.mu"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mu</span></code></a> is <span class="math notranslate nohighlight">\(\mu\)</span>, <a class="reference internal" href="cultivars.engine._internals._parameters._NelsonSiegelParameters.ar.html#cultivars.engine._internals._parameters._NelsonSiegelParameters.ar" title="cultivars.engine._internals._parameters._NelsonSiegelParameters.ar"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ar</span></code></a> is the
+diagonal of <span class="math notranslate nohighlight">\(A\)</span>, <a class="reference internal" href="cultivars.engine._internals._parameters._NelsonSiegelParameters.state_chol.html#cultivars.engine._internals._parameters._NelsonSiegelParameters.state_chol" title="cultivars.engine._internals._parameters._NelsonSiegelParameters.state_chol"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_chol</span></code></a> is the lower-triangular <span class="math notranslate nohighlight">\(C\)</span>
+and <a class="reference internal" href="cultivars.engine._internals._parameters._NelsonSiegelParameters.obs_var.html#cultivars.engine._internals._parameters._NelsonSiegelParameters.obs_var" title="cultivars.engine._internals._parameters._NelsonSiegelParameters.obs_var"><code class="xref py py-attr docutils literal notranslate"><span class="pre">obs_var</span></code></a> holds the variances of the measurement errors
+<span class="math notranslate nohighlight">\(e_t(\tau)\)</span>, one per maturity and mutually uncorrelated. The loadings
+are evaluated by
+<a class="reference internal" href="cultivars.engine._core._polynomials._nelson_siegel_loadings.html#cultivars.engine._core._polynomials._nelson_siegel_loadings" title="cultivars.engine._core._polynomials._nelson_siegel_loadings"><code class="xref py py-func docutils literal notranslate"><span class="pre">_nelson_siegel_loadings()</span></code></a>.
+<span class="math notranslate nohighlight">\(\lambda\)</span> fixes the maturity at which the curvature loading peaks, so
+it is identified by the shape of the cross-section, not by the dynamics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>decay</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – The loading decay <code class="docutils literal notranslate"><span class="pre">lambda</span></code>, strictly positive.</p></li>
+<li><p><strong>decay</strong> – The loading decay <span class="math notranslate nohighlight">\(\lambda\)</span>, strictly positive.</p></li>
 <li><p><strong>mu</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Factor means, shape <code class="docutils literal notranslate"><span class="pre">(3,)</span></code>.</p></li>
 <li><p><strong>ar</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Diagonal factor persistences, shape <code class="docutils literal notranslate"><span class="pre">(3,)</span></code>, each in
 <code class="docutils literal notranslate"><span class="pre">(-1,</span> <span class="pre">1)</span></code>.</p></li>
@@ -5536,6 +5557,14 @@ covariance, shape <code class="docutils literal notranslate"><span class="pre">(
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="cultivars.engine._internals._objectives._NelsonSiegelObjective.unpack.html#cultivars.engine._internals._objectives._NelsonSiegelObjective.unpack" title="cultivars.engine._internals._objectives._NelsonSiegelObjective.unpack"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_NelsonSiegelObjective.unpack()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._fits._NelsonSiegelFit.params.html#cultivars.engine._internals._fits._NelsonSiegelFit.params" title="cultivars.engine._internals._fits._NelsonSiegelFit.params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">_NelsonSiegelFit.params</span></code></a> – holds an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._objectives._DecayNelsonSiegelObjective.warm.html#cultivars.engine._internals._objectives._DecayNelsonSiegelObjective.warm" title="cultivars.engine._internals._objectives._DecayNelsonSiegelObjective.warm"><code class="xref py py-attr docutils literal notranslate"><span class="pre">_DecayNelsonSiegelObjective.warm</span></code></a> – holds an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5543,7 +5572,7 @@ covariance, shape <code class="docutils literal notranslate"><span class="pre">(
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._parameters._NelsonSiegelParameters.decay.html#cultivars.engine._internals._parameters._NelsonSiegelParameters.decay" title="cultivars.engine._internals._parameters._NelsonSiegelParameters.decay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decay</span></code></a></p></td>
-<td><p>The loading decay <code class="docutils literal notranslate"><span class="pre">lambda</span></code>, strictly positive.</p></td>
+<td><p>The loading decay <span class="math notranslate nohighlight">\(\lambda\)</span>, strictly positive.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._parameters._NelsonSiegelParameters.mu.html#cultivars.engine._internals._parameters._NelsonSiegelParameters.mu" title="cultivars.engine._internals._parameters._NelsonSiegelParameters.mu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mu</span></code></a></p></td>
 <td><p>Means of the level, slope, and curvature factors, <code class="docutils literal notranslate"><span class="pre">(3,)</span></code>.</p></td>
@@ -5788,7 +5817,7 @@ covariance, shape <code class="docutils literal notranslate"><span class="pre">(
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

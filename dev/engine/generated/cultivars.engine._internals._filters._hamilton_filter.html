@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_hamilton_filter &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._filters._hamilton_filter.8ba2a4a4-d519-46e3-a934-016153ccbbcc.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._filters._hamilton_filter.fdf1333d-14e0-4533-999d-762e542970e2.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._filters._hamilton_filter';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5518,7 +5520,7 @@
 <h1>_hamilton_filter<a class="headerlink" href="#hamilton-filter" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="cultivars.engine._internals._filters._hamilton_filter">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._filters.</span></span><span class="sig-name descname"><span class="pre">_hamilton_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_conditional_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transition</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_filters.py#L60-L147"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._filters._hamilton_filter" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._filters.</span></span><span class="sig-name descname"><span class="pre">_hamilton_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_conditional_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transition</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_filters.py#L75-L162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._filters._hamilton_filter" title="Link to this definition">#</a></dt>
 <dd><p>Run the Hamilton forward filter over a discrete regime chain.</p>
 <p>At each period the filter predicts the regime distribution one step forward
 through <code class="docutils literal notranslate"><span class="pre">transition</span></code>, weights it by the per-regime conditional densities,
@@ -5529,26 +5531,26 @@ log-sum-exp for numerical stability.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>log_conditional_density</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayLike</span></code></a></span>) – Log conditional densities
-<code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">Pr(y_t</span> <span class="pre">|</span> <span class="pre">S_t</span> <span class="pre">=</span> <span class="pre">j,</span> <span class="pre">past)</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>. <code class="docutils literal notranslate"><span class="pre">-inf</span></code> entries
+<span class="math notranslate nohighlight">\(\log \Pr(y_t \mid S_t = j, \text{past})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>. <code class="docutils literal notranslate"><span class="pre">-inf</span></code> entries
 (a regime that assigns zero density) are permitted as long as some
 regime is finite at every period. <code class="docutils literal notranslate"><span class="pre">+inf</span></code> is not: it is
 reported with the same error as a period in which every density
 vanished.</p></li>
 <li><p><strong>transition</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayLike</span></code></a></span>) – Row-stochastic <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">K)</span></code> transition matrix.</p></li>
-<li><p><strong>initial_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayLike</span></code></a> | <span class="highlight sphinx_autodoc_typehints-value"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="kc"><span class="pre">None</span></span></code></a></span></span>) – Optional initial regime distribution <code class="docutils literal notranslate"><span class="pre">Pr(S_1</span> <span class="pre">=</span> <span class="pre">j)</span></code>,
-length <code class="docutils literal notranslate"><span class="pre">K</span></code>. Defaults to the ergodic distribution of <code class="docutils literal notranslate"><span class="pre">transition</span></code>.</p></li>
+<li><p><strong>initial_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayLike</span></code></a> | <span class="highlight sphinx_autodoc_typehints-value"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="kc"><span class="pre">None</span></span></code></a></span></span>) – Optional initial regime distribution <span class="math notranslate nohighlight">\(\Pr(S_1 = j)\)</span>,
+length <span class="math notranslate nohighlight">\(K\)</span>. Defaults to the ergodic distribution of <code class="docutils literal notranslate"><span class="pre">transition</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="cultivars.engine._internals._results._HamiltonFilterResult.html#cultivars.engine._internals._results._HamiltonFilterResult" title="cultivars.engine._internals._results._HamiltonFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_HamiltonFilterResult</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">_HamiltonFilterResult</span></code>.</p>
+<dd class="field-odd"><p>A <a class="reference internal" href="cultivars.engine._internals._results._HamiltonFilterResult.html#cultivars.engine._internals._results._HamiltonFilterResult" title="cultivars.engine._internals._results._HamiltonFilterResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_HamiltonFilterResult</span></code></a>.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><strong>DimensionError</strong></a> – If shapes are inconsistent.</p></li>
-<li><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><strong>SpecificationError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">initial_prob</span></code> is not a length-<code class="docutils literal notranslate"><span class="pre">K</span></code> distribution.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><strong>SpecificationError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">initial_prob</span></code> is not a length-<span class="math notranslate nohighlight">\(K\)</span> distribution.</p></li>
 <li><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><strong>NumericalError</strong></a> – If every regime density vanishes at some period, or a
     non-finite (NaN) density is supplied.</p></li>
 </ul>
@@ -5793,7 +5795,7 @@ length <code class="docutils literal notranslate"><span class="pre">K</span></co
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

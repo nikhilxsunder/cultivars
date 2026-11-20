@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>ParticleSmootherResult &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.state_space.nonlinear.ParticleSmootherResult.305bb7e8-1425-4f34-b73d-39685f1fd2db.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.state_space.nonlinear.ParticleSmootherResult.d3e543a6-a50e-4490-9046-ed2b9a407538.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.state_space.nonlinear.ParticleSmootherResult';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5514,7 +5516,7 @@
 <h1>ParticleSmootherResult<a class="headerlink" href="#particlesmootherresult" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.state_space.nonlinear.</span></span><span class="sig-name descname"><span class="pre">ParticleSmootherResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_state_std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L2028-L2049"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.state_space.nonlinear.</span></span><span class="sig-name descname"><span class="pre">ParticleSmootherResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_state_std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L2203-L2231"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._results._SmootherResult.html#cultivars.engine._internals._results._SmootherResult" title="cultivars.engine._internals._results._SmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_SmootherResult</span></code></a></p>
 <p>Output of a forward-filtering backward-smoothing particle pass.</p>
 <p>As with the particle filter, the state distribution is carried as
@@ -5523,7 +5525,7 @@ intermediates and are not retained.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>smoothed_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Smoothed cloud means <code class="docutils literal notranslate"><span class="pre">E[alpha_t</span> <span class="pre">|</span> <span class="pre">y_{1..n}]</span></code>,
+<li><p><strong>smoothed_state</strong> – Smoothed cloud means <span class="math notranslate nohighlight">\(\mathbb{E}[\alpha_t \mid y_{1:n}]\)</span>,
 shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
 <li><p><strong>smoothed_state_std</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Per-component smoothed cloud standard
 deviations, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>.</p></li>
@@ -5531,6 +5533,16 @@ deviations, shape <code class="docutils literal notranslate"><span class="pre">(
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.nonlinear.ParticleSmootherResult.html#cultivars.state_space.nonlinear.ParticleSmootherResult" title="cultivars.state_space.nonlinear.ParticleSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleSmootherResult</span></code></a> –
+the public name of this class.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother.html#cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother" title="cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NonlinearSSM.particle_smoother()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._substrates._NonlinearStateSpace.particle_smoother.html#cultivars.engine._internals._substrates._NonlinearStateSpace.particle_smoother" title="cultivars.engine._internals._substrates._NonlinearStateSpace.particle_smoother"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_NonlinearStateSpace.particle_smoother()</span></code></a> – returns an
+instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 </section>
@@ -5741,7 +5753,7 @@ deviations, shape <code class="docutils literal notranslate"><span class="pre">(
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

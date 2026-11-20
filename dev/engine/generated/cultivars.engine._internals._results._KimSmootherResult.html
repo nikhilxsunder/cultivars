@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_KimSmootherResult &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._results._KimSmootherResult.60274543-2d8a-4d7a-936d-c7e9d631b83c.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._results._KimSmootherResult.50f24854-96d7-4382-9c48-96b982d7a5cf.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._results._KimSmootherResult';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,21 +5522,44 @@
 <h1>_KimSmootherResult<a class="headerlink" href="#kimsmootherresult" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._results._KimSmootherResult">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._results.</span></span><span class="sig-name descname"><span class="pre">_KimSmootherResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_joint_prob</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L279-L298"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._results._KimSmootherResult" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._results.</span></span><span class="sig-name descname"><span class="pre">_KimSmootherResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothed_joint_prob</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_results.py#L380-L423"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._results._KimSmootherResult" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._results._SmootherResult.html#cultivars.engine._internals._results._SmootherResult" title="cultivars.engine._internals._results._SmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_SmootherResult</span></code></a></p>
 <p>Output of the Kim backward smoother.</p>
+<p>The backward pass turns the filtered probabilities into probabilities given
+the whole sample. With <span class="math notranslate nohighlight">\(\xi_{t \mid T}(j) = \Pr(S_t = j \mid y_{1:T})\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\Pr(S_t = i, S_{t+1} = j \mid y_{1:T})
+= \xi_{t \mid t}(i)\, P_{ij}\, \frac{\xi_{t+1 \mid T}(j)}{\xi_{t+1 \mid t}(j)},
+\qquad
+\xi_{t \mid T}(i) = \sum_{j=1}^{K} \Pr(S_t = i, S_{t+1} = j \mid y_{1:T}),\]</div>
+<p>started from <span class="math notranslate nohighlight">\(\xi_{T \mid T}\)</span>, the last filtered vector.
+<a class="reference internal" href="cultivars.engine._internals._results._KimSmootherResult.smoothed_prob.html#cultivars.engine._internals._results._KimSmootherResult.smoothed_prob" title="cultivars.engine._internals._results._KimSmootherResult.smoothed_prob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">smoothed_prob</span></code></a> holds the marginals and <a class="reference internal" href="cultivars.engine._internals._results._KimSmootherResult.smoothed_joint_prob.html#cultivars.engine._internals._results._KimSmootherResult.smoothed_joint_prob" title="cultivars.engine._internals._results._KimSmootherResult.smoothed_joint_prob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">smoothed_joint_prob</span></code></a> the
+pairwise terms. The joint terms are what an EM step needs: their sum over
+<span class="math notranslate nohighlight">\(t\)</span> is the expected number of <span class="math notranslate nohighlight">\(i \to j\)</span> transitions, which is the
+sufficient statistic for the transition matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>smoothed_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Full-sample regime probabilities
-<code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..T})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></li>
+<span class="math notranslate nohighlight">\(\Pr(S_t = j \mid y_{1:T})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></li>
 <li><p><strong>smoothed_joint_prob</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – Consecutive-pair probabilities
-<code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">i,</span> <span class="pre">S_{t+1}</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..T})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T</span> <span class="pre">-</span> <span class="pre">1,</span> <span class="pre">K,</span> <span class="pre">K)</span></code>;
-entry <code class="docutils literal notranslate"><span class="pre">[t]</span></code> links period <code class="docutils literal notranslate"><span class="pre">t</span></code> to <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">+</span> <span class="pre">1</span></code>. Empty when <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">==</span> <span class="pre">1</span></code>.
+<span class="math notranslate nohighlight">\(\Pr(S_t = i, S_{t+1} = j \mid y_{1:T})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T</span> <span class="pre">-</span> <span class="pre">1,</span> <span class="pre">K,</span> <span class="pre">K)</span></code>;
+entry <code class="docutils literal notranslate"><span class="pre">[t]</span></code> links period <span class="math notranslate nohighlight">\(t\)</span> to <span class="math notranslate nohighlight">\(t + 1\)</span>. Empty when <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">==</span> <span class="pre">1</span></code>.
 These are the expected-transition weights of the EM M-step.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.KimSmootherResult.html#cultivars.state_space.regime_switching.KimSmootherResult" title="cultivars.state_space.regime_switching.KimSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">KimSmootherResult</span></code></a> –
+the public name of this class.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.MarkovSwitchingSSM.smooth.html#cultivars.state_space.regime_switching.MarkovSwitchingSSM.smooth" title="cultivars.state_space.regime_switching.MarkovSwitchingSSM.smooth"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MarkovSwitchingSSM.smooth()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.MarkovSwitchingSSM.smooth_densities.html#cultivars.state_space.regime_switching.MarkovSwitchingSSM.smooth_densities" title="cultivars.state_space.regime_switching.MarkovSwitchingSSM.smooth_densities"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MarkovSwitchingSSM.smooth_densities()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.smooth.html#cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.smooth" title="cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM.smooth"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM.smooth()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._smoothers._kim_smoother.html#cultivars.engine._internals._smoothers._kim_smoother" title="cultivars.engine._internals._smoothers._kim_smoother"><code class="xref py py-func docutils literal notranslate"><span class="pre">_kim_smoother()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5542,10 +5567,10 @@ These are the expected-transition weights of the EM M-step.</p></li>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._results._KimSmootherResult.smoothed_prob.html#cultivars.engine._internals._results._KimSmootherResult.smoothed_prob" title="cultivars.engine._internals._results._KimSmootherResult.smoothed_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smoothed_prob</span></code></a></p></td>
-<td><p>Full-sample regime probabilities <code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..T})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></td>
+<td><p>Full-sample regime probabilities <span class="math notranslate nohighlight">\(\Pr(S_t = j \mid y_{1:T})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">K)</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._results._KimSmootherResult.smoothed_joint_prob.html#cultivars.engine._internals._results._KimSmootherResult.smoothed_joint_prob" title="cultivars.engine._internals._results._KimSmootherResult.smoothed_joint_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smoothed_joint_prob</span></code></a></p></td>
-<td><p>Consecutive-pair probabilities <code class="docutils literal notranslate"><span class="pre">Pr(S_t</span> <span class="pre">=</span> <span class="pre">i,</span> <span class="pre">S_{t+1}</span> <span class="pre">=</span> <span class="pre">j</span> <span class="pre">|</span> <span class="pre">y_{1..T})</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(T</span> <span class="pre">-</span> <span class="pre">1,</span> <span class="pre">K,</span> <span class="pre">K)</span></code>; entry <code class="docutils literal notranslate"><span class="pre">[t]</span></code> links period <code class="docutils literal notranslate"><span class="pre">t</span></code> to <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">+</span> <span class="pre">1</span></code>.</p></td>
+<td><p>Consecutive-pair probabilities <span class="math notranslate nohighlight">\(\Pr(S_t = i, S_{t+1} = j \mid y_{1:T})\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(T</span> <span class="pre">-</span> <span class="pre">1,</span> <span class="pre">K,</span> <span class="pre">K)</span></code>; entry <code class="docutils literal notranslate"><span class="pre">[t]</span></code> links period <span class="math notranslate nohighlight">\(t\)</span> to <span class="math notranslate nohighlight">\(t + 1\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -5778,7 +5803,7 @@ These are the expected-transition weights of the EM M-step.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

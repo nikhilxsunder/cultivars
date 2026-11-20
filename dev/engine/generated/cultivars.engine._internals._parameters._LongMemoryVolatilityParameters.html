@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_LongMemoryVolatilityParameters &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._LongMemoryVolatilityParameters.ca866964-a967-4607-9050-49ce59b043e7.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._parameters._LongMemoryVolatilityParameters.e70ab30e-0cde-4b0d-8ad2-947ff8bfb255.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._parameters._LongMemoryVolatilityParameters';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,13 +5522,13 @@
 <h1>_LongMemoryVolatilityParameters<a class="headerlink" href="#longmemoryvolatilityparameters" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._parameters._LongMemoryVolatilityParameters">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_LongMemoryVolatilityParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L413-L440"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._LongMemoryVolatilityParameters" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._parameters.</span></span><span class="sig-name descname"><span class="pre">_LongMemoryVolatilityParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_parameters.py#L616-L647"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._parameters._LongMemoryVolatilityParameters" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The parameter record of the long-memory stochastic-volatility model.</p>
-<p>The log variance is <code class="docutils literal notranslate"><span class="pre">h_t</span> <span class="pre">=</span> <span class="pre">mu</span> <span class="pre">+</span> <span class="pre">v_t</span></code> with <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">phi</span> <span class="pre">L)(1</span> <span class="pre">-</span> <span class="pre">L)**d</span> <span class="pre">v_t</span> <span class="pre">=</span>
+<p>The log variance is <span class="math notranslate nohighlight">\(h_t = \mu + v_t\)</span> with <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">phi</span> <span class="pre">L)(1</span> <span class="pre">-</span> <span class="pre">L)**d</span> <span class="pre">v_t</span> <span class="pre">=</span>
 <span class="pre">eta_t</span></code>, an ARFIMA(1, d, 0) whose fractional order <code class="docutils literal notranslate"><span class="pre">d</span></code> in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0.5)</span></code>
 is what makes volatility shocks decay hyperbolically rather than
-geometrically; the observation is <code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">c</span> <span class="pre">+</span> <span class="pre">exp(h_t</span> <span class="pre">/</span> <span class="pre">2)</span> <span class="pre">eps_t</span></code>.</p>
+geometrically; the observation is <span class="math notranslate nohighlight">\(y_t = c + \exp(h_t / 2)\, \varepsilon_t\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5539,6 +5541,13 @@ geometrically; the observation is <code class="docutils literal notranslate"><sp
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="cultivars.engine._internals._objectives._WhittleVolatilityObjective.unpack.html#cultivars.engine._internals._objectives._WhittleVolatilityObjective.unpack" title="cultivars.engine._internals._objectives._WhittleVolatilityObjective.unpack"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_WhittleVolatilityObjective.unpack()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="cultivars.engine._internals._fits._LongMemoryVolatilityFit.params.html#cultivars.engine._internals._fits._LongMemoryVolatilityFit.params" title="cultivars.engine._internals._fits._LongMemoryVolatilityFit.params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">_LongMemoryVolatilityFit.params</span></code></a> – holds an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5791,7 +5800,7 @@ geometrically; the observation is <code class="docutils literal notranslate"><sp
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

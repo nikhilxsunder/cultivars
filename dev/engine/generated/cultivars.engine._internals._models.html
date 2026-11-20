@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>cultivars.engine._internals._models &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models.20ad7c54-f996-4a49-b468-dafa26f665e7.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models.b0455583-4630-4ae9-a674-72663275b7e2.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._models';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5518,10 +5520,11 @@
 <p>Protected base classes for model specifications and fitted results.</p>
 <p>Two hierarchies live here, and they are deliberately separate.</p>
 <p>Results inherit a single linear chain of <em>field</em> bases – <code class="docutils literal notranslate"><span class="pre">_Result</span></code> then
-<code class="docutils literal notranslate"><span class="pre">_MeanResult</span></code> – because multiple slotted dataclass bases that each declare
-fields raise <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">multiple</span> <span class="pre">bases</span> <span class="pre">have</span> <span class="pre">instance</span> <span class="pre">lay-out</span> <span class="pre">conflict</span></code>.
-Anything optional is a <em>behavior</em> mixin with <code class="docutils literal notranslate"><span class="pre">__slots__</span> <span class="pre">=</span> <span class="pre">()</span></code> and no fields
-of its own; the concrete result declares the attribute the mixin reads.</p>
+<a class="reference internal" href="cultivars.engine._internals._results._MeanResult.html#cultivars.engine._internals._results._MeanResult" title="cultivars.engine._internals._results._MeanResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_MeanResult</span></code></a> – because multiple
+slotted dataclass bases that each declare fields raise
+<code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">multiple</span> <span class="pre">bases</span> <span class="pre">have</span> <span class="pre">instance</span> <span class="pre">lay-out</span> <span class="pre">conflict</span></code>. Anything optional
+is a <em>behavior</em> mixin with <code class="docutils literal notranslate"><span class="pre">__slots__</span> <span class="pre">=</span> <span class="pre">()</span></code> and no fields of its own; the
+concrete result declares the attribute the mixin reads.</p>
 <p>Model specifications inherit <code class="docutils literal notranslate"><span class="pre">_ModelBase</span></code>, which owns <code class="docutils literal notranslate"><span class="pre">endog</span></code> validation
 and the length check. Every family base in this subpackage descends from it,
 so no public constructor re-implements either.</p>
@@ -5543,7 +5546,7 @@ duck-typed, so the relationship is checked by <code class="docutils literal notr
 <td><p>Specification surface for the autoregressive family.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._models._BaseModel.html#cultivars.engine._internals._models._BaseModel" title="cultivars.engine._internals._models._BaseModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseModel</span></code></a></p></td>
-<td><p>Root of every model specification, fitting to a result of type <code class="docutils literal notranslate"><span class="pre">R</span></code>.</p></td>
+<td><p>Root of every model specification, fitting to a result of type <span class="math notranslate nohighlight">\(R\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._models._BayesianVectorAutoRegressionModel.html#cultivars.engine._internals._models._BayesianVectorAutoRegressionModel" title="cultivars.engine._internals._models._BayesianVectorAutoRegressionModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BayesianVectorAutoRegressionModel</span></code></a></p></td>
 <td><p>Estimation engine of the conjugate Normal-inverse-Wishart VAR.</p></td>
@@ -5892,7 +5895,7 @@ duck-typed, so the relationship is checked by <code class="docutils literal notr
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

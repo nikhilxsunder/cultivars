@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_ModelConfidenceSetSelection &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._selections._ModelConfidenceSetSelection.90cbd0ed-07dd-4bc6-9751-612442e87f1a.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._selections._ModelConfidenceSetSelection.00c80c2a-4691-47b7-8fe3-d5a180ce650a.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._selections._ModelConfidenceSetSelection';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,11 +5522,11 @@
 <h1>_ModelConfidenceSetSelection<a class="headerlink" href="#modelconfidencesetselection" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._selections._ModelConfidenceSetSelection">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._selections.</span></span><span class="sig-name descname"><span class="pre">_ModelConfidenceSetSelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pvalues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_losses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elimination_order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bootstrap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_selections.py#L602-L735"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._selections._ModelConfidenceSetSelection" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._selections.</span></span><span class="sig-name descname"><span class="pre">_ModelConfidenceSetSelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pvalues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_losses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elimination_order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bootstrap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_selections.py#L625-L764"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._selections._ModelConfidenceSetSelection" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The model confidence set: the forecasters not shown to be worse than the best.</p>
 <p>Hansen, Lunde and Nason (2011): a set that contains the best model
-with probability at least <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">alpha</span></code>, reached by eliminating the
+with probability at least <span class="math notranslate nohighlight">\(1 - \alpha\)</span>, reached by eliminating the
 worst model while the equivalence of the remaining ones is rejected.
 Like a confidence interval it is honest about what the data can and
 cannot separate: a short or noisy evaluation window keeps many models,
@@ -5546,6 +5548,14 @@ survivor.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.forecast.confidence_set.ModelConfidenceSetSelection.html#cultivars.forecast.confidence_set.ModelConfidenceSetSelection" title="cultivars.forecast.confidence_set.ModelConfidenceSetSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelConfidenceSetSelection</span></code></a>
+– the public name of this class.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.forecast.confidence_set.model_confidence_set.html#cultivars.forecast.confidence_set.model_confidence_set" title="cultivars.forecast.confidence_set.model_confidence_set"><code class="xref py py-func docutils literal notranslate"><span class="pre">model_confidence_set()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5565,7 +5575,7 @@ survivor.</p></li>
 <td><p>Model indices from the first eliminated to the survivor.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._selections._ModelConfidenceSetSelection.alpha.html#cultivars.engine._internals._selections._ModelConfidenceSetSelection.alpha" title="cultivars.engine._internals._selections._ModelConfidenceSetSelection.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a></p></td>
-<td><p>Level of the set; it contains the best model with probability at least <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">alpha</span></code>.</p></td>
+<td><p>Level of the set; it contains the best model with probability at least <span class="math notranslate nohighlight">\(1 - \alpha\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._selections._ModelConfidenceSetSelection.statistic.html#cultivars.engine._internals._selections._ModelConfidenceSetSelection.statistic" title="cultivars.engine._internals._selections._ModelConfidenceSetSelection.statistic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">statistic</span></code></a></p></td>
 <td><p>Equivalence statistic used, <code class="docutils literal notranslate"><span class="pre">&quot;range&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>.</p></td>
@@ -5834,7 +5844,7 @@ survivor.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

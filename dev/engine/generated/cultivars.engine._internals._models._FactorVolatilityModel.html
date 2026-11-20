@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_FactorVolatilityModel &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models._FactorVolatilityModel.7fea8cae-9401-445f-9caf-0ca4fc858c1d.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models._FactorVolatilityModel.3ce9f1f2-4928-4087-a552-eddf4abe8c2f.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._models._FactorVolatilityModel';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,23 +5522,23 @@
 <h1>_FactorVolatilityModel<a class="headerlink" href="#factorvolatilitymodel" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._models._FactorVolatilityModel">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._models.</span></span><span class="sig-name descname"><span class="pre">_FactorVolatilityModel</span></span><span class="sig-paren">[</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">]</span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">panel</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_models.py#L7923-L8170"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._models._FactorVolatilityModel" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._models.</span></span><span class="sig-name descname"><span class="pre">_FactorVolatilityModel</span></span><span class="sig-paren">[</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">]</span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">panel</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_factors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_models.py#L7941-L8188"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._models._FactorVolatilityModel" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="docutils literal notranslate"><span class="pre">R</span></code>]</p>
 <p>Estimation engine of the factor stochastic-volatility model.</p>
-<p><code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">Lambda</span> <span class="pre">f_t</span> <span class="pre">+</span> <span class="pre">eps_t</span></code> with every factor and every idiosyncratic
+<p><span class="math notranslate nohighlight">\(y_t = \Lambda f_t + \varepsilon_t\)</span> with every factor and every idiosyncratic
 error carrying its own log-AR(1) variance (Pitt and Shephard 1999;
 Chib, Nardari, and Shephard 2006): the covariance matrix of a wide
-panel moves every period through <code class="docutils literal notranslate"><span class="pre">r</span></code> common volatilities and <code class="docutils literal notranslate"><span class="pre">k</span></code>
-private ones, <code class="docutils literal notranslate"><span class="pre">Lambda</span> <span class="pre">H_t</span> <span class="pre">Lambda'</span> <span class="pre">+</span> <span class="pre">D_t</span></code>, which is what makes the
+panel moves every period through <span class="math notranslate nohighlight">\(r\)</span> common volatilities and <span class="math notranslate nohighlight">\(k\)</span>
+private ones, <span class="math notranslate nohighlight">\(\Lambda H_t \Lambda^\top + D_t\)</span>, which is what makes the
 model tractable where a multivariate GARCH of the same dimension is
-not. Identification is by the triangular convention – <code class="docutils literal notranslate"><span class="pre">Lambda</span></code> is
-lower triangular with a unit diagonal in its leading <code class="docutils literal notranslate"><span class="pre">r</span></code> rows, so
-factor <code class="docutils literal notranslate"><span class="pre">j</span></code> is scaled and signed by series <code class="docutils literal notranslate"><span class="pre">j</span></code> – and the factor
+not. Identification is by the triangular convention – <span class="math notranslate nohighlight">\(\Lambda\)</span> is
+lower triangular with a unit diagonal in its leading <span class="math notranslate nohighlight">\(r\)</span> rows, so
+factor <span class="math notranslate nohighlight">\(j\)</span> is scaled and signed by series <span class="math notranslate nohighlight">\(j\)</span> – and the factor
 log-variance levels are free.</p>
 <p>The Gibbs sampler alternates four exact blocks: the factors, one
 Gaussian per period given everything else; the free loadings, one
-weighted regression per row; the <code class="docutils literal notranslate"><span class="pre">k</span></code> idiosyncratic paths and the
-<code class="docutils literal notranslate"><span class="pre">r</span></code> factor paths by the Kim-Shephard-Chib mixture step; and every
+weighted regression per row; the <span class="math notranslate nohighlight">\(k\)</span> idiosyncratic paths and the
+<span class="math notranslate nohighlight">\(r\)</span> factor paths by the Kim-Shephard-Chib mixture step; and every
 path’s <code class="docutils literal notranslate"><span class="pre">(mu,</span> <span class="pre">phi,</span> <span class="pre">sigma2)</span></code> from their conditionals. Kastner,
 Fruehwirth-Schnatter, and Lopes (2017) show that interweaving the
 loading and factor-scale updates speeds mixing; that is not done here,
@@ -5545,7 +5547,7 @@ and the draws should be thinned accordingly.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>panel</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayLike</span></code></a></span>) – The observed <code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k)</span></code> panel; wide is welcome.</p></li>
-<li><p><strong>n_factors</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Factor count, at least one and below <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>n_factors</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Factor count, at least one and below <span class="math notranslate nohighlight">\(k\)</span>.</p></li>
 <li><p><strong>series_names</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <span class="highlight sphinx_autodoc_typehints-value"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="kc"><span class="pre">None</span></span></code></a></span></span>) – One label per series. Defaults to <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">...</span> <span class="pre">xk</span></code>.</p></li>
 </ul>
 </dd>
@@ -5827,7 +5829,7 @@ and the draws should be thinned accordingly.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

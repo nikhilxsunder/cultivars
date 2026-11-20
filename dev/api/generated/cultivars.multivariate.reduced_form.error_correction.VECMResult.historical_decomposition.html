@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>VECMResult.historical_decomposition &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.historical_decomposition.f4a2ecd2-a617-47c0-abcc-38f4e72b09dd.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.historical_decomposition.0f2a1c8e-13a0-4408-8838-2719b09ab5c7.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.multivariate.reduced_form.error_correction.VECMResult.historical_decomposition';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -2840,7 +2842,7 @@
 <h1>VECMResult.historical_decomposition<a class="headerlink" href="#vecmresult-historical-decomposition" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.multivariate.reduced_form.error_correction.VECMResult.historical_decomposition">
-<span class="sig-prename descclassname"><span class="pre">VECMResult.</span></span><span class="sig-name descname"><span class="pre">historical_decomposition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L1342-L1364"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.reduced_form.error_correction.VECMResult.historical_decomposition" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">VECMResult.</span></span><span class="sig-name descname"><span class="pre">historical_decomposition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L1375-L1397"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.reduced_form.error_correction.VECMResult.historical_decomposition" title="Link to this definition">#</a></dt>
 <dd><p>Attribute each observation to the shocks that produced it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -2848,8 +2850,8 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An array of shape <code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> whose entry <code class="docutils literal notranslate"><span class="pre">[t,</span> <span class="pre">i,</span> <span class="pre">j]</span></code> is
-shock <code class="docutils literal notranslate"><span class="pre">j</span></code>’s cumulative contribution to variable <code class="docutils literal notranslate"><span class="pre">i</span></code> at time
-<code class="docutils literal notranslate"><span class="pre">t</span></code>. Summing over <code class="docutils literal notranslate"><span class="pre">j</span></code> recovers the <em>stochastic</em> component of
+shock <span class="math notranslate nohighlight">\(j\)</span>’s cumulative contribution to variable <span class="math notranslate nohighlight">\(i\)</span> at time
+<span class="math notranslate nohighlight">\(t\)</span>. Summing over <span class="math notranslate nohighlight">\(j\)</span> recovers the <em>stochastic</em> component of
 the path, not the observed series: the deterministic terms and the
 influence of pre-sample initial conditions are excluded by
 construction, since neither is attributable to any shock. Add the
@@ -2858,8 +2860,8 @@ deterministic path back before comparing against <code class="docutils literal n
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Costs <code class="docutils literal notranslate"><span class="pre">O(nobs^2)</span></code> moving-average terms, because the contribution
-at <code class="docutils literal notranslate"><span class="pre">t</span></code> sums over every shock up to <code class="docutils literal notranslate"><span class="pre">t</span></code>. Fine for macro samples;
+<p>Costs <span class="math notranslate nohighlight">\(O(\mathrm{nobs}^2)\)</span> moving-average terms, because the contribution
+at <span class="math notranslate nohighlight">\(t\)</span> sums over every shock up to <span class="math notranslate nohighlight">\(t\)</span>. Fine for macro samples;
 noticeable past a few thousand observations.</p>
 </div>
 </dd></dl>
@@ -3090,7 +3092,7 @@ noticeable past a few thousand observations.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

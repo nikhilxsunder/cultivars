@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>cultivars.engine._internals._specifications &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._specifications.38b78c02-bcc8-442a-86f4-999b7ef95c4a.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._specifications.d01e41b3-6c77-4bb4-a4d9-8fd83d334e06.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._specifications';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5522,24 +5524,26 @@ estimated. The user writes the equilibrium conditions, the steady state,
 the shock loading, the measurement equation, and the prior as plain methods
 on a class; the engine differentiates, solves, filters, and samples. The
 protocol is structural, so the class inherits from nothing.</p>
-<p>The solver that consumes a specification is <code class="docutils literal notranslate"><span class="pre">_solve_perturbation</span></code> in
-<code class="docutils literal notranslate"><span class="pre">_solvers</span></code>, the estimation engine is <code class="docutils literal notranslate"><span class="pre">_PerturbationModel</span></code> in
-<code class="docutils literal notranslate"><span class="pre">_models</span></code>, and the public front is
+<p>The solver that consumes a specification is
+<a class="reference internal" href="cultivars.engine._internals._solvers._solve_perturbation.html#cultivars.engine._internals._solvers._solve_perturbation" title="cultivars.engine._internals._solvers._solve_perturbation"><code class="xref py py-func docutils literal notranslate"><span class="pre">_solve_perturbation()</span></code></a> in
+<a class="reference internal" href="cultivars.engine._internals._solvers.html#module-cultivars.engine._internals._solvers" title="cultivars.engine._internals._solvers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_solvers</span></code></a>, the estimation engine is
+<a class="reference internal" href="cultivars.engine._internals._models._PerturbationModel.html#cultivars.engine._internals._models._PerturbationModel" title="cultivars.engine._internals._models._PerturbationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">_PerturbationModel</span></code></a> in
+<a class="reference internal" href="cultivars.engine._internals._models.html#module-cultivars.engine._internals._models" title="cultivars.engine._internals._models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_models</span></code></a>, and the public front is
 <a class="reference internal" href="../../api/generated/cultivars.multivariate.structural.perturbation.PerturbationDSGE.html#cultivars.multivariate.structural.perturbation.PerturbationDSGE" title="cultivars.multivariate.structural.perturbation.PerturbationDSGE"><code class="xref py py-class docutils literal notranslate"><span class="pre">cultivars.multivariate.structural.perturbation.PerturbationDSGE</span></code></a>.</p>
 <p>Background: perturbation solution of rational-expectations models, to
 second order.</p>
 <p>A model is a system of equilibrium conditions <code class="docutils literal notranslate"><span class="pre">E_t</span> <span class="pre">f(y',</span> <span class="pre">y,</span> <span class="pre">x',</span> <span class="pre">x)</span> <span class="pre">=</span> <span class="pre">0</span></code>
-with <code class="docutils literal notranslate"><span class="pre">x</span></code> the predetermined states (including any exogenous driving
+with <span class="math notranslate nohighlight">\(x\)</span> the predetermined states (including any exogenous driving
 processes) and <code class="docutils literal notranslate"><span class="pre">y</span></code> the controls, closed by <code class="docutils literal notranslate"><span class="pre">x'</span> <span class="pre">=</span> <span class="pre">h(x,</span> <span class="pre">sigma)</span> <span class="pre">+</span> <span class="pre">sigma</span>
 <span class="pre">eta</span> <span class="pre">eps'</span></code>. Schmitt-Grohe and Uribe (2004) showed that the Taylor
-coefficients of the policy functions <code class="docutils literal notranslate"><span class="pre">g</span></code> and <code class="docutils literal notranslate"><span class="pre">h</span></code> around the
+coefficients of the policy functions <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(h\)</span> around the
 deterministic steady state solve a sequence of <em>linear</em> problems once the
 first-order coefficients are known: the first order is the Blanchard-Kahn
-/ Klein generalized-Schur problem, the second order in <code class="docutils literal notranslate"><span class="pre">x</span></code> is one linear
+/ Klein generalized-Schur problem, the second order in <span class="math notranslate nohighlight">\(x\)</span> is one linear
 system in <code class="docutils literal notranslate"><span class="pre">(g_xx,</span> <span class="pre">h_xx)</span></code>, and the risk correction is one linear system in
 <code class="docutils literal notranslate"><span class="pre">(g_ss,</span> <span class="pre">h_ss)</span></code> – with the cross terms <code class="docutils literal notranslate"><span class="pre">g_xs</span></code>, <code class="docutils literal notranslate"><span class="pre">h_xs</span></code> identically
 zero.</p>
-<p>Derivatives of <code class="docutils literal notranslate"><span class="pre">f</span></code> are taken numerically (central differences), so the
+<p>Derivatives of <span class="math notranslate nohighlight">\(f\)</span> are taken numerically (central differences), so the
 model is supplied as a plain callable and no symbolic layer is needed;
 the cost is a step-size floor on accuracy of order <code class="docutils literal notranslate"><span class="pre">1e-8</span></code> in the second
 derivatives, immaterial next to the perturbation error itself.</p>
@@ -5805,7 +5809,7 @@ Studies</em>, 74(4), 1059-1087.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

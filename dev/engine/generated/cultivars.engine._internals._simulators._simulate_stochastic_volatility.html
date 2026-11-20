@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_simulate_stochastic_volatility &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._simulators._simulate_stochastic_volatility.9c0dbf89-ec19-493e-a2ba-71b9b94abae2.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._simulators._simulate_stochastic_volatility.9a03f95d-2e2a-4cef-910a-c669c0289506.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._simulators._simulate_stochastic_volatility';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,11 +5522,11 @@
 <dt class="sig sig-object py" id="cultivars.engine._internals._simulators._simulate_stochastic_volatility">
 <span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._simulators.</span></span><span class="sig-name descname"><span class="pre">_simulate_stochastic_volatility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_simulators.py#L272-L330"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._simulators._simulate_stochastic_volatility" title="Link to this definition">#</a></dt>
 <dd><p>One path of the log-AR(1) stochastic-volatility model from its stationary start.</p>
-<p><code class="docutils literal notranslate"><span class="pre">h_1</span></code> is drawn from the stationary distribution of the log variance,
-then <code class="docutils literal notranslate"><span class="pre">h_{t+1}</span> <span class="pre">=</span> <span class="pre">mu</span> <span class="pre">+</span> <span class="pre">phi</span> <span class="pre">(h_t</span> <span class="pre">-</span> <span class="pre">mu)</span> <span class="pre">+</span> <span class="pre">sigma</span> <span class="pre">eta_t</span></code> and <code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">mean</span> <span class="pre">+</span>
-<span class="pre">exp(h_t</span> <span class="pre">/</span> <span class="pre">2)</span> <span class="pre">eps_t</span></code>. Heavy tails make <code class="docutils literal notranslate"><span class="pre">eps_t</span></code> Student-t with <code class="docutils literal notranslate"><span class="pre">nu</span></code>
+<p><span class="math notranslate nohighlight">\(h_1\)</span> is drawn from the stationary distribution of the log variance,
+then <span class="math notranslate nohighlight">\(h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \eta_t\)</span> and <code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">mean</span> <span class="pre">+</span>
+<span class="pre">exp(h_t</span> <span class="pre">/</span> <span class="pre">2)</span> <span class="pre">eps_t</span></code>. Heavy tails make <span class="math notranslate nohighlight">\(\varepsilon_t\)</span> Student-t with <code class="docutils literal notranslate"><span class="pre">nu</span></code>
 degrees of freedom (unscaled, as the model states it); leverage
-correlates <code class="docutils literal notranslate"><span class="pre">eps_t</span></code> with the innovation that moves <code class="docutils literal notranslate"><span class="pre">h_{t+1}</span></code>.</p>
+correlates <span class="math notranslate nohighlight">\(\varepsilon_t\)</span> with the innovation that moves <span class="math notranslate nohighlight">\(h_{t+1}\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5536,7 +5538,7 @@ correlates <code class="docutils literal notranslate"><span class="pre">eps_t</s
 <li><p><strong>rng</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></span>) – Random generator.</p></li>
 <li><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> | <span class="highlight sphinx_autodoc_typehints-value"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="kc"><span class="pre">None</span></span></code></a></span></span>) – Degrees of freedom of the observation noise, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for
 Gaussian.</p></li>
-<li><p><strong>rho</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Correlation between <code class="docutils literal notranslate"><span class="pre">eps_t</span></code> and <code class="docutils literal notranslate"><span class="pre">eta_t</span></code>.</p></li>
+<li><p><strong>rho</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Correlation between <span class="math notranslate nohighlight">\(\varepsilon_t\)</span> and <span class="math notranslate nohighlight">\(\eta_t\)</span>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -5778,7 +5780,7 @@ Gaussian.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

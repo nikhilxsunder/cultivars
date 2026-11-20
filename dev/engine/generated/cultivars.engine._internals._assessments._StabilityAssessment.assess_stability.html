@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_StabilityAssessment.assess_stability &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments._StabilityAssessment.assess_stability.20e67322-2c0e-4495-9bec-6de8fff5b1ff.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._assessments._StabilityAssessment.assess_stability.f790764e-7013-41ca-8407-4f3ee4906b27.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._assessments._StabilityAssessment.assess_stability';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,12 +5523,12 @@
 <h1>_StabilityAssessment.assess_stability<a class="headerlink" href="#stabilityassessment-assess-stability" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._assessments._StabilityAssessment.assess_stability">
-<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">_StabilityAssessment.</span></span><span class="sig-name descname"><span class="pre">assess_stability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_coeffs</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unit_roots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L298-L363"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments._StabilityAssessment.assess_stability" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">_StabilityAssessment.</span></span><span class="sig-name descname"><span class="pre">assess_stability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_coeffs</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unit_roots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_assessments.py#L330-L395"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._assessments._StabilityAssessment.assess_stability" title="Link to this definition">#</a></dt>
 <dd><p>Assess stationarity of an AR/VAR from its autoregressive coefficients.</p>
 <p>Builds the <code class="docutils literal notranslate"><span class="pre">(k</span> <span class="pre">*</span> <span class="pre">p,</span> <span class="pre">k</span> <span class="pre">*</span> <span class="pre">p)</span></code> companion of
-<code class="docutils literal notranslate"><span class="pre">y_t</span> <span class="pre">=</span> <span class="pre">A_1</span> <span class="pre">y_{t-1}</span> <span class="pre">+</span> <span class="pre">...</span> <span class="pre">+</span> <span class="pre">A_p</span> <span class="pre">y_{t-p}</span> <span class="pre">+</span> <span class="pre">u_t</span></code> and classifies its
+<span class="math notranslate nohighlight">\(y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + u_t\)</span> and classifies its
 eigenvalues. Equivalently, tests whether
-<code class="docutils literal notranslate"><span class="pre">det(I</span> <span class="pre">-</span> <span class="pre">A_1</span> <span class="pre">z</span> <span class="pre">-</span> <span class="pre">...</span> <span class="pre">-</span> <span class="pre">A_p</span> <span class="pre">z^p)</span></code> has all its roots outside the
+<span class="math notranslate nohighlight">\(\det(I - A_1 z - \cdots - A_p z^p)\)</span> has all its roots outside the
 unit circle. Deterministic terms and exogenous regressors play no
 part and must not be included in <code class="docutils literal notranslate"><span class="pre">ar_coeffs</span></code>.</p>
 <p>Empty coefficients (<code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code>) short-circuit to the trivial stable
@@ -5816,7 +5818,7 @@ when it is allowed:</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

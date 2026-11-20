@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_ParticleMarginalChain.run &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain.run.b1dd23a3-a584-460f-a083-b822cac95cb8.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain.run.70d611c9-2cf0-43bb-b797-6be72cbd494e.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain.run';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,10 +5523,10 @@
 <h1>_ParticleMarginalChain.run<a class="headerlink" href="#particlemarginalchain-run" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._chains._ParticleMarginalChain.run">
-<span class="sig-prename descclassname"><span class="pre">_ParticleMarginalChain.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_draws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_burn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proposal_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adapt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L301-L469"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains._ParticleMarginalChain.run" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">_ParticleMarginalChain.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_draws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_burn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proposal_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adapt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L329-L498"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains._ParticleMarginalChain.run" title="Link to this definition">#</a></dt>
 <dd><p>Run the chain from a starting point.</p>
-<p>Each iteration proposes <code class="docutils literal notranslate"><span class="pre">theta</span> <span class="pre">+</span> <span class="pre">s</span> <span class="pre">*</span> <span class="pre">L</span> <span class="pre">&#64;</span> <span class="pre">z</span></code> with <code class="docutils literal notranslate"><span class="pre">z</span></code> standard
-normal, <code class="docutils literal notranslate"><span class="pre">L</span></code> the Cholesky factor of the current proposal covariance,
+<p>Each iteration proposes <span class="math notranslate nohighlight">\(\theta + s L z\)</span> with <code class="docutils literal notranslate"><span class="pre">z</span></code> standard
+normal, <span class="math notranslate nohighlight">\(L\)</span> the Cholesky factor of the current proposal covariance,
 and <code class="docutils literal notranslate"><span class="pre">s</span></code> the global scale. It estimates the likelihood there with a
 fresh particle cloud and accepts with probability
 <code class="docutils literal notranslate"><span class="pre">min(1,</span> <span class="pre">exp(log_post_new</span> <span class="pre">-</span> <span class="pre">log_post))</span></code>, where <code class="docutils literal notranslate"><span class="pre">log_post</span></code> is the
@@ -5533,11 +5535,11 @@ rejected outright.</p>
 <p>With <code class="docutils literal notranslate"><span class="pre">adapt=True</span></code> two things move during burn-in and are frozen
 after it:</p>
 <ul class="simple">
-<li><p>the scale: after iteration <code class="docutils literal notranslate"><span class="pre">i</span></code> (counting from one), <code class="docutils literal notranslate"><span class="pre">log</span> <span class="pre">s</span></code>
-changes by <code class="docutils literal notranslate"><span class="pre">(alpha</span> <span class="pre">-</span> <span class="pre">0.234)</span> <span class="pre">/</span> <span class="pre">sqrt(i)</span></code>, with <code class="docutils literal notranslate"><span class="pre">alpha</span></code> the
+<li><p>the scale: after iteration <span class="math notranslate nohighlight">\(i\)</span> (counting from one), <span class="math notranslate nohighlight">\(\log s\)</span>
+changes by <span class="math notranslate nohighlight">\((\alpha - 0.234) / \sqrt{i}\)</span>, with <code class="docutils literal notranslate"><span class="pre">alpha</span></code> the
 acceptance probability of that proposal (zero if inadmissible);</p></li>
 <li><p>the shape: once <code class="docutils literal notranslate"><span class="pre">max(20,</span> <span class="pre">2</span> <span class="pre">*</span> <span class="pre">d)</span></code> iterations have run, the
-covariance becomes <code class="docutils literal notranslate"><span class="pre">2.38**2</span> <span class="pre">/</span> <span class="pre">d</span></code> times the running covariance of
+covariance becomes <span class="math notranslate nohighlight">\(2.38^2 / d\)</span> times the running covariance of
 the chain’s states so far, plus <code class="docutils literal notranslate"><span class="pre">1e-8</span></code> on the diagonal. If that
 matrix cannot be factorized, the previous factor is kept.</p></li>
 </ul>
@@ -5568,7 +5570,7 @@ written.</p></li>
 <li><p><strong>thin</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Keep every <code class="docutils literal notranslate"><span class="pre">thin</span></code>-th post-burn draw; at least 1.</p></li>
 <li><p><strong>proposal_scale</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArrayLike</span></code></a> | <span class="highlight sphinx_autodoc_typehints-value"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="kc"><span class="pre">None</span></span></code></a></span></span>) – Initial proposal covariance <code class="docutils literal notranslate"><span class="pre">(d,</span> <span class="pre">d)</span></code>, a
 per-coordinate standard deviation vector <code class="docutils literal notranslate"><span class="pre">(d,)</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">None</span></code> for <code class="docutils literal notranslate"><span class="pre">0.1**2</span></code> times the identity. Must be positive
+<code class="docutils literal notranslate"><span class="pre">None</span></code> for <span class="math notranslate nohighlight">\(0.1^2\)</span> times the identity. Must be positive
 definite.</p></li>
 <li><p><strong>adapt</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether to adapt the covariance and scale during
 burn-in. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the initial proposal is used
@@ -5580,11 +5582,12 @@ unchanged throughout.</p></li>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="cultivars.engine._internals._fits._ParticleChainFit.html#cultivars.engine._internals._fits._ParticleChainFit" title="cultivars.engine._internals._fits._ParticleChainFit"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleChainFit</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The packed <code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleChainFit</span></code> – the kept draws with the
-log-likelihood estimate and log posterior carried at each, the
-acceptance rate over all <code class="docutils literal notranslate"><span class="pre">n_draws</span></code> iterations (burn-in
-included), and the proposal covariance the chain ended with,
-global scale folded in.</p>
+<dd class="field-odd"><p>The packed
+<a class="reference internal" href="cultivars.engine._internals._fits._ParticleChainFit.html#cultivars.engine._internals._fits._ParticleChainFit" title="cultivars.engine._internals._fits._ParticleChainFit"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleChainFit</span></code></a>: the
+kept draws with the log-likelihood estimate and log posterior
+carried at each, the acceptance rate over all <code class="docutils literal notranslate"><span class="pre">n_draws</span></code>
+iterations (burn-in included), and the proposal covariance the
+chain ended with, global scale folded in.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -5842,7 +5845,7 @@ longer burn-in.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

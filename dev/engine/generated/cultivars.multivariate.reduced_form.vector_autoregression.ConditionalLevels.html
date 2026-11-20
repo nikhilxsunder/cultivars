@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>ConditionalLevels &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels.9faa7633-c37d-4d52-abb8-6ca528e9b05d.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels.646ee47e-4f9d-487a-a0e1-8c972397a6cf.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5517,7 +5519,7 @@
 <h1>ConditionalLevels<a class="headerlink" href="#conditionallevels" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.multivariate.reduced_form.vector_autoregression.</span></span><span class="sig-name descname"><span class="pre">ConditionalLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exog_lags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exog_names</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_levels.py#L43-L114"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.multivariate.reduced_form.vector_autoregression.</span></span><span class="sig-name descname"><span class="pre">ConditionalLevels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exog_lags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exog_names</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_levels.py#L43-L120"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>One unit’s equations written in levels, ready to be linked.</p>
 <p>The common currency of a global system. Units may be estimated as a VARX in
@@ -5540,13 +5542,22 @@ to the same depth as <code class="docutils literal notranslate"><span class="pre
 </ul>
 </dd>
 </dl>
-<p>Read as an equation, with <code class="docutils literal notranslate"><span class="pre">x</span></code> the unit’s <code class="docutils literal notranslate"><span class="pre">k</span></code> variables, <code class="docutils literal notranslate"><span class="pre">f</span></code> its
-<code class="docutils literal notranslate"><span class="pre">m</span></code> foreign aggregates, and <code class="docutils literal notranslate"><span class="pre">d</span></code> the deterministic terms:</p>
+<p>Read as an equation, with <span class="math notranslate nohighlight">\(x\)</span> the unit’s <span class="math notranslate nohighlight">\(k\)</span> variables, <span class="math notranslate nohighlight">\(f\)</span> its
+<span class="math notranslate nohighlight">\(m\)</span> foreign aggregates, and <code class="docutils literal notranslate"><span class="pre">d</span></code> the deterministic terms:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_t</span> <span class="o">=</span> <span class="n">sum_l</span> <span class="n">phi</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="n">x_</span><span class="p">{</span><span class="n">t</span><span class="o">-</span><span class="n">l</span><span class="p">}</span> <span class="o">+</span> <span class="n">impact</span> <span class="n">f_t</span> <span class="o">+</span> <span class="n">sum_l</span> <span class="n">exog_lags</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="n">f_</span><span class="p">{</span><span class="n">t</span><span class="o">-</span><span class="n">l</span><span class="p">}</span>
       <span class="o">+</span> <span class="n">deterministic</span><span class="s1">' d_t + u_t</span>
 </pre></div>
 </div>
-<p>with the lag index <code class="docutils literal notranslate"><span class="pre">l</span></code> running from one to <code class="docutils literal notranslate"><span class="pre">order</span></code>.</p>
+<p>with the lag index <span class="math notranslate nohighlight">\(\ell\)</span> running from one to <code class="docutils literal notranslate"><span class="pre">order</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels.html#cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels" title="cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalLevels</span></code></a>
+– the public name of this class.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.reduced_form.error_correction.VECMXResult.to_varx.html#cultivars.multivariate.reduced_form.error_correction.VECMXResult.to_varx" title="cultivars.multivariate.reduced_form.error_correction.VECMXResult.to_varx"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VECMXResult.to_varx()</span></code></a> – returns an instance.</p></li>
+<li><p><a class="reference internal" href="../../api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.to_varx.html#cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.to_varx" title="cultivars.multivariate.reduced_form.vector_autoregression.VARXResult.to_varx"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VARXResult.to_varx()</span></code></a> – returns an instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 </section>
 
@@ -5756,7 +5767,7 @@ to the same depth as <code class="docutils literal notranslate"><span class="pre
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>NonlinearSSM.particle_smoother &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother.00f206fb-5d37-41e2-b637-a4f1f23557f5.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother.76f80a33-0d67-4564-bfb4-8fa14e8cfb12.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -2837,7 +2839,7 @@
 <h1>NonlinearSSM.particle_smoother<a class="headerlink" href="#nonlinearssm-particle-smoother" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother">
-<span class="sig-prename descclassname"><span class="pre">NonlinearSSM.</span></span><span class="sig-name descname"><span class="pre">particle_smoother</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ess_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_substrates.py#L1891-L2013"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">NonlinearSSM.</span></span><span class="sig-name descname"><span class="pre">particle_smoother</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ess_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_substrates.py#L1952-L2074"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.state_space.nonlinear.NonlinearSSM.particle_smoother" title="Link to this definition">#</a></dt>
 <dd><p>Forward-filtering backward-smoothing (Doucet-Godsill-Andrieu).</p>
 <p>A bootstrap forward pass stores every weighted cloud, and the
 backward recursion reweights each of them through the transition
@@ -2845,7 +2847,7 @@ density <code class="docutils literal notranslate"><span class="pre">N(f(x),</sp
 differs from the particle filter’s: a custom <code class="docutils literal notranslate"><span class="pre">observation_loglik</span></code>
 is fine (it only enters the forward weights), but a custom
 <code class="docutils literal notranslate"><span class="pre">transition_sampler</span></code> exposes draws without a density and is
-refused, as is a singular <code class="docutils literal notranslate"><span class="pre">Q</span></code>.</p>
+refused, as is a singular <span class="math notranslate nohighlight">\(Q\)</span>.</p>
 <p>The costs are quadratic and stated rather than hidden: time is
 <code class="docutils literal notranslate"><span class="pre">O(n_particles**2)</span></code> per period and the forward clouds are held
 in full, so the default cloud is smaller than the filter’s –
@@ -2865,13 +2867,13 @@ bootstrap filter.</p></li>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../../engine/generated/cultivars.engine._internals._results._ParticleSmootherResult.html#cultivars.engine._internals._results._ParticleSmootherResult" title="cultivars.engine._internals._results._ParticleSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleSmootherResult</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleSmootherResult</span></code>.</p>
+<dd class="field-odd"><p>The <a class="reference internal" href="../../engine/generated/cultivars.engine._internals._results._ParticleSmootherResult.html#cultivars.engine._internals._results._ParticleSmootherResult" title="cultivars.engine._internals._results._ParticleSmootherResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ParticleSmootherResult</span></code></a>.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference internal" href="cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><strong>SpecificationError</strong></a> – If the model carries a transition sampler
     hook or the bookkeeping is malformed.</p></li>
-<li><p><a class="reference internal" href="cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><strong>NumericalError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">Q</span></code> is singular or the cloud degenerates.</p></li>
+<li><p><a class="reference internal" href="cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><strong>NumericalError</strong></a> – If <span class="math notranslate nohighlight">\(Q\)</span> is singular or the cloud degenerates.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3103,7 +3105,7 @@ bootstrap filter.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

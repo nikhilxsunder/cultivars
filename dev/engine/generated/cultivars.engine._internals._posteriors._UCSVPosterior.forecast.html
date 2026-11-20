@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_UCSVPosterior.forecast &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._posteriors._UCSVPosterior.forecast.4f047525-10ae-4227-8043-c3e12913770d.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._posteriors._UCSVPosterior.forecast.b01fe606-c286-441a-9daa-8a3a1c9dd1aa.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._posteriors._UCSVPosterior.forecast';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,14 +5523,14 @@
 <h1>_UCSVPosterior.forecast<a class="headerlink" href="#ucsvposterior-forecast" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._posteriors._UCSVPosterior.forecast">
-<span class="sig-prename descclassname"><span class="pre">_UCSVPosterior.</span></span><span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_posteriors.py#L974-L1018"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._posteriors._UCSVPosterior.forecast" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">_UCSVPosterior.</span></span><span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_posteriors.py#L992-L1036"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._posteriors._UCSVPosterior.forecast" title="Link to this definition">#</a></dt>
 <dd><p>Predictive draws of the series, <code class="docutils literal notranslate"><span class="pre">(n_paths,</span> <span class="pre">steps)</span></code>.</p>
 <p>Each path picks a kept draw, then propagates both random-walk
 log variances and the trend forward and adds the irregular.</p>
 <p>Within a step both log variances are advanced first, and the trend
 then moves with the <em>advanced</em> variance of its innovation. That is
 one period ahead of the timing the sampler and <a class="reference internal" href="cultivars.engine._internals._posteriors._UCSVPosterior.state_space.html#cultivars.engine._internals._posteriors._UCSVPosterior.state_space" title="cultivars.engine._internals._posteriors._UCSVPosterior.state_space"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_space</span></code></a>
-use, where the step from <code class="docutils literal notranslate"><span class="pre">t</span></code> to <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">+</span> <span class="pre">1</span></code> is scaled by <code class="docutils literal notranslate"><span class="pre">q_t</span></code>.</p>
+use, where the step from <span class="math notranslate nohighlight">\(t\)</span> to <span class="math notranslate nohighlight">\(t + 1\)</span> is scaled by <span class="math notranslate nohighlight">\(q_t\)</span>.</p>
 <p>Kept draws are picked with replacement. <code class="docutils literal notranslate"><span class="pre">n_paths</span></code> is not
 validated: zero returns an empty array, and a negative value raises
 NumPy’s <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
@@ -5779,7 +5781,7 @@ horizon.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

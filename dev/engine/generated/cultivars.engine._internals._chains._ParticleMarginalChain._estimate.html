@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_ParticleMarginalChain._estimate &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain._estimate.01620fcc-9609-4e6b-8569-0f32a6b21155.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain._estimate.ef098a3e-94be-4e94-ac7e-92f7b161c4a6.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._chains._ParticleMarginalChain._estimate';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,13 +5523,13 @@
 <h1>_ParticleMarginalChain._estimate<a class="headerlink" href="#particlemarginalchain-estimate" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._chains._ParticleMarginalChain._estimate">
-<span class="sig-prename descclassname"><span class="pre">_ParticleMarginalChain.</span></span><span class="sig-name descname"><span class="pre">_estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L245-L299"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains._ParticleMarginalChain._estimate" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">_ParticleMarginalChain.</span></span><span class="sig-name descname"><span class="pre">_estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_chains.py#L273-L327"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._chains._ParticleMarginalChain._estimate" title="Link to this definition">#</a></dt>
 <dd><p>One particle log-likelihood estimate, or <code class="docutils literal notranslate"><span class="pre">-inf</span></code> if inadmissible.</p>
 <p>The likelihood kernel of the chain. The prior is evaluated first and
 the filter is skipped when it is not finite; otherwise the system is
 built at <code class="docutils literal notranslate"><span class="pre">theta</span></code> and one particle filter is run over the data with
 a fresh cloud drawn from <code class="docutils literal notranslate"><span class="pre">rng</span></code>. The result is the logarithm of an
-unbiased estimate of <code class="docutils literal notranslate"><span class="pre">p(y</span> <span class="pre">|</span> <span class="pre">theta)</span></code>. It is random, so two calls at
+unbiased estimate of <span class="math notranslate nohighlight">\(p(y \mid \theta)\)</span>. It is random, so two calls at
 the same <code class="docutils literal notranslate"><span class="pre">theta</span></code> differ, and <a class="reference internal" href="cultivars.engine._internals._chains._ParticleMarginalChain.run.html#cultivars.engine._internals._chains._ParticleMarginalChain.run" title="cultivars.engine._internals._chains._ParticleMarginalChain.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> depends on calling it
 exactly once per proposal.</p>
 <p>The prior decides admissibility here but is not added to the return
@@ -5536,17 +5538,17 @@ value; <a class="reference internal" href="cultivars.engine._internals._chains._
 following holds:</p>
 <ul class="simple">
 <li><p>the log prior is not finite (<code class="docutils literal notranslate"><span class="pre">-inf</span></code>, <code class="docutils literal notranslate"><span class="pre">nan</span></code>, or <code class="docutils literal notranslate"><span class="pre">+inf</span></code>);</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">build</span></code> or the filter raises <code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.linalg.LinAlgError</span></code>, or
+<li><p><code class="docutils literal notranslate"><span class="pre">build</span></code> or the filter raises <a class="reference internal" href="../../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a>,
+<a class="reference internal" href="../../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>, <code class="docutils literal notranslate"><span class="pre">numpy.linalg.LinAlgError</span></code>, or
 <code class="docutils literal notranslate"><span class="pre">FloatingPointError</span></code>;</p></li>
 <li><p>the estimate itself is not finite.</p></li>
 </ul>
 <p>The filter validates its own arguments with
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code>, so an unrecognized <code class="docutils literal notranslate"><span class="pre">method</span></code>, an
+<a class="reference internal" href="../../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a>, so an unrecognized <code class="docutils literal notranslate"><span class="pre">method</span></code>, an
 <code class="docutils literal notranslate"><span class="pre">n_particles</span></code> below 2, an <code class="docutils literal notranslate"><span class="pre">ess_threshold</span></code> outside <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1]</span></code>, or
 a partially observed data row falls under the second rule and makes
 every point inadmissible. Exceptions outside that list,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code> among them, propagate.</p>
+<a class="reference internal" href="../../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a> among them, propagate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5792,7 +5794,7 @@ runs.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_VectorPropagationMixin &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._mixins._VectorPropagationMixin.cf101ae9-caab-47cf-b069-8f1919bc1f74.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._mixins._VectorPropagationMixin.da4b702a-1dad-4da6-9d91-0f70aa27a121.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._mixins._VectorPropagationMixin';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,7 +5522,7 @@
 <h1>_VectorPropagationMixin<a class="headerlink" href="#vectorpropagationmixin" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._mixins._VectorPropagationMixin">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._mixins.</span></span><span class="sig-name descname"><span class="pre">_VectorPropagationMixin</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L980-L1364"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._mixins._VectorPropagationMixin" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._mixins.</span></span><span class="sig-name descname"><span class="pre">_VectorPropagationMixin</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L982-L1397"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._mixins._VectorPropagationMixin" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>How a shock travels through a closed vector system.</p>
 <p>The half of the reduced-form surface that needs a law of motion for every
@@ -5538,6 +5540,26 @@ one by one with refusals, which is a list that drifts the moment a tenth is
 added. Now they simply do not mix this in, and
 <a class="reference internal" href="cultivars.engine._internals._mixins._ConditionalSystemMixin.html#cultivars.engine._internals._mixins._ConditionalSystemMixin" title="cultivars.engine._internals._mixins._ConditionalSystemMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">_ConditionalSystemMixin</span></code></a> keeps the error messages good without
 claiming the type.</p>
+<p>In symbols, a stable system has the moving-average representation</p>
+<div class="math notranslate nohighlight">
+\[y_t = \mu + \sum_{h \ge 0} \Psi_h u_{t-h}, \qquad
+\Psi_0 = I, \quad
+\Psi_h = \sum_{i=1}^{\min(h, p)} A_i \Psi_{h-i},\]</div>
+<p>equivalently <span class="math notranslate nohighlight">\(\Psi_h = J C^h J^\top\)</span> with <span class="math notranslate nohighlight">\(C\)</span> the companion matrix
+and <span class="math notranslate nohighlight">\(J = (I, 0, \ldots, 0)\)</span>. With <span class="math notranslate nohighlight">\(P\)</span> the lower Cholesky factor of
+the innovation covariance, <span class="math notranslate nohighlight">\(P P^\top = \Sigma_u\)</span>, the orthogonalized
+responses are <span class="math notranslate nohighlight">\(\Theta_h = \Psi_h P\)</span>, the <span class="math notranslate nohighlight">\(h\)</span>-step forecast-error
+covariance is</p>
+<div class="math notranslate nohighlight">
+\[\Sigma_y(h) = \sum_{s=0}^{h-1} \Psi_s \Sigma_u \Psi_s^\top,\]</div>
+<p>and the share of variable <span class="math notranslate nohighlight">\(i\)</span>’s <span class="math notranslate nohighlight">\(h\)</span>-step forecast-error variance
+attributed to shock <span class="math notranslate nohighlight">\(j\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[\omega_{ij}(h) = \frac{\sum_{s=0}^{h-1} \bigl( e_i^\top \Theta_s e_j \bigr)^2}
+{\sum_{s=0}^{h-1} e_i^\top \Psi_s \Sigma_u \Psi_s^\top e_i},\]</div>
+<p>where <span class="math notranslate nohighlight">\(e_i\)</span> is the <span class="math notranslate nohighlight">\(i\)</span>-th unit vector. <span class="math notranslate nohighlight">\(\Psi_h\)</span> does not
+depend on the ordering of the variables; <span class="math notranslate nohighlight">\(\Theta_h\)</span> and
+<span class="math notranslate nohighlight">\(\omega_{ij}(h)\)</span> do, through <span class="math notranslate nohighlight">\(P\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>coefficients</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> autoregressive matrices of the closed
@@ -5577,7 +5599,7 @@ impulse responses need no separate implementation.</p>
 <td><p>The observed sample of the host record, <code class="docutils literal notranslate"><span class="pre">(T,</span> <span class="pre">k)</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._mixins._VectorPropagationMixin.names.html#cultivars.engine._internals._mixins._VectorPropagationMixin.names" title="cultivars.engine._internals._mixins._VectorPropagationMixin.names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">names</span></code></a></p></td>
-<td><p>Variable labels, length <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></td>
+<td><p>Variable labels, length <span class="math notranslate nohighlight">\(k\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._mixins._VectorPropagationMixin.order.html#cultivars.engine._internals._mixins._VectorPropagationMixin.order" title="cultivars.engine._internals._mixins._VectorPropagationMixin.order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">order</span></code></a></p></td>
 <td><p>Autoregressive order <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></td>
@@ -5627,7 +5649,7 @@ impulse responses need no separate implementation.</p>
 <td><p>Impulse responses to a one-standard-deviation shock.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._mixins._VectorPropagationMixin.ma_representation.html#cultivars.engine._internals._mixins._VectorPropagationMixin.ma_representation" title="cultivars.engine._internals._mixins._VectorPropagationMixin.ma_representation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ma_representation</span></code></a>([horizon])</p></td>
-<td><p>Moving-average matrices <code class="docutils literal notranslate"><span class="pre">Psi_0,</span> <span class="pre">...,</span> <span class="pre">Psi_horizon</span></code>.</p></td>
+<td><p>Moving-average matrices <span class="math notranslate nohighlight">\(\Psi_0, \ldots, \Psi_{\mathrm{horizon}}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._mixins._VectorPropagationMixin.simulate.html#cultivars.engine._internals._mixins._VectorPropagationMixin.simulate" title="cultivars.engine._internals._mixins._VectorPropagationMixin.simulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code></a>([n, seed, burn])</p></td>
 <td><p>A fresh sample path from the fitted system.</p></td>
@@ -5870,7 +5892,7 @@ impulse responses need no separate implementation.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_VectorErrorCorrectionModel._levels_blocks &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models._VectorErrorCorrectionModel._levels_blocks.9453022e-fff6-498c-8961-04aff19a287d.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._models._VectorErrorCorrectionModel._levels_blocks.4c4acfb7-d809-4285-b3c4-aa79a898d5c0.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._models._VectorErrorCorrectionModel._levels_blocks';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5521,15 +5523,15 @@
 <h1>_VectorErrorCorrectionModel._levels_blocks<a class="headerlink" href="#vectorerrorcorrectionmodel-levels-blocks" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.engine._internals._models._VectorErrorCorrectionModel._levels_blocks">
-<span class="sig-prename descclassname"><span class="pre">_VectorErrorCorrectionModel.</span></span><span class="sig-name descname"><span class="pre">_levels_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_models.py#L3123-L3161"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._models._VectorErrorCorrectionModel._levels_blocks" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">_VectorErrorCorrectionModel.</span></span><span class="sig-name descname"><span class="pre">_levels_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_models.py#L3138-L3176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._models._VectorErrorCorrectionModel._levels_blocks" title="Link to this definition">#</a></dt>
 <dd><p>The levels autoregressive matrices this parameterization implies.</p>
-<p>From <code class="docutils literal notranslate"><span class="pre">A_1</span> <span class="pre">=</span> <span class="pre">I</span> <span class="pre">+</span> <span class="pre">Pi</span> <span class="pre">+</span> <span class="pre">Gamma_1</span></code>, <code class="docutils literal notranslate"><span class="pre">A_i</span> <span class="pre">=</span> <span class="pre">Gamma_i</span> <span class="pre">-</span> <span class="pre">Gamma_{i-1}</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">A_p</span> <span class="pre">=</span> <span class="pre">-Gamma_{p-1}</span></code>. Recovering them here rather than in the result
+<p>From <span class="math notranslate nohighlight">\(A_1 = I + \Pi + \Gamma_1\)</span>, <span class="math notranslate nohighlight">\(A_i = \Gamma_i - \Gamma_{i-1}\)</span>, and
+<span class="math notranslate nohighlight">\(A_p = -\Gamma_{p-1}\)</span>. Recovering them here rather than in the result
 is what lets every dynamic method downstream – impulse responses, the
 variance decomposition, forecasts – be inherited from the reduced-form
 surface instead of reimplemented in error-correction coordinates.</p>
 <p>A conditional specification has no such representation and gets a
-zero-length stack, which is the statement that there are no <code class="docutils literal notranslate"><span class="pre">A_i</span></code> –
+zero-length stack, which is the statement that there are no <span class="math notranslate nohighlight">\(A_i\)</span> –
 not a default, and not something a caller should propagate. Closing the
 system requires a model for the exogenous block, which is what a global
 vector autoregression supplies by stacking units.</p>
@@ -5776,7 +5778,7 @@ vector autoregression supplies by stacking units.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

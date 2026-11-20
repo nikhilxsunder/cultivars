@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>VARResult.ma_representation &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.ma_representation.7d37d74a-c1cf-49e2-ac84-d8af8bd18ecc.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.ma_representation.e6cb2502-d995-4b0c-a382-db0e2c65fe5c.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.multivariate.reduced_form.vector_autoregression.VARResult.ma_representation';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -2840,10 +2842,10 @@
 <h1>VARResult.ma_representation<a class="headerlink" href="#varresult-ma-representation" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.multivariate.reduced_form.vector_autoregression.VARResult.ma_representation">
-<span class="sig-prename descclassname"><span class="pre">VARResult.</span></span><span class="sig-name descname"><span class="pre">ma_representation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L1114-L1146"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.reduced_form.vector_autoregression.VARResult.ma_representation" title="Link to this definition">#</a></dt>
-<dd><p>Moving-average matrices <code class="docutils literal notranslate"><span class="pre">Psi_0,</span> <span class="pre">...,</span> <span class="pre">Psi_horizon</span></code>.</p>
-<p>Computed as <code class="docutils literal notranslate"><span class="pre">J</span> <span class="pre">C^h</span> <span class="pre">J'</span></code> from the companion rather than by the
-recursion <code class="docutils literal notranslate"><span class="pre">Psi_h</span> <span class="pre">=</span> <span class="pre">sum_i</span> <span class="pre">A_i</span> <span class="pre">Psi_{h-i}</span></code>. The two agree to machine
+<span class="sig-prename descclassname"><span class="pre">VARResult.</span></span><span class="sig-name descname"><span class="pre">ma_representation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L1147-L1179"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.reduced_form.vector_autoregression.VARResult.ma_representation" title="Link to this definition">#</a></dt>
+<dd><p>Moving-average matrices <span class="math notranslate nohighlight">\(\Psi_0, \ldots, \Psi_{\mathrm{horizon}}\)</span>.</p>
+<p>Computed as <span class="math notranslate nohighlight">\(J C^h J^\top\)</span> from the companion rather than by the
+recursion <span class="math notranslate nohighlight">\(\Psi_h = \sum_i A_i \Psi_{h-i}\)</span>. The two agree to machine
 precision, and the companion form generalizes without change to any
 member of the family that can produce a companion matrix.</p>
 <dl class="field-list simple">
@@ -2854,7 +2856,7 @@ member of the family that can produce a companion matrix.</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An array of shape <code class="docutils literal notranslate"><span class="pre">(horizon</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> with <code class="docutils literal notranslate"><span class="pre">Psi_0</span> <span class="pre">=</span> <span class="pre">I</span></code>.</p>
+<dd class="field-odd"><p>An array of shape <code class="docutils literal notranslate"><span class="pre">(horizon</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> with <span class="math notranslate nohighlight">\(\Psi_0 = I\)</span>.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><strong>SpecificationError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">horizon</span></code> is negative.</p>
@@ -3088,7 +3090,7 @@ member of the family that can produce a companion matrix.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_VectorInferenceMixin &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._mixins._VectorInferenceMixin.eeea0c21-8f63-4031-a186-c2c6fd1d3e2d.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._mixins._VectorInferenceMixin.2d409ef7-99ef-44c5-8e24-403bfabaeb8e.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._mixins._VectorInferenceMixin';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,7 +5522,7 @@
 <h1>_VectorInferenceMixin<a class="headerlink" href="#vectorinferencemixin" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._mixins._VectorInferenceMixin">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._mixins.</span></span><span class="sig-name descname"><span class="pre">_VectorInferenceMixin</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L437-L977"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._mixins._VectorInferenceMixin" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._mixins.</span></span><span class="sig-name descname"><span class="pre">_VectorInferenceMixin</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L437-L979"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._mixins._VectorInferenceMixin" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Post-estimation inference shared by every reduced-form vector model.</p>
 <p>Seven of the nine operations a usable VAR must expose – forecasting,
@@ -5553,7 +5555,7 @@ variable takes and returns these rather than integer positions.</p></li>
 every <em>inferential</em> quantity – Wald tests, the impact matrix –
 because the maximum-likelihood estimator is biased downward by the
 estimated coefficients.</p></li>
-<li><p><strong>sigma_ml</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – The <code class="docutils literal notranslate"><span class="pre">1/T</span></code> estimator. Used for the likelihood and the
+<li><p><strong>sigma_ml</strong> – The <span class="math notranslate nohighlight">\(1/T\)</span> estimator. Used for the likelihood and the
 information criteria, where the adjustment does not belong.
 Both are stored deliberately: substituting one for the other
 biases either the criteria or the standard errors, and nothing
@@ -5617,7 +5619,7 @@ raises when it happens.</p></li>
 <td><p>Degrees-of-freedom-adjusted innovation covariance.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._mixins._VectorInferenceMixin.sigma_ml.html#cultivars.engine._internals._mixins._VectorInferenceMixin.sigma_ml" title="cultivars.engine._internals._mixins._VectorInferenceMixin.sigma_ml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sigma_ml</span></code></a></p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">1/T</span></code> estimator.</p></td>
+<td><p>The <span class="math notranslate nohighlight">\(1/T\)</span> estimator.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._mixins._VectorInferenceMixin.resid.html#cultivars.engine._internals._mixins._VectorInferenceMixin.resid" title="cultivars.engine._internals._mixins._VectorInferenceMixin.resid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resid</span></code></a></p></td>
 <td><p>Residuals over the effective sample, shape <code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k)</span></code>.</p></td>
@@ -5691,7 +5693,7 @@ raises when it happens.</p></li>
 <td><p>Run every residual test and collect them into one table.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._mixins._VectorInferenceMixin.structural_shocks.html#cultivars.engine._internals._mixins._VectorInferenceMixin.structural_shocks" title="cultivars.engine._internals._mixins._VectorInferenceMixin.structural_shocks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_shocks</span></code></a>()</p></td>
-<td><p>Orthogonalized innovations <code class="docutils literal notranslate"><span class="pre">P^{-1}</span> <span class="pre">u_t</span></code>, shape <code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k)</span></code>.</p></td>
+<td><p>Orthogonalized innovations <span class="math notranslate nohighlight">\(P^{-1} u_t\)</span>, shape <code class="docutils literal notranslate"><span class="pre">(nobs,</span> <span class="pre">k)</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -5925,7 +5927,7 @@ raises when it happens.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

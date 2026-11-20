@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_log_scale_mixture_moments &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._emitters._log_scale_mixture_moments.13f2ac0e-8690-434a-82d2-5055d3a9c2cf.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._emitters._log_scale_mixture_moments.04967969-3498-4cb1-9252-b1bf8e40a177.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._emitters._log_scale_mixture_moments';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5518,12 +5520,13 @@
 <h1>_log_scale_mixture_moments<a class="headerlink" href="#log-scale-mixture-moments" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="cultivars.engine._internals._emitters._log_scale_mixture_moments">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._emitters.</span></span><span class="sig-name descname"><span class="pre">_log_scale_mixture_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_emitters.py#L73-L88"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._emitters._log_scale_mixture_moments" title="Link to this definition">#</a></dt>
-<dd><p>Mean and variance of <code class="docutils literal notranslate"><span class="pre">log(lambda)</span></code> for <code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">~</span> <span class="pre">IG(nu/2,</span> <span class="pre">nu/2)</span></code>.</p>
-<p>Under the Student-t scale mixture <code class="docutils literal notranslate"><span class="pre">log(eps**2)</span> <span class="pre">=</span> <span class="pre">log(z**2)</span> <span class="pre">+</span> <span class="pre">log(lambda)</span></code>,
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._emitters.</span></span><span class="sig-name descname"><span class="pre">_log_scale_mixture_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_emitters.py#L73-L90"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._emitters._log_scale_mixture_moments" title="Link to this definition">#</a></dt>
+<dd><p>Mean and variance of <span class="math notranslate nohighlight">\(\log \lambda\)</span> for the Student-t mixing scale.</p>
+<p>The mixing scale is <span class="math notranslate nohighlight">\(\lambda \sim \mathcal{IG}(\nu/2, \nu/2)\)</span>.</p>
+<p>Under the Student-t scale mixture <span class="math notranslate nohighlight">\(\log \varepsilon^2 = \log z^2 + \log \lambda\)</span>,
 so the linearized measurement noise of the quasi-likelihood shifts by
-these two moments: <code class="docutils literal notranslate"><span class="pre">E[log</span> <span class="pre">lambda]</span> <span class="pre">=</span> <span class="pre">log(nu/2)</span> <span class="pre">-</span> <span class="pre">psi(nu/2)</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Var[log</span> <span class="pre">lambda]</span> <span class="pre">=</span> <span class="pre">psi'(nu/2)</span></code>.</p>
+these two moments: <span class="math notranslate nohighlight">\(\mathbb{E}[\log \lambda] = \log(\nu/2) - \psi(\nu/2)\)</span> and
+<span class="math notranslate nohighlight">\(\operatorname{Var}[\log \lambda] = \psi'(\nu/2)\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Degrees of freedom of the Student-t observation noise.</p>
@@ -5532,7 +5535,7 @@ these two moments: <code class="docutils literal notranslate"><span class="pre">
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The mean and the variance of <code class="docutils literal notranslate"><span class="pre">log(lambda)</span></code>.</p>
+<dd class="field-odd"><p>The mean and the variance of <span class="math notranslate nohighlight">\(\log \lambda\)</span>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -5763,7 +5766,7 @@ these two moments: <code class="docutils literal notranslate"><span class="pre">
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

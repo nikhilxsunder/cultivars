@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_solve_global &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._solvers._solve_global.3eb915a9-f08b-479c-a122-3c62b808a05b.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._solvers._solve_global.fc558a72-ff67-4fae-b493-74a64b7f6a89.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._solvers._solve_global';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5518,15 +5520,16 @@
 <h1>_solve_global<a class="headerlink" href="#solve-global" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="cultivars.engine._internals._solvers._solve_global">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._solvers.</span></span><span class="sig-name descname"><span class="pre">_solve_global</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_of_column</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_solvers.py#L127-L212"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._solvers._solve_global" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._solvers.</span></span><span class="sig-name descname"><span class="pre">_solve_global</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_of_column</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_solvers.py#L127-L213"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._solvers._solve_global" title="Link to this definition">#</a></dt>
 <dd><p>Stack conditional unit equations into one closed global autoregression.</p>
-<p>Each unit satisfies <code class="docutils literal notranslate"><span class="pre">A_i0</span> <span class="pre">z_it</span> <span class="pre">=</span> <span class="pre">d_it</span> <span class="pre">+</span> <span class="pre">sum_l</span> <span class="pre">A_il</span> <span class="pre">z_{i,t-l}</span> <span class="pre">+</span> <span class="pre">u_it</span></code> with
-<code class="docutils literal notranslate"><span class="pre">A_i0</span> <span class="pre">=</span> <span class="pre">[I,</span> <span class="pre">-Lambda_i0]</span></code> and <code class="docutils literal notranslate"><span class="pre">A_il</span> <span class="pre">=</span> <span class="pre">[Phi_il,</span> <span class="pre">Lambda_il]</span></code>. Substituting
-<code class="docutils literal notranslate"><span class="pre">z_it</span> <span class="pre">=</span> <span class="pre">W_i</span> <span class="pre">x_t</span></code> writes every unit against the same global vector, and
-stacking the results gives <code class="docutils literal notranslate"><span class="pre">G_0</span> <span class="pre">x_t</span> <span class="pre">=</span> <span class="pre">d_t</span> <span class="pre">+</span> <span class="pre">sum_l</span> <span class="pre">G_l</span> <span class="pre">x_{t-l}</span> <span class="pre">+</span> <span class="pre">u_t</span></code>,
-which is square because the units’ own blocks partition the global vector
-exactly once.</p>
-<p>The inversion of <code class="docutils literal notranslate"><span class="pre">G_0</span></code> is the moment the system closes. Individually no
+<p>Each unit satisfies <span class="math notranslate nohighlight">\(A_{i0} z_{it} = d_{it} + \sum_{l} A_{il} z_{i,t-l} + u_{it}\)</span> with
+<span class="math notranslate nohighlight">\(A_{i0} = [I,\; -\Lambda_{i0}]\)</span> and
+<span class="math notranslate nohighlight">\(A_{il} = [\Phi_{il},\; \Lambda_{il}]\)</span>. Substituting
+<span class="math notranslate nohighlight">\(z_{it} = W_i x_t\)</span> writes every unit against the same global vector,
+and stacking the results gives
+<span class="math notranslate nohighlight">\(G_0 x_t = d_t + \sum_{l} G_l x_{t-l} + u_t\)</span>, which is square because
+the units’ own blocks partition the global vector exactly once.</p>
+<p>The inversion of <span class="math notranslate nohighlight">\(G_0\)</span> is the moment the system closes. Individually no
 unit has a law of motion for its foreign variables; jointly they do, because
 one unit’s foreign aggregate is a weighted sum of other units’ domestic
 variables and those units have equations. Nothing is estimated here – the
@@ -5546,14 +5549,14 @@ approximately.</p>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>], <a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>], <a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The contemporaneous matrix <code class="docutils literal notranslate"><span class="pre">G_0</span></code>, the <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> stack of global
-autoregressive matrices <code class="docutils literal notranslate"><span class="pre">G_0^{-1}</span> <span class="pre">G_l</span></code>, and the global deterministic
+<dd class="field-odd"><p>The contemporaneous matrix <span class="math notranslate nohighlight">\(G_0\)</span>, the <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> stack of global
+autoregressive matrices <span class="math notranslate nohighlight">\(G_0^{-1} G_l\)</span>, and the global deterministic
 coefficients.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><strong>DimensionError</strong></a> – If the units do not partition the global columns.</p></li>
-<li><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><strong>NumericalError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">G_0</span></code> is singular, which means the contemporaneous
+<li><p><a class="reference internal" href="../../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><strong>NumericalError</strong></a> – If <span class="math notranslate nohighlight">\(G_0\)</span> is singular, which means the contemporaneous
     linkage has no solution – typically a weight matrix that makes two
     units’ foreign aggregates identical.</p></li>
 </ul>
@@ -5787,7 +5790,7 @@ coefficients.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

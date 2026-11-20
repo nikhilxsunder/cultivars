@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_spectral_factor &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._solvers._spectral_factor.6925c18a-781f-4c46-8f0e-33208a0c0b78.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._solvers._spectral_factor.e399c3c6-6244-486d-bfed-eee8a7dcdc68.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._solvers._spectral_factor';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5518,25 +5520,25 @@
 <h1>_spectral_factor<a class="headerlink" href="#spectral-factor" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="cultivars.engine._internals._solvers._spectral_factor">
-<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._solvers.</span></span><span class="sig-name descname"><span class="pre">_spectral_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_solvers.py#L437-L513"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._solvers._spectral_factor" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._solvers.</span></span><span class="sig-name descname"><span class="pre">_spectral_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_solvers.py#L442-L518"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._solvers._spectral_factor" title="Link to this definition">#</a></dt>
 <dd><p>Canonical spectral factorization by Wilson’s (1972) algorithm.</p>
 <p>Given a Hermitian positive-definite spectral density sampled on the
-<em>full</em> circle <code class="docutils literal notranslate"><span class="pre">omega_m</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">pi</span> <span class="pre">m</span> <span class="pre">/</span> <span class="pre">M</span></code>, finds the minimum-phase factor
-<code class="docutils literal notranslate"><span class="pre">psi</span></code> with <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">pi</span> <span class="pre">S(omega)</span> <span class="pre">=</span> <span class="pre">psi(omega)</span> <span class="pre">psi(omega)*</span></code> and only
+<em>full</em> circle <span class="math notranslate nohighlight">\(\omega_m = 2 \pi m / M\)</span>, finds the minimum-phase factor
+<span class="math notranslate nohighlight">\(\psi\)</span> with <span class="math notranslate nohighlight">\(2 \pi S(\omega) = \psi(\omega)\, \psi(\omega)^{\ast}\)</span> and only
 non-negative-lag Fourier content, and reads off the innovation
-representation: transfer <code class="docutils literal notranslate"><span class="pre">H</span> <span class="pre">=</span> <span class="pre">psi</span> <span class="pre">psi_0**(-1)</span></code> and covariance
-<code class="docutils literal notranslate"><span class="pre">Sigma</span> <span class="pre">=</span> <span class="pre">psi_0</span> <span class="pre">psi_0*</span></code>. This is what turns a <em>marginal</em> spectral
+representation: transfer <span class="math notranslate nohighlight">\(H = \psi\, \psi_0^{-1}\)</span> and covariance
+<span class="math notranslate nohighlight">\(\Sigma = \psi_0 \psi_0^{\ast}\)</span>. This is what turns a <em>marginal</em> spectral
 density – a sub-block of a larger system’s, which is generally VARMA
 and matches no finite lag stack – back into the (transfer, covariance)
 pair Geweke’s causality formulas need, and it is the standard route
 (Dhamala-Rangarajan-Ding 2008). The constant-unitary ambiguity of the
-factorization cancels in <code class="docutils literal notranslate"><span class="pre">H</span></code> and <code class="docutils literal notranslate"><span class="pre">Sigma</span></code>, so no triangularization
-of <code class="docutils literal notranslate"><span class="pre">psi_0</span></code> is enforced.</p>
+factorization cancels in <span class="math notranslate nohighlight">\(H\)</span> and <span class="math notranslate nohighlight">\(\Sigma\)</span>, so no triangularization
+of <span class="math notranslate nohighlight">\(\psi_0\)</span> is enforced.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>density</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.cdouble" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdouble</span></code></a>]</span>) – <code class="docutils literal notranslate"><span class="pre">(M,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> spectral density on the full circle, with
-the <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">(2</span> <span class="pre">pi)</span></code> normalization of <code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_matrix()</span></code>.</p></li>
+the <span class="math notranslate nohighlight">\(1 / (2 \pi)\)</span> normalization of <code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_matrix()</span></code>.</p></li>
 <li><p><strong>max_iter</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Iteration cap.</p></li>
 <li><p><strong>tol</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Relative factorization error below which iteration stops.</p></li>
 </ul>
@@ -5781,7 +5783,7 @@ and the <code class="docutils literal notranslate"><span class="pre">(k,</span> 
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

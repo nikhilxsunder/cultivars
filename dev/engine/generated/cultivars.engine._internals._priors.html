@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>cultivars.engine._internals._priors &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._priors.5c247ff5-35ac-424c-8fda-7d5538796a49.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._priors.1cbe6807-03a8-4fc2-9b4a-c88e0dec81e6.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._priors';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5533,7 +5535,7 @@ variances are latent states and not constants.</p>
 deterministic block first, then the lags ordered lag-major (every variable
 at lag one, then every variable at lag two), then the exogenous regressors.
 Columns are equations. Entry <code class="docutils literal notranslate"><span class="pre">[n_deterministic</span> <span class="pre">+</span> <span class="pre">(l</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">k</span> <span class="pre">+</span> <span class="pre">j,</span> <span class="pre">i]</span></code> is
-therefore equation <code class="docutils literal notranslate"><span class="pre">i</span></code>’s coefficient on lag <code class="docutils literal notranslate"><span class="pre">l</span></code> of variable <code class="docutils literal notranslate"><span class="pre">j</span></code>. The
+therefore equation <span class="math notranslate nohighlight">\(i\)</span>’s coefficient on lag <span class="math notranslate nohighlight">\(\ell\)</span> of variable <span class="math notranslate nohighlight">\(j\)</span>. The
 estimator that owns the design builds the context, so the layout is stated
 once and no prior has to guess it.</p>
 <p>The second kind is the pair of hyperprior records read by the
@@ -5544,11 +5546,15 @@ summary table and nothing else.</p>
 <p>Layout. The concrete coefficient priors (Minnesota, normal-inverse-Wishart,
 sum-of-coefficients, dummy-initial-observation, independent normal-Wishart,
 and the four adaptive priors) live in <a class="reference internal" href="../../api/generated/cultivars.bayes.priors.html#module-cultivars.bayes.priors" title="cultivars.bayes.priors"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cultivars.bayes.priors</span></code></a>. That
-module also re-exports five classes from here under public names: <code class="docutils literal notranslate"><span class="pre">Prior</span></code>,
-<code class="docutils literal notranslate"><span class="pre">PriorContext</span></code>, <code class="docutils literal notranslate"><span class="pre">NoPrior</span></code>, <code class="docutils literal notranslate"><span class="pre">VolatilityPrior</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">RandomWalkVolatilityPrior</span></code>. The context is built by the vector-model base
-in <code class="docutils literal notranslate"><span class="pre">_models</span></code>, and the samplers that read the moments and drive the
-adaptive hooks are there too.</p>
+module also re-exports five classes from here under public names:
+<a class="reference internal" href="../../api/generated/cultivars.bayes.priors.Prior.html#cultivars.bayes.priors.Prior" title="cultivars.bayes.priors.Prior"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior</span></code></a>,
+<a class="reference internal" href="../../api/generated/cultivars.bayes.priors.PriorContext.html#cultivars.bayes.priors.PriorContext" title="cultivars.bayes.priors.PriorContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">PriorContext</span></code></a>,
+<a class="reference internal" href="../../api/generated/cultivars.bayes.priors.NoPrior.html#cultivars.bayes.priors.NoPrior" title="cultivars.bayes.priors.NoPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">NoPrior</span></code></a>,
+<a class="reference internal" href="../../api/generated/cultivars.bayes.priors.VolatilityPrior.html#cultivars.bayes.priors.VolatilityPrior" title="cultivars.bayes.priors.VolatilityPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolatilityPrior</span></code></a>, and
+<a class="reference internal" href="../../api/generated/cultivars.bayes.priors.RandomWalkVolatilityPrior.html#cultivars.bayes.priors.RandomWalkVolatilityPrior" title="cultivars.bayes.priors.RandomWalkVolatilityPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomWalkVolatilityPrior</span></code></a>. The context is
+built by the vector-model base in <a class="reference internal" href="cultivars.engine._internals._models.html#module-cultivars.engine._internals._models" title="cultivars.engine._internals._models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">_models</span></code></a>,
+and the samplers that read the moments and drive the adaptive hooks are there
+too.</p>
 <p class="rubric">References</p>
 <p>Banbura, M., Giannone, D., &amp; Reichlin, L. (2010). Large Bayesian vector
 auto regressions. <em>Journal of Applied Econometrics</em>, 25(1), 71-92.</p>
@@ -5819,7 +5825,7 @@ harder to forecast? <em>Journal of Money, Credit and Banking</em>, 39(s1),
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

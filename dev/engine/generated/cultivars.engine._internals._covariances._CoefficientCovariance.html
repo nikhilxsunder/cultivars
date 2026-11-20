@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_CoefficientCovariance &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._covariances._CoefficientCovariance.fec0909b-b857-496a-8bd7-125f148691f8.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._covariances._CoefficientCovariance.4b9eb8aa-2fc8-49c1-a585-b169fc756092.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._covariances._CoefficientCovariance';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,11 +5522,11 @@
 <h1>_CoefficientCovariance<a class="headerlink" href="#coefficientcovariance" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._covariances._CoefficientCovariance">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._covariances.</span></span><span class="sig-name descname"><span class="pre">_CoefficientCovariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xtx_inv</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_covariances.py#L59-L276"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._covariances._CoefficientCovariance" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._covariances.</span></span><span class="sig-name descname"><span class="pre">_CoefficientCovariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xtx_inv</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_covariances.py#L84-L301"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._covariances._CoefficientCovariance" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Asymptotic covariance of a multivariate least-squares coefficient matrix.</p>
-<p>For <code class="docutils literal notranslate"><span class="pre">Y</span> <span class="pre">=</span> <span class="pre">Z</span> <span class="pre">B</span> <span class="pre">+</span> <span class="pre">U</span></code> with <code class="docutils literal notranslate"><span class="pre">B</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(width,</span> <span class="pre">k)</span></code>, the estimator’s
-asymptotic covariance is <code class="docutils literal notranslate"><span class="pre">kron(sigma_u,</span> <span class="pre">inv(Z'Z))</span></code> over <code class="docutils literal notranslate"><span class="pre">vec(B)</span></code> stacked
+<p>For <span class="math notranslate nohighlight">\(Y = Z B + U\)</span> with <span class="math notranslate nohighlight">\(B\)</span> of shape <code class="docutils literal notranslate"><span class="pre">(width,</span> <span class="pre">k)</span></code>, the estimator’s
+asymptotic covariance is <span class="math notranslate nohighlight">\(\Sigma_u \otimes (Z^\top Z)^{-1}\)</span> over <code class="docutils literal notranslate"><span class="pre">vec(B)</span></code> stacked
 equation by equation. This holds the two Kronecker factors rather than their
 product. The product is <code class="docutils literal notranslate"><span class="pre">(k</span> <span class="pre">*</span> <span class="pre">width)</span></code> square, which for a fixed-effects
 panel with two hundred units is a third of a million floats to answer a
@@ -5844,7 +5846,7 @@ corrected.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

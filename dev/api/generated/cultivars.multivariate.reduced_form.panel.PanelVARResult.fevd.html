@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>PanelVARResult.fevd &#8212; cultivars</title>
   
   
@@ -85,7 +85,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.reduced_form.panel.PanelVARResult.fevd.612db2c5-07a8-41c4-b5cc-271c9bb2607f.js"></script>
+    <script defer="defer" src="../../_static/tippy/api/generated/cultivars.multivariate.reduced_form.panel.PanelVARResult.fevd.731d2128-782b-4e88-abd3-0dc2d8fe09e1.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/cultivars.multivariate.reduced_form.panel.PanelVARResult.fevd';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -106,7 +108,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -2840,7 +2842,7 @@
 <h1>PanelVARResult.fevd<a class="headerlink" href="#panelvarresult-fevd" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="cultivars.multivariate.reduced_form.panel.PanelVARResult.fevd">
-<span class="sig-prename descclassname"><span class="pre">PanelVARResult.</span></span><span class="sig-name descname"><span class="pre">fevd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L1214-L1234"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.reduced_form.panel.PanelVARResult.fevd" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">PanelVARResult.</span></span><span class="sig-name descname"><span class="pre">fevd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_mixins.py#L1247-L1267"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.multivariate.reduced_form.panel.PanelVARResult.fevd" title="Link to this definition">#</a></dt>
 <dd><p>Forecast-error variance decomposition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2851,15 +2853,15 @@
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>An array of shape <code class="docutils literal notranslate"><span class="pre">(horizon</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">k,</span> <span class="pre">k)</span></code> whose entry <code class="docutils literal notranslate"><span class="pre">[h,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>
-is the share of variable <code class="docutils literal notranslate"><span class="pre">i</span></code>’s <code class="docutils literal notranslate"><span class="pre">h</span> <span class="pre">+</span> <span class="pre">1</span></code>-step forecast-error
-variance attributable to shock <code class="docutils literal notranslate"><span class="pre">j</span></code>. Rows sum to one by
+is the share of variable <span class="math notranslate nohighlight">\(i\)</span>’s <span class="math notranslate nohighlight">\(h + 1\)</span>-step forecast-error
+variance attributable to shock <span class="math notranslate nohighlight">\(j\)</span>. Rows sum to one by
 construction, so a row that does not is a bug rather than a finding.</p>
 </dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Inherits the ordering dependence of <a class="reference internal" href="cultivars.multivariate.reduced_form.panel.PanelVARResult.irf.html#cultivars.multivariate.reduced_form.panel.PanelVARResult.irf" title="cultivars.multivariate.reduced_form.panel.PanelVARResult.irf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">irf()</span></code></a> in full, and more
-visibly: at <code class="docutils literal notranslate"><span class="pre">h</span> <span class="pre">=</span> <span class="pre">0</span></code> the decomposition is exactly triangular, so
+visibly: at <span class="math notranslate nohighlight">\(h = 0\)</span> the decomposition is exactly triangular, so
 the first variable is always attributed 100% of its own impact
 variance purely because of where it sits in <code class="docutils literal notranslate"><span class="pre">names</span></code>.</p>
 </div>
@@ -3091,7 +3093,7 @@ variance purely because of where it sits in <code class="docutils literal notran
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

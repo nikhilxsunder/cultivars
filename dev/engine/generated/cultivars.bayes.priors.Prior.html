@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>Prior &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.bayes.priors.Prior.383d992c-1414-499a-9373-90c2f130d8a9.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.bayes.priors.Prior.a79a218f-edc2-410c-a824-99129d8df71d.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.bayes.priors.Prior';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,7 +5522,7 @@
 <h1>Prior<a class="headerlink" href="#prior" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">Prior</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L244-L401"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">Prior</span></span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L261-L423"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>A prior on a vector autoregression’s coefficients.</p>
 <p>Stated as <em>moments</em> – a mean and a variance over the coefficient matrix –
@@ -5542,7 +5544,7 @@ Giannone, Lenza and Primiceri do, and it is why the two coexist here.</p>
 columns: the deterministic block, then the lags ordered lag-major (every
 variable at lag one, then every variable at lag two), then the exogenous
 regressors. Columns are equations. So entry <code class="docutils literal notranslate"><span class="pre">[lag_offset</span> <span class="pre">+</span> <span class="pre">j,</span> <span class="pre">i]</span></code> is
-equation <code class="docutils literal notranslate"><span class="pre">i</span></code>’s coefficient on the first lag of variable <code class="docutils literal notranslate"><span class="pre">j</span></code>.</p>
+equation <span class="math notranslate nohighlight">\(i\)</span>’s coefficient on the first lag of variable <span class="math notranslate nohighlight">\(j\)</span>.</p>
 <p>A subclass implements <a class="reference internal" href="../../api/generated/cultivars.bayes.priors.Prior.coefficient_mean.html#cultivars.bayes.priors.Prior.coefficient_mean" title="cultivars.bayes.priors.Prior.coefficient_mean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">coefficient_mean()</span></code></a>,
 <a class="reference internal" href="../../api/generated/cultivars.bayes.priors.Prior.coefficient_variance.html#cultivars.bayes.priors.Prior.coefficient_variance" title="cultivars.bayes.priors.Prior.coefficient_variance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">coefficient_variance()</span></code></a>, and <a class="reference internal" href="cultivars.bayes.priors.Prior._label.html#cultivars.bayes.priors.Prior._label" title="cultivars.bayes.priors.Prior._label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_label()</span></code></a>, and overrides
 <a class="reference internal" href="../../api/generated/cultivars.bayes.priors.Prior.dummy_observations.html#cultivars.bayes.priors.Prior.dummy_observations" title="cultivars.bayes.priors.Prior.dummy_observations"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dummy_observations()</span></code></a> only if it restricts a combination of
@@ -5556,6 +5558,14 @@ fits.</p>
 is <code class="xref py py-class docutils literal notranslate"><span class="pre">_NoPrior</span></code>. There is no <code class="docutils literal notranslate"><span class="pre">__radd__</span></code>, so the built-in
 <code class="docutils literal notranslate"><span class="pre">sum</span></code> needs a prior as its start value:
 <code class="docutils literal notranslate"><span class="pre">sum(priors,</span> <span class="pre">_NoPrior())</span></code>.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.bayes.priors.Prior.html#cultivars.bayes.priors.Prior" title="cultivars.bayes.priors.Prior"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior</span></code></a> – the public name of this
+class.</p></li>
+<li><p><a class="reference internal" href="cultivars.multivariate.large_dim.hierarchical.HierarchicalBVAR._prior_at.html#cultivars.multivariate.large_dim.hierarchical.HierarchicalBVAR._prior_at" title="cultivars.multivariate.large_dim.hierarchical.HierarchicalBVAR._prior_at"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HierarchicalBVAR._prior_at()</span></code></a> – returns an instance.</p></li>
+</ul>
 </div>
 <div class="admonition-example admonition">
 <p class="admonition-title">Example</p>
@@ -5825,7 +5835,7 @@ composing it with itself does to the moments:</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

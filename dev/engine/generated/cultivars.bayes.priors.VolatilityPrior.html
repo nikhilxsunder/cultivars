@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T16:59:41+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>VolatilityPrior &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.bayes.priors.VolatilityPrior.05469455-6e6f-4ffe-9d76-6b79a64cb0b0.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.bayes.priors.VolatilityPrior.afcd414c-0d45-4539-9747-2113bea859de.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.bayes.priors.VolatilityPrior';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,15 +5522,15 @@
 <h1>VolatilityPrior<a class="headerlink" href="#volatilityprior" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">VolatilityPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">10.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20.0,</span> <span class="pre">1.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2.5,</span> <span class="pre">0.025)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L825-L948"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.bayes.priors.</span></span><span class="sig-name descname"><span class="pre">VolatilityPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">10.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20.0,</span> <span class="pre">1.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2.5,</span> <span class="pre">0.025)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_priors.py#L851-L978"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The Kim-Shephard-Chib prior on a stationary log-AR(1) volatility law.</p>
-<p><code class="docutils literal notranslate"><span class="pre">h_{t+1}</span> <span class="pre">=</span> <span class="pre">mu</span> <span class="pre">+</span> <span class="pre">phi</span> <span class="pre">(h_t</span> <span class="pre">-</span> <span class="pre">mu)</span> <span class="pre">+</span> <span class="pre">sigma</span> <span class="pre">eta_t</span></code> carries three
+<p><span class="math notranslate nohighlight">\(h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \eta_t\)</span> carries three
 hyperparameters, and every model in the package whose volatility
 follows this law – the univariate stochastic-volatility model, the
 volatility-identified SVAR, the factor stochastic-volatility model –
 states its prior through this one record: Gaussian on <code class="docutils literal notranslate"><span class="pre">mu</span></code>, Beta on
-<code class="docutils literal notranslate"><span class="pre">(phi</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">/</span> <span class="pre">2</span></code>, inverse-gamma on <code class="docutils literal notranslate"><span class="pre">sigma2</span></code>. The defaults are Kim,
+<span class="math notranslate nohighlight">\((\phi + 1) / 2\)</span>, inverse-gamma on <code class="docutils literal notranslate"><span class="pre">sigma2</span></code>. The defaults are Kim,
 Shephard and Chib’s (1998), which put the persistence near <code class="docutils literal notranslate"><span class="pre">0.86</span></code> a
 priori and keep the innovation variance small; a model that pins
 <code class="docutils literal notranslate"><span class="pre">mu</span></code> for identification says so and leaves that entry unread.</p>
@@ -5537,7 +5539,7 @@ priori and keep the innovation variance small; a model that pins
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mu</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>) – <code class="docutils literal notranslate"><span class="pre">(mean,</span> <span class="pre">variance)</span></code> of the Gaussian prior on the log-variance
 mean.</p></li>
-<li><p><strong>phi</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>) – <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b)</span></code> of the Beta prior on <code class="docutils literal notranslate"><span class="pre">(phi</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">/</span> <span class="pre">2</span></code>, both
+<li><p><strong>phi</strong> – <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b)</span></code> of the Beta prior on <span class="math notranslate nohighlight">\((\phi + 1) / 2\)</span>, both
 positive.</p></li>
 <li><p><strong>sigma2</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>) – <code class="docutils literal notranslate"><span class="pre">(shape,</span> <span class="pre">rate)</span></code> of the inverse-gamma prior on the
 log-variance innovation variance, both positive.</p></li>
@@ -5551,9 +5553,16 @@ log-variance innovation variance, both positive.</p></li>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>“Rate” is the rate of the gamma distribution on the precision
-<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">sigma2</span></code>, which is the scale of the inverse-gamma itself: the
+<span class="math notranslate nohighlight">\(1 / \sigma^2\)</span>, which is the scale of the inverse-gamma itself: the
 density is proportional to
-<code class="docutils literal notranslate"><span class="pre">sigma2</span> <span class="pre">**</span> <span class="pre">-(shape</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">exp(-rate</span> <span class="pre">/</span> <span class="pre">sigma2)</span></code>.</p>
+<span class="math notranslate nohighlight">\((\sigma^2)^{-(\mathrm{shape} + 1)} \exp(-\mathrm{rate} / \sigma^2)\)</span>.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../api/generated/cultivars.bayes.priors.VolatilityPrior.html#cultivars.bayes.priors.VolatilityPrior" title="cultivars.bayes.priors.VolatilityPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolatilityPrior</span></code></a> – the public name
+of this class.</p></li>
+</ul>
 </div>
 <p class="rubric">References</p>
 <p>Kim, S., Shephard, N., &amp; Chib, S. (1998). Stochastic volatility:
@@ -5809,7 +5818,7 @@ Review of Economic Studies</em>, 65(3), 361-393.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

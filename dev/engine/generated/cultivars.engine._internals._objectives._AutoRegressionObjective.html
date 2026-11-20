@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-11-19T15:17:33+00:00" />
+    <meta property="article:modified_time" content="2026-11-20T02:44:45+00:00" />
     <title>_AutoRegressionObjective &#8212; cultivars</title>
   
   
@@ -87,7 +87,9 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._objectives._AutoRegressionObjective.b6230fed-db1f-4650-a539-5fc713fb53da.js"></script>
+    <script defer="defer" src="../../_static/tippy/engine/generated/cultivars.engine._internals._objectives._AutoRegressionObjective.b6da236a-3f77-47ac-b019-e00b75d9c732.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'engine/generated/cultivars.engine._internals._objectives._AutoRegressionObjective';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -108,7 +110,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-11-19"/>
+    <meta name="docbuild:last-update" content="2026-11-20"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -5520,11 +5522,11 @@
 <h1>_AutoRegressionObjective<a class="headerlink" href="#autoregressionobjective" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cultivars.engine._internals._objectives._AutoRegressionObjective">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._objectives.</span></span><span class="sig-name descname"><span class="pre">_AutoRegressionObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_const</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_objectives.py#L209-L322"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._objectives._AutoRegressionObjective" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cultivars.engine._internals._objectives.</span></span><span class="sig-name descname"><span class="pre">_AutoRegressionObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_const</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/nikhilxsunder/cultivars/blob/dev/src/cultivars/engine/_internals/_objectives.py#L210-L327"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cultivars.engine._internals._objectives._AutoRegressionObjective" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cultivars.engine._internals._objectives._Objective.html#cultivars.engine._internals._objectives._Objective" title="cultivars.engine._internals._objectives._Objective"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Objective</span></code></a>[<a class="reference internal" href="cultivars.engine._internals._parameters._AutoRegressionParameters.html#cultivars.engine._internals._parameters._AutoRegressionParameters" title="cultivars.engine._internals._parameters._AutoRegressionParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">_AutoRegressionParameters</span></code></a>]</p>
 <p>Exact Kalman likelihood of an AR(p) in companion state-space form.</p>
 <p>The observation vector, selection vector, and observation covariance are
-all determined by the first unit vector <code class="docutils literal notranslate"><span class="pre">e_1</span></code>, so only <code class="docutils literal notranslate"><span class="pre">e_1</span></code> and the
+all determined by the first unit vector <span class="math notranslate nohighlight">\(e_1\)</span>, so only <span class="math notranslate nohighlight">\(e_1\)</span> and the
 identity are stored; the rest are reshaped views built on demand.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
@@ -5532,13 +5534,20 @@ identity are stored; the rest are reshaped views built on demand.</p>
 <li><p><strong>y</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – The endogenous series, used at full length.</p></li>
 <li><p><strong>order</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Autoregressive order <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
 <li><p><strong>has_const</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether a mean intercept is estimated.</p></li>
-<li><p><strong>state_unit</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – The first unit vector <code class="docutils literal notranslate"><span class="pre">e_1</span></code> of length <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
+<li><p><strong>state_unit</strong> – The first unit vector <span class="math notranslate nohighlight">\(e_1\)</span> of length <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
 <li><p><strong>identity</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – The <code class="docutils literal notranslate"><span class="pre">p</span></code> by <code class="docutils literal notranslate"><span class="pre">p</span></code> identity, used to solve for the stationary
 mean of the state when a constant is present.</p></li>
 <li><p><strong>theta0</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDArray</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.double" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">double</span></code></a>]</span>) – The warm start, from the CSS fit.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="cultivars.engine._internals._models._AutoRegressionModel._build_objective.html#cultivars.engine._internals._models._AutoRegressionModel._build_objective" title="cultivars.engine._internals._models._AutoRegressionModel._build_objective"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_AutoRegressionModel._build_objective()</span></code></a> – returns an
+instance.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <section id="attributes">
@@ -5555,7 +5564,7 @@ mean of the state when a constant is present.</p></li>
 <td><p>Whether a mean intercept is estimated.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._AutoRegressionObjective.state_unit.html#cultivars.engine._internals._objectives._AutoRegressionObjective.state_unit" title="cultivars.engine._internals._objectives._AutoRegressionObjective.state_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_unit</span></code></a></p></td>
-<td><p>The first unit vector <code class="docutils literal notranslate"><span class="pre">e_1</span></code> of length <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></td>
+<td><p>The first unit vector <span class="math notranslate nohighlight">\(e_1\)</span> of length <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._AutoRegressionObjective.identity.html#cultivars.engine._internals._objectives._AutoRegressionObjective.identity" title="cultivars.engine._internals._objectives._AutoRegressionObjective.identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identity</span></code></a></p></td>
 <td><p>The <code class="docutils literal notranslate"><span class="pre">p</span></code> by <code class="docutils literal notranslate"><span class="pre">p</span></code> identity, used to solve for the stationary mean of the state when a constant is present.</p></td>
@@ -5564,19 +5573,19 @@ mean of the state when a constant is present.</p></li>
 <td><p>The warm start, from the CSS fit.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._AutoRegressionObjective.design.html#cultivars.engine._internals._objectives._AutoRegressionObjective.design" title="cultivars.engine._internals._objectives._AutoRegressionObjective.design"><code class="xref py py-obj docutils literal notranslate"><span class="pre">design</span></code></a></p></td>
-<td><p>The observation matrix <code class="docutils literal notranslate"><span class="pre">Z</span></code>, which selects the first state.</p></td>
+<td><p>The observation matrix <span class="math notranslate nohighlight">\(Z\)</span>, which selects the first state.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._AutoRegressionObjective.method.html#cultivars.engine._internals._objectives._AutoRegressionObjective.method" title="cultivars.engine._internals._objectives._AutoRegressionObjective.method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span></code></a></p></td>
 <td><p>The <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.18.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> algorithm this surface wants.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._AutoRegressionObjective.obs_cov.html#cultivars.engine._internals._objectives._AutoRegressionObjective.obs_cov" title="cultivars.engine._internals._objectives._AutoRegressionObjective.obs_cov"><code class="xref py py-obj docutils literal notranslate"><span class="pre">obs_cov</span></code></a></p></td>
-<td><p>The observation covariance <code class="docutils literal notranslate"><span class="pre">H</span></code>, identically zero for an AR.</p></td>
+<td><p>The observation covariance <span class="math notranslate nohighlight">\(H\)</span>, identically zero for an AR.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._AutoRegressionObjective.options.html#cultivars.engine._internals._objectives._AutoRegressionObjective.options" title="cultivars.engine._internals._objectives._AutoRegressionObjective.options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">options</span></code></a></p></td>
 <td><p>Algorithm options passed through to the optimizer, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for the scipy defaults.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cultivars.engine._internals._objectives._AutoRegressionObjective.selection.html#cultivars.engine._internals._objectives._AutoRegressionObjective.selection" title="cultivars.engine._internals._objectives._AutoRegressionObjective.selection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">selection</span></code></a></p></td>
-<td><p>The selection matrix <code class="docutils literal notranslate"><span class="pre">R</span></code>, which loads the shock on the first state.</p></td>
+<td><p>The selection matrix <span class="math notranslate nohighlight">\(R\)</span>, which loads the shock on the first state.</p></td>
 </tr>
 </tbody>
 </table>
@@ -5827,7 +5836,7 @@ mean of the state when a constant is present.</p></li>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a5 &middot; updated 2026-11-19 &middot; built with
+          cultivars 1.0.0a5 &middot; updated 2026-11-20 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"
