@@ -25,7 +25,7 @@ One protocol, :class:`_CoefficientInference`. A multivariate result reports
 standard errors, intervals, and Wald tests without knowing whether the
 numbers behind them come from a sampling distribution or from a posterior.
 It holds an object that satisfies this protocol and asks. The two
-implementations are in ``_covariances``.
+implementations are in :mod:`~cultivars.engine._internals._covariances`.
 """
 
 from __future__ import annotations
@@ -48,11 +48,20 @@ class _CoefficientInference(Protocol):
     """What every result needs from whatever produced its coefficients.
 
     Two objects satisfy this and they answer the same questions from different
-    theories: :class:`_CoefficientCovariance` from a sampling distribution,
-    :class:`_PosteriorCovariance` from a posterior. Naming the interface rather
-    than the union is what keeps the mixin from having to know which it has --
-    and ``_IS_POSTERIOR`` is here precisely so the one place that *must* know,
-    the coefficient table's headings, can ask.
+    theories:
+    :class:`~cultivars.engine._internals._covariances._CoefficientCovariance`
+    from a sampling distribution,
+    :class:`~cultivars.engine._internals._covariances._PosteriorCovariance`
+    from a posterior. Naming the interface rather than the union is what keeps
+    the mixin from having to know which it has -- and ``_IS_POSTERIOR`` is here
+    precisely so the one place that *must* know, the coefficient table's
+    headings, can ask.
+
+    See Also:
+        * :class:`~cultivars.multivariate.reduced_form.vector_autoregression.CoefficientInference`
+          -- the public name of this class.
+        * :attr:`._VectorAutoRegressionFit.posterior` -- holds an instance.
+        * :attr:`._VectorResult.posterior` -- holds an instance.
     """
 
     @property

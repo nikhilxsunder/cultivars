@@ -23,25 +23,25 @@
 
 Eight routines of three kinds.
 
-Optimizers. ``_solve`` minimizes an objective from every starting point the
-objective supplies and keeps the best; ``_maximize_likelihood`` is the same
+Optimizers. :func:`_solve` minimizes an objective from every starting point the
+objective supplies and keeps the best; :func:`_maximize_likelihood` is the same
 call with the sign flipped, for objectives that are negative log
 likelihoods. The algorithm and its options belong to the objective, so
 these two contain no model-specific choices.
 
-Estimators. ``_solve_global`` stacks conditional unit models into one
-closed global autoregression. ``_posterior_coefficients`` computes the
+Estimators. :func:`_solve_global` stacks conditional unit models into one
+closed global autoregression. :func:`_posterior_coefficients` computes the
 equation-by-equation posterior of a coefficient matrix under a
-moment-and-dummy prior. ``_conjugate_posterior`` is the
+moment-and-dummy prior. :func:`_conjugate_posterior` is the
 Normal-inverse-Wishart update with its exact log marginal likelihood.
-``_fista_penalized`` solves a penalized least-squares problem by
+:func:`_fista_penalized` solves a penalized least-squares problem by
 accelerated proximal gradient.
 
-Factorizations. ``_spectral_factor`` computes the canonical factor of a
-spectral density by Wilson's algorithm, and ``_solve_perturbation`` solves
+Factorizations. :func:`_spectral_factor` computes the canonical factor of a
+spectral density by Wilson's algorithm, and :func:`_solve_perturbation` solves
 a rational-expectations model to first or second order around its steady
 state. The background to the perturbation method is in the module
-docstring of ``_specifications``.
+docstring of :mod:`~cultivars.engine._internals._specifications`.
 """
 
 from __future__ import annotations
@@ -131,16 +131,17 @@ def _solve_global(
     unit_of_column: Sequence[int],
     variable_of_column: Sequence[int],
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """Stack conditional unit equations into one closed global autoregression.
+    r"""Stack conditional unit equations into one closed global autoregression.
 
-    Each unit satisfies ``A_i0 z_it = d_it + sum_l A_il z_{i,t-l} + u_it`` with
-    ``A_i0 = [I, -Lambda_i0]`` and ``A_il = [Phi_il, Lambda_il]``. Substituting
-    ``z_it = W_i x_t`` writes every unit against the same global vector, and
-    stacking the results gives ``G_0 x_t = d_t + sum_l G_l x_{t-l} + u_t``,
-    which is square because the units' own blocks partition the global vector
-    exactly once.
+    Each unit satisfies :math:`A_{i0} z_{it} = d_{it} + \sum_{l} A_{il} z_{i,t-l} + u_{it}` with
+    :math:`A_{i0} = [I,\; -\Lambda_{i0}]` and
+    :math:`A_{il} = [\Phi_{il},\; \Lambda_{il}]`. Substituting
+    :math:`z_{it} = W_i x_t` writes every unit against the same global vector,
+    and stacking the results gives
+    :math:`G_0 x_t = d_t + \sum_{l} G_l x_{t-l} + u_t`, which is square because
+    the units' own blocks partition the global vector exactly once.
 
-    The inversion of ``G_0`` is the moment the system closes. Individually no
+    The inversion of :math:`G_0` is the moment the system closes. Individually no
     unit has a law of motion for its foreign variables; jointly they do, because
     one unit's foreign aggregate is a weighted sum of other units' domestic
     variables and those units have equations. Nothing is estimated here -- the
@@ -155,13 +156,13 @@ def _solve_global(
         variable_of_column: Variable identity for each global column.
 
     Returns:
-        The contemporaneous matrix ``G_0``, the ``(p, k, k)`` stack of global
-        autoregressive matrices ``G_0^{-1} G_l``, and the global deterministic
+        The contemporaneous matrix :math:`G_0`, the ``(p, k, k)`` stack of global
+        autoregressive matrices :math:`G_0^{-1} G_l`, and the global deterministic
         coefficients.
 
     Raises:
         DimensionError: If the units do not partition the global columns.
-        NumericalError: If ``G_0`` is singular, which means the contemporaneous
+        NumericalError: If :math:`G_0` is singular, which means the contemporaneous
             linkage has no solution -- typically a weight matrix that makes two
             units' foreign aggregates identical.
     """
@@ -221,7 +222,7 @@ def _posterior_coefficients(
     """Posterior mean of the coefficient matrix, equation by equation.
 
     Each equation solves ``(X'X / s_i^2 + V_i^-1) b_i = X'y_i / s_i^2 +
-    V_i^-1 m_i`` with ``V_i`` the prior variances for that equation and ``m_i``
+    V_i^-1 m_i`` with :math:`V_i` the prior variances for that equation and :math:`m_i`
     its prior mean. Running equation by equation is not an approximation and
     not a shortcut: once the cross-equation weight differs from one, the prior
     variance stops factoring as a Kronecker product, the Normal-inverse-Wishart
@@ -239,11 +240,13 @@ def _posterior_coefficients(
         context: What the prior needs to know about the sample.
 
     Returns:
-        A :class:`_PosteriorCovariance` carrying the posterior mean, the
-        per-equation covariance, and the effective parameter count. The last is
-        not decoration: shrinkage means the model spends fewer parameters than
-        the design has columns, and an information criterion that charges for
-        the nominal width penalizes a shrunk model for freedom it never used.
+        A
+        :class:`~cultivars.engine._internals._covariances._PosteriorCovariance`
+        carrying the posterior mean, the per-equation covariance, and the
+        effective parameter count. The last is not decoration: shrinkage means
+        the model spends fewer parameters than the design has columns, and an
+        information criterion that charges for the nominal width penalizes a
+        shrunk model for freedom it never used.
 
     Raises:
         DimensionError: If the design does not match the context's width.
@@ -286,7 +289,7 @@ def _conjugate_posterior(
     scale0: npt.NDArray[np.float64],
     df0: float,
 ) -> _ConjugatePosterior:
-    """One exact Normal-inverse-Wishart update, with its marginal likelihood.
+    r"""One exact Normal-inverse-Wishart update, with its marginal likelihood.
 
     The conjugate counterpart of :func:`posterior_coefficients`, and the two
     agree exactly at their overlap: with a Kronecker prior the per-equation
@@ -296,9 +299,11 @@ def _conjugate_posterior(
     over ``(B, Sigma)`` and the closed-form marginal likelihood that
     hierarchical shrinkage optimizes.
 
-    The prior is ``Sigma ~ IW(scale0, df0)`` and ``B | Sigma`` matrix normal
-    with mean ``mean`` and covariance ``Sigma x diag(omega)``; the update is
-    the standard one, and the marginal likelihood is the matrix-variate-t
+    The prior is
+    :math:`\Sigma \sim \mathcal{IW}(\mathrm{scale0}, \mathrm{df0})` and
+    :math:`B \mid \Sigma` matrix normal with mean ``mean`` and covariance
+    :math:`\Sigma \otimes \operatorname{diag}(\omega)`; the update is the
+    standard one, and the marginal likelihood is the matrix-variate-t
     normalizing-constant ratio, exact rather than simulated.
 
     Args:
@@ -312,7 +317,7 @@ def _conjugate_posterior(
         df0: Inverse-Wishart prior degrees of freedom, above ``k - 1``.
 
     Returns:
-        The :class:`_ConjugatePosterior`.
+        The :class:`~cultivars.engine._internals._posteriors._ConjugatePosterior`.
 
     Raises:
         NumericalError: If a posterior scale matrix is not positive definite,
@@ -367,10 +372,10 @@ def _fista_penalized(
     max_iter: int = 500,
     tol: float = 1e-8,
 ) -> npt.NDArray[np.float64]:
-    """Penalized multivariate least squares by accelerated proximal gradient.
+    r"""Penalized multivariate least squares by accelerated proximal gradient.
 
-    Minimizes ``sum_i [ b_i' G b_i / 2 - c_i' b_i ] + lam * P(B)`` over the
-    ``(w, k)`` coefficient matrix, where ``P`` is a weighted elementwise
+    Minimizes :math:`\sum_i \bigl[ b_i^\top G b_i / 2 - c_i^\top b_i \bigr] + \lambda P(B)` over the
+    ``(w, k)`` coefficient matrix, where :math:`P` is a weighted elementwise
     L1 penalty -- or, when ``groups`` is given, a group penalty whose blocks
     are rows shared by every equation, shrunk by Frobenius norm. FISTA with
     adaptive restart, fully vectorized across coordinates and equations: one
@@ -440,24 +445,24 @@ def _spectral_factor(
     max_iter: int = 200,
     tol: float = 1e-10,
 ) -> tuple[npt.NDArray[np.complex128], npt.NDArray[np.float64]]:
-    """Canonical spectral factorization by Wilson's (1972) algorithm.
+    r"""Canonical spectral factorization by Wilson's (1972) algorithm.
 
     Given a Hermitian positive-definite spectral density sampled on the
-    *full* circle ``omega_m = 2 pi m / M``, finds the minimum-phase factor
-    ``psi`` with ``2 pi S(omega) = psi(omega) psi(omega)*`` and only
+    *full* circle :math:`\omega_m = 2 \pi m / M`, finds the minimum-phase factor
+    :math:`\psi` with :math:`2 \pi S(\omega) = \psi(\omega)\, \psi(\omega)^{\ast}` and only
     non-negative-lag Fourier content, and reads off the innovation
-    representation: transfer ``H = psi psi_0**(-1)`` and covariance
-    ``Sigma = psi_0 psi_0*``. This is what turns a *marginal* spectral
+    representation: transfer :math:`H = \psi\, \psi_0^{-1}` and covariance
+    :math:`\Sigma = \psi_0 \psi_0^{\ast}`. This is what turns a *marginal* spectral
     density -- a sub-block of a larger system's, which is generally VARMA
     and matches no finite lag stack -- back into the (transfer, covariance)
     pair Geweke's causality formulas need, and it is the standard route
     (Dhamala-Rangarajan-Ding 2008). The constant-unitary ambiguity of the
-    factorization cancels in ``H`` and ``Sigma``, so no triangularization
-    of ``psi_0`` is enforced.
+    factorization cancels in :math:`H` and :math:`\Sigma`, so no triangularization
+    of :math:`\psi_0` is enforced.
 
     Args:
         density: ``(M, k, k)`` spectral density on the full circle, with
-            the ``1 / (2 pi)`` normalization of :func:`spectral_matrix`.
+            the :math:`1 / (2 \pi)` normalization of :func:`spectral_matrix`.
         max_iter: Iteration cap.
         tol: Relative factorization error below which iteration stops.
 
@@ -534,7 +539,7 @@ def _solve_perturbation(
         residual_tolerance: Largest steady-state residual tolerated.
 
     Returns:
-        The :class:`_PerturbationSolution`.
+        The :class:`~cultivars.engine._internals._solutions._PerturbationSolution`.
 
     Raises:
         SpecificationError: If the order is not 1 or 2, or the equation

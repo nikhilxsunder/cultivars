@@ -21,13 +21,13 @@
 # SOFTWARE.
 """Posterior records: what a sampler returns once its draws are packed.
 
-A sampler in this package produces a *fit* record of raw draws (``_fits``).
-A posterior record is that fit made usable: the draws under the names a
-user reads, the bookkeeping of the run, and every derived quantity as a
-property or method of the draws. Posterior means, pointwise bands, the
-parameter record at the posterior mean, the state-space model that mean
-implies, replicated and simulated data, and the summary table all live
-here. Nothing in this module runs a sampler.
+A sampler in this package produces a *fit* record of raw draws
+(:mod:`~cultivars.engine._internals._fits`). A posterior record is that fit
+made usable: the draws under the names a user reads, the bookkeeping of the
+run, and every derived quantity as a property or method of the draws. Posterior
+means, pointwise bands, the parameter record at the posterior mean, the
+state-space model that mean implies, replicated and simulated data, and the
+summary table all live here. Nothing in this module runs a sampler.
 
 There are four records:
 
@@ -63,14 +63,17 @@ impulse-response methods that loop over draws, are the ones that carry
 parameter uncertainty.
 
 Layout. The three draw-based records are re-exported under public names:
-``SVPosterior`` and ``UCSVPosterior`` from
+:class:`~cultivars.univariate.stochastic_volatility.SVPosterior` and
+:class:`~cultivars.univariate.stochastic_volatility.UCSVPosterior` from
 :mod:`cultivars.univariate.stochastic_volatility`, and
-``PerturbationDSGEPosterior`` from
-:mod:`cultivars.multivariate.structural.perturbation`. The conjugate record
-is built by the Normal-inverse-Wishart update in ``_solvers``. The summary,
-series, and convergence behavior comes from the mixins in ``_mixins``; the
-state-space emitters are in ``_emitters`` and the simulators in
-``_simulators``.
+:class:`~cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior`
+from :mod:`cultivars.multivariate.structural.perturbation`. The conjugate
+record is built by the Normal-inverse-Wishart update in
+:mod:`~cultivars.engine._internals._solvers`. The summary, series, and
+convergence behavior comes from the mixins in
+:mod:`~cultivars.engine._internals._mixins`; the state-space emitters are in
+:mod:`~cultivars.engine._internals._emitters` and the simulators in
+:mod:`~cultivars.engine._internals._simulators`.
 
 References:
     Geweke, J. (1999). Using simulation methods for Bayesian econometric
@@ -135,39 +138,45 @@ __all__ = [
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _ConjugatePosterior:
-    """Joint Normal-inverse-Wishart posterior over ``(B, Sigma)``.
+    r"""Joint Normal-inverse-Wishart posterior over ``(B, Sigma)``.
 
-    The conjugate counterpart of :class:`_PosteriorCovariance`, and it holds
-    Kronecker factors again because conjugacy is exactly the condition under
-    which they exist: with the prior variance factoring as ``Sigma x Omega``,
-    the posterior of the coefficient matrix given ``Sigma`` is matrix normal
-    with row precision ``K = Omega^-1 + X'X`` shared by every equation, and
-    ``Sigma`` itself is inverse-Wishart. Cross-equation posterior dependence
-    -- what the per-equation record cannot carry -- lives in that product.
+    The conjugate counterpart of
+    :class:`~cultivars.engine._internals._covariances._PosteriorCovariance`,
+    and it holds Kronecker factors again because conjugacy is exactly the
+    condition under which they exist: with the prior variance factoring as
+    :math:`\Sigma \otimes \Omega`, the posterior of the coefficient matrix
+    given :math:`\Sigma` is matrix normal with row precision
+    :math:`K = \Omega^{-1} + X^\top X` shared by every equation, and
+    :math:`\Sigma` itself is inverse-Wishart. Cross-equation posterior
+    dependence -- what the per-equation record cannot carry -- lives in that
+    product.
 
     Attributes:
         coefficients: The ``(width, k)`` posterior mean, in design-column
             order.
-        row_precision: The ``(width, width)`` shared row precision ``K``.
+        row_precision: The ``(width, width)`` shared row precision :math:`K`.
         scale: The ``(k, k)`` inverse-Wishart posterior scale.
         df: Inverse-Wishart posterior degrees of freedom.
         log_ml: Log marginal likelihood of the rows this posterior was
             updated on, given the prior -- exact, from the matrix-variate-t
             form.
 
-    In symbols, with ``B`` the ``(width, k)`` coefficient matrix::
+    In symbols, with :math:`B` the ``(width, k)`` coefficient matrix::
 
         B | Sigma ~ MN(coefficients, row_precision^-1, Sigma)
         Sigma ~ IW(scale, df)
 
-    so the covariance of ``vec(B)`` given ``Sigma`` is the Kronecker product
-    of ``Sigma`` with the inverse of ``row_precision``.
+    so the covariance of ``vec(B)`` given :math:`\Sigma` is the Kronecker product
+    of :math:`\Sigma` with the inverse of ``row_precision``.
 
     Note:
         The record is a plain container. It is built by the conjugate
-        update in ``_solvers`` and validates nothing itself. As with every
-        frozen record that holds arrays, ``==`` raises ``ValueError`` and
-        ``hash`` raises ``TypeError``.
+        update in :mod:`~cultivars.engine._internals._solvers` and validates
+        nothing itself. As with every frozen record that holds arrays, ``==``
+        raises ``ValueError`` and ``hash`` raises ``TypeError``.
+
+    See Also:
+        * :func:`._conjugate_posterior` -- returns an instance.
 
     Example:
         >>> import numpy as np
@@ -183,22 +192,22 @@ class _ConjugatePosterior:
     """
 
     coefficients: npt.NDArray[np.float64]
-    """Posterior mean of the coefficient matrix, ``(width, k)``, in design-column order.
+    r"""Posterior mean of the coefficient matrix, ``(width, k)``, in design-column order.
 
     Rows are design columns and columns are equations, the layout every
-    prior uses. It is the mean of ``B`` given any ``Sigma``, and so also the
+    prior uses. It is the mean of :math:`B` given any :math:`\Sigma`, and so also the
     marginal posterior mean.
     """
     row_precision: npt.NDArray[np.float64]
-    """Row precision ``K = Omega^-1 + X'X`` shared by every equation, ``(width, width)``.
+    r"""Row precision ``K = Omega^-1 + X'X`` shared by every equation, ``(width, width)``.
 
-    Symmetric. Its inverse, scaled by ``Sigma``, is the covariance of the
-    coefficients given ``Sigma``.
+    Symmetric. Its inverse, scaled by :math:`\Sigma`, is the covariance of the
+    coefficients given :math:`\Sigma`.
     """
     scale: npt.NDArray[np.float64]
-    """Inverse-Wishart posterior scale matrix, ``(k, k)``.
+    r"""Inverse-Wishart posterior scale matrix, ``(k, k)``.
 
-    Divided by ``df - k - 1`` it is the posterior mean of ``Sigma``; see
+    Divided by ``df - k - 1`` it is the posterior mean of :math:`\Sigma`; see
     :attr:`sigma_mean`.
     """
     df: float
@@ -229,7 +238,7 @@ class _ConjugatePosterior:
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
-    """A posterior over the stochastic-volatility model, from either sampler.
+    r"""A posterior over the stochastic-volatility model, from either sampler.
 
     Deliberately absent: ``llf``, ``n_params``, information criteria. A
     posterior has none of them; :attr:`loglik_draws` (particle chain only)
@@ -258,8 +267,8 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
 
-    The model is ``y_t = c + exp(h_t / 2) eps_t`` with
-    ``h_{t+1} = mu + phi (h_t - mu) + sigma eta_t``. The two samplers fill
+    The model is :math:`y_t = c + \exp(h_t / 2)\, \varepsilon_t` with
+    :math:`h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \eta_t`. The two samplers fill
     the record differently, and these fields mean different things under
     each:
 
@@ -318,7 +327,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     phi_draws: npt.NDArray[np.float64] = field(repr=False)
     """Kept draws of the persistence ``phi``, ``(S,)``, each in ``(-1, 1)``."""
     sigma2_draws: npt.NDArray[np.float64] = field(repr=False)
-    """Kept draws of the log-variance innovation variance ``sigma**2``, ``(S,)``."""
+    r"""Kept draws of the log-variance innovation variance :math:`\sigma^2`, ``(S,)``."""
     mean_draws: npt.NDArray[np.float64] = field(repr=False)
     """Draws of the observation mean ``c``, ``(S,)``.
 
@@ -355,7 +364,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     when the noise is Gaussian and there is no such step.
     """
     nobs: int
-    """Number of observations ``n``."""
+    """Number of observations :math:`n`."""
     n_draws: int
     """Total sampler iterations, burn-in included."""
     n_burn: int
@@ -411,12 +420,12 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         n_particles: int,
         seed: int | None,
     ) -> _SVPosterior:
-        """Assemble from the particle chain's output.
+        r"""Assemble from the particle chain's output.
 
         Maps the chain's unconstrained coordinates back to the model's
-        parameters: ``mu`` as it is, ``phi = tanh(.)``, ``sigma2 = exp(.)``,
-        then ``nu = 2 + exp(.)`` if the model is heavy-tailed and
-        ``rho = tanh(.)`` if it carries leverage, in that order. The path
+        parameters: ``mu`` as it is, :math:`\phi = \tanh(\cdot)`, :math:`\sigma^2 = \exp(\cdot)`,
+        then :math:`\nu = 2 + \exp(\cdot)` if the model is heavy-tailed and
+        :math:`\rho = \tanh(\cdot)` if it carries leverage, in that order. The path
         block is then filled by one particle-smoother run at the
         posterior-mean parameters.
 
@@ -479,7 +488,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         """Posterior draws retained.
 
         Returns:
-            The length ``S`` of the parameter draw arrays.
+            The length :math:`S` of the parameter draw arrays.
         """
         return int(self.mu_draws.shape[0])
 
@@ -509,8 +518,9 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         ``rho`` is ``0.0`` when the posterior does not carry them.
 
         Returns:
-            A :class:`_StochasticVolatilityParameters` at the posterior
-            means.
+            A
+            :class:`~cultivars.engine._internals._parameters._StochasticVolatilityParameters`
+            at the posterior means.
         """
         return _StochasticVolatilityParameters(
             mu=float(self.mu_draws.mean()),
@@ -533,10 +543,10 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
 
     @property
     def volatility(self) -> npt.NDArray[np.float64]:
-        """Posterior-mean volatility ``E[exp(h_t / 2) | y]``, ``(n,)``.
+        r"""Posterior-mean volatility :math:`\mathbb{E}[\exp(h_t / 2) \mid y]`, ``(n,)``.
 
         Returns:
-            The mean over draws of ``exp(h / 2)``. By Jensen's inequality it
+            The mean over draws of :math:`\exp(h / 2)`. By Jensen's inequality it
             is not ``exp(log_variance / 2)`` unless there is a single path.
         """
         return np.asarray(np.exp(0.5 * self.h_draws).mean(axis=0), dtype=np.float64)
@@ -544,7 +554,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     def volatility_quantiles(
         self, levels: tuple[float, ...] = (0.05, 0.5, 0.95)
     ) -> npt.NDArray[np.float64]:
-        """Pointwise posterior quantiles of the volatility, ``(len(levels), n)``.
+        r"""Pointwise posterior quantiles of the volatility, ``(len(levels), n)``.
 
         Under the particle chain the path block holds one smoothed path,
         so the quantiles collapse to it; the parameter draws carry the
@@ -554,7 +564,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
             levels: Probabilities in ``[0, 1]``, one row of the result each.
 
         Returns:
-            The pointwise quantiles of ``exp(h / 2)`` across draws.
+            The pointwise quantiles of :math:`\exp(h / 2)` across draws.
         """
         return _quantiles(np.exp(0.5 * self.h_draws), levels)
 
@@ -719,7 +729,7 @@ class _SVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         when an acceptance rate is.
 
         Returns:
-            The :class:`_SummaryTable` that ``summary()``, ``str()``, and
+            The :class:`_SummaryTable` that :meth:`summary`, ``str()``, and
             the notebook renderer display.
         """
 
@@ -791,7 +801,7 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         trend_draws: ``(S, n)`` trend paths.
         h_draws: ``(S, n)`` log variances of the irregular.
         q_draws: ``(S, n)`` log variances of the trend innovation.
-        gamma2_irregular_draws: ``(S,)`` vol-of-vol variance draws of ``h``.
+        gamma2_irregular_draws: ``(S,)`` vol-of-vol variance draws of :math:`h`.
         gamma2_trend_draws: ``(S,)`` vol-of-vol variance draws of ``q``.
         nobs: Observations.
         n_draws: Total sampler iterations.
@@ -808,6 +818,12 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     Every path is sampled, so unlike :class:`_SVPosterior` under the
     particle chain the bands here carry path uncertainty. When the
     vol-of-vol was held fixed, the two ``gamma2`` arrays are constant.
+
+    See Also:
+        * :class:`~cultivars.univariate.stochastic_volatility.UCSVPosterior` --
+          the public name of this class.
+        * :meth:`.UCSV.fit` -- returns an instance.
+        * :meth:`.UCSVPosterior._from_fit` -- returns an instance.
 
     Example:
         >>> import numpy as np
@@ -832,17 +848,18 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
     summary rows are degenerate.
     """
     trend_draws: npt.NDArray[np.float64] = field(repr=False)
-    """Kept trend paths ``tau_t``, ``(S, n)``."""
+    r"""Kept trend paths :math:`\tau_t`, ``(S, n)``."""
     h_draws: npt.NDArray[np.float64] = field(repr=False)
     """Kept log-variance paths of the irregular, ``(S, n)``."""
     q_draws: npt.NDArray[np.float64] = field(repr=False)
     """Kept log-variance paths of the trend innovation, ``(S, n)``."""
     gamma2_irregular_draws: npt.NDArray[np.float64] = field(repr=False)
-    """Kept draws of the step variance of ``h``, ``(S,)``; a variance, not a standard deviation."""
+    """Kept draws of the step variance of :math:`h`, ``(S,)``; a variance, not
+    a standard deviation."""
     gamma2_trend_draws: npt.NDArray[np.float64] = field(repr=False)
     """Kept draws of the step variance of ``q``, ``(S,)``; a variance, not a standard deviation."""
     nobs: int
-    """Number of observations ``n``."""
+    """Number of observations :math:`n`."""
     n_draws: int
     """Total sampler iterations, burn-in included."""
     n_burn: int
@@ -884,7 +901,7 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         """Posterior draws retained.
 
         Returns:
-            The number of kept trend paths, ``S``.
+            The number of kept trend paths, :math:`S`.
         """
         return int(self.trend_draws.shape[0])
 
@@ -893,9 +910,10 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         """The posterior-mean parameter record.
 
         Returns:
-            A :class:`_TrendVolatilityParameters` holding the means of the
-            two step variances and the posterior means of the trend and of
-            both log variances at the first date.
+            A
+            :class:`~cultivars.engine._internals._parameters._TrendVolatilityParameters`
+            holding the means of the two step variances and the posterior means
+            of the trend and of both log variances at the first date.
         """
         return _TrendVolatilityParameters(
             gamma2_irregular=float(self.gamma2_irregular_draws.mean()),
@@ -929,19 +947,19 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
 
     @property
     def irregular_volatility(self) -> npt.NDArray[np.float64]:
-        """Posterior-mean volatility of the irregular ``E[exp(h_t / 2) | y]``.
+        r"""Posterior-mean volatility of the irregular :math:`\mathbb{E}[\exp(h_t / 2) \mid y]`.
 
         Returns:
-            The mean over draws of ``exp(h / 2)``, shape ``(n,)``.
+            The mean over draws of :math:`\exp(h / 2)`, shape ``(n,)``.
         """
         return np.asarray(np.exp(0.5 * self.h_draws).mean(axis=0), dtype=np.float64)
 
     @property
     def trend_volatility(self) -> npt.NDArray[np.float64]:
-        """Posterior-mean volatility of the trend innovation ``E[exp(q_t / 2) | y]``.
+        r"""Posterior-mean trend-innovation volatility, :math:`\mathbb{E}[\exp(q_t / 2) \mid y]`.
 
         Returns:
-            The mean over draws of ``exp(q / 2)``, shape ``(n,)``.
+            The mean over draws of :math:`\exp(q / 2)`, shape ``(n,)``.
         """
         return np.asarray(np.exp(0.5 * self.q_draws).mean(axis=0), dtype=np.float64)
 
@@ -982,7 +1000,7 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         Within a step both log variances are advanced first, and the trend
         then moves with the *advanced* variance of its innovation. That is
         one period ahead of the timing the sampler and :attr:`state_space`
-        use, where the step from ``t`` to ``t + 1`` is scaled by ``q_t``.
+        use, where the step from :math:`t` to :math:`t + 1` is scaled by :math:`q_t`.
 
         Kept draws are picked with replacement. ``n_paths`` is not
         validated: zero returns an empty array, and a negative value raises
@@ -1045,7 +1063,7 @@ class _UCSVPosterior(_SummaryMixin, _SeriesMixin, _ConvergenceMixin):
         date. The thinning interval is not listed.
 
         Returns:
-            The :class:`_SummaryTable` that ``summary()``, ``str()``, and
+            The :class:`_SummaryTable` that :meth:`summary`, ``str()``, and
             the notebook renderer display.
         """
 
@@ -1113,6 +1131,12 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
     ``impulse_responses``, ``simulate``) solves the model again at a
     parameter value. None of it is cached.
 
+    See Also:
+        * :class:`~cultivars.multivariate.structural.perturbation.PerturbationDSGEPosterior`
+          -- the public name of this class.
+        * :meth:`.PerturbationDSGE.sample` -- returns an instance.
+        * :meth:`.PerturbationDSGEPosterior._from_fit` -- returns an instance.
+
     Example:
         A latent AR(1) written as a one-state model, with a chain far too
         short for inference:
@@ -1172,7 +1196,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
     n_particles: int
     """Particles per likelihood estimate."""
     nobs: int
-    """Number of observations ``n``."""
+    """Number of observations :math:`n`."""
     n_draws: int
     """Total chain iterations, burn-in included."""
     n_burn: int
@@ -1279,7 +1303,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
         """Posterior draws retained.
 
         Returns:
-            The number of rows ``S`` of ``theta_draws``.
+            The number of rows :math:`S` of ``theta_draws``.
         """
         return int(self.theta_draws.shape[0])
 
@@ -1412,7 +1436,7 @@ class _PerturbationDSGEPosterior(_SummaryMixin, _ConvergenceMixin):
         space. The thinning interval is not listed.
 
         Returns:
-            The :class:`_SummaryTable` that ``summary()``, ``str()``, and
+            The :class:`_SummaryTable` that :meth:`summary`, ``str()``, and
             the notebook renderer display.
         """
         rows = []

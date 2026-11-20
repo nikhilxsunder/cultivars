@@ -81,6 +81,14 @@ class _MeanLayer(ABC):
 
     Concrete layers are frozen and hold whatever data their residual map needs,
     so an objective can ask for residuals with nothing but a parameter block.
+
+    See Also:
+        * :meth:`._ConditionalVarianceModel._mean_layer` -- returns an
+          instance.
+        * :meth:`._FractionalVarianceModel._mean_layer` -- returns an instance.
+        * :meth:`._ShortMemoryVarianceModel._mean_layer` -- returns an
+          instance.
+        * :attr:`._VarianceObjective.mean` -- holds an instance.
     """
 
     __slots__ = ()
@@ -141,7 +149,7 @@ class _MeanLayer(ABC):
         Defaults to the difference against the residuals, which is the only
         thing a recursion can offer. A layer that computes the mean directly
         should override this rather than let the difference round-trip: for a
-        matrix product ``t - (t - x)`` is not bit-identical to ``x``, and a
+        matrix product ``t - (t - x)`` is not bit-identical to :math:`x`, and a
         reported fitted value that disagrees with its own definition in the
         last unit in the last place is the kind of drift that makes a
         regression test fail for no reason anyone can find.
@@ -198,7 +206,7 @@ class _LinearMean(_MeanLayer):
         """Number of design columns.
 
         Returns:
-            The width ``m`` of this layer's parameter block.
+            The width :math:`m` of this layer's parameter block.
         """
         return int(self.design.shape[1])
 
@@ -264,7 +272,7 @@ class _LinearMean(_MeanLayer):
 
 @dataclass(frozen=True, slots=True)
 class _ARMAMean(_MeanLayer):
-    """A mean produced by a conditional-sum-of-squares ARMA recursion.
+    r"""A mean produced by a conditional-sum-of-squares ARMA recursion.
 
     The recursion conditions on the first ``max(p, q)`` observations: lagged
     levels before that point are taken from the untrimmed series, and lagged
@@ -288,9 +296,9 @@ class _ARMAMean(_MeanLayer):
     Warning:
         The claim above about the moving-average roots holds only for
         ``q <= 1``. The recursion adds ``ma[j] * eps[t - j - 1]``, so the
-        moving-average polynomial is ``1 + ma_1 L + ... + ma_q L^q``, while
+        moving-average polynomial is :math:`1 + \mathrm{ma}_1 L + \cdots + \mathrm{ma}_q L^q`, while
         the reparameterization returns coefficients for which
-        ``1 - ma_1 L - ... - ma_q L^q`` has its roots outside the unit
+        :math:`1 - \mathrm{ma}_1 L - \cdots - \mathrm{ma}_q L^q` has its roots outside the unit
         circle. For ``q >= 2`` those are different regions: some searched
         draws are not invertible and make the recursion explode, and some
         invertible moving averages cannot be reached.

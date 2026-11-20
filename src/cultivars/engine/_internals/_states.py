@@ -46,7 +46,10 @@ class _ExpectationMaximizationState:
     """Internal state carried between EM restarts.
 
     The end point of one EM run for a Markov-switching autoregression with
-    ``K`` regimes, order ``p``, and an effective sample of ``T`` periods.
+    :math:`K` regimes, order ``p``, and an effective sample of :math:`T` periods.
+
+    See Also:
+        * :meth:`._MarkovSwitchingModel._run_em` -- returns an instance.
     """
 
     transition: npt.NDArray[np.float64]
@@ -58,11 +61,11 @@ class _ExpectationMaximizationState:
     sigma2: npt.NDArray[np.float64]
     """Regime innovation variances, ``(K,)``; equal when the variance does not switch."""
     filtered_prob: npt.NDArray[np.float64]
-    """Filtered regime probabilities ``Pr(S_t | y_1..t)``, ``(T, K)``."""
+    r"""Filtered regime probabilities :math:`\Pr(S_t \mid y_{1:t})`, ``(T, K)``."""
     predicted_prob: npt.NDArray[np.float64]
-    """One-step-predicted regime probabilities ``Pr(S_t | y_1..t-1)``, ``(T, K)``."""
+    r"""One-step-predicted regime probabilities :math:`\Pr(S_t \mid y_{1:t-1})`, ``(T, K)``."""
     smoothed_prob: npt.NDArray[np.float64]
-    """Smoothed regime probabilities ``Pr(S_t | y_1..T)``, ``(T, K)``."""
+    r"""Smoothed regime probabilities :math:`\Pr(S_t \mid y_{1:T})`, ``(T, K)``."""
     llf: float
     """Log likelihood at the last completed iteration."""
     n_iter: int
@@ -75,7 +78,11 @@ class _ExpectationMaximizationState:
 class _VectorExpectationMaximizationState:
     """Internal state carried between EM restarts of a switching VAR.
 
-    The end point of one EM run with ``M`` regimes and ``k`` variables.
+    The end point of one EM run with :math:`M` regimes and :math:`k` variables.
+
+    See Also:
+        * :meth:`._MarkovSwitchingVectorAutoRegressionModel._run_em` -- returns
+          an instance.
     """
 
     transition: npt.NDArray[np.float64]

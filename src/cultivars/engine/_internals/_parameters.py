@@ -64,13 +64,31 @@ __all__ = [
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _AutoRegressionParameters:
-    """Structured parameters of an AR(p) exact-ML draw.
+    r"""Structured parameters of an AR(p) exact-ML draw.
+
+    The record is one point of the parameter space of
+
+    .. math::
+
+       y_t = c + \phi_1 y_{t-1} + \cdots + \phi_p y_{t-p} + \varepsilon_t,
+       \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2),
+
+    on the natural scale: :attr:`const` is :math:`c`, :attr:`ar_params` is
+    :math:`(\phi_1, \ldots, \phi_p)` and :attr:`sigma2` is :math:`\sigma^2`. The
+    optimizer never sees these values. It moves an unconstrained vector, partial
+    autocorrelations for the lag polynomial and a log for the variance, so that
+    every point it can reach is stationary with a positive variance; this record
+    is what that vector unpacks to, and it is the form every consumer downstream
+    reads.
 
     Attributes:
         const: Mean intercept; ``0.0`` when the specification has no constant.
         ar_params: Autoregressive coefficients, already mapped back from the
             partial-autocorrelation parameterization.
         sigma2: Innovation variance, already exponentiated.
+
+    See Also:
+        * :meth:`._AutoRegressionObjective.unpack` -- returns an instance.
     """
 
     const: float
@@ -83,7 +101,31 @@ class _AutoRegressionParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _BoxJenkinsParameters:
-    """Structured parameters of a seasonal ARIMA-with-regressors draw.
+    r"""Structured parameters of a seasonal ARIMA-with-regressors draw.
+
+    The record is one point of the parameter space of a regression with seasonal
+    ARMA errors,
+
+    .. math::
+
+       \phi(L)\, \Phi(L^s)\, u_t = \theta(L)\, \Theta(L^s)\, \varepsilon_t,
+       \qquad u_t = w_t - x_t^\top \beta,
+       \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2),
+
+    where :math:`w_t` is the series after whatever differencing the specification
+    applies and :math:`x_t` stacks the deterministic and exogenous columns.
+    :attr:`ar_params` and :attr:`seasonal_ar_params` are the coefficients of
+    :math:`\phi(L)` and :math:`\Phi(L^s)`, :attr:`ma_params` and
+    :attr:`seasonal_ma_params` those of :math:`\theta(L)` and :math:`\Theta(L^s)`,
+    :attr:`beta` is :math:`\beta` and :attr:`sigma2` is :math:`\sigma^2`. All six
+    are on the natural scale: the stationarity and invertibility maps and the log
+    on the variance have already been undone.
+
+    Note:
+        The moving-average blocks are stored in the sign convention of the
+        observation equation, not of the unconstrained vector they were unpacked
+        from. A consumer that rebuilds :math:`\theta(L)` should read the attribute
+        and not re-derive it from the packed parameters.
 
     Attributes:
         beta: Coefficients on the deterministic and exogenous block.
@@ -93,6 +135,9 @@ class _BoxJenkinsParameters:
             observation equation.
         seasonal_ma_params: Seasonal MA coefficients.
         sigma2: Innovation variance.
+
+    See Also:
+        * :meth:`._BoxJenkinsObjective.unpack` -- returns an instance.
     """
 
     beta: npt.NDArray[np.float64]
@@ -102,10 +147,10 @@ class _BoxJenkinsParameters:
     seasonal_ar_params: npt.NDArray[np.float64]
     """Seasonal autoregressive coefficients, ``(P,)``."""
     ma_params: npt.NDArray[np.float64]
-    """Non-seasonal moving-average coefficients, ``(q,)``.
+    r"""Non-seasonal moving-average coefficients, ``(q,)``.
 
     In the sign convention of the observation equation,
-    ``theta(L) = 1 + theta_1 L + ...``.
+    :math:`\theta(L) = 1 + \theta_1 L + \cdots`.
     """
     seasonal_ma_params: npt.NDArray[np.float64]
     """Seasonal moving-average coefficients, ``(Q,)``, in the same sign convention."""
@@ -115,7 +160,24 @@ class _BoxJenkinsParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _FractionalIntegrationParameters:
-    """Structured parameters of an ARFIMA(p, d, q) draw.
+    r"""Structured parameters of an ARFIMA(p, d, q) draw.
+
+    The record is one point of the parameter space of
+
+    .. math::
+
+       \phi(L)\, (1 - L)^d\, (y_t - \mu) = \theta(L)\, \varepsilon_t,
+       \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2),
+
+    with :attr:`mean` as :math:`\mu`, :attr:`d` as the memory parameter,
+    :attr:`ar_params` and :attr:`ma_params` as the short-memory polynomials and
+    :attr:`sigma2` as :math:`\sigma^2`. The fractional difference
+    :math:`(1 - L)^d = \sum_{k \ge 0} \pi_k L^k` has weights
+    :math:`\pi_k = \pi_{k-1} (k - 1 - d) / k` with :math:`\pi_0 = 1`, which decay
+    hyperbolically rather than geometrically; that slow decay is the long memory.
+    The process is stationary and invertible for :math:`|d| < 1/2`, and the
+    unconstrained map keeps :attr:`d` strictly inside the slightly narrower
+    interval set by :data:`~cultivars.engine._core._defaults._D_MAX`.
 
     Attributes:
         mean: Estimated mean; ``0.0`` when the mean is not estimated.
@@ -123,6 +185,10 @@ class _FractionalIntegrationParameters:
         ar_params: Short-memory AR coefficients.
         ma_params: Short-memory MA coefficients.
         sigma2: Innovation variance.
+
+    See Also:
+        * :meth:`._FractionalIntegrationObjective.unpack` -- returns an
+          instance.
     """
 
     mean: float
@@ -139,7 +205,25 @@ class _FractionalIntegrationParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _VarianceParameters:
-    """Parameters every conditional-variance draw carries.
+    r"""Parameters every conditional-variance draw carries.
+
+    Every conditional-variance family writes the observation as
+
+    .. math::
+
+       y_t = m_t + \varepsilon_t, \qquad \varepsilon_t = \sigma_t z_t,
+       \qquad z_t \sim (0, 1),
+
+    and differs only in the recursion that generates :math:`\sigma_t^2`. The two
+    fields here are the part of a draw that does not depend on that recursion:
+    :attr:`mean` parameterizes :math:`m_t`, and :attr:`omega` is the intercept
+    :math:`\omega` of the recursion. The subclasses add the lag coefficients.
+
+    Note:
+        :attr:`omega` is on the scale of the recursion it belongs to: a variance
+        for the families that recurse in :math:`\sigma_t^2`, a log variance for
+        the family that recurses in :math:`\ln \sigma_t^2`. It is not comparable
+        across families.
 
     Attributes:
         mean: Conditional-mean coefficients, intercept first when present.
@@ -157,12 +241,43 @@ class _VarianceParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _ConditionalVarianceParameters(_VarianceParameters):
-    """Structured parameters of a finite-order variance draw.
+    r"""Structured parameters of a finite-order variance draw.
+
+    The three lag blocks enter one of two recursions. The families that recurse in
+    levels use
+
+    .. math::
+
+       \sigma_t^2 = \omega + \sum_{i=1}^{p} \alpha_i \varepsilon_{t-i}^2
+       + \sum_{k=1}^{o} \gamma_k \varepsilon_{t-k}^2\, \mathbf{1}[\varepsilon_{t-k} < 0]
+       + \sum_{j=1}^{q} \beta_j \sigma_{t-j}^2,
+
+    which is the symmetric model when :attr:`gamma` is empty and the
+    sign-asymmetric one otherwise. The family that recurses in logs uses the
+    standardized shock :math:`z_t = \varepsilon_t / \sigma_t`,
+
+    .. math::
+
+       \ln \sigma_t^2 = \omega
+       + \sum_{i=1}^{p} \alpha_i \bigl( |z_{t-i}| - \sqrt{2/\pi} \bigr)
+       + \sum_{k=1}^{o} \gamma_k z_{t-k}
+       + \sum_{j=1}^{q} \beta_j \ln \sigma_{t-j}^2,
+
+    where the magnitude term is centered by :math:`\mathbb{E}|z| = \sqrt{2/\pi}`
+    so that a standard-normal shock adds no drift. :attr:`alpha` therefore loads
+    on the size of a shock, :attr:`gamma` on its sign and :attr:`beta` on the
+    past of the variance in both, but the coefficients are not interchangeable
+    between the two recursions. The recursions themselves are
+    :func:`~cultivars.engine._core._recursions._linear_variance_recursion` and
+    :func:`~cultivars.engine._core._recursions._log_variance_recursion`.
 
     Attributes:
         alpha: Coefficients on the shock magnitude.
         gamma: Asymmetry coefficients; empty for the symmetric case.
         beta: Persistence coefficients.
+
+    See Also:
+        * :meth:`._ConditionalVarianceObjective.unpack` -- returns an instance.
     """
 
     alpha: npt.NDArray[np.float64]
@@ -175,12 +290,33 @@ class _ConditionalVarianceParameters(_VarianceParameters):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _FractionalVarianceParameters(_VarianceParameters):
-    """Structured parameters of a fractionally integrated variance draw.
+    r"""Structured parameters of a fractionally integrated variance draw.
+
+    The variance is an intercept plus an infinite distributed lag of past squared
+    residuals,
+
+    .. math::
+
+       \sigma_t^2 = \omega^{\ast} + \sum_{k \ge 1} \lambda_k \varepsilon_{t-k}^2,
+       \qquad
+       \lambda(L) = 1 - (1 - \beta L)^{-1} (1 - \phi L) (1 - L)^d,
+
+    truncated at a fixed number of lags. :attr:`d` governs how slowly the weights
+    :math:`\lambda_k` die out, hyperbolically for :math:`0 < d < 1`, so a shock to
+    volatility is neither absorbed geometrically nor permanent; :attr:`phi` and
+    :attr:`beta` shape the first few weights. The weights are generated by
+    :func:`~cultivars.engine._core._recursions._arch_infinity_weights` and applied
+    by :func:`~cultivars.engine._core._recursions._arch_infinity_variance`, which
+    also fixes how the intercept :math:`\omega^{\ast}` is formed from
+    :attr:`~_VarianceParameters.omega`.
 
     Attributes:
         phi: Short-memory numerator weight, in ``(0, 1)``.
         d: Fractional integration order, in ``(0, 1)``.
         beta: Denominator weight, in ``(0, 1)``.
+
+    See Also:
+        * :meth:`._FractionalVarianceObjective.unpack` -- returns an instance.
     """
 
     phi: float
@@ -193,14 +329,37 @@ class _FractionalVarianceParameters(_VarianceParameters):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _SmoothTransitionParameters:
-    """Structured parameters of a smooth-transition draw.
+    r"""Structured parameters of a smooth-transition draw.
 
     The regime coefficients are absent by design: they are concentrated out and
-    recovered by :meth:`_SmoothTransitionObjective.least_squares`.
+    recovered by :meth:`._SmoothTransitionObjective.least_squares`.
+
+    With :math:`u_t = (z_t - c) / s` the transition variable centered at
+    :attr:`threshold` (:math:`c`) and divided by the scale the objective holds
+    fixed, the two parameters define the weight on the upper regime,
+
+    .. math::
+
+       G(u_t) = \frac{1}{1 + \exp(-\gamma u_t)}
+       \quad \text{(logistic)},
+       \qquad
+       G(u_t) = 1 - \exp(-\gamma u_t^2)
+       \quad \text{(exponential)},
+
+    with :attr:`gamma` as :math:`\gamma > 0`. The logistic weight moves
+    monotonically from one regime to the other as :math:`z_t` crosses the
+    threshold; the exponential weight is symmetric about it, so the outer regime
+    applies on both sides. A large :math:`\gamma` approaches a discrete threshold
+    model in the logistic case.
 
     Attributes:
         gamma: Transition speed, strictly positive.
         threshold: Transition location, on the scale of the transition variable.
+
+    See Also:
+        * :meth:`._SmoothTransitionObjective.unpack` -- returns an instance.
+        * :meth:`._VectorSmoothTransitionObjective.unpack` -- returns an
+          instance.
     """
 
     gamma: float
@@ -228,6 +387,10 @@ class _StructuralParameters:
         cycle_freq: Cycle frequency in ``(0, pi)``, or ``None``.
         sigma2_cycle: Cycle innovation variance, or ``None``.
         sigma2_seasonal: Shared seasonal innovation variance, or ``None``.
+
+    See Also:
+        * :meth:`._StructuralObjective.unpack` -- returns an instance.
+        * :attr:`._StructuralFit.params` -- holds an instance.
     """
 
     sigma2_irregular: float
@@ -248,20 +411,51 @@ class _StructuralParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _NelsonSiegelParameters:
-    """The parameter record of the dynamic Nelson-Siegel state space.
+    r"""The parameter record of the dynamic Nelson-Siegel state space.
+
+    The yield at maturity :math:`\tau` loads on three latent factors, level,
+    slope and curvature,
+
+    .. math::
+
+       y_t(\tau) = L_t + S_t\, \frac{1 - e^{-\lambda \tau}}{\lambda \tau}
+       + C_t \left( \frac{1 - e^{-\lambda \tau}}{\lambda \tau} - e^{-\lambda \tau} \right)
+       + e_t(\tau),
+
+    and the factor vector :math:`f_t = (L_t, S_t, C_t)^\top` follows a first-order
+    autoregression with a diagonal coefficient matrix,
+
+    .. math::
+
+       f_{t+1} - \mu = A\, (f_t - \mu) + \eta_{t+1},
+       \qquad \eta_t \sim \mathcal{N}(0, C C^\top).
+
+    :attr:`decay` is :math:`\lambda`, :attr:`mu` is :math:`\mu`, :attr:`ar` is the
+    diagonal of :math:`A`, :attr:`state_chol` is the lower-triangular :math:`C`
+    and :attr:`obs_var` holds the variances of the measurement errors
+    :math:`e_t(\tau)`, one per maturity and mutually uncorrelated. The loadings
+    are evaluated by
+    :func:`~cultivars.engine._core._polynomials._nelson_siegel_loadings`.
+    :math:`\lambda` fixes the maturity at which the curvature loading peaks, so
+    it is identified by the shape of the cross-section, not by the dynamics.
 
     Attributes:
-        decay: The loading decay ``lambda``, strictly positive.
+        decay: The loading decay :math:`\lambda`, strictly positive.
         mu: Factor means, shape ``(3,)``.
         ar: Diagonal factor persistences, shape ``(3,)``, each in
             ``(-1, 1)``.
         state_chol: Lower-Cholesky factor of the factor innovation
             covariance, shape ``(3, 3)``.
         obs_var: Per-maturity measurement variances, shape ``(p,)``.
+
+    See Also:
+        * :meth:`._NelsonSiegelObjective.unpack` -- returns an instance.
+        * :attr:`._NelsonSiegelFit.params` -- holds an instance.
+        * :attr:`._DecayNelsonSiegelObjective.warm` -- holds an instance.
     """
 
     decay: float
-    """The loading decay ``lambda``, strictly positive."""
+    r"""The loading decay :math:`\lambda`, strictly positive."""
     mu: npt.NDArray[np.float64]
     """Means of the level, slope, and curvature factors, ``(3,)``."""
     ar: npt.NDArray[np.float64]
@@ -274,10 +468,10 @@ class _NelsonSiegelParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _StochasticVolatilityParameters:
-    """The parameter record of the log-AR(1) stochastic-volatility model.
+    r"""The parameter record of the log-AR(1) stochastic-volatility model.
 
-    The log variance follows ``h_{t+1} = mu + phi (h_t - mu) + sigma eta_t``
-    and the observation is ``y_t = c + exp(h_t / 2) eps_t``.
+    The log variance follows :math:`h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \eta_t`
+    and the observation is :math:`y_t = c + \exp(h_t / 2)\, \varepsilon_t`.
 
     Attributes:
         mu: Unconditional mean of the log variance.
@@ -289,6 +483,11 @@ class _StochasticVolatilityParameters:
             for Gaussian noise.
         rho: Correlation between the observation and log-variance
             innovations (leverage); ``0.0`` for none.
+
+    See Also:
+        * :meth:`._StochasticVolatilityModel._unpack` -- returns an instance.
+        * :meth:`._QuasiVolatilityObjective.unpack` -- returns an instance.
+        * :attr:`._StochasticVolatilityFit.params` -- holds an instance.
     """
 
     mu: float
@@ -306,11 +505,11 @@ class _StochasticVolatilityParameters:
 
     @property
     def stationary_variance(self) -> float:
-        """The unconditional variance of the log variance.
+        r"""The unconditional variance of the log variance.
 
         Returns:
-            ``sigma2 / (1 - phi ** 2)``. The value is meaningful only for
-            ``abs(phi) < 1``, which is not checked.
+            :math:`\sigma^2 / (1 - \phi^2)`. The value is meaningful only for
+            :math:`|\phi| < 1`, which is not checked.
         """
         return float(self.sigma2 / (1.0 - self.phi**2))
 
@@ -335,26 +534,26 @@ class _StochasticVolatilityParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _TrendVolatilityParameters:
-    """The parameter record of the unobserved-components stochastic-volatility model.
+    r"""The parameter record of the unobserved-components stochastic-volatility model.
 
     Stock and Watson's (2007) trend-inflation model: ``y_t = tau_t +
-    exp(h_t / 2) eps_t``, ``tau_{t+1} = tau_t + exp(q_t / 2) eta_t``, with
+    exp(h_t / 2) eps_t``, :math:`\tau_{t+1} = \tau_t + \exp(q_t / 2)\, \eta_t`, with
     the two log variances random walks.
 
     Attributes:
         gamma2_irregular: Random-walk variance of the irregular's log
-            variance ``h_t``.
+            variance :math:`h_t`.
         gamma2_trend: Random-walk variance of the trend innovation's log
-            variance ``q_t``.
+            variance :math:`q_t`.
         h0: Initial log variance of the irregular.
         q0: Initial log variance of the trend innovation.
         tau0: Initial trend level.
     """
 
     gamma2_irregular: float
-    """Random-walk step variance of ``h_t``, the irregular's log variance."""
+    """Random-walk step variance of :math:`h_t`, the irregular's log variance."""
     gamma2_trend: float
-    """Random-walk step variance of ``q_t``, the trend innovation's log variance."""
+    """Random-walk step variance of :math:`q_t`, the trend innovation's log variance."""
     h0: float
     """Initial log variance of the irregular."""
     q0: float
@@ -383,6 +582,10 @@ class _DecayNelsonSiegelParameters:
         decay_ar: Persistence of the log decay, in ``(-1, 1)``.
         decay_sd: Innovation standard deviation of the log decay,
             nonnegative.
+
+    See Also:
+        * :meth:`._DecayNelsonSiegelObjective.unpack` -- returns an instance.
+        * :attr:`._DecayNelsonSiegelFit.params` -- holds an instance.
     """
 
     mu: npt.NDArray[np.float64]
@@ -412,12 +615,12 @@ class _DecayNelsonSiegelParameters:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _LongMemoryVolatilityParameters:
-    """The parameter record of the long-memory stochastic-volatility model.
+    r"""The parameter record of the long-memory stochastic-volatility model.
 
-    The log variance is ``h_t = mu + v_t`` with ``(1 - phi L)(1 - L)**d v_t =
+    The log variance is :math:`h_t = \mu + v_t` with ``(1 - phi L)(1 - L)**d v_t =
     eta_t``, an ARFIMA(1, d, 0) whose fractional order ``d`` in ``(0, 0.5)``
     is what makes volatility shocks decay hyperbolically rather than
-    geometrically; the observation is ``y_t = c + exp(h_t / 2) eps_t``.
+    geometrically; the observation is :math:`y_t = c + \exp(h_t / 2)\, \varepsilon_t`.
 
     Attributes:
         mu: Level of the log variance.
@@ -426,6 +629,10 @@ class _LongMemoryVolatilityParameters:
         phi: Short-memory AR(1) coefficient of the log variance, in
             ``(-1, 1)``; ``0.0`` when the law is pure fractional noise.
         mean: The observation mean ``c``, or ``0.0`` when fixed at zero.
+
+    See Also:
+        * :meth:`._WhittleVolatilityObjective.unpack` -- returns an instance.
+        * :attr:`._LongMemoryVolatilityFit.params` -- holds an instance.
     """
 
     mu: float

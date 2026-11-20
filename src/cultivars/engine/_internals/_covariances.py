@@ -19,22 +19,47 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Coefficient covariances: the uncertainty behind a coefficient matrix, two ways.
+r"""Coefficient covariances: the uncertainty behind a coefficient matrix, two ways.
 
 Two records answer the same questions about a ``(width, k)`` coefficient
 matrix from different theories. :class:`_CoefficientCovariance` is the
 sampling covariance of unrestricted least squares, held as its two
 Kronecker factors. :class:`_PosteriorCovariance` is the posterior covariance
 of an equation-by-equation fit under a prior, held as one block per
-equation. Both satisfy the protocol in ``_inferences``, which is all a
-result ever sees: standard errors, ratios, tail areas, intervals, and Wald
-tests come out of either the same way.
+equation. Both satisfy the protocol in
+:mod:`~cultivars.engine._internals._inferences`, which is all a result ever
+sees: standard errors, ratios, tail areas, intervals, and Wald tests come out
+of either the same way.
 
 The conventions they share: ``coefficients`` is indexed design column by
 equation; a Wald cell is an ``(equation, regressor)`` pair; and ``vec(B)``
-is equation-major, so equation ``i`` occupies positions ``i * width``
+is equation-major, so equation :math:`i` occupies positions ``i * width``
 through ``(i + 1) * width - 1``. All tail areas are normal or chi-squared,
-never ``t`` or ``F``.
+never :math:`t` or :math:`F`.
+
+In symbols, for the multivariate regression :math:`Y = Z B + U` whose rows
+have covariance :math:`\Sigma_u`, the sampling record holds the two factors of
+
+.. math::
+
+   \operatorname{Var}\bigl[ \operatorname{vec}(\hat{B}) \bigr]
+   = \Sigma_u \otimes (Z^\top Z)^{-1},
+
+kept separate rather than multiplied out: a standard error needs one diagonal
+entry of each factor, and a joint test needs only the block its restriction
+touches.
+A Wald test of :math:`q` linear restrictions
+:math:`R \operatorname{vec}(B) = r` is
+
+.. math::
+
+   W = (R \hat{b} - r)^\top
+   \bigl[ R\, \widehat{\operatorname{Var}}(\hat{b})\, R^\top \bigr]^{-1}
+   (R \hat{b} - r) \;\overset{a}{\sim}\; \chi^2_q,
+   \qquad \hat{b} = \operatorname{vec}(\hat{B}),
+
+which is the quadratic form both records evaluate, each with its own
+covariance.
 """
 
 from __future__ import annotations
@@ -58,10 +83,10 @@ __all__ = [
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _CoefficientCovariance:
-    """Asymptotic covariance of a multivariate least-squares coefficient matrix.
+    r"""Asymptotic covariance of a multivariate least-squares coefficient matrix.
 
-    For ``Y = Z B + U`` with ``B`` of shape ``(width, k)``, the estimator's
-    asymptotic covariance is ``kron(sigma_u, inv(Z'Z))`` over ``vec(B)`` stacked
+    For :math:`Y = Z B + U` with :math:`B` of shape ``(width, k)``, the estimator's
+    asymptotic covariance is :math:`\Sigma_u \otimes (Z^\top Z)^{-1}` over ``vec(B)`` stacked
     equation by equation. This holds the two Kronecker factors rather than their
     product. The product is ``(k * width)`` square, which for a fixed-effects
     panel with two hundred units is a third of a million floats to answer a
@@ -103,7 +128,7 @@ class _CoefficientCovariance:
         """Number of equations.
 
         Returns:
-            The dimension ``k``, read from ``sigma_u``.
+            The dimension :math:`k`, read from ``sigma_u``.
         """
         return int(self.sigma_u.shape[0])
 
@@ -129,10 +154,10 @@ class _CoefficientCovariance:
     def tstat(self) -> npt.NDArray[np.float64]:
         """Coefficients divided by their standard errors.
 
-        Referred to the normal rather than a ``t``: the asymptotics for a
+        Referred to the normal rather than a :math:`t`: the asymptotics for a
         vector autoregression are normal, the residual covariance is estimated
         jointly across equations rather than one at a time, and there is no
-        exact small-sample distribution here for a ``t`` to be an
+        exact small-sample distribution here for a :math:`t` to be an
         approximation of.
         """
         return self.coefficients / self.stderr
@@ -188,8 +213,8 @@ class _CoefficientCovariance:
                 result so the test says what it tested.
 
         Returns:
-            A :class:`_WaldTest` with degrees of freedom equal to the
-            number of restrictions.
+            A :class:`~cultivars.engine._internals._tests._WaldTest` with
+            degrees of freedom equal to the number of restrictions.
 
         Raises:
             SpecificationError: If no cells are given.
@@ -228,12 +253,12 @@ class _CoefficientCovariance:
 
         Args:
             restriction: A ``(q, k * width)`` matrix over ``vec(B)`` in
-                equation-major order, so equation ``i`` occupies columns
+                equation-major order, so equation :math:`i` occupies columns
                 ``i * width`` through ``(i + 1) * width - 1``.
             null: Plain-language statement of the hypothesis.
 
         Returns:
-            A :class:`_WaldTest` with ``q`` degrees of freedom.
+            A :class:`~cultivars.engine._internals._tests._WaldTest` with ``q`` degrees of freedom.
 
         Raises:
             DimensionError: If the matrix has the wrong width or no rows.
@@ -278,14 +303,14 @@ class _CoefficientCovariance:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _PosteriorCovariance:
-    """Per-equation posterior covariance of a coefficient matrix under a prior.
+    r"""Per-equation posterior covariance of a coefficient matrix under a prior.
 
     The shrunk counterpart of :class:`_CoefficientCovariance`, and it holds a
     stack of blocks rather than two Kronecker factors because under a prior
     there are no such factors. Litterman's cross-equation weight makes the
     prior variance differ from equation to equation, so ``X'X`` enters each
     equation with a different penalty and the joint covariance stops being
-    ``kron(sigma_u, inv(X'X))``.
+    :math:`\Sigma_u \otimes (X^\top X)^{-1}`.
 
     A consequence worth stating rather than discovering: with the innovation
     covariance treated as fixed and diagonal -- which is what running equation
@@ -302,6 +327,9 @@ class _PosteriorCovariance:
             equations -- the parameter count shrinkage actually spends, which
             is what an information criterion has to charge for rather than the
             nominal width.
+
+    See Also:
+        * :func:`._posterior_coefficients` -- returns an instance.
     """
 
     coefficients: npt.NDArray[np.float64]
@@ -323,7 +351,7 @@ class _PosteriorCovariance:
         """Number of equations.
 
         Returns:
-            The dimension ``k``, read from ``blocks``.
+            The dimension :math:`k`, read from ``blocks``.
         """
         return int(self.blocks.shape[0])
 
@@ -413,7 +441,7 @@ class _PosteriorCovariance:
             null: Plain-language statement of the hypothesis.
 
         Returns:
-            A :class:`_WaldTest` with ``q`` degrees of freedom.
+            A :class:`~cultivars.engine._internals._tests._WaldTest` with ``q`` degrees of freedom.
 
         Raises:
             DimensionError: If the matrix has the wrong width or no rows.
@@ -447,7 +475,8 @@ class _PosteriorCovariance:
             null: Plain-language statement of the hypothesis.
 
         Returns:
-            A :class:`_WaldTest` with one degree of freedom per cell.
+            A :class:`~cultivars.engine._internals._tests._WaldTest` with one
+            degree of freedom per cell.
 
         Raises:
             SpecificationError: If no cells are given.

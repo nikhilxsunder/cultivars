@@ -71,18 +71,20 @@ __all__ = [
 
 
 def _log_scale_mixture_moments(nu: float) -> tuple[float, float]:
-    """Mean and variance of ``log(lambda)`` for ``lambda ~ IG(nu/2, nu/2)``.
+    r"""Mean and variance of :math:`\log \lambda` for the Student-t mixing scale.
 
-    Under the Student-t scale mixture ``log(eps**2) = log(z**2) + log(lambda)``,
+    The mixing scale is :math:`\lambda \sim \mathcal{IG}(\nu/2, \nu/2)`.
+
+    Under the Student-t scale mixture :math:`\log \varepsilon^2 = \log z^2 + \log \lambda`,
     so the linearized measurement noise of the quasi-likelihood shifts by
-    these two moments: ``E[log lambda] = log(nu/2) - psi(nu/2)`` and
-    ``Var[log lambda] = psi'(nu/2)``.
+    these two moments: :math:`\mathbb{E}[\log \lambda] = \log(\nu/2) - \psi(\nu/2)` and
+    :math:`\operatorname{Var}[\log \lambda] = \psi'(\nu/2)`.
 
     Args:
         nu: Degrees of freedom of the Student-t observation noise.
 
     Returns:
-        The mean and the variance of ``log(lambda)``.
+        The mean and the variance of :math:`\log \lambda`.
     """
     half = 0.5 * nu
     return float(np.log(half) - digamma(half)), float(polygamma(1, half))
@@ -91,10 +93,10 @@ def _log_scale_mixture_moments(nu: float) -> tuple[float, float]:
 def _volatility_state_space(
     params: _StochasticVolatilityParameters,
 ) -> _NonlinearStateSpace:
-    """The stochastic-volatility model on the nonlinear substrate.
+    r"""The stochastic-volatility model on the nonlinear substrate.
 
-    The state is the log variance ``h_t`` with a linear-Gaussian
-    transition; the measurement ``y_t = c + exp(h_t / 2) eps_t`` is
+    The state is the log variance :math:`h_t` with a linear-Gaussian
+    transition; the measurement :math:`y_t = c + \exp(h_t / 2)\, \varepsilon_t` is
     *multiplicative* in the state, so the Gaussian measurement density is
     replaced through ``observation_loglik`` and the emitted system is
     outside the additive form: the extended and unscented filters refuse
@@ -104,11 +106,11 @@ def _volatility_state_space(
 
     Heavy tails replace the Gaussian measurement density by the Student-t
     one. Leverage enters through ``observed_transition``: given the
-    return, ``h_{t+1} = mu + phi (h_t - mu) + sigma rho eps_t`` with
-    residual noise variance ``sigma2 (1 - rho**2)``, which keeps the
+    return, :math:`h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \rho\, \varepsilon_t` with
+    residual noise variance :math:`\sigma^2 (1 - \rho^2)`, which keeps the
     transition density intact for the particle smoother. The two
     departures are not combined: with heavy tails the correlated
-    innovation is the Gaussian kernel ``z_t`` rather than ``eps_t``, and
+    innovation is the Gaussian kernel :math:`z_t` rather than :math:`\varepsilon_t`, and
     recovering it from the return needs the mixture variable in the
     state, which this emitter does not carry.
 
@@ -194,15 +196,15 @@ def _volatility_state_space(
 def _quasi_volatility_state_space(
     params: _StochasticVolatilityParameters,
 ) -> _LinearGaussianStateSpace:
-    """The Harvey-Ruiz-Shephard linearization on the linear substrate.
+    r"""The Harvey-Ruiz-Shephard linearization on the linear substrate.
 
-    Squaring and taking logs, ``log((y_t - c)**2) = h_t + log(eps_t**2)``,
-    and ``log(eps_t**2)`` is replaced by a Gaussian with its mean
-    ``-1.2704`` and variance ``pi**2 / 2``. The Kalman filter on this
+    Squaring and taking logs, :math:`\log (y_t - c)^2 = h_t + \log \varepsilon_t^2`,
+    and :math:`\log \varepsilon_t^2` is replaced by a Gaussian with its mean
+    ``-1.2704`` and variance :math:`\pi^2 / 2`. The Kalman filter on this
     system yields the *quasi*-likelihood: consistent for the parameters,
     not the exact likelihood, and the estimator that seeds both the Gibbs
     sampler and the particle chain. Under Student-t noise the moments
-    shift by those of ``log(lambda)`` (Ruiz 1994); the degrees of freedom
+    shift by those of :math:`\log \lambda` (Ruiz 1994); the degrees of freedom
     are identified there only through the white part of the linearized
     noise variance, which the summary says.
 
@@ -244,13 +246,13 @@ def _quasi_volatility_state_space(
 def _trend_volatility_state_space(
     params: _TrendVolatilityParameters,
 ) -> _NonlinearStateSpace:
-    """The unobserved-components stochastic-volatility model on the substrate.
+    r"""The unobserved-components stochastic-volatility model on the substrate.
 
     The state is ``(tau_t, h_t, q_t)``: the trend, the log variance of the
     irregular, and the log variance of the trend innovation. The trend's
     innovation variance depends on the state, so the transition noise is
     not additive: ``transition_sampler`` draws the state, and
-    ``observation_loglik`` reads ``y_t ~ N(tau_t, exp(h_t))``. Both hooks
+    ``observation_loglik`` reads :math:`y_t \sim \mathcal{N}(\tau_t, \exp(h_t))`. Both hooks
     place the system outside the additive form, so only the particle
     filter reads it; the Gibbs sampler is the model's primary estimator
     and this emitter is for the likelihood and for filtering new data.
@@ -286,7 +288,7 @@ def _trend_volatility_state_space(
     def observation_loglik(
         y: npt.NDArray[np.float64], states: npt.NDArray[np.float64]
     ) -> npt.NDArray[np.float64]:
-        """Gaussian log density of ``y`` around each particle's trend with variance ``exp(h)``."""
+        r"""Gaussian log density of ``y`` around each particle's trend, variance :math:`\exp(h)`."""
         block = np.asarray(states, dtype=np.float64)
         gap = float(y[0]) - block[:, 0]
         return -0.5 * (_LOG_2PI + block[:, 1] + gap**2 * np.exp(-block[:, 1]))
@@ -308,12 +310,12 @@ def _decay_nelson_siegel_state_space(
     params: _DecayNelsonSiegelParameters,
     maturities: npt.NDArray[np.float64],
 ) -> _NonlinearStateSpace:
-    """The dynamic Nelson-Siegel model with a time-varying decay on the substrate.
+    r"""The dynamic Nelson-Siegel model with a time-varying decay on the substrate.
 
     The state is ``(level, slope, curvature, log lambda)``; the transition
     is linear-Gaussian (diagonal AR(1) in each), and the measurement
-    ``y_t(tau) = L_t + S_t s(tau, lambda_t) + C_t c(tau, lambda_t)`` is
-    nonlinear only through the loadings' dependence on ``lambda_t``. The
+    :math:`y_t(\tau) = L_t + S_t\, s(\tau, \lambda_t) + C_t\, c(\tau, \lambda_t)` is
+    nonlinear only through the loadings' dependence on :math:`\lambda_t`. The
     system is additive-Gaussian, so the extended, unscented, and particle
     filters all read it; the unscented filter is the default reader
     because the loadings are smooth and bounded. The likelihoods those
@@ -415,7 +417,7 @@ def _pruned_state_space(
     """The pruned second-order solution as an additive-Gaussian nonlinear state space.
 
     The state is ``(x_f, x_s)``: the first-order deviation and the
-    second-order deviation. Noise enters only ``x_f``, so the state
+    second-order deviation. Noise enters only :math:`x_f`, so the state
     covariance is singular and the form is additive-Gaussian, which
     every filter on the substrate accepts.
 
@@ -439,7 +441,11 @@ def _pruned_state_space(
         return np.einsum("nj,nk->njk", block, block).reshape(block.shape[0], n_x * n_x)
 
     def transition(states: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """One pruned step: ``x_f`` by ``h_x``; ``x_s`` by ``h_x`` plus the square of ``x_f``."""
+        """One pruned second-order step of the state.
+
+        The first-order part :math:`x_f` moves by ``h_x``; the second-order part
+        :math:`x_s` moves by ``h_x`` plus the square of :math:`x_f`.
+        """
         block = np.asarray(states, dtype=np.float64)
         x_f = block[:, :n_x]
         x_s = block[:, n_x:]
@@ -478,17 +484,17 @@ def _pruned_state_space(
 def _long_memory_quasi_state_space(
     params: _LongMemoryVolatilityParameters, *, truncation: int
 ) -> _LinearGaussianStateSpace:
-    """The linearized long-memory SV model as a truncated AR(inf) state space.
+    r"""The linearized long-memory SV model as a truncated AR(inf) state space.
 
-    ``log((y_t - c)**2) = mu + E[log eps**2] + v_t + xi_t`` with ``v_t``
+    :math:`\log (y_t - c)^2 = \mu + \mathbb{E}[\log \varepsilon^2] + v_t + \xi_t` with :math:`v_t`
     ARFIMA(1, d, 0). The fractional operator has no finite state
-    representation, so ``v_t`` is written in its autoregressive form
-    ``v_t = sum_j pi_j v_{t-j} + eta_t`` and cut at ``truncation`` lags: a
+    representation, so :math:`v_t` is written in its autoregressive form
+    :math:`v_t = \sum_j \pi_j v_{t-j} + \eta_t` and cut at ``truncation`` lags: a
     companion system of that dimension on the linear substrate, exact for
     the truncated law and an approximation of the long-memory one whose
     error decays like ``truncation**(-d)``. The initial state covariance is
     the truncated law's stationary covariance. Both the truncation and the
-    ``pi**2 / 2`` measurement floor are the linearization's, so what the
+    :math:`\pi^2 / 2` measurement floor are the linearization's, so what the
     Kalman filter returns on this system is a truncated quasi-likelihood.
 
     Args:

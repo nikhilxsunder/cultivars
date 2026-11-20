@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""The Kim smoother: full-sample regime probabilities from a Hamilton-filter pass.
+r"""The Kim smoother: full-sample regime probabilities from a Hamilton-filter pass.
 
 One function, :func:`_kim_smoother`, the backward recursion that turns
 filtered regime probabilities into smoothed ones. Along the way it produces
@@ -27,6 +27,19 @@ the joint probabilities of consecutive regimes, which are what an EM update
 of the transition matrix is computed from. Like the filter it reads
 probabilities and a transition matrix and nothing else, so it serves every
 model with a discrete regime chain.
+
+In symbols, with :math:`\odot` and :math:`\oslash` the elementwise product and
+quotient, the backward step is
+
+.. math::
+
+   \xi_{t \mid T} = \xi_{t \mid t} \odot
+   \Bigl[ P \bigl( \xi_{t+1 \mid T} \oslash \xi_{t+1 \mid t} \bigr) \Bigr],
+   \qquad t = T - 1, \ldots, 1,
+
+started from the last filtered vector :math:`\xi_{T \mid T}`. The marginal and
+pairwise probabilities are returned as a
+:class:`~cultivars.engine._internals._results._KimSmootherResult`.
 
 References:
     Kim, C.-J. (1994). Dynamic linear models with Markov-switching.
@@ -61,15 +74,18 @@ def _kim_smoother(
     * sum_j [ P_ij * Pr(S_{t+1} = j | y_{1..T}) / Pr(S_{t+1} = j | y_{1..t}) ]``.
 
     Args:
-        filter_result: The output of ``_hamilton_filter`` on the same data.
+        filter_result: The output of
+            :func:`~cultivars.engine._internals._filters._hamilton_filter` on
+            the same data.
         transition: The same row-stochastic ``(K, K)`` transition matrix used
             for filtering.
 
     Returns:
-        A :class:`_KimSmootherResult` with smoothed marginal and consecutive-pair
-        regime probabilities. The pair array has ``T - 1`` entries, entry
-        ``t`` joining period ``t`` with period ``t + 1``. The last period's
-        smoothed probabilities are its filtered ones.
+        A :class:`~cultivars.engine._internals._results._KimSmootherResult`
+        with smoothed marginal and consecutive-pair regime probabilities. The
+        pair array has ``T - 1`` entries, entry :math:`t` joining period
+        :math:`t` with period :math:`t + 1`. The last period's smoothed
+        probabilities are its filtered ones.
 
     Raises:
         DimensionError: If ``transition`` is not conformable with the filter.

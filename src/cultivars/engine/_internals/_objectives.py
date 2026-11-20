@@ -151,7 +151,7 @@ class _Objective[P](ABC):
     through :meth:`__call__`, so an instance is itself the callable handed to
     :func:`scipy.optimize.minimize`.
 
-    The type parameter ``P`` is the structured parameter record the flat
+    The type parameter :math:`P` is the structured parameter record the flat
     optimization vector maps onto, so ``unpack`` is statically typed per family
     rather than returning an anonymous tuple.
 
@@ -179,7 +179,7 @@ class _Objective[P](ABC):
         Returns:
             One or more unconstrained parameter vectors. Most surfaces return a
             single warm start; a multi-modal surface returns a grid, and
-            :func:`_solve` keeps the best result.
+            :func:`~cultivars.engine._internals._solvers._solve` keeps the best result.
         """
 
     @abstractmethod
@@ -201,7 +201,8 @@ class _Objective[P](ABC):
             theta: The flat vector the optimizer searches over.
 
         Returns:
-            The criterion value, or :data:`_PENALTY` if the draw is
+            The criterion value, or
+            :data:`~cultivars.engine._core._defaults._PENALTY` if the draw is
             inadmissible or the evaluation fails numerically.
         """
 
@@ -211,17 +212,21 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
     """Exact Kalman likelihood of an AR(p) in companion state-space form.
 
     The observation vector, selection vector, and observation covariance are
-    all determined by the first unit vector ``e_1``, so only ``e_1`` and the
+    all determined by the first unit vector :math:`e_1`, so only :math:`e_1` and the
     identity are stored; the rest are reshaped views built on demand.
 
     Attributes:
         y: The endogenous series, used at full length.
         order: Autoregressive order ``p``.
         has_const: Whether a mean intercept is estimated.
-        state_unit: The first unit vector ``e_1`` of length ``p``.
+        state_unit: The first unit vector :math:`e_1` of length ``p``.
         identity: The ``p`` by ``p`` identity, used to solve for the stationary
             mean of the state when a constant is present.
         theta0: The warm start, from the CSS fit.
+
+    See Also:
+        * :meth:`._AutoRegressionModel._build_objective` -- returns an
+          instance.
     """
 
     y: npt.NDArray[np.float64]
@@ -231,7 +236,7 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
     has_const: bool
     """Whether a mean intercept is estimated."""
     state_unit: npt.NDArray[np.float64]
-    """The first unit vector ``e_1`` of length ``p``."""
+    """The first unit vector :math:`e_1` of length ``p``."""
     identity: npt.NDArray[np.float64]
     """The ``p`` by ``p`` identity, used to solve for the stationary mean of the state
     when a constant is present.
@@ -241,17 +246,17 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
 
     @property
     def design(self) -> npt.NDArray[np.float64]:
-        """The observation matrix ``Z``, which selects the first state."""
+        """The observation matrix :math:`Z`, which selects the first state."""
         return self.state_unit.reshape(1, self.order)
 
     @property
     def selection(self) -> npt.NDArray[np.float64]:
-        """The selection matrix ``R``, which loads the shock on the first state."""
+        """The selection matrix :math:`R`, which loads the shock on the first state."""
         return self.state_unit.reshape(self.order, 1)
 
     @property
     def obs_cov(self) -> npt.NDArray[np.float64]:
-        """The observation covariance ``H``, identically zero for an AR."""
+        """The observation covariance :math:`H`, identically zero for an AR."""
         return np.zeros((1, 1), dtype=np.float64)
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
@@ -259,13 +264,13 @@ class _AutoRegressionObjective(_Objective[_AutoRegressionParameters]):
         return (self.theta0,)
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _AutoRegressionParameters:
-        """Split the vector into intercept, AR block, and log variance.
+        r"""Split the vector into intercept, AR block, and log variance.
 
         Args:
             theta: ``[const?, psi_1..psi_p, log sigma2]``.
 
         Returns:
-            The parameter record, with ``psi`` mapped back through the
+            The parameter record, with :math:`\psi` mapped back through the
             partial-autocorrelation transform so the AR block is stationary.
         """
         p = self.order
@@ -337,6 +342,9 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
         order: Non-seasonal ``(p, d, q)``.
         seasonal_order: Seasonal ``(P, D, Q, s)``.
         theta0: The warm start.
+
+    See Also:
+        * :meth:`._BoxJenkinsModel._build_objective` -- returns an instance.
     """
 
     w: npt.NDArray[np.float64]
@@ -410,14 +418,14 @@ class _BoxJenkinsObjective(_Objective[_BoxJenkinsParameters]):
         return self.design_x @ parameters.beta
 
     def state_space(self, parameters: _BoxJenkinsParameters) -> _LinearGaussianStateSpace:
-        """Build the Harvey ARMA state-space form at the given parameters.
+        r"""Build the Harvey ARMA state-space form at the given parameters.
 
         Args:
             parameters: An unpacked draw.
 
         Returns:
             The state-space model for the multiplied polynomials
-            ``phi(L)Phi(L**s)`` and ``theta(L)Theta(L**s)``.
+            :math:`\phi(L)\, \Phi(L^s)` and :math:`\theta(L)\, \Theta(L^s)`.
         """
         s = self.seasonal_order[3]
         return _LinearGaussianStateSpace._from_arma(
@@ -459,6 +467,10 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
         estimate_mean: Whether a mean is estimated.
         truncation: Length of the fractional-difference filter.
         theta0: The warm start, with ``d`` seeded from a local Whittle estimate.
+
+    See Also:
+        * :meth:`._FractionalIntegrationModel._build_objective` -- returns an
+          instance.
     """
 
     y: npt.NDArray[np.float64]
@@ -491,8 +503,9 @@ class _FractionalIntegrationObjective(_Objective[_FractionalIntegrationParameter
 
         Returns:
             The parameter record. ``d`` comes back through ``tanh`` scaled by
-            ``_D_MAX``, which keeps the search unconstrained while confining
-            ``d`` to the range where the filter converges.
+            :data:`~cultivars.engine._core._defaults._D_MAX`, which keeps the
+            search unconstrained while confining ``d`` to the range where the
+            filter converges.
         """
         i_d = self.offset
         i_ar = i_d + 1
@@ -675,6 +688,10 @@ class _ConditionalVarianceObjective(_VarianceObjective[_ConditionalVarianceParam
         p: Order of the shock-magnitude block.
         o: Order of the asymmetry block.
         q: Order of the persistence block.
+
+    See Also:
+        * :meth:`._ShortMemoryVarianceModel._build_objective` -- returns an
+          instance.
     """
 
     vol: str
@@ -770,6 +787,10 @@ class _FractionalVarianceObjective(_VarianceObjective[_FractionalVarianceParamet
 
     Attributes:
         truncation: Number of infinite-order weights retained.
+
+    See Also:
+        * :meth:`._FractionalVarianceModel._build_objective` -- returns an
+          instance.
     """
 
     truncation: int
@@ -859,6 +880,10 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
         transition: ``"logistic"`` or ``"exponential"``.
         seeds: Starting points, crossed over a grid of transition speeds and two
             candidate thresholds.
+
+    See Also:
+        * :meth:`._SmoothTransitionModel._build_objective` -- returns an
+          instance.
     """
 
     method: ClassVar[OptimizerMethod] = "Nelder-Mead"
@@ -889,7 +914,7 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
         return self.seeds
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _SmoothTransitionParameters:
-        """Map ``[log gamma, c]`` to the transition parameters.
+        r"""Map :math:`[\log \gamma,\; c]` to the transition parameters.
 
         Args:
             theta: The flat parameter vector, in search coordinates.
@@ -960,7 +985,7 @@ class _SmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _VectorSmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
-    """Concentrated Gaussian likelihood of a smooth-transition VAR.
+    r"""Concentrated Gaussian likelihood of a smooth-transition VAR.
 
     The multivariate counterpart of :class:`_SmoothTransitionObjective`, with
     one substantive change: the concentrated criterion is the log-determinant
@@ -980,7 +1005,11 @@ class _VectorSmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
         z: The transition variable, aligned with ``target``.
         scale: Standard deviation of ``z``; ``gamma`` is per unit of it.
         transition: ``"logistic"`` or ``"exponential"``.
-        seeds: Starting points over ``[log gamma, c]``.
+        seeds: Starting points over :math:`[\log \gamma,\; c]`.
+
+    See Also:
+        * :meth:`._SmoothTransitionVectorAutoRegressionModel._build_objective`
+          -- returns an instance.
     """
 
     method: ClassVar[OptimizerMethod] = "Nelder-Mead"
@@ -1004,14 +1033,14 @@ class _VectorSmoothTransitionObjective(_Objective[_SmoothTransitionParameters]):
     transition: str
     """``"logistic"`` or ``"exponential"``."""
     seeds: tuple[npt.NDArray[np.float64], ...]
-    """Starting points over ``[log gamma, c]``."""
+    r"""Starting points over :math:`[\log \gamma,\; c]`."""
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
         """Return the multi-start grid."""
         return self.seeds
 
     def unpack(self, theta: npt.NDArray[np.float64]) -> _SmoothTransitionParameters:
-        """Map ``[log gamma, c]`` to the transition parameters.
+        r"""Map :math:`[\log \gamma,\; c]` to the transition parameters.
 
         Args:
             theta: The flat parameter vector, in search coordinates.
@@ -1192,7 +1221,7 @@ class _MidasProfileObjective(_Objective[npt.NDArray[np.float64]]):
 class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]]):
     """Concentrated Gaussian likelihood of an AB-model contemporaneous structure.
 
-    ``A u_t = B e_t`` with unit-variance shocks implies ``Sigma_u =
+    :math:`A u_t = B e_t` with unit-variance shocks implies ``Sigma_u =
     A^{-1} B B' A^{-1}'``, and the reduced-form coefficients concentrate out,
     so the surface depends on the data only through the estimated innovation
     covariance and the sample size. The criterion is the exact negative
@@ -1203,10 +1232,10 @@ class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[n
     Attributes:
         sigma: The ``(k, k)`` estimated innovation covariance.
         nobs: Effective sample size behind ``sigma``.
-        a_base: Fixed values of ``A``, zeros in the free cells.
-        a_free: Free cell coordinates of ``A``.
-        b_base: Fixed values of ``B``, zeros in the free cells.
-        b_free: Free cell coordinates of ``B``.
+        a_base: Fixed values of :math:`A`, zeros in the free cells.
+        a_free: Free cell coordinates of :math:`A`.
+        b_base: Fixed values of :math:`B`, zeros in the free cells.
+        b_free: Free cell coordinates of :math:`B`.
     """
 
     sigma: npt.NDArray[np.float64]
@@ -1214,24 +1243,24 @@ class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[n
     nobs: int
     """Effective sample size behind ``sigma``."""
     a_base: npt.NDArray[np.float64]
-    """Fixed values of ``A``, zeros in the free cells."""
+    """Fixed values of :math:`A`, zeros in the free cells."""
     a_free: tuple[tuple[int, int], ...]
-    """Free cell coordinates of ``A``."""
+    """Free cell coordinates of :math:`A`."""
     b_base: npt.NDArray[np.float64]
-    """Fixed values of ``B``, zeros in the free cells."""
+    """Fixed values of :math:`B`, zeros in the free cells."""
     b_free: tuple[tuple[int, int], ...]
-    """Free cell coordinates of ``B``."""
+    """Free cell coordinates of :math:`B`."""
 
     def build(
         self, theta: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Fill the free cells of ``A`` and ``B`` from the flat vector.
+        """Fill the free cells of :math:`A` and :math:`B` from the flat vector.
 
         Args:
             theta: The flat parameter vector, in search coordinates.
 
         Returns:
-            The contemporaneous matrices ``A`` and ``B`` with their free cells
+            The contemporaneous matrices :math:`A` and :math:`B` with their free cells
             filled.
         """
         values = np.asarray(theta, dtype=np.float64)
@@ -1245,7 +1274,7 @@ class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[n
         return a, b
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
-        """Warm starts: free ``B`` cells from the Cholesky factor, free ``A`` at zero."""
+        """Warm starts: free :math:`B` cells from the Cholesky factor, free :math:`A` at zero."""
         factor = np.linalg.cholesky(self.sigma)
         warm = np.concatenate(
             [
@@ -1301,15 +1330,15 @@ class _ShortRunObjective(_Objective[tuple[npt.NDArray[np.float64], npt.NDArray[n
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _MixedHorizonObjective(_Objective[npt.NDArray[np.float64]]):
-    """Feasibility surface for zero restrictions split across two horizons.
+    r"""Feasibility surface for zero restrictions split across two horizons.
 
-    The candidate impact matrix is ``chol(Sigma) Q`` with ``Q`` a rotation, so
-    the covariance is reproduced identically at every point of the search and
-    the criterion measures only how far the declared cells of the impact and
-    long-run matrices sit from their fixed values. At an exactly identified
-    pattern whose rank condition holds, the minimum is zero and the minimizer
-    is the identification; a strictly positive minimum is the rank condition
-    failing, and the caller reports it as exactly that.
+    The candidate impact matrix is :math:`\operatorname{chol}(\Sigma)\, Q` with
+    :math:`Q` a rotation, so the covariance is reproduced identically at every
+    point of the search and the criterion measures only how far the declared
+    cells of the impact and long-run matrices sit from their fixed values. At
+    an exactly identified pattern whose rank condition holds, the minimum is
+    zero and the minimizer is the identification; a strictly positive minimum
+    is the rank condition failing, and the caller reports it as exactly that.
 
     Attributes:
         impact_factor: ``(k, k)`` Cholesky factor of the innovation
@@ -1690,13 +1719,13 @@ class _NonlinearLikelihoodObjective[P](_Objective[P]):
     """A Gaussian-approximation likelihood surface over the nonlinear substrate.
 
     Subclasses supply the map from a parameter record to a
-    :class:`_NonlinearStateSpace` and the criterion runs the named
-    filter -- extended or unscented -- and negates its log-likelihood.
-    Both filters produce a *deterministic* surface, so the L-BFGS-B
-    default of the base class applies unchanged; what they produce is
-    not the exact likelihood, and every result built on this surface says
-    so. A system carrying non-Gaussian hooks is refused by both filters,
-    which the criterion reports as the penalty rather than swallowing.
+    :class:`~cultivars.engine._internals._substrates._NonlinearStateSpace` and
+    the criterion runs the named filter -- extended or unscented -- and negates
+    its log-likelihood. Both filters produce a *deterministic* surface, so the
+    L-BFGS-B default of the base class applies unchanged; what they produce is
+    not the exact likelihood, and every result built on this surface says so. A
+    system carrying non-Gaussian hooks is refused by both filters, which the
+    criterion reports as the penalty rather than swallowing.
 
     Attributes:
         filter_name: ``"extended"`` or ``"unscented"``.
@@ -1778,8 +1807,9 @@ class _ParticleLikelihoodObjective(_Objective[npt.NDArray[np.float64]]):
     Attributes:
         data: The observations.
         build: Map from the unconstrained vector to the system. May raise
-            :class:`SpecificationError` or :class:`NumericalError`, which
-            the criterion reports as the penalty.
+            :class:`~cultivars.exceptions.SpecificationError` or
+            :class:`~cultivars.exceptions.NumericalError`, which the criterion
+            reports as the penalty.
         theta0: The single warm start, in the unconstrained space.
         n_particles: Particles per evaluation.
         filter_method: Particle filter flavor.
@@ -1797,8 +1827,9 @@ class _ParticleLikelihoodObjective(_Objective[npt.NDArray[np.float64]]):
     build: Callable[[npt.NDArray[np.float64]], _NonlinearStateSpace]
     """Map from the unconstrained vector to the system.
 
-    May raise :class:`SpecificationError` or :class:`NumericalError`, which the
-    criterion reports as the penalty.
+    May raise :class:`~cultivars.exceptions.SpecificationError` or
+    :class:`~cultivars.exceptions.NumericalError`, which the criterion reports
+    as the penalty.
     """
     theta0: npt.NDArray[np.float64]
     """The single warm start, in the unconstrained space."""
@@ -1853,13 +1884,13 @@ class _ParticleLikelihoodObjective(_Objective[npt.NDArray[np.float64]]):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
-    """Harvey-Ruiz-Shephard quasi-likelihood of the stochastic-volatility model.
+    r"""Harvey-Ruiz-Shephard quasi-likelihood of the stochastic-volatility model.
 
     The flat vector holds the log-variance mean, an ``arctanh`` persistence,
     and a log innovation variance; the observation mean, when estimated,
     is concentrated out as the sample mean, which is the QML estimator of
     a constant under the linearization. The criterion is the exact
-    Gaussian likelihood of the *linearized* model in ``log((y - c)**2)``,
+    Gaussian likelihood of the *linearized* model in :math:`\log (y - c)^2`,
     hence a quasi-likelihood for the true model.
 
     Attributes:
@@ -1878,7 +1909,7 @@ class _QuasiVolatilityObjective(_Objective[_StochasticVolatilityParameters]):
     """
 
     def _log_squared(self) -> npt.NDArray[np.float64]:
-        """``log((y - c)**2 + offset)``, the linearized observation."""
+        r""":math:`\log\bigl((y - c)^2 + \mathrm{offset}\bigr)`, the linearized observation."""
         return np.log((self.endog - self.mean) ** 2 + 1e-6)
 
     def starts(self) -> tuple[npt.NDArray[np.float64], ...]:
@@ -2033,9 +2064,10 @@ class _DecayNelsonSiegelObjective(_NonlinearLikelihoodObjective[_DecayNelsonSieg
 class _PerturbationObjective(_Objective[npt.NDArray[np.float64]]):
     """Deterministic-filter likelihood surface of a perturbation model.
 
-    Lives beside the engine rather than in ``_objectives`` because its
-    criterion is the engine's own ``_loglikelihood``: the surface is a
-    closure over a model specification, not over a parameter record.
+    Lives beside the engine rather than in
+    :mod:`~cultivars.engine._internals._objectives` because its criterion is
+    the engine's own ``_loglikelihood``: the surface is a closure over a model
+    specification, not over a parameter record.
 
     Attributes:
         engine: The perturbation engine.
@@ -2099,22 +2131,22 @@ class _PerturbationObjective(_Objective[npt.NDArray[np.float64]]):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
-    """Whittle quasi-likelihood of the long-memory stochastic-volatility model.
+    r"""Whittle quasi-likelihood of the long-memory stochastic-volatility model.
 
     Squaring and taking logs gives ``x_t = log((y_t - c)**2) = mu + E[log
-    eps**2] + v_t + xi_t`` with ``v_t`` ARFIMA(1, d, 0) and ``xi_t`` white
-    noise of variance ``pi**2 / 2``, so the spectrum of ``x`` is the
-    fractional spectrum plus a flat floor ``pi / 4``. The Whittle criterion
-    ``sum_j log f(lambda_j) + I(lambda_j) / f(lambda_j)`` over the positive
+    eps**2] + v_t + xi_t`` with :math:`v_t` ARFIMA(1, d, 0) and :math:`\xi_t` white
+    noise of variance :math:`\pi^2 / 2`, so the spectrum of :math:`x` is the
+    fractional spectrum plus a flat floor :math:`\pi / 4`. The Whittle criterion
+    :math:`\sum_j \bigl[ \log f(\lambda_j) + I(\lambda_j) / f(\lambda_j) \bigr]` over the positive
     Fourier frequencies is the frequency-domain quasi-likelihood (Breidt,
     Crato, and de Lima 1998): consistent and asymptotically normal for
     ``(d, sigma2, phi)`` under Gaussian ``eta``, and indifferent to the
     level, which the zero frequency alone carries and which is therefore
-    read off the sample mean of ``x``.
+    read off the sample mean of :math:`x`.
 
     The flat vector holds ``arctanh(2d)`` so that ``d`` lives on
     ``(-0.5, 0.5)``, the log innovation variance and, under a short-memory
-    factor, ``arctanh phi``.
+    factor, :math:`\operatorname{arctanh} \phi`.
 
     Attributes:
         endog: The observed series.
@@ -2135,7 +2167,7 @@ class _WhittleVolatilityObjective(_Objective[_LongMemoryVolatilityParameters]):
     """Whether the log variance carries the AR(1) factor."""
 
     def _log_squared(self) -> npt.NDArray[np.float64]:
-        """``log((y - c)**2 + offset)``, the linearized observation."""
+        r""":math:`\log\bigl((y - c)^2 + \mathrm{offset}\bigr)`, the linearized observation."""
         return np.log((self.endog - self.mean) ** 2 + 1e-6)
 
     def _level(self) -> float:

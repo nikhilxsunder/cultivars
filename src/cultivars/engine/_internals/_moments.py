@@ -66,6 +66,16 @@ class _VectorMoments:
         llf: Gaussian log-likelihood concentrated over ``sigma_ml``.
         nobs: Design rows.
         width: Design columns, that is regressors per equation.
+
+    See Also:
+        * :meth:`._BayesianVectorAutoRegressionModel._gaussian_moments` --
+          returns an instance.
+        * :meth:`._ExogenousVectorAutoRegressionModel._gaussian_moments` --
+          returns an instance.
+        * :meth:`._ExogenousVectorErrorCorrectionModel._gaussian_moments` --
+          returns an instance.
+        * :meth:`._FunctionalCoefficientVectorAutoRegressionModel._gaussian_moments`
+          -- returns an instance.
     """
 
     coef: npt.NDArray[np.float64]
@@ -88,7 +98,7 @@ class _VectorMoments:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _CointegrationMoments:
-    """The reduced-rank problem's solution, before a rank is chosen.
+    r"""The reduced-rank problem's solution, before a rank is chosen.
 
     Holds what the eigenvalue problem produces plus the three blocks the
     short-run regression is built from. Separated from the fit because none of
@@ -98,7 +108,7 @@ class _CointegrationMoments:
     Attributes:
         eigenvalues: Squared canonical correlations, descending.
         eigenvectors: Candidate cointegrating vectors, normalized so that
-            ``beta' S11 beta`` is the identity. Columns match
+            :math:`\beta^\top S_{11} \beta` is the identity. Columns match
             :attr:`eigenvalues`.
         levels: The lagged levels block, with any restricted deterministic
             column appended.
@@ -106,14 +116,20 @@ class _CointegrationMoments:
         short_run: Unrestricted deterministic terms and lagged differences.
         s00: Residual second moment of the differences.
         nobs: Effective sample.
+
+    See Also:
+        * :meth:`._ExogenousVectorErrorCorrectionModel._cointegration_moments`
+          -- returns an instance.
+        * :meth:`._VectorErrorCorrectionModel._cointegration_moments` --
+          returns an instance.
     """
 
     eigenvalues: npt.NDArray[np.float64]
     """Squared canonical correlations between differences and lagged levels, descending."""
     eigenvectors: npt.NDArray[np.float64]
-    """Candidate cointegrating vectors, one per column, in the order of ``eigenvalues``.
+    r"""Candidate cointegrating vectors, one per column, in the order of ``eigenvalues``.
 
-    Normalized so that ``beta' S11 beta`` is the identity.
+    Normalized so that :math:`\beta^\top S_{11} \beta` is the identity.
     """
     levels: npt.NDArray[np.float64]
     """The lagged-levels block, with any restricted deterministic column appended."""

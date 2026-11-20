@@ -24,10 +24,11 @@
 Two hierarchies live here, and they are deliberately separate.
 
 Results inherit a single linear chain of *field* bases -- ``_Result`` then
-``_MeanResult`` -- because multiple slotted dataclass bases that each declare
-fields raise ``TypeError: multiple bases have instance lay-out conflict``.
-Anything optional is a *behavior* mixin with ``__slots__ = ()`` and no fields
-of its own; the concrete result declares the attribute the mixin reads.
+:class:`~cultivars.engine._internals._results._MeanResult` -- because multiple
+slotted dataclass bases that each declare fields raise
+``TypeError: multiple bases have instance lay-out conflict``. Anything optional
+is a *behavior* mixin with ``__slots__ = ()`` and no fields of its own; the
+concrete result declares the attribute the mixin reads.
 
 Model specifications inherit ``_ModelBase``, which owns ``endog`` validation
 and the length check. Every family base in this subpackage descends from it,
@@ -295,7 +296,7 @@ __all__ = [
 
 
 class _BaseModel[R](ABC):
-    """Root of every model specification, fitting to a result of type ``R``.
+    """Root of every model specification, fitting to a result of type :math:`R`.
 
     Owns ``endog`` coercion and validation so that a malformed series produces
     an identical error regardless of which model was constructed.
@@ -407,7 +408,7 @@ class _AutoRegressionModel[R](_UnivariateModel[R]):
         ``n - p`` and the reported likelihood is the conditional one.
 
         Returns:
-            The packed :class:`_AutoRegressionFit`.
+            The packed :class:`~cultivars.engine._internals._fits._AutoRegressionFit`.
         """
         y, order, trend = self.endog, self._order, self._trend
         target, regressors, eff = _conditional_design(y, order, trend)
@@ -834,8 +835,9 @@ class _ConditionalVarianceModel[R](_UnivariateModel[R]):
         output, which a matrix product does not.
 
         Returns:
-            A :class:`_LinearMean` when ``ma_lags == 0``, else an
-            :class:`_ARMAMean`.
+            A :class:`~cultivars.engine._internals._means._LinearMean` when
+            ``ma_lags == 0``, else an
+            :class:`~cultivars.engine._internals._means._ARMAMean`.
         """
         endog, ar_lags = self.endog, self._ar_lags
         if self._ma_lags:
@@ -870,8 +872,12 @@ class _ShortMemoryVarianceModel[R](_ConditionalVarianceModel[R]):
         mean: ``"constant"`` or ``"zero"``.
 
     Raises:
-        SpecificationError: If an order is negative, ``GARCH`` is given a
-            non-zero asymmetry order, or ``GJR``/``EGARCH`` is given ``o < 1``.
+        SpecificationError: If an order is negative,
+            :class:`~cultivars.univariate.conditional_variance.GARCH` is given
+            a non-zero asymmetry order, or
+            :class:`~cultivars.univariate.conditional_variance.GJR`/:class:
+            `~cultivars.univariate.conditional_variance.EGARCH` is given
+            ``o < 1``.
         DimensionError: If the series is too short for the specification.
     """
 
@@ -1088,11 +1094,13 @@ class _MeanFunctionModel[R](_UnivariateModel[R]):
     Args:
         endog: The series.
         order: Autoregressive order.
-        engine: Training backend; defaults to :class:`NumpyMLPEngine`.
+        engine: Training backend; defaults to
+            :class:`~cultivars.engine._internals._engines.NumpyMLPEngine`.
 
     Raises:
         SpecificationError: If ``engine`` does not satisfy
-            :class:`MeanFunctionEngine`, or the order is invalid.
+            :class:`~cultivars.engine._internals._engines.MeanFunctionEngine`,
+            or the order is invalid.
     """
 
     __slots__ = (
@@ -1147,7 +1155,7 @@ class _NeuralAutoRegressionModel[R](_MeanFunctionModel[R]):
         ``n_params`` counts the learner's parameters plus that variance.
 
         Returns:
-            The packed :class:`_NeuralAutoRegressionFit`.
+            The packed :class:`~cultivars.engine._internals._fits._NeuralAutoRegressionFit`.
         """
         y, order, engine = self.endog, self._order, self._engine
         target = y[order:]
@@ -1228,7 +1236,7 @@ class _NeuralThresholdModel[R](_MeanFunctionModel[R]):
         would retrain the network at every candidate split.
 
         Returns:
-            The packed :class:`_NeuralThresholdFit`.
+            The packed :class:`~cultivars.engine._internals._fits._NeuralThresholdFit`.
 
         Raises:
             NumericalError: If the split leaves a regime with too few observations.
@@ -1285,7 +1293,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
     Args:
         endog: The series.
         order: Autoregressive order ``p``.
-        n_regimes: Number of regimes ``K``.
+        n_regimes: Number of regimes :math:`K`.
         switching_mean: Whether the intercept switches.
         switching_variance: Whether the innovation variance switches.
         switching_ar: Whether the AR coefficients switch.
@@ -1293,7 +1301,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
     Raises:
         SpecificationError: If no component switches, so no regime is
             identified, or an order is invalid.
-        DimensionError: If the series is too short for ``K`` regimes.
+        DimensionError: If the series is too short for :math:`K` regimes.
     """
 
     __slots__ = (
@@ -1344,14 +1352,14 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         joint: npt.NDArray[np.float64],
         floor: float,
     ) -> npt.NDArray[np.float64]:
-        """M-step transition update from expected transition counts.
+        r"""M-step transition update from expected transition counts.
 
         Probabilities are floored before renormalizing, so a regime that becomes
         momentarily unvisited can still be re-entered instead of being absorbed.
 
         Args:
             smoothed: Smoothed regime probabilities.
-            joint: Smoothed joint probabilities ``Pr(S_t = i, S_{t+1} = j | y)``.
+            joint: Smoothed joint probabilities :math:`\Pr(S_t = i, S_{t+1} = j \mid y)`.
             floor: Minimum admissible probability.
 
         Returns:
@@ -1500,18 +1508,18 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
         """Run EM to convergence or ``max_iter`` from one set of starting values.
 
         The E-step assembles the current draw into a
-        :class:`_MarkovSwitchingStateSpace` and asks it to filter and smooth;
-        the M-step updates the transition matrix, the coefficients, and the
-        variances in that order, and the conditional means are recomputed
-        between the coefficient and variance updates so the variance sees the
-        new means.
+        :class:`~cultivars.engine._internals._substrates._MarkovSwitchingStateSpace`
+        and asks it to filter and smooth; the M-step updates the transition
+        matrix, the coefficients, and the variances in that order, and the
+        conditional means are recomputed between the coefficient and variance
+        updates so the variance sees the new means.
 
         The state space is rebuilt each iteration rather than mutated, because
         it is frozen and validating -- so the E-step can only ever run on a
         system whose transition matrix is row-stochastic and whose variances
         are positive, which is exactly the invariant an EM loop can lose. It is
         handed the precomputed target and lag block through
-        :meth:`_MarkovSwitchingStateSpace.density_matrix` rather than the raw
+        :meth:`._MarkovSwitchingStateSpace.density_matrix` rather than the raw
         series, so the trim is paid once for the whole run.
 
         Args:
@@ -1523,7 +1531,7 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
             tol: Convergence tolerance on the log-likelihood increment.
 
         Returns:
-            The :class:`_ExpectationMaximizationState` reached.
+            The :class:`~cultivars.engine._internals._states._ExpectationMaximizationState` reached.
 
         Raises:
             NumericalError: If the log-likelihood becomes non-finite.
@@ -1595,7 +1603,9 @@ class _MarkovSwitchingModel[R](_UnivariateModel[R]):
             seed: Seed or generator for the random starts.
 
         Returns:
-            The packed :class:`_MarkovSwitchingFit`, regimes ordered by intercept.
+            The packed
+            :class:`~cultivars.engine._internals._fits._MarkovSwitchingFit`,
+            regimes ordered by intercept.
 
         Raises:
             NumericalError: If every start fails to produce a finite likelihood.
@@ -1776,7 +1786,7 @@ class _ThresholdModel[R](_UnivariateModel[R]):
         would not be identified.
 
         Returns:
-            The packed :class:`_ThresholdFit`.
+            The packed :class:`~cultivars.engine._internals._fits._ThresholdFit`.
 
         Raises:
             NumericalError: If no admissible split exists.
@@ -2143,10 +2153,11 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
     def _n_deterministic_columns(self) -> int:
         """Width of the leading deterministic block.
 
-        Split out from :func:`_n_deterministic` because a fixed-effects panel
-        replaces the trend specification with one indicator per unit, and every
-        offset downstream is expressed against this number rather than against
-        the trend string.
+        Split out from
+        :func:`~cultivars.engine._core._matrices._n_deterministic` because a
+        fixed-effects panel replaces the trend specification with one indicator
+        per unit, and every offset downstream is expressed against this number
+        rather than against the trend string.
         """
         return _n_deterministic(self._trend)
 
@@ -2170,7 +2181,7 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
         """Design rows the whole sample loses at a candidate order.
 
         Distinct from :meth:`_burn_for` only when there is more than one series:
-        a panel of ``N`` units loses ``order`` observations from each of them.
+        a panel of :math:`N` units loses ``order`` observations from each of them.
 
         Args:
             order: Autoregressive order under consideration.
@@ -2239,7 +2250,7 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
             design: The ``(nobs, width)`` regressor matrix.
 
         Returns:
-            A :class:`_VectorMoments` record.
+            A :class:`~cultivars.engine._internals._moments._VectorMoments` record.
 
         Raises:
             DimensionError: If the design is not overidentified.
@@ -2363,7 +2374,9 @@ class _VectorAutoRegressionModel[R](_MultivariateModel[R]):
                 sample supports.
 
         Returns:
-            A :class:`_LagOrderSelection` holding all four criteria.
+            A
+            :class:`~cultivars.engine._internals._selections._LagOrderSelection`
+            holding all four criteria.
 
         Raises:
             SpecificationError: If ``max_lags`` exceeds what the sample supports.
@@ -2424,7 +2437,7 @@ class _PanelVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
     which produces a number rather than an error.
 
     With unit effects the estimator is least-squares dummy variables, so the lag
-    coefficients carry the Nickell bias: of order ``1/T``, downward for a
+    coefficients carry the Nickell bias: of order :math:`1/T`, downward for a
     positive own-lag, and unaffected by the number of units. The result says so
     on its summary rather than reporting a clean-looking coefficient.
     """
@@ -2589,10 +2602,10 @@ class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
     appending keeps all of them correct without a single override.
 
     Two things the exogenous block does not do. It does not enter the
-    moving-average representation, because ``x`` is conditioned on rather than
+    moving-average representation, because :math:`x` is conditioned on rather than
     shocked, so impulse responses and the variance decomposition are exactly the
     endogenous ones. And it does not extend a forecast, because there is no
-    model of ``x`` here to extend it with.
+    model of :math:`x` here to extend it with.
     """
 
     __slots__ = ("_exog", "_exog_names", "_exog_order")
@@ -2686,7 +2699,7 @@ class _ExogenousVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         return max(free // (self.k_endog + 1), 0)
 
     def _exog_block(self, exog: npt.NDArray[np.float64], burn: int) -> npt.NDArray[np.float64]:
-        """Stack ``x_t, x_{t-1}, ..., x_{t-s}`` for rows ``burn`` onward.
+        r"""Stack :math:`x_t, x_{t-1}, \ldots, x_{t-s}` for rows ``burn`` onward.
 
         Args:
             exog: The exogenous series, ``(T, m)``.
@@ -2815,7 +2828,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             order: Lags of the levels system; the VECM carries ``order - 1``
                 lagged differences.
             rank: Cointegrating rank. Up to ``k - 1`` for a closed system, since
-                rank ``k`` is stationarity in levels; up to ``k`` when an
+                rank :math:`k` is stationarity in levels; up to :math:`k` when an
                 exogenous block is present, where it means every modelled
                 variable cointegrates with that block.
             cointegration_trend: One of Johansen's five cases.
@@ -2934,7 +2947,9 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         """Concentrate out the short-run terms and solve the eigenvalue problem.
 
         Returns:
-            A :class:`_CointegrationMoments` record, independent of the rank.
+            A
+            :class:`~cultivars.engine._internals._moments._CointegrationMoments`
+            record, independent of the rank.
 
         Raises:
             DimensionError: If the sample is too short for the lag length.
@@ -3004,7 +3019,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         steps: int = 500,
         seed: int = 20260819,
     ) -> _JohansenRankTest:
-        """Trace and maximum-eigenvalue tests for every candidate rank.
+        r"""Trace and maximum-eigenvalue tests for every candidate rank.
 
         Independent of the ``rank`` this model was constructed with: the
         eigenvalue problem does not know about it, so the test is a property of
@@ -3017,7 +3032,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         statistic read against the unconditional table would over-reject.
 
         Args:
-            small_sample: Apply the Reinsel-Ahn scaling ``(T - (k_y + k_x) * p) / T``.
+            small_sample: Apply the Reinsel-Ahn scaling :math:`(T - (k_y + k_x)\, p) / T`.
                 The asymptotic test over-rejects in short samples -- around
                 seven percent at a nominal five in a three-variable system with
                 four hundred observations -- and this pulls it back.
@@ -3026,7 +3041,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
             seed: Fixed so a p-value is reproducible.
 
         Returns:
-            A :class:`_JohansenRankTest`.
+            A :class:`~cultivars.engine._internals._tests._JohansenRankTest`.
         """
         moments = self._cointegration_moments()
         k, effective = self.k_endog, moments.nobs
@@ -3067,7 +3082,7 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         """Estimate the system at the specified rank.
 
         Returns:
-            A :class:`_VectorErrorCorrectionFit`.
+            A :class:`~cultivars.engine._internals._fits._VectorErrorCorrectionFit`.
 
         Raises:
             DimensionError: If the short-run design is not overidentified.
@@ -3126,16 +3141,16 @@ class _VectorErrorCorrectionModel[R](_VectorAutoRegressionModel[R]):
         beta: npt.NDArray[np.float64],
         gamma: npt.NDArray[np.float64],
     ) -> npt.NDArray[np.float64]:
-        """The levels autoregressive matrices this parameterization implies.
+        r"""The levels autoregressive matrices this parameterization implies.
 
-        From ``A_1 = I + Pi + Gamma_1``, ``A_i = Gamma_i - Gamma_{i-1}``, and
-        ``A_p = -Gamma_{p-1}``. Recovering them here rather than in the result
+        From :math:`A_1 = I + \Pi + \Gamma_1`, :math:`A_i = \Gamma_i - \Gamma_{i-1}`, and
+        :math:`A_p = -\Gamma_{p-1}`. Recovering them here rather than in the result
         is what lets every dynamic method downstream -- impulse responses, the
         variance decomposition, forecasts -- be inherited from the reduced-form
         surface instead of reimplemented in error-correction coordinates.
 
         A conditional specification has no such representation and gets a
-        zero-length stack, which is the statement that there are no ``A_i`` --
+        zero-length stack, which is the statement that there are no :math:`A_i` --
         not a default, and not something a caller should propagate. Closing the
         system requires a model for the exogenous block, which is what a global
         vector autoregression supplies by stacking units.
@@ -3258,7 +3273,7 @@ class _ObservedRegimeVectorModel[R](_VectorAutoRegressionModel[R]):
     Adds one thing to the linear specification: the transition variable and
     its delay. The variable is named rather than defaulted -- a univariate
     threshold model can plausibly self-excite on its own past, but a system
-    has ``k`` candidate drivers and choosing one is economics, not a default
+    has :math:`k` candidate drivers and choosing one is economics, not a default
     the estimator should quietly make.
 
     Args:
@@ -3458,7 +3473,7 @@ class _ThresholdVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R]):
         """Fit both regimes and the split by exhaustive grid search.
 
         Returns:
-            The packed :class:`_VectorThresholdFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorThresholdFit`.
 
         Raises:
             NumericalError: If no admissible split exists.
@@ -3527,7 +3542,7 @@ class _SmoothTransitionVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R
     Conditional on the transition speed and location the model is linear, so
     the regime coefficients are concentrated out by one multivariate solve and
     only ``(gamma, c)`` is searched, on the log-determinant criterion of
-    :class:`_VectorSmoothTransitionObjective`.
+    :class:`~cultivars.engine._internals._objectives._VectorSmoothTransitionObjective`.
 
     Args:
         endog: The observed panel.
@@ -3617,7 +3632,7 @@ class _SmoothTransitionVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R
         """Fit the transition by concentrated maximum likelihood.
 
         Returns:
-            The packed :class:`_VectorSmoothTransitionFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorSmoothTransitionFit`.
 
         Raises:
             NumericalError: If the transition variable has zero variance or
@@ -3657,7 +3672,7 @@ class _SmoothTransitionVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R
 
 
 class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorModel[R]):
-    """Specification and local-linear engine of a functional-coefficient VAR.
+    r"""Specification and local-linear engine of a functional-coefficient VAR.
 
     Subclassing :class:`_ObservedRegimeVectorModel` is deliberate: what that
     base actually contributes is the observed-transition-driver surface --
@@ -3671,7 +3686,7 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
     Estimation is local-linear kernel regression (Cai, Fan & Yao 2000): at
     each evaluation point the coefficients and their state-derivatives are
     solved from one Epanechnikov-weighted least squares on the augmented
-    design ``[x_t, x_t (z_t - u)]``, all equations sharing the weights. The
+    design :math:`[x_t,\; x_t (z_t - u)]`, all equations sharing the weights. The
     bandwidth -- the model's one tuning constant -- is chosen by exact
     leave-one-out cross-validation unless the caller states it.
 
@@ -3724,13 +3739,13 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
 
     @staticmethod
     def _epanechnikov(scaled: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """The Epanechnikov kernel on already-bandwidth-scaled distances.
+        r"""The Epanechnikov kernel on already-bandwidth-scaled distances.
 
         Args:
             scaled: Distances divided by the bandwidth.
 
         Returns:
-            ``0.75 * (1 - u**2)`` where ``abs(u) < 1`` and zero elsewhere.
+            :math:`0.75\, (1 - u^2)` where :math:`|u| < 1` and zero elsewhere.
         """
         return np.where(np.abs(scaled) < 1.0, 0.75 * (1.0 - scaled**2), 0.0)
 
@@ -3739,7 +3754,7 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
         """Whether the state variable is exactly a column of the design.
 
         True for a self-exciting model whose delay does not exceed the
-        order: the state ``z_t`` is then the design's own lag column
+        order: the state :math:`z_t` is then the design's own lag column
         ``name.L{delay}``, and the intercept's local-linear interaction
         ``1 * (z - u) = name.L{delay} - u`` is *exactly* collinear with the
         design. This is a structural fact about the model, not a numerical
@@ -3828,10 +3843,10 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
         scored: npt.NDArray[np.bool_],
         bandwidth: float,
     ) -> float:
-        """Exact leave-one-out squared error of one candidate bandwidth.
+        r"""Exact leave-one-out squared error of one candidate bandwidth.
 
         The deletion residual is computed from the full-sample local fit via
-        the smoother diagonal, ``(y_t - yhat_t) / (1 - H_tt)`` -- exact for a
+        the smoother diagonal, :math:`(y_t - \hat{y}_t) / (1 - H_{tt})` -- exact for a
         linear smoother, so no refit per left-out point is needed. Only the
         ``scored`` points -- those inside the trimmed state range, where the
         curves will actually be read -- enter the criterion, so an isolated
@@ -3896,7 +3911,7 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
         isolated state excursion would otherwise do at any honest bandwidth.
 
         Returns:
-            The packed :class:`_VectorFunctionalFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorFunctionalFit`.
 
         Raises:
             SpecificationError: If the grid or trim is malformed, or a
@@ -3990,13 +4005,13 @@ class _FunctionalCoefficientVectorAutoRegressionModel[R](_ObservedRegimeVectorMo
 
 
 class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
-    """Specification and estimation engine of a quantile VAR.
+    r"""Specification and estimation engine of a quantile VAR.
 
     Each equation's coefficient vector minimizes the check loss at each
     requested quantile level -- an exact linear program (Koenker & Bassett
     1978), solved by HiGHS in its standard primal form: split the residual
-    into its positive and negative parts, price them at ``tau`` and
-    ``1 - tau``, and constrain ``X beta + u - v = y``. Equations share one
+    into its positive and negative parts, price them at :math:`\tau` and
+    :math:`1 - \tau`, and constrain :math:`X \beta + u - v = y`. Equations share one
     design and separate at estimation because the check loss is additive
     across them; quantile levels separate for the same reason, so the fit is
     ``k * Q`` independent programs over one design.
@@ -4096,7 +4111,9 @@ class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
                 ``(0, 1)``.
 
         Returns:
-            The packed :class:`_VectorQuantileFit`, quantiles ascending.
+            The packed
+            :class:`~cultivars.engine._internals._fits._VectorQuantileFit`,
+            quantiles ascending.
 
         Raises:
             SpecificationError: If the levels are empty, repeated, or
@@ -4142,7 +4159,7 @@ class _QuantileVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
 
 
 class _GibbsBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
-    """Estimation engine of the non-conjugate Gibbs-sampled BVAR.
+    r"""Estimation engine of the non-conjugate Gibbs-sampled BVAR.
 
     The coefficient prior here is stated *independently* of the innovation
     covariance -- the independent Normal-Wishart pairing -- which is what
@@ -4165,7 +4182,7 @@ class _GibbsBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
     system size well below the conjugate model's.
 
     Dummy-observation rows from a static prior are stacked under the sample
-    and weighted by ``Sigma`` like any other row, which is exactly the
+    and weighted by :math:`\Sigma` like any other row, which is exactly the
     conjugate model's treatment; adaptive priors state no dummies by
     construction.
     """
@@ -4217,11 +4234,11 @@ class _GibbsBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         *,
         seed: int | np.random.Generator | None = None,
     ) -> npt.NDArray[np.float64]:
-        """Data sets the independent Normal-Wishart prior generates.
+        r"""Data sets the independent Normal-Wishart prior generates.
 
-        Each replication draws ``Sigma`` from its inverse-Wishart prior and
+        Each replication draws :math:`\Sigma` from its inverse-Wishart prior and
         every coefficient from its own Gaussian, independently of
-        ``Sigma``, then simulates the sample from the observed presample.
+        :math:`\Sigma`, then simulates the sample from the observed presample.
 
         Args:
             n_replications: Replicated data sets.
@@ -4297,7 +4314,7 @@ class _GibbsBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_VectorGibbsFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorGibbsFit`.
 
         Raises:
             SpecificationError: If the draw bookkeeping is inconsistent or
@@ -4537,9 +4554,9 @@ class _SparseVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         penalty: str,
         mask: npt.NDArray[np.float64],
     ) -> npt.NDArray[np.float64]:
-        """Local-linear-approximation weights at the current solution.
+        r"""Local-linear-approximation weights at the current solution.
 
-        The derivative of the SCAD (``a = 3.7``) or MCP (``gamma = 3``)
+        The derivative of the SCAD (:math:`a = 3.7`) or MCP (:math:`\gamma = 3`)
         penalty at each coefficient's magnitude, scaled to the unit-weight
         convention of the solver, and masked so free rows stay free.
 
@@ -4629,7 +4646,7 @@ class _SparseVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
                 that zeroes everything.
 
         Returns:
-            The packed :class:`_VectorSparseFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorSparseFit`.
 
         Raises:
             SpecificationError: If the penalty name, level, or path
@@ -4748,7 +4765,7 @@ class _SparseVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             seed: Seed or generator for the fold shuffle.
 
         Returns:
-            The packed :class:`_VectorGraphicalFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorGraphicalFit`.
 
         Raises:
             SpecificationError: If a stage's specification is malformed.
@@ -4915,7 +4932,7 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
     Args:
         endog: The observed panel.
         order: Autoregressive order within each regime.
-        n_regimes: Number of latent regimes ``M``, at least two.
+        n_regimes: Number of latent regimes :math:`M`, at least two.
         switching_mean: Whether the deterministic block switches.
         switching_variance: Whether the innovation covariance switches.
         switching_ar: Whether the lag coefficients switch.
@@ -4925,7 +4942,7 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
     Raises:
         SpecificationError: If no component switches, so no regime is
             identified, or the specification is malformed.
-        DimensionError: If the sample cannot support ``M`` regimes.
+        DimensionError: If the sample cannot support :math:`M` regimes.
     """
 
     __slots__ = ("_m", "_sw_ar", "_sw_mean", "_sw_var")
@@ -5005,12 +5022,12 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
         return "first own-lag coefficient"
 
     def _selection_matrices(self) -> tuple[npt.NDArray[np.float64], ...]:
-        """Per-regime maps from the stacked slab matrix to full coefficients.
+        r"""Per-regime maps from the stacked slab matrix to full coefficients.
 
         The free parameters are slabs: one deterministic block per regime or
-        one shared, one lag block per regime or one shared. ``S_m`` maps the
-        ``(q, k)`` stacked slab matrix to regime ``m``'s full ``(w, k)``
-        coefficient matrix as ``B_m = S_m @ theta``.
+        one shared, one lag block per regime or one shared. :math:`S_m` maps the
+        ``(q, k)`` stacked slab matrix to regime :math:`m`'s full ``(w, k)``
+        coefficient matrix as :math:`B_m = S_m \theta`.
 
         Returns:
             One ``(w, q)`` selection matrix per regime.
@@ -5069,15 +5086,15 @@ class _MarkovSwitchingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]
         sigmas: npt.NDArray[np.float64],
         selections: tuple[npt.NDArray[np.float64], ...],
     ) -> npt.NDArray[np.float64]:
-        """M-step coefficient update by probability-weighted GLS.
+        r"""M-step coefficient update by probability-weighted GLS.
 
         Minimizes ``sum_m tr[Sigma_m^{-1} (Y - X S_m theta)' W_m
         (Y - X S_m theta)]`` over the stacked slab matrix ``theta``, which is
-        the generalized Sylvester system ``sum_m G_m theta Sigma_m^{-1} = C``
+        the generalized Sylvester system :math:`\sum_m G_m \theta\, \Sigma_m^{-1} = C`
         with ``G_m = S_m' X' W_m X S_m``, solved through its Kronecker form.
         With every block switching the system is block-diagonal and collapses
         to per-regime weighted least squares; with shared blocks the coupling
-        through ``Sigma_m^{-1}`` is exactly what per-regime-then-average
+        through :math:`\Sigma_m^{-1}` is exactly what per-regime-then-average
         would get wrong.
 
         Returns:
@@ -5407,11 +5424,11 @@ class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         target: npt.NDArray[np.float64],
         design: npt.NDArray[np.float64],
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """OLS on the training rows: prior mean, prior covariance, and Sigma.
+        r"""OLS on the training rows: prior mean, prior covariance, and Sigma.
 
         Returns:
             ``(b0, v0, sigma0)``: the stacked coefficient prior mean ``(D,)``,
-            its covariance ``(D, D)`` as ``kron(Sigma, (X'X)^{-1})``, and the
+            its covariance ``(D, D)`` as :math:`\Sigma \otimes (X^\top X)^{-1}`, and the
             training innovation covariance.
         """
         moments = self._gaussian_moments(target, design)
@@ -5425,10 +5442,10 @@ class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
     def _triangularize(
         sigma: npt.NDArray[np.float64],
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Split a covariance as ``A^{-1} D A^{-T}`` with unit-lower ``A^{-1}``.
+        r"""Split a covariance as :math:`A^{-1} D A^{-\top}` with unit-lower :math:`A^{-1}`.
 
         Returns:
-            ``(a, log_diag)``: the unit-lower-triangular ``A`` whose rows
+            ``(a, log_diag)``: the unit-lower-triangular :math:`A` whose rows
             orthogonalize the residuals, and the log of the diagonal
             variances.
         """
@@ -5464,7 +5481,7 @@ class _TimeVaryingVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_TimeVaryingFit`.
+            The packed :class:`~cultivars.engine._internals._fits._TimeVaryingFit`.
 
         Raises:
             SpecificationError: If the draw bookkeeping is inconsistent.
@@ -5855,7 +5872,7 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             seed: Seed or generator, for reproducibility.
 
         Returns:
-            The packed :class:`_VectorConjugateFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorConjugateFit`.
 
         Raises:
             SpecificationError: If the prior is unusable or the draw count
@@ -5898,7 +5915,7 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         n_burn: int,
         seed: int | np.random.Generator | None,
     ) -> _VectorHierarchicalFit:
-        """Giannone-Lenza-Primiceri: treat the tightnesses as unknowns too.
+        r"""Giannone-Lenza-Primiceri: treat the tightnesses as unknowns too.
 
         The hyperparameter posterior is ``p(theta | Y) proportional to
         p(Y | theta) p(theta)``, with ``p(Y | theta)`` the closed-form
@@ -5907,7 +5924,7 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
         mode, found by direct optimization in log space. Empirical Bayes
         stops there and draws ``(B, Sigma)`` conditional on the mode; the
         full treatment runs an adaptive random-walk Metropolis chain over
-        ``log theta`` and draws one ``(B, Sigma)`` from the exact
+        :math:`\log \theta` and draws one ``(B, Sigma)`` from the exact
         conditional posterior at every kept state, so the retained draws
         marginalize over the hyperparameters and the bands stop pretending
         the tightness was known.
@@ -5924,7 +5941,7 @@ class _BayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel[R]):
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_VectorHierarchicalFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorHierarchicalFit`.
 
         Raises:
             SpecificationError: If the method is unknown or the counts are
@@ -6060,9 +6077,9 @@ class _StudentBayesianVectorAutoRegressionModel[R](_BayesianVectorAutoRegression
         weights: npt.NDArray[np.float64],
         rng: np.random.Generator,
     ) -> float:
-        """Draw the degrees of freedom from their exact grid conditional.
+        r"""Draw the degrees of freedom from their exact grid conditional.
 
-        ``p(nu | w)`` is a product of Gamma densities in the weights with a
+        :math:`p(\nu \mid w)` is a product of Gamma densities in the weights with a
         flat prior on the grid; evaluating it on a fixed grid and sampling
         the normalized probabilities is an exact Gibbs step, trades no
         correctness for tuning, and caps the tail index at the grid's top --
@@ -6155,7 +6172,7 @@ class _StudentBayesianVectorAutoRegressionModel[R](_BayesianVectorAutoRegression
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_VectorStudentFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorStudentFit`.
 
         Raises:
             SpecificationError: If the draw bookkeeping is inconsistent, the
@@ -6311,7 +6328,7 @@ class _VolatilityBayesianVectorAutoRegressionModel[R](_VectorAutoRegressionModel
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_VectorVolatilityFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VectorVolatilityFit`.
 
         Raises:
             SpecificationError: If the draw bookkeeping is inconsistent or
@@ -6495,7 +6512,7 @@ class _UnobservedComponentsModel[R](_UnivariateModel[R]):
 
 
 class _StochasticVolatilityModel[R](_UnivariateModel[R]):
-    """Estimation engine of the log-AR(1) stochastic-volatility model.
+    r"""Estimation engine of the log-AR(1) stochastic-volatility model.
 
     Owns the specification and three estimators that answer different
     questions about the same model:
@@ -6508,7 +6525,7 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
       estimate on the exact likelihood.
     - :meth:`_sample_gibbs` -- Kim-Shephard-Chib mixture Gibbs sampling:
       the exact posterior up to the seven-component approximation of
-      ``log chi-squared(1)``.
+      :math:`\log \chi^2_1`.
     - :meth:`_sample_chain` -- particle marginal Metropolis-Hastings: the
       exact posterior with no approximation, at particle-filter cost per
       draw. The two samplers target the same prior, so they should agree,
@@ -6588,11 +6605,11 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
         prior: _VolatilityPrior | None = None,
         seed: int | np.random.Generator | None = None,
     ) -> npt.NDArray[np.float64]:
-        """Series the prior generates, one per prior draw of ``(mu, phi, sigma2)``.
+        r"""Series the prior generates, one per prior draw of ``(mu, phi, sigma2)``.
 
         The prior is the samplers' prior, stated through the same record:
-        Gaussian ``mu``, Beta on ``(phi + 1) / 2``, inverse-gamma
-        ``sigma2``; under heavy tails ``nu - 2`` is exponential with the
+        Gaussian ``mu``, Beta on :math:`(\phi + 1) / 2`, inverse-gamma
+        ``sigma2``; under heavy tails :math:`\nu - 2` is exponential with the
         Gibbs sampler's rate. The observation mean, on which the samplers
         put no informative prior, is held at the sample mean (or zero), as
         the particle chain holds it. Each replication starts its log
@@ -6678,9 +6695,9 @@ class _StochasticVolatilityModel[R](_UnivariateModel[R]):
 
     @staticmethod
     def _log_prior(theta: npt.NDArray[np.float64], *, prior: _VolatilityPrior) -> float:
-        """The Gibbs sampler's prior, in the chain's unconstrained space.
+        r"""The Gibbs sampler's prior, in the chain's unconstrained space.
 
-        Gaussian on ``mu``, Beta on ``(phi + 1) / 2``, inverse-gamma on
+        Gaussian on ``mu``, Beta on :math:`(\phi + 1) / 2`, inverse-gamma on
         ``sigma2``, with the Jacobians of ``tanh`` and ``exp`` so that the
         chain and the Gibbs sampler target the same posterior.
 
@@ -7060,9 +7077,9 @@ class _TrendVolatilityModel[R](_UnivariateModel[R]):
 
 
 class _DecayNelsonSiegelModel[R](ABC):
-    """Estimation engine of the Nelson-Siegel model with a time-varying decay.
+    r"""Estimation engine of the Nelson-Siegel model with a time-varying decay.
 
-    The loading decay ``lambda_t`` becomes a fourth latent factor with
+    The loading decay :math:`\lambda_t` becomes a fourth latent factor with
     AR(1) dynamics in its log (Koopman, Mallee, and van der Wel, 2010),
     which makes the measurement equation nonlinear in the state. The
     likelihood is the extended or unscented filter's Gaussian
@@ -7206,7 +7223,8 @@ class _PerturbationModel[R](ABC):
     prior in the constrained space it thinks in.
 
     Args:
-        specification: The model, see :class:`_PerturbationModelSpecification`.
+        specification: The model, see
+            :class:`~cultivars.engine._internals._specifications._PerturbationModelSpecification`.
         data: The ``(nobs, p)`` observables, ``numpy.nan`` rows missing.
         order: Perturbation order, ``1`` or ``2``.
 
@@ -7281,7 +7299,7 @@ class _PerturbationModel[R](ABC):
                 space, ``(n_params,)``.
 
         Returns:
-            The :class:`_PerturbationSolution`.
+            The :class:`~cultivars.engine._internals._solutions._PerturbationSolution`.
         """
         return self._solve(np.asarray(theta, dtype=np.float64))
 
@@ -7371,7 +7389,7 @@ class _PerturbationModel[R](ABC):
         return out
 
     def _log_jacobian(self, z: npt.NDArray[np.float64]) -> float:
-        """``log |d theta / d z|`` of the reparameterization.
+        r""":math:`\log \lvert \mathrm{d}\theta / \mathrm{d}z \rvert` of the reparameterization.
 
         Args:
             z: A point in the unconstrained space.
@@ -7641,28 +7659,28 @@ class _PerturbationModel[R](ABC):
 
 
 class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
-    """Engine of identification through stochastic volatility.
+    r"""Engine of identification through stochastic volatility.
 
-    The reduced-form innovations are ``u_t = B eps_t`` with each structural
-    shock carrying its own log-AR(1) variance ``h_it``; if those variance
+    The reduced-form innovations are :math:`u_t = B \varepsilon_t` with each structural
+    shock carrying its own log-AR(1) variance :math:`h_{it}`; if those variance
     paths are not proportional the impact matrix is identified up to
     column order and sign from the second moments alone (Lewis 2021;
     Bertsche and Braun 2022). The sampler alternates three exact blocks:
-    the rows of ``A = B**-1`` by Waggoner-Zha given the paths; each path
-    by the Kim-Shephard-Chib mixture step given ``A``; and each path's
+    the rows of :math:`A = B^{-1}` by Waggoner-Zha given the paths; each path
+    by the Kim-Shephard-Chib mixture step given :math:`A`; and each path's
     persistence and innovation variance from their conditionals. The
-    log-variance means are pinned at zero in the transition, since ``B``
+    log-variance means are pinned at zero in the transition, since :math:`B`
     carries the scale; because a persistent path's sample mean can sit far
     from that zero and the likelihood cannot tell level from scale, every
     kept draw is re-expressed with zero *sample* mean per path and the
-    level folded into the matching column of ``B``. The impact matrix is
+    level folded into the matching column of :math:`B`. The impact matrix is
     therefore the response to a shock at its in-sample average variance,
     which is the finite-sample statement the data can actually support.
 
     Order and sign are conventions imposed after the fact: every kept draw
     is matched to a reference impact matrix by assignment on column
-    similarity, and the reference itself is ordered so that shock ``j``
-    is the one loading most on variable ``j``, with a positive diagonal.
+    similarity, and the reference itself is ordered so that shock :math:`j`
+    is the one loading most on variable :math:`j`, with a positive diagonal.
     How often the assignment has to permute columns is reported as the
     relabelling rate.
 
@@ -7698,7 +7716,7 @@ class _VolatilityIdentificationModel[R](_IdentificationModel[R]):
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_VolatilityStructuralFit`.
+            The packed :class:`~cultivars.engine._internals._fits._VolatilityStructuralFit`.
 
         Raises:
             SpecificationError: If the draw bookkeeping is inconsistent.
@@ -7921,23 +7939,23 @@ class _LongMemoryVolatilityModel[R](_UnivariateModel[R]):
 
 
 class _FactorVolatilityModel[R](ABC):
-    """Estimation engine of the factor stochastic-volatility model.
+    r"""Estimation engine of the factor stochastic-volatility model.
 
-    ``y_t = Lambda f_t + eps_t`` with every factor and every idiosyncratic
+    :math:`y_t = \Lambda f_t + \varepsilon_t` with every factor and every idiosyncratic
     error carrying its own log-AR(1) variance (Pitt and Shephard 1999;
     Chib, Nardari, and Shephard 2006): the covariance matrix of a wide
-    panel moves every period through ``r`` common volatilities and ``k``
-    private ones, ``Lambda H_t Lambda' + D_t``, which is what makes the
+    panel moves every period through :math:`r` common volatilities and :math:`k`
+    private ones, :math:`\Lambda H_t \Lambda^\top + D_t`, which is what makes the
     model tractable where a multivariate GARCH of the same dimension is
-    not. Identification is by the triangular convention -- ``Lambda`` is
-    lower triangular with a unit diagonal in its leading ``r`` rows, so
-    factor ``j`` is scaled and signed by series ``j`` -- and the factor
+    not. Identification is by the triangular convention -- :math:`\Lambda` is
+    lower triangular with a unit diagonal in its leading :math:`r` rows, so
+    factor :math:`j` is scaled and signed by series :math:`j` -- and the factor
     log-variance levels are free.
 
     The Gibbs sampler alternates four exact blocks: the factors, one
     Gaussian per period given everything else; the free loadings, one
-    weighted regression per row; the ``k`` idiosyncratic paths and the
-    ``r`` factor paths by the Kim-Shephard-Chib mixture step; and every
+    weighted regression per row; the :math:`k` idiosyncratic paths and the
+    :math:`r` factor paths by the Kim-Shephard-Chib mixture step; and every
     path's ``(mu, phi, sigma2)`` from their conditionals. Kastner,
     Fruehwirth-Schnatter, and Lopes (2017) show that interweaving the
     loading and factor-scale updates speeds mixing; that is not done here,
@@ -7945,7 +7963,7 @@ class _FactorVolatilityModel[R](ABC):
 
     Args:
         panel: The observed ``(nobs, k)`` panel; wide is welcome.
-        n_factors: Factor count, at least one and below ``k``.
+        n_factors: Factor count, at least one and below :math:`k`.
         series_names: One label per series. Defaults to ``x1 ... xk``.
 
     Raises:
@@ -8027,7 +8045,7 @@ class _FactorVolatilityModel[R](ABC):
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_FactorVolatilityFit`.
+            The packed :class:`~cultivars.engine._internals._fits._FactorVolatilityFit`.
 
         Raises:
             SpecificationError: If the draw bookkeeping is inconsistent.

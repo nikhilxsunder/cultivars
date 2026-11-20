@@ -23,9 +23,9 @@
 
 One record, :class:`_PerturbationSolution`, holding the Taylor coefficients
 of the state transition and the control policy around the deterministic
-steady state. The solver in ``_solvers`` produces it; the emitters turn it
-into a state space, the simulators iterate it, and the posterior record
-recomputes it draw by draw.
+steady state. The solver in :mod:`~cultivars.engine._internals._solvers`
+produces it; the emitters turn it into a state space, the simulators iterate
+it, and the posterior record recomputes it draw by draw.
 
 References:
     Schmitt-Grohe, S., & Uribe, M. (2004). Solving dynamic general
@@ -50,7 +50,7 @@ __all__ = [
 class _PerturbationSolution:
     """A second-order perturbation solution in Schmitt-Grohe-Uribe form.
 
-    With ``x`` the predetermined states (deviations from steady state) and
+    With :math:`x` the predetermined states (deviations from steady state) and
     ``y`` the controls::
 
         y = g_x x + 1/2 g_xx (x kron x) + 1/2 g_ss sigma^2
@@ -68,6 +68,15 @@ class _PerturbationSolution:
         x_ss: ``(n_x,)`` steady-state states.
         y_ss: ``(n_y,)`` steady-state controls.
         order: ``1`` or ``2``; at order one every second-order block is zero.
+
+    See Also:
+        * :class:`~cultivars.multivariate.structural.perturbation.PerturbationDSGESolution`
+          -- the public name of this class.
+        * :meth:`.PerturbationDSGE.solve` -- returns an instance.
+        * :meth:`._PerturbationModel._solve` -- returns an instance.
+        * :meth:`._PerturbationModel.solve` -- returns an instance.
+        * :func:`._solve_perturbation` -- returns an instance.
+        * :attr:`._PerturbationFit.solution` -- holds an instance.
     """
 
     h_x: npt.NDArray[np.float64]

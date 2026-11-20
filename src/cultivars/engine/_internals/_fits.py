@@ -34,7 +34,7 @@ depends on it in the other direction, so a fit record can be constructed,
 compared, or serialized without dragging in an optimizer.
 
 The hierarchies are shallow and share fields only where the fields genuinely
-mean the same thing across the group. ``_ConditionalVarianceFit`` is the one
+mean the same thing across the group. :class:`_ConditionalVarianceFit` is the one
 multi-level case: its two subclasses parameterize the variance path in ways
 that are not comparable, so only the path itself and the two quantities derived
 from it live on the shared base.
@@ -133,7 +133,22 @@ class _BaseFit(ABC):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _AutoRegressionFit(_BaseFit):
-    """Raw outputs of an autoregressive fit, before public result assembly.
+    r"""Raw outputs of an autoregressive fit, before public result assembly.
+
+    The fitted equation is
+
+    .. math::
+
+       y_t = c + \delta t + \phi_1 y_{t-1} + \cdots + \phi_p y_{t-p} + \varepsilon_t,
+       \qquad \varepsilon_t \sim (0, \sigma^2),
+
+    with :attr:`const` as :math:`c`, :attr:`trend_coeff` as :math:`\delta`,
+    :attr:`ar_params` as :math:`(\phi_1, \ldots, \phi_p)` and :attr:`sigma2` as
+    :math:`\sigma^2`. A deterministic term the specification leaves out is stored
+    as ``None`` rather than as zero, so a consumer can tell an estimated zero from
+    an absent term. This is the estimator's output before anything is derived
+    from it: the standard errors, the stability verdict and the summary are
+    assembled on the public result.
 
     Attributes:
         const: Intercept, or ``None`` when ``trend == "n"``.
@@ -144,6 +159,11 @@ class _AutoRegressionFit(_BaseFit):
         nobs: Observations the likelihood was evaluated on.
         resid: One-step residuals.
         fittedvalues: One-step fitted values.
+
+    See Also:
+        * :meth:`._AutoRegressionModel._fit_css` -- returns an instance.
+        * :meth:`._AutoRegressionModel._fit_exact` -- returns an instance.
+        * :meth:`._AutoRegressionModel._fit_family` -- returns an instance.
     """
 
     const: float | None
@@ -158,13 +178,27 @@ class _AutoRegressionFit(_BaseFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _BoxJenkinsFit(_BaseFit):
-    """Raw outputs of a seasonal ARIMA-with-regressors fit."""
+    r"""Raw outputs of a seasonal ARIMA-with-regressors fit.
+
+    The model is the regression with seasonal ARMA errors stated on
+    :class:`~cultivars.engine._internals._parameters._BoxJenkinsParameters`,
+
+    .. math::
+
+       \phi(L)\, \Phi(L^s)\, u_t = \theta(L)\, \Theta(L^s)\, \varepsilon_t,
+       \qquad u_t = w_t - x_t^\top \beta,
+
+    and the six coefficient blocks here are that record's blocks at the optimum,
+    on the natural scale. The base record adds what every fit carries: the
+    maximized log likelihood, the sample it was evaluated on, the one-step
+    residuals and the fitted values.
+    """
 
     ar_params: npt.NDArray[np.float64]
     """Non-seasonal autoregressive coefficients, ``(p,)``."""
     ma_params: npt.NDArray[np.float64]
-    """Non-seasonal moving-average coefficients, ``(q,)``, in the sign convention
-    ``theta(L) = 1 + theta_1 L + ...``.
+    r"""Non-seasonal moving-average coefficients, ``(q,)``, in the sign convention
+    :math:`\theta(L) = 1 + \theta_1 L + \cdots`.
     """
     seasonal_ar_params: npt.NDArray[np.float64]
     """Seasonal autoregressive coefficients, ``(P,)``."""
@@ -180,7 +214,20 @@ class _BoxJenkinsFit(_BaseFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _FractionalIntegrationFit(_BaseFit):
-    """Raw outputs of a fractionally integrated ARMA fit."""
+    r"""Raw outputs of a fractionally integrated ARMA fit.
+
+    The model is the ARFIMA process stated on
+    :class:`~cultivars.engine._internals._parameters._FractionalIntegrationParameters`,
+
+    .. math::
+
+       \phi(L)\, (1 - L)^d\, (y_t - \mu) = \theta(L)\, \varepsilon_t,
+
+    with :attr:`d` the memory parameter and :attr:`mean` the level :math:`\mu`.
+    The autocorrelations of such a process decay like :math:`k^{2d - 1}`, which
+    is not summable for :math:`d > 0`: :attr:`d` is therefore the one number that
+    separates this fit from a short-memory ARMA with the same polynomials.
+    """
 
     d: float
     """Fractional integration order."""
@@ -245,7 +292,27 @@ class _ConditionalVarianceFit(_BaseFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _ShortMemoryVarianceFit(_ConditionalVarianceFit):
-    """Raw outputs of a finite-order variance fit: GARCH, GJR, or EGARCH.
+    r"""Raw outputs of a finite-order variance fit: GARCH, GJR, or EGARCH.
+
+    The three lag blocks are those of
+    :class:`~cultivars.engine._internals._parameters._ConditionalVarianceParameters`
+    at the optimum, entering the level recursion for GARCH and GJR and the log
+    recursion for EGARCH. :attr:`vol` records which, because the same three
+    arrays mean different things in each and because the persistence of the
+    variance is a different functional of them:
+
+    .. math::
+
+       \rho = \sum_i \alpha_i + \tfrac{1}{2} \sum_k \gamma_k + \sum_j \beta_j
+       \quad \text{(GARCH, GJR)},
+       \qquad
+       \rho = \sum_j \beta_j
+       \quad \text{(EGARCH)}.
+
+    The factor one half is the probability of a negative shock under a symmetric
+    innovation law. :math:`\rho < 1` is the condition for a finite unconditional
+    variance in the level recursion and, at first order, for stationarity of the
+    log variance in the log recursion; :meth:`persistence` returns :math:`\rho`.
 
     Attributes:
         vol: The family that produced the fit, needed because persistence is
@@ -253,6 +320,10 @@ class _ShortMemoryVarianceFit(_ConditionalVarianceFit):
         alpha: Coefficients on the shock magnitude.
         gamma: Asymmetry coefficients; empty for the symmetric family.
         beta: Persistence coefficients.
+
+    See Also:
+        * :meth:`._ShortMemoryVarianceModel._fit_family` -- returns an
+          instance.
     """
 
     vol: str
@@ -283,12 +354,29 @@ class _ShortMemoryVarianceFit(_ConditionalVarianceFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _FractionalVarianceFit(_ConditionalVarianceFit):
-    """Raw outputs of a fractionally integrated variance fit.
+    r"""Raw outputs of a fractionally integrated variance fit.
+
+    The variance is the truncated ARCH(:math:`\infty`) filter stated on
+    :class:`~cultivars.engine._internals._parameters._FractionalVarianceParameters`,
+    with weights generated by
+
+    .. math::
+
+       \lambda(L) = 1 - (1 - \beta L)^{-1} (1 - \phi L) (1 - L)^d.
+
+    For :math:`0 < d < 1` the weights decay hyperbolically, so the effect of a
+    squared shock on future variance dies out far more slowly than under any
+    finite-order recursion without being permanent. :attr:`d` is the long-memory
+    parameter of the variance; :attr:`phi` and :attr:`beta` are the short-memory
+    weights.
 
     Attributes:
         phi: Short-memory numerator weight of the fractional polynomial.
         d: Fractional integration order.
         beta: Denominator weight.
+
+    See Also:
+        * :meth:`._FractionalVarianceModel._fit_family` -- returns an instance.
     """
 
     phi: float
@@ -301,7 +389,20 @@ class _FractionalVarianceFit(_ConditionalVarianceFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _MeanFunctionFit(_BaseFit):
-    """Raw outputs of a neural mean-function fit."""
+    r"""Raw outputs of a neural mean-function fit.
+
+    The model is a nonlinear autoregression with an additive, homoskedastic
+    innovation,
+
+    .. math::
+
+       y_t = f(x_t) + \varepsilon_t, \qquad \varepsilon_t \sim (0, \sigma^2),
+
+    where :math:`x_t` collects the lagged values the specification feeds the
+    network and :math:`f` is the fitted mean function. Only :attr:`sigma2` is
+    common to every member of the group; how :math:`f` is represented is the
+    subclass's business.
+    """
 
     sigma2: float
     """Innovation variance, concentrated out of the Gaussian likelihood."""
@@ -309,7 +410,12 @@ class _MeanFunctionFit(_BaseFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _NeuralAutoRegressionFit(_MeanFunctionFit):
-    """Raw outputs of an autoregressive neural mean-function fit."""
+    r"""Raw outputs of an autoregressive neural mean-function fit.
+
+    One network serves the whole sample: :math:`f` in
+    :math:`y_t = f(x_t) + \varepsilon_t` is the single fitted
+    :attr:`predictor`, evaluated on the lag vector :math:`x_t`.
+    """
 
     predictor: MeanPredictor
     """The fitted conditional-mean map returned by the engine."""
@@ -317,7 +423,24 @@ class _NeuralAutoRegressionFit(_MeanFunctionFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _NeuralThresholdFit(_MeanFunctionFit):
-    """Raw outputs of a threshold neural mean-function fit."""
+    r"""Raw outputs of a threshold neural mean-function fit.
+
+    Two networks split the sample by an observed threshold variable :math:`z`,
+
+    .. math::
+
+       y_t = \begin{cases}
+       f_L(x_t) + \varepsilon_t, & z_{t-d} \le c, \\
+       f_U(x_t) + \varepsilon_t, & z_{t-d} > c,
+       \end{cases}
+
+    with :attr:`delay` as :math:`d`, :attr:`threshold` as :math:`c`, and
+    :attr:`lower_predictor` and :attr:`upper_predictor` as :math:`f_L` and
+    :math:`f_U`. When :attr:`self_exciting` is true the threshold variable is the
+    series itself, :math:`z_t = y_t`. :attr:`n_lower` and :attr:`n_upper` count
+    the observations that fell in each regime, and :attr:`ssr` is the sum of
+    squared residuals at the selected threshold.
+    """
 
     delay: int
     """Delay of the threshold variable, in periods."""
@@ -343,7 +466,37 @@ class _NeuralThresholdFit(_MeanFunctionFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _MarkovSwitchingFit(_BaseFit):
-    """Raw outputs of a Markov-switching autoregression fit."""
+    r"""Raw outputs of a Markov-switching autoregression fit.
+
+    The regime :math:`S_t` is an unobserved first-order Markov chain with
+    transition matrix :math:`P_{ij} = \Pr(S_t = j \mid S_{t-1} = i)`, held in
+    :attr:`transition`, and every parameter of the autoregression switches with
+    it,
+
+    .. math::
+
+       y_t = c_{S_t} + \sum_{i=1}^{p} \phi_{i, S_t}\, y_{t-i} + \sigma_{S_t} \varepsilon_t,
+       \qquad \varepsilon_t \sim \mathcal{N}(0, 1),
+
+    with :attr:`intercepts`, :attr:`ar_params` and :attr:`variances` holding
+    :math:`c_j`, :math:`\phi_{i, j}` and :math:`\sigma_j^2` for each regime
+    :math:`j`. The three probability paths are the standard inferences about the
+    chain,
+
+    .. math::
+
+       \Pr(S_t = j \mid y_{1:t-1}), \qquad
+       \Pr(S_t = j \mid y_{1:t}), \qquad
+       \Pr(S_t = j \mid y_{1:T}),
+
+    in :attr:`predicted_prob`, :attr:`filtered_prob` and :attr:`smoothed_prob`.
+    Two summaries of the chain itself are derived from :math:`P`:
+    :attr:`ergodic_prob` is its stationary distribution, the solution of
+    :math:`\pi = P^\top \pi`, and :attr:`expected_durations` holds
+    :math:`1 / (1 - P_{mm})`, the mean number of consecutive periods spent in
+    regime :math:`m`. :attr:`n_iter` and :attr:`converged` report how the
+    expectation-maximization iteration ended.
+    """
 
     transition: npt.NDArray[np.float64]
     """Row-stochastic transition matrix, ``(K, K)``."""
@@ -371,7 +524,27 @@ class _MarkovSwitchingFit(_BaseFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _ThresholdFit(_BaseFit):
-    """Raw outputs of a two-regime threshold grid search."""
+    r"""Raw outputs of a two-regime threshold grid search.
+
+    The model switches between two linear autoregressions on an observed
+    threshold variable,
+
+    .. math::
+
+       y_t = \begin{cases}
+       x_t^\top \beta_L + \varepsilon_t, & z_{t-d} \le c, \\
+       x_t^\top \beta_U + \varepsilon_t, & z_{t-d} > c,
+       \end{cases}
+
+    with :attr:`delay` as :math:`d`, :attr:`threshold` as :math:`c`, and
+    :attr:`lower_params` and :attr:`upper_params` as :math:`\beta_L` and
+    :math:`\beta_U`. Given :math:`(d, c)` both regimes are linear, so the
+    estimator is a grid search: each candidate pair is scored by the pooled sum
+    of squared residuals of the two regressions, and the minimizer is kept with
+    its :attr:`ssr`. The sum of squares is a step function of :math:`c`, which is
+    why the search is over a grid and not by a gradient method, and why the
+    threshold estimate has a non-standard limit law.
+    """
 
     delay: int
     """Delay of the threshold variable, in periods."""
@@ -393,7 +566,25 @@ class _ThresholdFit(_BaseFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _SmoothTransitionFit(_BaseFit):
-    """Raw outputs of a smooth-transition autoregression fit."""
+    r"""Raw outputs of a smooth-transition autoregression fit.
+
+    The model moves between two linear autoregressions continuously,
+
+    .. math::
+
+       y_t = \bigl( 1 - G_t \bigr)\, x_t^\top \beta_L + G_t\, x_t^\top \beta_U
+       + \varepsilon_t,
+       \qquad G_t = G(z_{t-d};\, \gamma, c) \in [0, 1],
+
+    with :attr:`delay` as :math:`d`, :attr:`threshold` as :math:`c`,
+    :attr:`gamma` as the transition speed :math:`\gamma`, and
+    :attr:`lower_params` and :attr:`upper_params` as :math:`\beta_L` and
+    :math:`\beta_U`. The transition function :math:`G` is stated on
+    :class:`~cultivars.engine._internals._parameters._SmoothTransitionParameters`.
+    Given :math:`(\gamma, c)` the model is linear in the regime coefficients, so
+    those are concentrated out by least squares and only the two transition
+    parameters are searched numerically.
+    """
 
     delay: int
     """Delay of the transition variable, in periods."""
@@ -424,12 +615,12 @@ class _TimeVaryingFit:
         beta_low: ``(n, D)`` posterior 16th percentile path.
         beta_high: ``(n, D)`` posterior 84th percentile path.
         beta_draws: ``(S, n, D)`` kept coefficient-path draws.
-        state_cov: ``(D, D)`` posterior mean of the drift covariance ``Q``.
+        state_cov: ``(D, D)`` posterior mean of the drift covariance :math:`Q`.
         sigma_u: ``(k, k)`` posterior mean innovation covariance -- constant
             for the homoskedastic model, the time average under stochastic
             volatility.
         impact_draws: ``(S, k, k)`` draws of the inverse contemporaneous
-            matrix ``A^{-1}``, or ``None`` for the homoskedastic model.
+            matrix :math:`A^{-1}`, or ``None`` for the homoskedastic model.
         h_draws: ``(S, n, k)`` kept log-variance path draws, or ``None``.
         vol_of_vol: ``(k,)`` posterior mean random-walk variances of the log
             volatilities, or ``None``.
@@ -440,6 +631,10 @@ class _TimeVaryingFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in iterations discarded.
         thin: Keep-every-``thin`` thinning applied after burn-in.
+
+    See Also:
+        * :meth:`._TimeVaryingVectorAutoRegressionModel._fit_tvp` -- returns an
+          instance.
     """
 
     beta_mean: npt.NDArray[np.float64]
@@ -451,13 +646,13 @@ class _TimeVaryingFit:
     beta_draws: npt.NDArray[np.float64]
     """``(S, n, D)`` kept coefficient-path draws."""
     state_cov: npt.NDArray[np.float64]
-    """``(D, D)`` posterior mean of the drift covariance ``Q``."""
+    """``(D, D)`` posterior mean of the drift covariance :math:`Q`."""
     sigma_u: npt.NDArray[np.float64]
     """``(k, k)`` posterior mean innovation covariance -- constant for the
     homoskedastic model, the time average under stochastic volatility.
     """
     impact_draws: npt.NDArray[np.float64] | None
-    """``(S, k, k)`` draws of the inverse contemporaneous matrix ``A^{-1}``, or
+    """``(S, k, k)`` draws of the inverse contemporaneous matrix :math:`A^{-1}`, or
     ``None`` for the homoskedastic model.
     """
     h_draws: npt.NDArray[np.float64] | None
@@ -482,20 +677,24 @@ class _TimeVaryingFit:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _VectorMarkovSwitchingFit(_BaseFit):
-    """Raw outputs of a Markov-switching vector autoregression fit.
+    r"""Raw outputs of a Markov-switching vector autoregression fit.
 
     Attributes:
         transition: Row-stochastic ``(M, M)`` matrix.
         coefficients: ``(M, p, k, k)`` per-regime lag stacks.
         deterministics: ``(M, d, k)`` per-regime deterministic coefficients.
         sigmas: ``(M, k, k)`` per-regime innovation covariances.
-        filtered_prob: ``Pr(S_t = m | y_1..t)``, shape ``(nobs, M)``.
-        predicted_prob: ``Pr(S_t = m | y_1..t-1)``, shape ``(nobs, M)``.
-        smoothed_prob: ``Pr(S_t = m | y_1..T)``, shape ``(nobs, M)``.
+        filtered_prob: :math:`\Pr(S_t = m \mid y_{1:t})`, shape ``(nobs, M)``.
+        predicted_prob: :math:`\Pr(S_t = m \mid y_{1:t-1})`, shape ``(nobs, M)``.
+        smoothed_prob: :math:`\Pr(S_t = m \mid y_{1:T})`, shape ``(nobs, M)``.
         ergodic_prob: Stationary distribution of ``transition``.
-        expected_durations: ``1 / (1 - P_mm)``, in periods.
+        expected_durations: :math:`1 / (1 - P_{mm})`, in periods.
         n_iter: EM iterations used by the refining run.
         converged: Whether the refining run met its tolerance.
+
+    See Also:
+        * :meth:`._MarkovSwitchingVectorAutoRegressionModel._fit_markov` --
+          returns an instance.
     """
 
     transition: npt.NDArray[np.float64]
@@ -507,15 +706,15 @@ class _VectorMarkovSwitchingFit(_BaseFit):
     sigmas: npt.NDArray[np.float64]
     """``(M, k, k)`` per-regime innovation covariances."""
     filtered_prob: npt.NDArray[np.float64]
-    """``Pr(S_t = m | y_1..t)``, shape ``(nobs, M)``."""
+    r""":math:`\Pr(S_t = m \mid y_{1:t})`, shape ``(nobs, M)``."""
     predicted_prob: npt.NDArray[np.float64]
-    """``Pr(S_t = m | y_1..t-1)``, shape ``(nobs, M)``."""
+    r""":math:`\Pr(S_t = m \mid y_{1:t-1})`, shape ``(nobs, M)``."""
     smoothed_prob: npt.NDArray[np.float64]
-    """``Pr(S_t = m | y_1..T)``, shape ``(nobs, M)``."""
+    r""":math:`\Pr(S_t = m \mid y_{1:T})`, shape ``(nobs, M)``."""
     ergodic_prob: npt.NDArray[np.float64]
     """Stationary distribution of ``transition``."""
     expected_durations: npt.NDArray[np.float64]
-    """``1 / (1 - P_mm)``, in periods."""
+    """:math:`1 / (1 - P_{mm})`, in periods."""
     n_iter: int
     """EM iterations used by the refining run."""
     converged: bool
@@ -561,6 +760,10 @@ class _VectorThresholdFit(_VectorObservedRegimeFit):
         upper_sigma_u: Upper-regime innovation covariance, dof-corrected.
         n_lower: Observations assigned to the lower regime.
         n_upper: Observations assigned to the upper regime.
+
+    See Also:
+        * :meth:`._ThresholdVectorAutoRegressionModel._fit_regimes` -- returns
+          an instance.
     """
 
     lower_sigma_u: npt.NDArray[np.float64]
@@ -586,6 +789,10 @@ class _VectorSmoothTransitionFit(_VectorObservedRegimeFit):
             rather than two, because smooth weights never partition the
             sample: every observation is a blend of both regimes, so a
             per-regime covariance has no subsample to be estimated from.
+
+    See Also:
+        * :meth:`._SmoothTransitionVectorAutoRegressionModel._fit_regimes` --
+          returns an instance.
     """
 
     gamma: float
@@ -603,7 +810,25 @@ class _VectorSmoothTransitionFit(_VectorObservedRegimeFit):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _VectorAutoRegressionFit(_BaseFit):
-    """The estimated pieces of a reduced-form vector autoregression.
+    r"""The estimated pieces of a reduced-form vector autoregression.
+
+    In stacked form the system is :math:`Y = Z B + U`, with one row per date, the
+    deterministic terms and the :math:`p` lags of all :math:`k` variables in
+    :math:`Z`, and rows of :math:`U` with covariance :math:`\Sigma_u`. The record
+    holds the least-squares solution split into its two parts,
+    :attr:`deterministic` and the lag stack :attr:`coefficients`, together with
+    two estimates of the innovation covariance from the same residuals,
+
+    .. math::
+
+       \hat\Sigma_u = \frac{\hat{U}^\top \hat{U}}{T - w}, \qquad
+       \tilde\Sigma_u = \frac{\hat{U}^\top \hat{U}}{T},
+
+    in :attr:`sigma_u` and :attr:`sigma_ml`, where :math:`w` is the number of
+    regressors per equation, or the effective number spent when a prior or
+    penalty shrinks the fit. The first carries the degrees-of-freedom
+    correction; the second is the maximum-likelihood estimate, the one the
+    Gaussian log likelihood is evaluated at.
 
     Attributes:
         coefficients: ``(p, k, k)`` stack of ``A_1, ..., A_p``.
@@ -613,6 +838,16 @@ class _VectorAutoRegressionFit(_BaseFit):
         design: The regressor matrix as estimated.
         posterior: Posterior covariance when a prior was applied, else ``None``.
         prior_label: What the prior was, for the summary.
+
+    See Also:
+        * :meth:`._BayesianVectorAutoRegressionModel._fit_family` -- returns an
+          instance.
+        * :meth:`._FunctionalCoefficientVectorAutoRegressionModel._fit_family`
+          -- returns an instance.
+        * :meth:`._GibbsBayesianVectorAutoRegressionModel._fit_family` --
+          returns an instance.
+        * :meth:`._MarkovSwitchingVectorAutoRegressionModel._fit_family` --
+          returns an instance.
     """
 
     coefficients: npt.NDArray[np.float64]
@@ -653,12 +888,16 @@ class _ExogenousVectorAutoRegressionFit(_VectorAutoRegressionFit):
     Attributes:
         exog_coefficients: ``(s + 1, k, m)`` stack of ``B_0, ..., B_s``, laid
             out so that ``exog_coefficients[j]`` is the ``(k, m)`` matrix on
-            ``x_{t-j}`` and index ``0`` is the contemporaneous term.
+            :math:`x_{t-j}` and index ``0`` is the contemporaneous term.
+
+    See Also:
+        * :meth:`._ExogenousVectorAutoRegressionModel._fit_family` -- returns
+          an instance.
     """
 
     exog_coefficients: npt.NDArray[np.float64]
     """``(s + 1, k, m)`` stack of ``B_0, ..., B_s``, laid out so that
-    ``exog_coefficients[j]`` is the ``(k, m)`` matrix on ``x_{t-j}`` and index
+    ``exog_coefficients[j]`` is the ``(k, m)`` matrix on :math:`x_{t-j}` and index
     ``0`` is the contemporaneous term.
     """
 
@@ -702,6 +941,12 @@ class _VectorErrorCorrectionFit(_VectorAutoRegressionFit):
         impact: ``(k_y, k_x)`` contemporaneous response to the weakly exogenous
             differences, zero-width for a closed system.
         eigenvalues: The squared canonical correlations, descending.
+
+    See Also:
+        * :meth:`._ExogenousVectorErrorCorrectionModel._fit_family` -- returns
+          an instance.
+        * :meth:`._VectorErrorCorrectionModel._fit_family` -- returns an
+          instance.
     """
 
     alpha: npt.NDArray[np.float64]
@@ -735,7 +980,7 @@ class _VectorErrorCorrectionFit(_VectorAutoRegressionFit):
 
     @property
     def cointegrating_matrix(self) -> npt.NDArray[np.float64]:
-        """The long-run impact matrix ``Pi = alpha beta'``, over the variables only."""
+        r"""The long-run impact matrix :math:`\Pi = \alpha \beta^\top`, over the variables only."""
         return self.alpha @ self.beta[: self.k_endog].T
 
 
@@ -756,9 +1001,13 @@ class _VectorQuantileFit:
         resid: ``(Q, n, k)`` quantile residuals ``y - fitted``.
         loss: ``(Q, k)`` total check loss per equation at the optimum.
         loss_location: ``(Q, k)`` check loss of the unconditional quantile,
-            the intercept-only benchmark the pseudo-``R``:sup:`1` is read
+            the intercept-only benchmark the pseudo-:math:`R`:sup:`1` is read
             against (Koenker & Machado 1999).
         nobs: Effective sample size.
+
+    See Also:
+        * :meth:`._QuantileVectorAutoRegressionModel._fit_quantile` -- returns
+          an instance.
     """
 
     quantiles: tuple[float, ...]
@@ -775,7 +1024,7 @@ class _VectorQuantileFit:
     """``(Q, k)`` total check loss per equation at the optimum."""
     loss_location: npt.NDArray[np.float64]
     """``(Q, k)`` check loss of the unconditional quantile, the intercept-only
-    benchmark the pseudo-``R``:sup:`1` is read against (Koenker & Machado 1999).
+    benchmark the pseudo-:math:`R`:sup:`1` is read against (Koenker & Machado 1999).
     """
     nobs: int
     """Effective sample size."""
@@ -791,10 +1040,10 @@ class _VectorFunctionalFit:
 
     Attributes:
         delay: Delay of the state variable.
-        state_values: The delayed state ``z_t``, aligned with ``resid``.
+        state_values: The delayed state :math:`z_t`, aligned with ``resid``.
         grid: ``(G,)`` state values the coefficient curves are evaluated on.
         curves: ``(G, w, k)`` local-linear level coefficients, design-major:
-            ``curves[g, :, i]`` is equation ``i``'s coefficient vector at
+            ``curves[g, :, i]`` is equation :math:`i`'s coefficient vector at
             ``grid[g]``.
         curve_se: ``(G, w, k)`` pointwise standard errors of ``curves``.
         bandwidth: The bandwidth the curves were estimated at.
@@ -805,12 +1054,16 @@ class _VectorFunctionalFit:
         resid: Residuals of the local fits at the observed states.
         fittedvalues: One-step conditional means at the observed states.
         nobs: Effective sample size.
+
+    See Also:
+        * :meth:`._FunctionalCoefficientVectorAutoRegressionModel._fit_functional`
+          -- returns an instance.
     """
 
     delay: int
     """Delay of the state variable."""
     state_values: npt.NDArray[np.float64]
-    """The delayed state ``z_t``, aligned with ``resid``."""
+    """The delayed state :math:`z_t`, aligned with ``resid``."""
     grid: npt.NDArray[np.float64]
     """``(G,)`` state values the coefficient curves are evaluated on."""
     curves: npt.NDArray[np.float64]
@@ -858,6 +1111,12 @@ class _VectorConjugateFit:
         fittedvalues: One-step means at the posterior mean.
         nobs: Effective sample size, dummy rows excluded.
         n_dummy: Artificial rows the prior contributed.
+
+    See Also:
+        * :meth:`._BayesianVectorAutoRegressionModel._fit_conjugate` -- returns
+          an instance.
+        * :meth:`._StudentBayesianVectorAutoRegressionModel._fit_conjugate` --
+          returns an instance.
     """
 
     coefficient_stack: npt.NDArray[np.float64]
@@ -907,6 +1166,12 @@ class _VectorHierarchicalFit(_VectorConjugateFit):
         acceptance: Metropolis acceptance rate over the kept span; ``nan``
             under empirical Bayes.
         method: ``"full"`` or ``"empirical"``.
+
+    See Also:
+        * :meth:`._BayesianVectorAutoRegressionModel._fit_hierarchical` --
+          returns an instance.
+        * :meth:`._StudentBayesianVectorAutoRegressionModel._fit_hierarchical`
+          -- returns an instance.
     """
 
     hyper_names: tuple[str, ...]
@@ -950,6 +1215,10 @@ class _VectorStudentFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._StudentBayesianVectorAutoRegressionModel._fit_student` --
+          returns an instance.
     """
 
     coefficient_stack: npt.NDArray[np.float64]
@@ -1003,7 +1272,7 @@ class _VectorVolatilityFit:
         beta_draws: ``(S, w, k)`` kept coefficient draws.
         sigma_draws: ``(S, k, k)`` kept end-of-sample covariance draws.
         h_draws: ``(S, n, k)`` kept log-variance path draws.
-        impact_draws: ``(S, k, k)`` kept draws of ``A^{-1}``.
+        impact_draws: ``(S, k, k)`` kept draws of :math:`A^{-1}`.
         vol_of_vol: ``(k,)`` posterior mean random-walk variances of the
             log volatilities.
         resid: Residuals at the posterior mean.
@@ -1012,6 +1281,10 @@ class _VectorVolatilityFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._VolatilityBayesianVectorAutoRegressionModel._fit_volatility`
+          -- returns an instance.
     """
 
     coefficient_stack: npt.NDArray[np.float64]
@@ -1029,7 +1302,7 @@ class _VectorVolatilityFit:
     h_draws: npt.NDArray[np.float64]
     """``(S, n, k)`` kept log-variance path draws."""
     impact_draws: npt.NDArray[np.float64]
-    """``(S, k, k)`` kept draws of ``A^{-1}``."""
+    """``(S, k, k)`` kept draws of :math:`A^{-1}`."""
     vol_of_vol: npt.NDArray[np.float64]
     """``(k,)`` posterior mean random-walk variances of the log volatilities."""
     resid: npt.NDArray[np.float64]
@@ -1070,6 +1343,10 @@ class _VectorSparseFit:
             caller stated ``lam``.
         n_nonzero: Nonzero penalized coefficients at the solution.
         nobs: Effective sample size.
+
+    See Also:
+        * :meth:`._SparseVectorAutoRegressionModel._fit_sparse` -- returns an
+          instance.
     """
 
     coefficient_stack: npt.NDArray[np.float64]
@@ -1109,6 +1386,10 @@ class _VectorGraphicalFit(_VectorSparseFit):
             the precision, unit diagonal.
         lam_nodes: ``(k,)`` the per-node penalty levels cross-validation
             selected.
+
+    See Also:
+        * :meth:`._SparseVectorAutoRegressionModel._fit_graphical` -- returns
+          an instance.
     """
 
     precision: npt.NDArray[np.float64]
@@ -1149,6 +1430,10 @@ class _VectorGibbsFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._GibbsBayesianVectorAutoRegressionModel._fit_gibbs` --
+          returns an instance.
     """
 
     coefficient_stack: npt.NDArray[np.float64]
@@ -1199,6 +1484,10 @@ class _StructuralFit:
         smoothed_state: Full-sample state means, ``(n, m)``.
         smoothed_state_cov: Full-sample state covariances, ``(n, m, m)``.
         slices: Component name to state index range.
+
+    See Also:
+        * :meth:`._UnobservedComponentsModel._fit_structural` -- returns an
+          instance.
     """
 
     params: _StructuralParameters
@@ -1261,6 +1550,12 @@ class _StochasticVolatilityFit:
         log_variance: Smoothed log-variance path, ``(n,)``.
         log_variance_std: Smoothed log-variance standard deviations,
             ``(n,)``.
+
+    See Also:
+        * :meth:`._StochasticVolatilityModel._fit_particle` -- returns an
+          instance.
+        * :meth:`._StochasticVolatilityModel._fit_quasi` -- returns an
+          instance.
     """
 
     params: _StochasticVolatilityParameters
@@ -1298,6 +1593,10 @@ class _VolatilityDrawsFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._StochasticVolatilityModel._sample_gibbs` -- returns an
+          instance.
     """
 
     mu_draws: npt.NDArray[np.float64]
@@ -1356,6 +1655,10 @@ class _ParticleChainFit:
         n_draws: Total iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._ParticleMarginalChain.run` -- returns an instance.
+        * :meth:`._PerturbationModel._sample_chain` -- returns an instance.
     """
 
     theta_draws: npt.NDArray[np.float64]
@@ -1385,13 +1688,13 @@ class _ParticleChainFit:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _TrendVolatilityFit:
-    """Raw output of the unobserved-components stochastic-volatility Gibbs sampler.
+    r"""Raw output of the unobserved-components stochastic-volatility Gibbs sampler.
 
     Attributes:
-        trend_draws: ``(S, n)`` kept trend paths ``tau_t``.
+        trend_draws: ``(S, n)`` kept trend paths :math:`\tau_t`.
         h_draws: ``(S, n)`` kept log variances of the irregular.
         q_draws: ``(S, n)`` kept log variances of the trend innovation.
-        gamma2_irregular_draws: ``(S,)`` vol-of-vol draws of ``h`` (constant
+        gamma2_irregular_draws: ``(S,)`` vol-of-vol draws of :math:`h` (constant
             across draws when fixed).
         gamma2_trend_draws: ``(S,)`` vol-of-vol draws of ``q``.
         gamma_fixed: Whether the vol-of-vol parameters were held fixed.
@@ -1399,16 +1702,19 @@ class _TrendVolatilityFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._TrendVolatilityModel._sample_gibbs` -- returns an instance.
     """
 
     trend_draws: npt.NDArray[np.float64]
-    """``(S, n)`` kept trend paths ``tau_t``."""
+    r"""``(S, n)`` kept trend paths :math:`\tau_t`."""
     h_draws: npt.NDArray[np.float64]
     """``(S, n)`` kept log variances of the irregular."""
     q_draws: npt.NDArray[np.float64]
     """``(S, n)`` kept log variances of the trend innovation."""
     gamma2_irregular_draws: npt.NDArray[np.float64]
-    """``(S,)`` vol-of-vol draws of ``h`` (constant across draws when fixed)."""
+    """``(S,)`` vol-of-vol draws of :math:`h` (constant across draws when fixed)."""
     gamma2_trend_draws: npt.NDArray[np.float64]
     """``(S,)`` vol-of-vol draws of ``q``."""
     gamma_fixed: bool
@@ -1449,6 +1755,9 @@ class _DecayNelsonSiegelFit:
         factor_cov: Smoothed factor covariances, ``(n, 3, 3)``.
         log_decay: Smoothed log-decay path, ``(n,)``.
         log_decay_std: Smoothed log-decay standard deviations, ``(n,)``.
+
+    See Also:
+        * :meth:`._DecayNelsonSiegelModel._fit_decay` -- returns an instance.
     """
 
     params: _DecayNelsonSiegelParameters
@@ -1490,6 +1799,9 @@ class _PerturbationFit:
         nobs: Observations.
         filtered_state: Filtered state means (pruned state, ``(n, 2 n_x)``
             at second order, ``(n, n_x)`` at first).
+
+    See Also:
+        * :meth:`._PerturbationModel._fit_point` -- returns an instance.
     """
 
     theta: npt.NDArray[np.float64]
@@ -1515,16 +1827,16 @@ class _PerturbationFit:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _VolatilityStructuralFit:
-    """Raw output of the stochastic-volatility identification sampler.
+    r"""Raw output of the stochastic-volatility identification sampler.
 
     Every draw is already normalized to one labelling: columns of the
     impact matrix are matched to a reference by assignment on their
     absolute cosine similarity and signed to agree with it, so the draws
-    below describe one posterior mode rather than a mixture of ``2**k k!``
+    below describe one posterior mode rather than a mixture of :math:`2^k\, k!`
     relabellings.
 
     Attributes:
-        impact_draws: ``(S, k, k)`` kept impact matrices ``B = A**-1``.
+        impact_draws: ``(S, k, k)`` kept impact matrices :math:`B = A^{-1}`.
         h_draws: ``(S, T, k)`` kept structural log-variance paths, one
             column per shock, each with zero sample mean; the level sits
             in the matching column of ``impact_draws``.
@@ -1538,10 +1850,14 @@ class _VolatilityStructuralFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._VolatilityIdentificationModel._sample` -- returns an
+          instance.
     """
 
     impact_draws: npt.NDArray[np.float64]
-    """``(S, k, k)`` kept impact matrices ``B = A**-1``."""
+    """``(S, k, k)`` kept impact matrices :math:`B = A^{-1}`."""
     h_draws: npt.NDArray[np.float64]
     """``(S, T, k)`` kept structural log-variance paths, one column per shock, each
     with zero sample mean; the level sits in the matching column of
@@ -1583,6 +1899,10 @@ class _LongMemoryVolatilityFit:
             approximation.
         log_variance_std: The smoother's stationary root mean squared
             error, one value repeated ``(n,)`` times.
+
+    See Also:
+        * :meth:`._LongMemoryVolatilityModel._fit_whittle` -- returns an
+          instance.
     """
 
     params: _LongMemoryVolatilityParameters
@@ -1612,7 +1932,7 @@ class _FactorVolatilityFit:
 
     Attributes:
         loading_draws: ``(S, k, r)`` kept loading matrices, lower triangular
-            with unit diagonal in the leading ``r`` rows.
+            with unit diagonal in the leading :math:`r` rows.
         factor_draws: ``(S, T, r)`` kept factor paths.
         h_factor_draws: ``(S, T, r)`` kept factor log-variance paths.
         h_idio_draws: ``(S, T, k)`` kept idiosyncratic log-variance paths.
@@ -1628,11 +1948,14 @@ class _FactorVolatilityFit:
         n_draws: Total sampler iterations.
         n_burn: Burn-in discarded.
         thin: Post-burn thinning.
+
+    See Also:
+        * :meth:`._FactorVolatilityModel._sample` -- returns an instance.
     """
 
     loading_draws: npt.NDArray[np.float64]
     """``(S, k, r)`` kept loading matrices, lower triangular with unit diagonal in the
-    leading ``r`` rows.
+    leading :math:`r` rows.
     """
     factor_draws: npt.NDArray[np.float64]
     """``(S, T, r)`` kept factor paths."""

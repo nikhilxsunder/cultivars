@@ -19,12 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Assessment records: the companion-eigenvalue verdict on stability and invertibility.
+r"""Assessment records: the companion-eigenvalue verdict on stability and invertibility.
 
-A linear recursion ``y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + u_t`` is stable
+A linear recursion :math:`y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + u_t` is stable
 exactly when every eigenvalue of its companion matrix lies strictly inside
 the unit circle, which is the same statement as
-``det(I - A_1 z - ... - A_p z^p)`` having no root with ``|z| <= 1``. This
+:math:`\det(I - A_1 z - \cdots - A_p z^p)` having no root with :math:`|z| \le 1`. This
 module holds the one record that carries that reading,
 :class:`_StabilityAssessment`, together with the class methods that produce
 it. Every stationarity, invertibility, and transition-stability check in the
@@ -34,9 +34,9 @@ that decides it are defined once rather than per model family.
 The rule is a three-way partition of the eigenvalue moduli by a band of
 half-width ``tol`` around the circle:
 
-* inside: ``|lambda| < 1 - tol``;
-* unit: ``abs(|lambda| - 1) <= tol``;
-* explosive: ``|lambda| > 1 + tol``.
+* inside: :math:`|\lambda| < 1 - \mathrm{tol}`;
+* unit: :math:`\bigl|\, |\lambda| - 1 \,\bigr| \le \mathrm{tol}`;
+* explosive: :math:`|\lambda| > 1 + \mathrm{tol}`.
 
 The strict verdict (``allow_unit_roots=False``) requires every modulus to be
 inside; the permissive verdict (``allow_unit_roots=True``) requires only
@@ -49,19 +49,45 @@ transition with random-walk states asks for.
 Two conventions are fixed here and assumed by every caller.
 
 Sign. All four entry points read their argument in the autoregressive
-convention, testing ``1 - c_1 z - ... - c_q z^q``. A moving-average
-polynomial stored as ``theta(L) = 1 + theta_1 L + ... + theta_q L^q`` must be
+convention, testing :math:`1 - c_1 z - \cdots - c_q z^q`. A moving-average
+polynomial stored as :math:`\theta(L) = 1 + \theta_1 L + \cdots + \theta_q L^q` must be
 negated before it is passed, :meth:`_StabilityAssessment.is_invertible`
-included. The fitted results do this in ``_InvertibilityMixin``; a direct
+included. The fitted results do this in
+:class:`~cultivars.engine._internals._mixins._InvertibilityMixin`; a direct
 caller has to do it by hand.
 
 Accuracy. The eigenvalues are those of a general real matrix
-(``numpy.linalg.eigvals``), and a defective eigenvalue of multiplicity ``m``
+(``numpy.linalg.eigvals``), and a defective eigenvalue of multiplicity :math:`m`
 is recovered only to about ``eps ** (1 / m)``. Simple and double unit roots
 land inside the default band of ``1e-8``. A triple unit root does not: the
-companion of ``(1 - L)^3`` returns moduli about ``7e-6`` from one, so at the
+companion of :math:`(1 - L)^3` returns moduli about ``7e-6`` from one, so at the
 default tolerance two of its three roots are classified as explosive. Models
 that carry higher-order integration by design should pass a wider ``tol``.
+
+In companion form the recursion is first order in the stacked vector,
+
+.. math::
+
+   \begin{pmatrix} y_t \\ y_{t-1} \\ \vdots \\ y_{t-p+1} \end{pmatrix}
+   =
+   \underbrace{\begin{pmatrix}
+   A_1 & A_2 & \cdots & A_{p-1} & A_p \\
+   I & 0 & \cdots & 0 & 0 \\
+   \vdots & & \ddots & & \vdots \\
+   0 & 0 & \cdots & I & 0
+   \end{pmatrix}}_{C}
+   \begin{pmatrix} y_{t-1} \\ y_{t-2} \\ \vdots \\ y_{t-p} \end{pmatrix}
+   +
+   \begin{pmatrix} u_t \\ 0 \\ \vdots \\ 0 \end{pmatrix},
+
+and the eigenvalues :math:`\lambda` of :math:`C` are the reciprocals of the
+roots of :math:`\det(I - A_1 z - \cdots - A_p z^p)`. The verdict is read off
+their moduli against the tolerance: a root counts as stable when
+:math:`|\lambda| < 1 - \mathrm{tol}`, as a unit root when
+:math:`\bigl|\, |\lambda| - 1 \,\bigr| \le \mathrm{tol}`, and as explosive when
+:math:`|\lambda| > 1 + \mathrm{tol}`. A moving-average polynomial is assessed
+the same way through its own companion matrix, which is why invertibility
+needs no second implementation.
 
 Layout. The record is a frozen dataclass and is re-exported under its public
 name as ``cultivars.diagnostics.stability.StabilityAssessment``. The
@@ -135,6 +161,12 @@ class _StabilityAssessment:
             ``0.0`` on the trivial record that :meth:`assess_stability`
             returns for empty coefficients, whatever tolerance was passed.
 
+    See Also:
+        * :meth:`.GVARResult.stability_check` -- returns an instance.
+        * :meth:`.VECMResult.stability_check` -- returns an instance.
+        * :meth:`.VECMXResult.stability_check` -- returns an instance.
+        * :meth:`.MFVARResult.stability_check` -- returns an instance.
+
     Example:
         >>> res = _StabilityAssessment.assess_stability([0.5, -0.3])
         >>> res.is_stable, res.n_unit_roots, res.n_explosive
@@ -169,11 +201,11 @@ class _StabilityAssessment:
     fields.
     """
     n_unit_roots: int
-    """Number of eigenvalues with ``abs(|lambda| - 1) <= tol``.
+    r"""Number of eigenvalues with :math:`\bigl|\, |\lambda| - 1 \,\bigr| \le \mathrm{tol}`.
 
     Counts eigenvalues on the unit circle wherever they sit on it, so
     seasonal roots and complex pairs are included and each member of a pair
-    counts once: ``1 - L^4`` reports four. A stable root within ``tol`` of
+    counts once: :math:`1 - L^4` reports four. A stable root within ``tol`` of
     the circle is counted here as well.
     """
     n_explosive: int
@@ -221,13 +253,13 @@ class _StabilityAssessment:
     def _assess(
         cls, companion: npt.NDArray[np.float64], *, tol: float, allow_unit_roots: bool
     ) -> Self:
-        """Classify the eigenvalues of a square matrix against the unit circle.
+        r"""Classify the eigenvalues of a square matrix against the unit circle.
 
         The single kernel behind every public entry point. It takes the
         matrix as given, computes its eigenvalues, and partitions their
         moduli by the band of half-width ``tol`` around one: ``n_unit_roots``
-        counts ``abs(|lambda| - 1) <= tol`` and ``n_explosive`` counts
-        ``|lambda| > 1 + tol``. The verdict is ``n_explosive == 0`` when unit
+        counts :math:`\bigl|\, |\lambda| - 1 \,\bigr| \le \mathrm{tol}` and ``n_explosive`` counts
+        :math:`|\lambda| > 1 + \mathrm{tol}`. The verdict is ``n_explosive == 0`` when unit
         roots are allowed and ``max_modulus < 1 - tol`` otherwise, so under
         the strict criterion a root inside the circle but within ``tol`` of
         it fails.
@@ -299,12 +331,12 @@ class _StabilityAssessment:
     def assess_stability(
         cls, ar_coeffs: npt.ArrayLike, *, tol: float = 1e-8, allow_unit_roots: bool = False
     ) -> Self:
-        """Assess stationarity of an AR/VAR from its autoregressive coefficients.
+        r"""Assess stationarity of an AR/VAR from its autoregressive coefficients.
 
         Builds the ``(k * p, k * p)`` companion of
-        ``y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + u_t`` and classifies its
+        :math:`y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + u_t` and classifies its
         eigenvalues. Equivalently, tests whether
-        ``det(I - A_1 z - ... - A_p z^p)`` has all its roots outside the
+        :math:`\det(I - A_1 z - \cdots - A_p z^p)` has all its roots outside the
         unit circle. Deterministic terms and exogenous regressors play no
         part and must not be included in ``ar_coeffs``.
 
@@ -366,13 +398,13 @@ class _StabilityAssessment:
     def assess_stability_from_companion(
         cls, companion: npt.ArrayLike, *, tol: float = 1e-8, allow_unit_roots: bool = False
     ) -> Self:
-        """Assess stability directly from a companion (or state-transition) matrix.
+        r"""Assess stability directly from a companion (or state-transition) matrix.
 
         For callers that already hold the matrix whose powers drive the
         recursion: a companion built elsewhere, or the transition matrix of
         a linear Gaussian state-space model. No companion structure is
         assumed or verified; any square real matrix is accepted and read as
-        ``x_t = T x_{t-1} + ...``.
+        :math:`x_t = T x_{t-1} + \cdots`.
 
         Unlike :meth:`assess_stability`, an empty ``(0, 0)`` matrix is not
         short-circuited: ``tol`` is validated and recorded on the returned
@@ -453,15 +485,15 @@ class _StabilityAssessment:
 
     @classmethod
     def is_invertible(cls, ma_coeffs: npt.ArrayLike, *, tol: float = 1e-8) -> bool:
-        """Is an MA/ARMA invertible? (companion of the MA polynomial, roots inside).
+        r"""Is an MA/ARMA invertible? (companion of the MA polynomial, roots inside).
 
         The same strict companion test as :meth:`is_stationary`, applied to
         moving-average coefficients. It therefore reads its argument in the
-        autoregressive convention and tests ``1 - M_1 z - ... - M_q z^q``.
+        autoregressive convention and tests :math:`1 - M_1 z - \cdots - M_q z^q`.
 
         Warning:
             A moving-average polynomial written the usual way,
-            ``theta(L) = 1 + theta_1 L + ... + theta_q L^q``, must be passed
+            :math:`\theta(L) = 1 + \theta_1 L + \cdots + \theta_q L^q`, must be passed
             **negated**. Passing ``theta`` itself tests a different
             polynomial and returns a wrong verdict whenever the two
             disagree; for ``q == 1`` they happen to coincide. The fitted
@@ -470,7 +502,7 @@ class _StabilityAssessment:
         Args:
             ma_coeffs: MA coefficients ``M_1, ..., M_q`` in the same layout as AR
                 coefficients; shape ``(q,)`` or ``(q, k, k)``. In terms of
-                ``theta(L)`` above, ``M_j = -theta_j``. Empty coefficients
+                :math:`\theta(L)` above, :math:`M_j = -\theta_j`. Empty coefficients
                 are invertible.
             tol: Modulus tolerance.
 
@@ -486,7 +518,7 @@ class _StabilityAssessment:
                 the eigenvalue computation returns them.
 
         Example:
-            ``1 + 1.5 L + 0.6 L^2`` is invertible, which the method reports
+            :math:`1 + 1.5 L + 0.6 L^2` is invertible, which the method reports
             only for the negated coefficients:
 
             >>> import numpy as np

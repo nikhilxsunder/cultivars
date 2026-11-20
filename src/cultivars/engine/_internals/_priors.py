@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Priors: the moment-and-dummy interface for VAR coefficients, and the volatility hyperpriors.
+r"""Priors: the moment-and-dummy interface for VAR coefficients, and the volatility hyperpriors.
 
 Two unrelated kinds of prior live here. They share a module because both
 are records that an estimator reads, not objects that estimate anything.
@@ -40,7 +40,7 @@ All of them index coefficients the same way. Rows are design columns: the
 deterministic block first, then the lags ordered lag-major (every variable
 at lag one, then every variable at lag two), then the exogenous regressors.
 Columns are equations. Entry ``[n_deterministic + (l - 1) * k + j, i]`` is
-therefore equation ``i``'s coefficient on lag ``l`` of variable ``j``. The
+therefore equation :math:`i`'s coefficient on lag :math:`\ell` of variable :math:`j`. The
 estimator that owns the design builds the context, so the layout is stated
 once and no prior has to guess it.
 
@@ -53,11 +53,15 @@ summary table and nothing else.
 Layout. The concrete coefficient priors (Minnesota, normal-inverse-Wishart,
 sum-of-coefficients, dummy-initial-observation, independent normal-Wishart,
 and the four adaptive priors) live in :mod:`cultivars.bayes.priors`. That
-module also re-exports five classes from here under public names: ``Prior``,
-``PriorContext``, ``NoPrior``, ``VolatilityPrior``, and
-``RandomWalkVolatilityPrior``. The context is built by the vector-model base
-in ``_models``, and the samplers that read the moments and drive the
-adaptive hooks are there too.
+module also re-exports five classes from here under public names:
+:class:`~cultivars.bayes.priors.Prior`,
+:class:`~cultivars.bayes.priors.PriorContext`,
+:class:`~cultivars.bayes.priors.NoPrior`,
+:class:`~cultivars.bayes.priors.VolatilityPrior`, and
+:class:`~cultivars.bayes.priors.RandomWalkVolatilityPrior`. The context is
+built by the vector-model base in :mod:`~cultivars.engine._internals._models`,
+and the samplers that read the moments and drive the adaptive hooks are there
+too.
 
 References:
     Banbura, M., Giannone, D., & Reichlin, L. (2010). Large Bayesian vector
@@ -121,8 +125,9 @@ class _PriorContext:
     Attributes:
         k_endog: Number of modelled variables.
         order: Autoregressive order.
-        scales: Per-variable residual scale, from ``_minnesota_scales`` in
-            ``_core``.
+        scales: Per-variable residual scale, from
+            :func:`~cultivars.engine._core._estimators._minnesota_scales` in
+            :mod:`~cultivars.engine._core`.
         presample_mean: Mean of the first ``order`` observations, which the
             sum-of-coefficients restriction is centred on.
         k_exog: Exogenous regressors carried after the lag block.
@@ -150,6 +155,18 @@ class _PriorContext:
         the package places its columns from ``n_deterministic`` alone, and
         nothing checks that the two fields agree.
 
+    See Also:
+        * :class:`~cultivars.bayes.priors.PriorContext` -- the public name of
+          this class.
+        * :meth:`._BayesianVectorAutoRegressionModel._prior_context` -- returns
+          an instance.
+        * :meth:`._ExogenousVectorAutoRegressionModel._prior_context` --
+          returns an instance.
+        * :meth:`._ExogenousVectorErrorCorrectionModel._prior_context` --
+          returns an instance.
+        * :meth:`._FunctionalCoefficientVectorAutoRegressionModel._prior_context`
+          -- returns an instance.
+
     Example:
         A bivariate VAR(2) with a constant has five design columns, one
         deterministic column ahead of four lag columns:
@@ -166,18 +183,18 @@ class _PriorContext:
     """
 
     k_endog: int
-    """Number of modelled variables ``k``, which is also the number of equations.
+    """Number of modelled variables :math:`k`, which is also the number of equations.
 
     The second dimension of every moment array and the width of each lag.
     """
     order: int
     """Autoregressive order ``p``; the lag block is ``k_endog * order`` columns wide."""
     scales: npt.NDArray[np.float64]
-    """Per-variable residual standard deviation ``s_i``, shape ``(k_endog,)``.
+    """Per-variable residual standard deviation :math:`s_i`, shape ``(k_endog,)``.
 
     Taken from univariate autoregressions, so the scale a prior is written
     against does not depend on the system it regularizes. The ratio
-    ``s_i / s_j`` is what makes a cross-variable coefficient unit-free. The
+    :math:`s_i / s_j` is what makes a cross-variable coefficient unit-free. The
     entries must be strictly positive: a zero makes that ratio infinite.
     """
     presample_mean: npt.NDArray[np.float64]
@@ -217,11 +234,11 @@ class _PriorContext:
 
     @property
     def lag_offset(self) -> int:
-        """Design columns ahead of the endogenous lag block.
+        r"""Design columns ahead of the endogenous lag block.
 
         Returns:
             The index of the first lag column, equal to ``n_deterministic``.
-            Variable ``j`` at lag ``l`` (counting lags from one) sits at
+            Variable :math:`j` at lag :math:`\ell` (counting lags from one) sits at
             column ``lag_offset + (l - 1) * k_endog + j``.
         """
         return self.n_deterministic
@@ -266,7 +283,7 @@ class _Prior(ABC):
     columns: the deterministic block, then the lags ordered lag-major (every
     variable at lag one, then every variable at lag two), then the exogenous
     regressors. Columns are equations. So entry ``[lag_offset + j, i]`` is
-    equation ``i``'s coefficient on the first lag of variable ``j``.
+    equation :math:`i`'s coefficient on the first lag of variable :math:`j`.
 
     A subclass implements :meth:`coefficient_mean`,
     :meth:`coefficient_variance`, and :meth:`_label`, and overrides
@@ -281,6 +298,11 @@ class _Prior(ABC):
         is :class:`_NoPrior`. There is no ``__radd__``, so the built-in
         ``sum`` needs a prior as its start value:
         ``sum(priors, _NoPrior())``.
+
+    See Also:
+        * :class:`~cultivars.bayes.priors.Prior` -- the public name of this
+          class.
+        * :meth:`.HierarchicalBVAR._prior_at` -- returns an instance.
 
     Example:
         A ridge prior, the same variance on every coefficient, and what
@@ -567,6 +589,10 @@ class _NoPrior(_Prior):
     :class:`_AdaptivePrior` the difference matters, because the samplers
     refuse an adaptive prior inside a composition.
 
+    See Also:
+        * :class:`~cultivars.bayes.priors.NoPrior` -- the public name of this
+          class.
+
     Example:
         >>> import numpy as np
         >>> context = _PriorContext(
@@ -638,7 +664,7 @@ class _AdaptivePrior(_Prior):
     fits. Two conventions keep every subclass unit-honest and aligned with
     the family's grammar: shrinkage applies to the *standardized* coefficient
     -- the raw coefficient divided by the Minnesota scale ratio
-    ``s_i / s_j``, so one latent scale means the same thing whatever the
+    :math:`s_i / s_j`, so one latent scale means the same thing whatever the
     variables' units -- and only the endogenous lag block is shrunk, with
     deterministic and exogenous columns held at a fixed loose variance,
     exactly where the Minnesota prior leaves them.
@@ -697,11 +723,11 @@ class _AdaptivePrior(_Prior):
         )
 
     def _unit_ratio(self, context: _PriorContext) -> npt.NDArray[np.float64]:
-        """Minnesota's unit fix as a matrix: ``s_i / s_j`` on the lag block.
+        """Minnesota's unit fix as a matrix: :math:`s_i / s_j` on the lag block.
 
-        Entry ``[column, i]`` scales equation ``i``'s coefficient on that
-        design column: ``s_i / s_j`` when the column is a lag of variable
-        ``j``, and ``s_i`` on the deterministic and exogenous columns, where
+        Entry ``[column, i]`` scales equation :math:`i`'s coefficient on that
+        design column: :math:`s_i / s_j` when the column is a lag of variable
+        :math:`j`, and :math:`s_i` on the deterministic and exogenous columns, where
         the coefficient itself carries the equation's units.
 
         Args:
@@ -824,14 +850,14 @@ class _AdaptivePrior(_Prior):
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _VolatilityPrior:
-    """The Kim-Shephard-Chib prior on a stationary log-AR(1) volatility law.
+    r"""The Kim-Shephard-Chib prior on a stationary log-AR(1) volatility law.
 
-    ``h_{t+1} = mu + phi (h_t - mu) + sigma eta_t`` carries three
+    :math:`h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \eta_t` carries three
     hyperparameters, and every model in the package whose volatility
     follows this law -- the univariate stochastic-volatility model, the
     volatility-identified SVAR, the factor stochastic-volatility model --
     states its prior through this one record: Gaussian on ``mu``, Beta on
-    ``(phi + 1) / 2``, inverse-gamma on ``sigma2``. The defaults are Kim,
+    :math:`(\phi + 1) / 2`, inverse-gamma on ``sigma2``. The defaults are Kim,
     Shephard and Chib's (1998), which put the persistence near ``0.86`` a
     priori and keep the innovation variance small; a model that pins
     ``mu`` for identification says so and leaves that entry unread.
@@ -839,7 +865,7 @@ class _VolatilityPrior:
     Attributes:
         mu: ``(mean, variance)`` of the Gaussian prior on the log-variance
             mean.
-        phi: ``(a, b)`` of the Beta prior on ``(phi + 1) / 2``, both
+        phi: ``(a, b)`` of the Beta prior on :math:`(\phi + 1) / 2`, both
             positive.
         sigma2: ``(shape, rate)`` of the inverse-gamma prior on the
             log-variance innovation variance, both positive.
@@ -850,9 +876,13 @@ class _VolatilityPrior:
 
     Note:
         "Rate" is the rate of the gamma distribution on the precision
-        ``1 / sigma2``, which is the scale of the inverse-gamma itself: the
+        :math:`1 / \sigma^2`, which is the scale of the inverse-gamma itself: the
         density is proportional to
-        ``sigma2 ** -(shape + 1) * exp(-rate / sigma2)``.
+        :math:`(\sigma^2)^{-(\mathrm{shape} + 1)} \exp(-\mathrm{rate} / \sigma^2)`.
+
+    See Also:
+        * :class:`~cultivars.bayes.priors.VolatilityPrior` -- the public name
+          of this class.
 
     References:
         Kim, S., Shephard, N., & Chib, S. (1998). Stochastic volatility:
@@ -877,7 +907,7 @@ class _VolatilityPrior:
     read this field.
     """
     phi: tuple[float, float] = _KSC_PHI_PRIOR
-    """``(a, b)`` of the Beta prior on ``(phi + 1) / 2``, both positive.
+    r"""``(a, b)`` of the Beta prior on :math:`(\phi + 1) / 2`, both positive.
 
     Places the persistence on ``(-1, 1)``. The default ``(20.0, 1.5)`` has
     prior mean ``0.86``: persistent, with mass kept off the unit root.
@@ -916,11 +946,11 @@ class _VolatilityPrior:
 
     @property
     def phi_mean(self) -> float:
-        """The prior mean of the persistence, ``2a / (a + b) - 1``.
+        r"""The prior mean of the persistence, :math:`2a / (a + b) - 1`.
 
         Returns:
             The mean of ``phi`` implied by the Beta prior on
-            ``(phi + 1) / 2``, a value in ``(-1, 1)``.
+            :math:`(\phi + 1) / 2`, a value in ``(-1, 1)``.
         """
         a, b = self.phi
         return 2.0 * a / (a + b) - 1.0
@@ -950,22 +980,26 @@ class _VolatilityPrior:
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _RandomWalkVolatilityPrior:
-    """The prior on a random-walk log-variance law with an estimated step variance.
+    r"""The prior on a random-walk log-variance law with an estimated step variance.
 
-    ``h_{t+1} = h_t + gamma eta_t`` carries one hyperparameter, the
+    :math:`h_{t+1} = h_t + \gamma \eta_t` carries one hyperparameter, the
     variance of the step, and the unobserved-components stochastic-
     volatility model states its prior on it through this record: an
-    inverse-gamma on ``gamma**2`` for each of its two volatility paths.
+    inverse-gamma on :math:`\gamma^2` for each of its two volatility paths.
     The walk has no mean and no persistence to put a prior on; a model
     that fixes ``gamma`` outright does not read this record at all.
 
     Attributes:
         vol_of_vol: ``(shape, rate)`` of the inverse-gamma prior on the
-            step variance ``gamma**2``, both positive.
+            step variance :math:`\gamma^2`, both positive.
 
     Raises:
         SpecificationError: If ``vol_of_vol`` is not a pair of finite,
             positive numbers.
+
+    See Also:
+        * :class:`~cultivars.bayes.priors.RandomWalkVolatilityPrior` -- the
+          public name of this class.
 
     References:
         Stock, J. H., & Watson, M. W. (2007). Why has U.S. inflation become
@@ -981,7 +1015,7 @@ class _RandomWalkVolatilityPrior:
     """
 
     vol_of_vol: tuple[float, float] = _UCSV_VOL_OF_VOL_PRIOR
-    """``(shape, rate)`` of the inverse-gamma prior on the step variance ``gamma**2``.
+    r"""``(shape, rate)`` of the inverse-gamma prior on the step variance :math:`\gamma^2`.
 
     Both positive, with "rate" in the same sense as
     :attr:`_VolatilityPrior.sigma2`. The same pair is applied to both

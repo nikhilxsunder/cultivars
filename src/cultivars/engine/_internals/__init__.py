@@ -33,43 +33,59 @@ The modules, by role.
 
 Records, frozen dataclasses that carry state between layers:
 
-* ``_parameters``: parameter records, the meeting point of a flat
+* :mod:`~cultivars.engine._internals._parameters`: parameter records, the meeting point of a flat
   optimization vector and a model.
-* ``_fits``: raw output of estimators and samplers.
-* ``_results``: filter and smoother output, and the shared result bases.
-* ``_posteriors``: packed sampler output with its derived quantities.
-* ``_moments``, ``_coefficients``, ``_levels``, ``_layouts``, ``_states``,
-  ``_solutions``: smaller intermediate records.
-* ``_assessments``, ``_selections``, ``_tests``: verdicts (stability, lag
-  order and model weights, hypothesis and convergence tests).
-* ``_covariances``: coefficient uncertainty, sampling or posterior, behind
-  the ``_inferences`` protocol.
+* :mod:`~cultivars.engine._internals._fits`: raw output of estimators and samplers.
+* :mod:`~cultivars.engine._internals._results`: filter and smoother output, and
+  the shared result bases.
+* :mod:`~cultivars.engine._internals._posteriors`: packed sampler output with
+  its derived quantities.
+* :mod:`~cultivars.engine._internals._moments`,
+  :mod:`~cultivars.engine._internals._coefficients`,
+  :mod:`~cultivars.engine._internals._levels`,
+  :mod:`~cultivars.engine._internals._layouts`,
+  :mod:`~cultivars.engine._internals._states`,
+  :mod:`~cultivars.engine._internals._solutions`: smaller intermediate records.
+* :mod:`~cultivars.engine._internals._assessments`,
+  :mod:`~cultivars.engine._internals._selections`,
+  :mod:`~cultivars.engine._internals._tests`: verdicts (stability, lag order
+  and model weights, hypothesis and convergence tests).
+* :mod:`~cultivars.engine._internals._covariances`: coefficient uncertainty,
+  sampling or posterior, behind the
+  :mod:`~cultivars.engine._internals._inferences` protocol.
 
 Interfaces that outside code implements:
 
-* ``_priors``: the coefficient-prior interface and the volatility
+* :mod:`~cultivars.engine._internals._priors`: the coefficient-prior interface and the volatility
   hyperpriors.
-* ``_predictors`` and ``_engines``: the fitted mean map and the training
-  backend of the neural mean-function models.
-* ``_specifications``: what a perturbation model must supply.
+* :mod:`~cultivars.engine._internals._predictors` and
+  :mod:`~cultivars.engine._internals._engines`: the fitted mean map and the
+  training backend of the neural mean-function models.
+* :mod:`~cultivars.engine._internals._specifications`: what a perturbation model must supply.
 
 Machinery:
 
-* ``_substrates``: the state-space models with their filters and smoothers.
-* ``_filters`` and ``_smoothers``: the Hamilton filter and the Kim smoother
-  for a discrete regime chain.
-* ``_systems`` and ``_emitters``: parameter records turned into state-space
-  systems.
-* ``_objectives`` and ``_means``: the functions the optimizers minimize and
-  the conditional-mean layers they share.
-* ``_solvers``: optimizers, posterior updates, and the perturbation solver.
-* ``_simulators``: data generation from fitted or stated parameters.
-* ``_chains``: particle marginal Metropolis-Hastings.
+* :mod:`~cultivars.engine._internals._substrates`: the state-space models with
+  their filters and smoothers.
+* :mod:`~cultivars.engine._internals._filters` and
+  :mod:`~cultivars.engine._internals._smoothers`: the Hamilton filter and the
+  Kim smoother for a discrete regime chain.
+* :mod:`~cultivars.engine._internals._systems` and
+  :mod:`~cultivars.engine._internals._emitters`: parameter records turned into
+  state-space systems.
+* :mod:`~cultivars.engine._internals._objectives` and
+  :mod:`~cultivars.engine._internals._means`: the functions the optimizers
+  minimize and the conditional-mean layers they share.
+* :mod:`~cultivars.engine._internals._solvers`: optimizers, posterior updates,
+  and the perturbation solver.
+* :mod:`~cultivars.engine._internals._simulators`: data generation from fitted or stated parameters.
+* :mod:`~cultivars.engine._internals._chains`: particle marginal Metropolis-Hastings.
 
 Bases:
 
-* ``_models``: the estimation engines the public model classes subclass.
-* ``_mixins``: behavior shared by result records (summaries, series,
+* :mod:`~cultivars.engine._internals._models`: the estimation engines the
+  public model classes subclass.
+* :mod:`~cultivars.engine._internals._mixins`: behavior shared by result records (summaries, series,
   comparison, inference, convergence, replication).
 
 Every submodule is imported here so that the package is fully loaded on

@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Markov chains over the parameters of a nonlinear state-space model.
+r"""Markov chains over the parameters of a nonlinear state-space model.
 
 The particle filter returns an unbiased *estimate* of the likelihood, and
 Andrieu, Doucet, and Holenstein (2010) showed that plugging that estimate
@@ -57,13 +57,38 @@ the optimum for an exactly evaluated likelihood, so it is reachable only
 when the estimate is reasonably tight; Sherlock et al. (2015) find the
 efficient rate for a pseudo-marginal random walk to be far lower, near 7%.
 
+In symbols, one iteration proposes and accepts as
+
+.. math::
+
+   \theta^{\ast} = \theta + s L z, \quad z \sim \mathcal{N}(0, I_d),
+   \qquad
+   \alpha = \min\Bigl\{ 1,\;
+   \frac{\hat{p}(y \mid \theta^{\ast})\, p(\theta^{\ast})}
+   {\hat{p}(y \mid \theta)\, p(\theta)} \Bigr\},
+
+where :math:`L` is the Cholesky factor of the proposal covariance, :math:`s`
+its scale, :math:`p(\theta)` the prior and :math:`\hat{p}(y \mid \theta)` the
+particle filter's unbiased estimate of the likelihood. During burn-in the
+scale follows a Robbins-Monro recursion toward the random-walk optimum,
+
+.. math::
+
+   \log s_{i+1} = \log s_i + \frac{\alpha_i - 0.234}{\sqrt{i}},
+
+so the step shrinks when proposals are rejected too often and grows when they
+are accepted too easily, with corrections that die out at rate
+:math:`i^{-1/2}`.
+
 Layout. :class:`_ParticleMarginalChain` is the sampler: a frozen record of
 the data, the two callables, and the filter settings, with ``run`` as its
 one entry point and ``_estimate`` as the likelihood kernel. It returns the
 raw draws as a :class:`~cultivars.engine._internals._fits._ParticleChainFit`;
-the posterior records that summarize them live in ``_posteriors``. The
-filter is :meth:`_NonlinearStateSpace.particle_filter` in ``_substrates``.
-The stochastic-volatility and perturbation-DSGE engines in ``_models`` are
+the posterior records that summarize them live in
+:mod:`~cultivars.engine._internals._posteriors`. The filter is
+:meth:`._NonlinearStateSpace.particle_filter` in
+:mod:`~cultivars.engine._internals._substrates`. The stochastic-volatility and
+perturbation-DSGE engines in :mod:`~cultivars.engine._internals._models` are
 the two callers.
 
 References:
@@ -109,10 +134,10 @@ __all__ = [
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _ParticleMarginalChain:
-    """Particle marginal Metropolis-Hastings over a nonlinear state space.
+    r"""Particle marginal Metropolis-Hastings over a nonlinear state space.
 
     A random-walk Metropolis chain on an unconstrained parameter vector
-    ``theta`` whose target is the posterior ``p(theta | y)``, with the
+    ``theta`` whose target is the posterior :math:`p(\theta \mid y)`, with the
     intractable likelihood replaced by a particle-filter estimate. The
     estimate at the current point is carried from the iteration that
     accepted it and never refreshed; each proposal gets exactly one fresh
@@ -132,10 +157,11 @@ class _ParticleMarginalChain:
         data: The observations, ``(n,)`` or ``(n, p)``, ``numpy.nan`` rows
             missing.
         build: Map from an unconstrained parameter vector to the
-            :class:`_NonlinearStateSpace` it implies. It may raise
-            :class:`SpecificationError` or :class:`NumericalError` for an
-            inadmissible point, which the chain treats as a rejected
-            proposal.
+            :class:`~cultivars.engine._internals._substrates._NonlinearStateSpace`
+            it implies. It may raise
+            :class:`~cultivars.exceptions.SpecificationError` or
+            :class:`~cultivars.exceptions.NumericalError` for an inadmissible
+            point, which the chain treats as a rejected proposal.
         log_prior: Log prior density *in the unconstrained space*, i.e.
             including the Jacobian of whatever reparameterization
             ``build`` inverts. ``-inf`` marks an excluded region.
@@ -149,8 +175,9 @@ class _ParticleMarginalChain:
         them back to the model's natural parameters is the caller's job.
 
     See Also:
-        * :class:`_ParticleChainFit` -- the raw draws :meth:`run` returns.
-        * :meth:`_NonlinearStateSpace.particle_filter` -- the likelihood
+        * :class:`~cultivars.engine._internals._fits._ParticleChainFit` -- the
+          raw draws :meth:`run` returns.
+        * :meth:`._NonlinearStateSpace.particle_filter` -- the likelihood
           estimator, and the meaning of ``method`` and ``ess_threshold``.
 
     Example:
@@ -207,10 +234,11 @@ class _ParticleMarginalChain:
     """Map from an unconstrained ``(d,)`` parameter vector to the system it implies.
 
     Called once per likelihood estimate, so its cost is paid on every
-    proposal. A :class:`SpecificationError`, :class:`NumericalError`,
-    ``numpy.linalg.LinAlgError``, or ``FloatingPointError`` raised here
-    marks the point inadmissible and rejects the proposal; any other
-    exception, :class:`DimensionError` included, stops the chain.
+    proposal. A :class:`~cultivars.exceptions.SpecificationError`,
+    :class:`~cultivars.exceptions.NumericalError`,
+    ``numpy.linalg.LinAlgError``, or ``FloatingPointError`` raised here marks
+    the point inadmissible and rejects the proposal; any other exception,
+    :class:`~cultivars.exceptions.DimensionError` included, stops the chain.
     """
     log_prior: Callable[[npt.NDArray[np.float64]], float]
     """Log prior density in the unconstrained space, Jacobian included.
@@ -243,13 +271,13 @@ class _ParticleMarginalChain:
     """
 
     def _estimate(self, theta: npt.NDArray[np.float64], rng: np.random.Generator) -> float:
-        """One particle log-likelihood estimate, or ``-inf`` if inadmissible.
+        r"""One particle log-likelihood estimate, or ``-inf`` if inadmissible.
 
         The likelihood kernel of the chain. The prior is evaluated first and
         the filter is skipped when it is not finite; otherwise the system is
         built at ``theta`` and one particle filter is run over the data with
         a fresh cloud drawn from ``rng``. The result is the logarithm of an
-        unbiased estimate of ``p(y | theta)``. It is random, so two calls at
+        unbiased estimate of :math:`p(y \mid \theta)`. It is random, so two calls at
         the same ``theta`` differ, and :meth:`run` depends on calling it
         exactly once per proposal.
 
@@ -260,17 +288,17 @@ class _ParticleMarginalChain:
         following holds:
 
         * the log prior is not finite (``-inf``, ``nan``, or ``+inf``);
-        * ``build`` or the filter raises :class:`SpecificationError`,
-          :class:`NumericalError`, ``numpy.linalg.LinAlgError``, or
+        * ``build`` or the filter raises :class:`~cultivars.exceptions.SpecificationError`,
+          :class:`~cultivars.exceptions.NumericalError`, ``numpy.linalg.LinAlgError``, or
           ``FloatingPointError``;
         * the estimate itself is not finite.
 
         The filter validates its own arguments with
-        :class:`SpecificationError`, so an unrecognized ``method``, an
+        :class:`~cultivars.exceptions.SpecificationError`, so an unrecognized ``method``, an
         ``n_particles`` below 2, an ``ess_threshold`` outside ``(0, 1]``, or
         a partially observed data row falls under the second rule and makes
         every point inadmissible. Exceptions outside that list,
-        :class:`DimensionError` among them, propagate.
+        :class:`~cultivars.exceptions.DimensionError` among them, propagate.
 
         Args:
             theta: Point in the unconstrained space, shape ``(d,)``.
@@ -309,10 +337,10 @@ class _ParticleMarginalChain:
         adapt: bool,
         seed: int | np.random.Generator | None,
     ) -> _ParticleChainFit:
-        """Run the chain from a starting point.
+        r"""Run the chain from a starting point.
 
-        Each iteration proposes ``theta + s * L @ z`` with ``z`` standard
-        normal, ``L`` the Cholesky factor of the current proposal covariance,
+        Each iteration proposes :math:`\theta + s L z` with ``z`` standard
+        normal, :math:`L` the Cholesky factor of the current proposal covariance,
         and ``s`` the global scale. It estimates the likelihood there with a
         fresh particle cloud and accepts with probability
         ``min(1, exp(log_post_new - log_post))``, where ``log_post`` is the
@@ -322,11 +350,11 @@ class _ParticleMarginalChain:
         With ``adapt=True`` two things move during burn-in and are frozen
         after it:
 
-        * the scale: after iteration ``i`` (counting from one), ``log s``
-          changes by ``(alpha - 0.234) / sqrt(i)``, with ``alpha`` the
+        * the scale: after iteration :math:`i` (counting from one), :math:`\log s`
+          changes by :math:`(\alpha - 0.234) / \sqrt{i}`, with ``alpha`` the
           acceptance probability of that proposal (zero if inadmissible);
         * the shape: once ``max(20, 2 * d)`` iterations have run, the
-          covariance becomes ``2.38**2 / d`` times the running covariance of
+          covariance becomes :math:`2.38^2 / d` times the running covariance of
           the chain's states so far, plus ``1e-8`` on the diagonal. If that
           matrix cannot be factorized, the previous factor is kept.
 
@@ -358,7 +386,7 @@ class _ParticleMarginalChain:
             thin: Keep every ``thin``-th post-burn draw; at least 1.
             proposal_scale: Initial proposal covariance ``(d, d)``, a
                 per-coordinate standard deviation vector ``(d,)``, or
-                ``None`` for ``0.1**2`` times the identity. Must be positive
+                ``None`` for :math:`0.1^2` times the identity. Must be positive
                 definite.
             adapt: Whether to adapt the covariance and scale during
                 burn-in. If ``False``, the initial proposal is used
@@ -366,11 +394,12 @@ class _ParticleMarginalChain:
             seed: Seed or generator.
 
         Returns:
-            The packed :class:`_ParticleChainFit`: the kept draws with the
-            log-likelihood estimate and log posterior carried at each, the
-            acceptance rate over all ``n_draws`` iterations (burn-in
-            included), and the proposal covariance the chain ended with,
-            global scale folded in.
+            The packed
+            :class:`~cultivars.engine._internals._fits._ParticleChainFit`: the
+            kept draws with the log-likelihood estimate and log posterior
+            carried at each, the acceptance rate over all ``n_draws``
+            iterations (burn-in included), and the proposal covariance the
+            chain ended with, global scale folded in.
 
         Raises:
             SpecificationError: If ``n_draws <= n_burn``, if ``thin < 1``,

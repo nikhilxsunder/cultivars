@@ -22,8 +22,8 @@
 
 """State-space substrates: the linear-Gaussian and nonlinear engines.
 
-Split out of ``_models`` so that objectives, samplers, and models can all
-import the substrates without a cycle.
+Split out of :mod:`~cultivars.engine._internals._models` so that objectives,
+samplers, and models can all import the substrates without a cycle.
 """
 
 from __future__ import annotations
@@ -150,30 +150,72 @@ class _StateSpace[F: _FilterResult, S: _SmootherResult](ABC):
 
 
 class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanSmootherResult]):
-    """A linear-Gaussian state-space model.
+    r"""A linear-Gaussian state-space model.
+
+    The model is, in the notation of Durbin and Koopman (2012),
+
+    .. math::
+
+       y_t = d_t + Z_t \alpha_t + \varepsilon_t,
+       \qquad \varepsilon_t \sim \mathcal{N}(0, H_t),
+
+       \alpha_{t+1} = c_t + T_t \alpha_t + R_t \eta_t,
+       \qquad \eta_t \sim \mathcal{N}(0, Q_t),
+
+       \alpha_1 \sim \mathcal{N}(a_1, P_1),
+
+    with :math:`y_t` of dimension :math:`p`, the state :math:`\alpha_t` of
+    dimension :math:`m` and the state disturbance :math:`\eta_t` of dimension
+    :math:`r \le m`. The disturbances are mutually and serially uncorrelated and
+    uncorrelated with :math:`\alpha_1`. Every system matrix is either constant or
+    supplied with a leading time axis of length :math:`n`.
+
+    Because the model is linear and Gaussian, the conditional law of the state
+    given any stretch of the sample is Gaussian, so two moments describe it
+    completely. :meth:`filter` returns them given the past and the present,
+    :meth:`smooth` given the whole sample, and :meth:`loglikelihood` is the
+    prediction-error decomposition
+
+    .. math::
+
+       \log L = -\frac{1}{2} \sum_{t=1}^{n} \Bigl( p \log 2\pi + \log \det F_t
+       + v_t^\top F_t^{-1} v_t \Bigr),
+       \qquad v_t = y_t - d_t - Z_t a_{t \mid t-1},
+       \quad F_t = Z_t P_{t \mid t-1} Z_t^\top + H_t,
+
+    that the filter produces as a by-product.
 
     Args:
-        design: Observation matrix ``Z``; shape ``(p, m)`` or ``(n, p, m)``.
-        obs_cov: Observation noise covariance ``H``; shape ``(p, p)`` or
+        design: Observation matrix :math:`Z`; shape ``(p, m)`` or ``(n, p, m)``.
+        obs_cov: Observation noise covariance :math:`H`; shape ``(p, p)`` or
             ``(n, p, p)``.
-        transition: State transition matrix ``T``; shape ``(m, m)`` or
+        transition: State transition matrix :math:`T`; shape ``(m, m)`` or
             ``(n, m, m)``.
-        selection: State disturbance selection ``R``; shape ``(m, r)`` or
+        selection: State disturbance selection :math:`R`; shape ``(m, r)`` or
             ``(n, m, r)``.
-        state_cov: State disturbance covariance ``Q``; shape ``(r, r)`` or
+        state_cov: State disturbance covariance :math:`Q`; shape ``(r, r)`` or
             ``(n, r, r)``.
         obs_intercept: Observation intercept ``d``; shape ``(p,)`` or ``(n, p)``.
             Defaults to zero.
         state_intercept: State intercept ``c``; shape ``(m,)`` or ``(n, m)``.
             Defaults to zero.
-        initial_state: Prior mean ``a_1``; shape ``(m,)``. Defaults to zero.
-        initial_state_cov: Prior covariance ``P_1``; shape ``(m, m)``. Defaults
+        initial_state: Prior mean :math:`a_1`; shape ``(m,)``. Defaults to zero.
+        initial_state_cov: Prior covariance :math:`P_1`; shape ``(m, m)``. Defaults
             to the stationary covariance when the model is time-invariant and
             stable, otherwise a large diffuse covariance.
 
     Raises:
         DimensionError: If any system matrix has an inconsistent shape or rank.
         NumericalError: If any system matrix contains non-finite values.
+
+    See Also:
+        * :class:`~cultivars.state_space.linear_gaussian.LinearGaussianSSM` --
+          the public name of this class.
+        * :meth:`.MFVAR._state_space` -- returns an instance.
+        * :meth:`.LongMemorySVResult.quasi_state_space` -- returns an instance.
+        * :meth:`.LinearGaussianSSM._from_arma` -- returns an instance.
+        * :meth:`.LinearGaussianSSM._from_nelson_siegel_system` -- returns an
+          instance.
     """
 
     def __init__(
@@ -332,12 +374,12 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
 
     @property
     def k_states(self) -> int:
-        """State dimension ``m``."""
+        """State dimension :math:`m`."""
         return self._m
 
     @property
     def k_posdef(self) -> int:
-        """State disturbance dimension ``r``."""
+        """State disturbance dimension :math:`r`."""
         return self._r
 
     @staticmethod
@@ -471,8 +513,10 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
                 ``(n, p)``; ``numpy.nan`` marks a missing element.
 
         Returns:
-            The :class:`_KalmanFilterResult` carrying predicted and filtered
-            states with their covariances and the per-period likelihood.
+            The
+            :class:`~cultivars.engine._internals._results._KalmanFilterResult`
+            carrying predicted and filtered states with their covariances and
+            the per-period likelihood.
         """
         data = self._prepare_data(y)
         fwd = self._forward(data)
@@ -603,7 +647,7 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
         n_sims: int = 1,
         seed: int | np.random.Generator | None = None,
     ) -> npt.NDArray[np.float64]:
-        """Draw states from ``p(alpha | y)`` via the Durbin-Koopman (2002) smoother.
+        r"""Draw states from :math:`p(\alpha \mid y)` via the Durbin-Koopman (2002) smoother.
 
         Returns:
             An array of shape ``(n_sims, n, m)`` of state draws.
@@ -631,15 +675,15 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
         """Solve the discrete Lyapunov equation for the stationary state covariance.
 
         Args:
-            transition: Time-invariant transition matrix ``T`` (must be stable).
-            selection: Selection matrix ``R``.
-            state_cov: State disturbance covariance ``Q``.
+            transition: Time-invariant transition matrix :math:`T` (must be stable).
+            selection: Selection matrix :math:`R`.
+            state_cov: State disturbance covariance :math:`Q`.
 
         Returns:
-            The stationary covariance ``P`` solving ``P = T P T' + R Q R'``.
+            The stationary covariance :math:`P` solving ``P = T P T' + R Q R'``.
 
         Raises:
-            NumericalError: If ``T`` is not stable (has an eigenvalue on or
+            NumericalError: If :math:`T` is not stable (has an eigenvalue on or
                 outside the unit circle).
         """
         t_mat = np.asarray(transition, dtype=np.float64)
@@ -661,9 +705,9 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
         sigma2: float,
         obs_intercept: npt.NDArray[np.float64],
     ) -> _LinearGaussianStateSpace:
-        """Build the Harvey state-space form of an ARMA process.
+        r"""Build the Harvey state-space form of an ARMA process.
 
-        The state dimension is ``max(p, q + 1)``, which is the minimal realization:
+        The state dimension is :math:`\max(p, q + 1)`, which is the minimal realization:
         a larger companion would be observationally equivalent but would make the
         Kalman recursion carry redundant states.
 
@@ -725,7 +769,7 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
         Args:
             coefficients: ``(p, k, k)`` autoregressive matrices of the latent system.
             sigma_u: ``(k, k)`` innovation covariance of the latent system.
-            kinds: One :data:`Frequency` per variable.
+            kinds: One :data:`~cultivars.engine._core._types.Frequency` per variable.
             period: Sub-periods per low-frequency period.
             weights: Optional per-variable flow weights; ``None`` entries take the
                 default from :func:`aggregation_weights`.
@@ -841,7 +885,7 @@ class _LinearGaussianStateSpace(_StateSpace[_KalmanFilterResult, _DurbinKoopmanS
 
 
 class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmootherResult]):
-    """A parameterized Markov-switching observation model over a latent chain.
+    r"""A parameterized Markov-switching observation model over a latent chain.
 
     The discrete counterpart of :class:`_LinearGaussianStateSpace`, and its
     peer in every structural respect: both hold a fully specified system, both
@@ -852,14 +896,14 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
 
     That difference is why the filter is Hamilton's rather than Kalman's, and
     why the likelihood is *exact*. Conditional on the observed lags, the density
-    ``Pr(y_t | S_t, y_{1..t-1})`` depends on ``S_t`` alone -- the regime enters
+    :math:`\Pr(y_t \mid S_t, y_{1:t-1})` depends on :math:`S_t` alone -- the regime enters
     contemporaneously through the intercept, not through the lags -- so the
     K-vector of filtered regime probabilities is a sufficient statistic and the
-    sum over all ``K**T`` regime paths is carried out implicitly. Nothing here
+    sum over all :math:`K^T` regime paths is carried out implicitly. Nothing here
     is approximated. That is a property of the intercept-switching form
     specifically: under Hamilton's original *mean*-switching parameterization
-    the density at ``t`` depends on ``(S_t, ..., S_{t-p})``, and exact filtering
-    then needs an augmented chain of ``K**(p+1)`` states.
+    the density at :math:`t` depends on :math:`(S_t, \ldots, S_{t-p})`, and exact filtering
+    then needs an augmented chain of :math:`K^{p+1}` states.
 
     Holding this as an object rather than as a pair of loose recursions is what
     lets a fitted model be re-applied: the same instance that produced an
@@ -870,21 +914,25 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
 
     Args:
         transition: Row-stochastic ``(K, K)`` matrix,
-            ``transition[i, j] = Pr(S_t = j | S_{t-1} = i)``.
+            :math:`P_{ij} = \Pr(S_t = j \mid S_{t-1} = i)`.
         intercepts: Per-regime intercepts, shape ``(K,)``.
         ar_params: Per-regime autoregressive coefficients, shape ``(K, p)``.
             A width of zero is a switching-mean model with no dynamics.
         variances: Per-regime innovation variances, shape ``(K,)``, all strictly
             positive.
-        initial_prob: Distribution of ``S_1``, length ``K``. Defaults to the
+        initial_prob: Distribution of :math:`S_1`, length :math:`K`. Defaults to the
             ergodic distribution of ``transition``.
 
     Raises:
-        DimensionError: If the blocks do not agree on ``K``, or a block has the
+        DimensionError: If the blocks do not agree on :math:`K`, or a block has the
             wrong rank.
         SpecificationError: If ``transition`` is not row-stochastic, a variance
             is not strictly positive, or ``initial_prob`` is not a distribution.
         NumericalError: If any block contains non-finite values.
+
+    See Also:
+        * :class:`~cultivars.state_space.regime_switching.MarkovSwitchingSSM`
+          -- the public name of this class.
     """
 
     __slots__ = ("_ar", "_c", "_k", "_p", "_pi0", "_sigma2", "_transition")
@@ -1005,7 +1053,7 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
         return series[self._p :], _lag_matrix(series, self._p)
 
     def conditional_means(self, lags: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        """Per-regime conditional means ``E[y_t | S_t = j, lags]``.
+        r"""Per-regime conditional means :math:`\mathbb{E}[y_t \mid S_t = j, \text{lags}]`.
 
         Args:
             lags: The ``(T_eff, p)`` lag block.
@@ -1085,8 +1133,9 @@ class _MarkovSwitchingStateSpace(_StateSpace[_HamiltonFilterResult, _KimSmoother
                 conditioned on rather than modelled.
 
         Returns:
-            A :class:`_HamiltonFilterResult` whose probability arrays have
-            ``len(y) - order`` rows.
+            A
+            :class:`~cultivars.engine._internals._results._HamiltonFilterResult`
+            whose probability arrays have ``len(y) - order`` rows.
 
         Raises:
             SpecificationError: If the series contains non-finite values
@@ -1139,12 +1188,12 @@ class _NonlinearStateSpace:
         y_t = g(alpha_t) + eps_t,      eps_t ~ N(0, R)
         alpha_{t+1} = f(alpha_t) + eta_t,   eta_t ~ N(0, Q)
 
-    with ``f`` and ``g`` arbitrary *batched* maps: each takes a
+    with :math:`f` and :math:`g` arbitrary *batched* maps: each takes a
     ``(n, m)`` block of states and returns ``(n, m)`` or ``(n, p)``
     rows, which is what lets sigma points and particle clouds move
     through them without Python loops. Three filters read it, in
     increasing generality and decreasing exactness-of-assumptions:
-    the extended filter linearizes ``f`` and ``g`` by central-difference
+    the extended filter linearizes :math:`f` and :math:`g` by central-difference
     Jacobians; the unscented filter propagates deterministic sigma
     points (Julier-Uhlmann), exact through linear maps and third-order
     accurate through smooth ones; the particle filter (bootstrap, or
@@ -1164,6 +1213,14 @@ class _NonlinearStateSpace:
     Missing observations are ``numpy.nan`` rows: every filter skips the
     update and carries the prediction, matching the linear substrate's
     convention.
+
+    See Also:
+        * :class:`~cultivars.state_space.nonlinear.NonlinearSSM` -- the public
+          name of this class.
+        * :meth:`.NonlinearSSM._lag_stack_state_space` -- returns an instance.
+        * :meth:`.ARNNResult.nonlinear_state_space` -- returns an instance.
+        * :meth:`.TARNNResult.nonlinear_state_space` -- returns an instance.
+        * :meth:`.STARResult.nonlinear_state_space` -- returns an instance.
     """
 
     def __init__(
@@ -1191,13 +1248,13 @@ class _NonlinearStateSpace:
         """Validate the system and probe the callables' shape contract.
 
         Args:
-            transition: Batched state map ``f``: ``(n, m) -> (n, m)``.
-            observation: Batched measurement map ``g``: ``(n, m) -> (n, p)``.
-            state_cov: State noise covariance ``Q``, ``(m, m)``.
-            obs_cov: Measurement noise covariance ``R``, ``(p, p)``. Ignored
+            transition: Batched state map :math:`f`: ``(n, m) -> (n, m)``.
+            observation: Batched measurement map :math:`g`: ``(n, m) -> (n, p)``.
+            state_cov: State noise covariance :math:`Q`, ``(m, m)``.
+            obs_cov: Measurement noise covariance :math:`R`, ``(p, p)``. Ignored
                 by the particle filter when ``observation_loglik`` is given.
-            initial_state: Prior mean ``a_1``, ``(m,)``.
-            initial_state_cov: Prior covariance ``P_1``, ``(m, m)``.
+            initial_state: Prior mean :math:`a_1`, ``(m,)``.
+            initial_state_cov: Prior covariance :math:`P_1`, ``(m, m)``.
             transition_sampler: Optional replacement for the additive state
                 draw: ``(particles (n, m), rng) -> (n, m)``.
             observation_loglik: Optional replacement for the Gaussian
@@ -1323,7 +1380,7 @@ class _NonlinearStateSpace:
         point: npt.NDArray[np.float64],
         out_dim: int,
     ) -> npt.NDArray[np.float64]:
-        """Central-difference Jacobian of a batched map at one point.
+        r"""Central-difference Jacobian of a batched map at one point.
 
         Args:
             func: A batched map taking ``(n, m)`` states to ``(n, out_dim)``
@@ -1333,7 +1390,7 @@ class _NonlinearStateSpace:
 
         Returns:
             The ``(out_dim, m)`` Jacobian. Each coordinate is stepped by
-            ``sqrt(eps) * max(abs(x), 1)``, and all the steps are evaluated in
+            :math:`\sqrt{\epsilon}\, \max(|x|, 1)`, and all the steps are evaluated in
             two batched calls.
         """
         m = self._m
@@ -1383,8 +1440,8 @@ class _NonlinearStateSpace:
     def extended_filter(self, y: npt.ArrayLike) -> _KalmanFilterResult:
         """The extended Kalman filter: linearize, then filter exactly.
 
-        First-order accurate in the nonlinearity; exact when ``f`` and
-        ``g`` are linear, in which case it *is* the Kalman filter.
+        First-order accurate in the nonlinearity; exact when :math:`f` and
+        :math:`g` are linear, in which case it *is* the Kalman filter.
         Jacobians come from central differences, so the maps need to be
         smooth at the working point but need not expose derivatives.
 
@@ -1433,12 +1490,12 @@ class _NonlinearStateSpace:
     def _sigma_points(
         self, mean: npt.NDArray[np.float64], cov: npt.NDArray[np.float64], scale: float
     ) -> npt.NDArray[np.float64]:
-        """The ``2m + 1`` unscented points around one moment pair.
+        """The :math:`2m + 1` unscented points around one moment pair.
 
         Args:
             mean: The ``(m,)`` mean.
             cov: The ``(m, m)`` covariance.
-            scale: The unscented scaling parameter added to ``m``.
+            scale: The unscented scaling parameter added to :math:`m`.
 
         Returns:
             A ``(2m + 1, m)`` array: the mean, then the mean plus and minus
@@ -1469,7 +1526,7 @@ class _NonlinearStateSpace:
     def _smoother_gain(
         cross: npt.NDArray[np.float64], predicted_cov: npt.NDArray[np.float64]
     ) -> npt.NDArray[np.float64]:
-        """The Rauch gain ``C P_{t+1|t}^{-1}`` from a cross-covariance.
+        r"""The Rauch gain :math:`C P_{t+1 \mid t}^{-1}` from a cross-covariance.
 
         Raises:
             NumericalError: If the predicted covariance degenerates.
@@ -1563,8 +1620,8 @@ class _NonlinearStateSpace:
 
         Args:
             outcome: The forward pass to smooth.
-            cross_at: Maps a period ``t`` to the ``(m, m)`` cross covariance
-                between the state at ``t`` and its one-step prediction, which is
+            cross_at: Maps a period :math:`t` to the ``(m, m)`` cross covariance
+                between the state at :math:`t` and its one-step prediction, which is
                 where the extended and unscented smoothers differ.
             method: Label recorded on the result.
 
@@ -1596,7 +1653,7 @@ class _NonlinearStateSpace:
         Runs the extended filter, then Rauch's backward recursion with the
         transition Jacobian evaluated at each filtered mean. The
         linearization error therefore compounds through both passes: exact
-        when ``f`` and ``g`` are linear, degrading faster than the forward
+        when :math:`f` and :math:`g` are linear, degrading faster than the forward
         filter as curvature grows. When this and the unscented smoother
         disagree materially, trust the unscented one.
 
@@ -1604,7 +1661,9 @@ class _NonlinearStateSpace:
             y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
 
         Returns:
-            The :class:`_RtsSmootherResult` with ``method="extended"``.
+            The
+            :class:`~cultivars.engine._internals._results._RtsSmootherResult`
+            with ``method="extended"``.
 
         Raises:
             SpecificationError: If the model carries custom hooks.
@@ -1643,7 +1702,9 @@ class _NonlinearStateSpace:
             kappa: Secondary scaling.
 
         Returns:
-            The :class:`_RtsSmootherResult` with ``method="unscented"``.
+            The
+            :class:`~cultivars.engine._internals._results._RtsSmootherResult`
+            with ``method="unscented"``.
 
         Raises:
             SpecificationError: If the model carries custom hooks or the
@@ -1752,7 +1813,7 @@ class _NonlinearStateSpace:
             rng: Random generator; one uniform draw is used.
 
         Returns:
-            ``n`` particle indices, in nondecreasing order.
+            :math:`n` particle indices, in nondecreasing order.
         """
         count = weights.shape[0]
         positions = (rng.random() + np.arange(count)) / count
@@ -1803,7 +1864,7 @@ class _NonlinearStateSpace:
             seed: Seed or generator.
 
         Returns:
-            The :class:`_ParticleFilterResult`.
+            The :class:`~cultivars.engine._internals._results._ParticleFilterResult`.
 
         Raises:
             SpecificationError: If the method or bookkeeping is malformed.
@@ -1904,7 +1965,7 @@ class _NonlinearStateSpace:
         differs from the particle filter's: a custom ``observation_loglik``
         is fine (it only enters the forward weights), but a custom
         ``transition_sampler`` exposes draws without a density and is
-        refused, as is a singular ``Q``.
+        refused, as is a singular :math:`Q`.
 
         The costs are quadratic and stated rather than hidden: time is
         ``O(n_particles**2)`` per period and the forward clouds are held
@@ -1920,12 +1981,12 @@ class _NonlinearStateSpace:
             seed: Seed or generator.
 
         Returns:
-            The :class:`_ParticleSmootherResult`.
+            The :class:`~cultivars.engine._internals._results._ParticleSmootherResult`.
 
         Raises:
             SpecificationError: If the model carries a transition sampler
                 hook or the bookkeeping is malformed.
-            NumericalError: If ``Q`` is singular or the cloud degenerates.
+            NumericalError: If :math:`Q` is singular or the cloud degenerates.
         """
         if self._sampler is not None:
             raise SpecificationError(
@@ -2023,7 +2084,7 @@ class _NonlinearStateSpace:
         center: float,
         spread: float,
     ) -> _NonlinearStateSpace:
-        """Wrap a nonlinear autoregressive mean as a noisily observed state space.
+        r"""Wrap a nonlinear autoregressive mean as a noisily observed state space.
 
         The shared emitter behind the observation-driven nonlinear models
         (threshold, smooth-transition, neural): the latent state is the
@@ -2042,7 +2103,7 @@ class _NonlinearStateSpace:
 
         Args:
             mean_map: Batched conditional mean: an ``(n, order)`` block of lag
-                rows ``[y_{t-1}, ..., y_{t-order}]`` to ``(n,)`` means.
+                rows :math:`[y_{t-1}, \ldots, y_{t-\mathrm{order}}]` to ``(n,)`` means.
             order: Depth of the lag stack, at least 1.
             sigma2: Fitted innovation variance, strictly positive.
             measurement_variance: Observation noise variance, strictly
@@ -2096,19 +2157,19 @@ class _NonlinearStateSpace:
 
 
 class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmootherResult]):
-    """A linear-Gaussian state space whose system matrices switch by regime.
+    r"""A linear-Gaussian state space whose system matrices switch by regime.
 
     The continuous-state half of the regime-switching layer -- the
     :class:`_MarkovSwitchingStateSpace` docstring's promised
-    extension. Each regime ``j`` of a ``K``-state Markov chain carries its
+    extension. Each regime :math:`j` of a :math:`K`-state Markov chain carries its
     own linear-Gaussian system::
 
         y_t         = Z_j alpha_t + d_j + eps_t,   eps_t ~ N(0, H_j)
         alpha_{t+1} = T_j alpha_t + c_j + eta_t,   eta_t ~ N(0, Q_j)
 
-    Exact filtering requires tracking every regime *path* -- ``K**t``
-    Kalman filters by period ``t`` -- so Kim (1994) collapses: run the
-    ``K * K`` per-pair Kalman updates, mix by the Hamilton regime
+    Exact filtering requires tracking every regime *path* -- :math:`K^t`
+    Kalman filters by period :math:`t` -- so Kim (1994) collapses: run the
+    :math:`K \times K` per-pair Kalman updates, mix by the Hamilton regime
     probabilities, and collapse each regime's mixture back to one moment
     pair by moment matching. The likelihood is therefore an
     *approximation*, and is labeled one; it is exact in the two limits
@@ -2119,6 +2180,11 @@ class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmoothe
 
     Missing observations are ``numpy.nan`` rows: the update is skipped and
     regime probabilities evolve by the chain alone.
+
+    See Also:
+        * :class:`~cultivars.state_space.regime_switching.RegimeSwitchingLinearSSM`
+          -- the public name of this class.
+        * :meth:`.MarkovSwitchingDFM._build` -- returns an instance.
     """
 
     def __init__(
@@ -2135,15 +2201,15 @@ class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmoothe
         initial_state_cov: npt.ArrayLike | None = None,
         initial_regime_prob: npt.ArrayLike | None = None,
     ) -> None:
-        """Validate the per-regime systems and the chain.
+        r"""Validate the per-regime systems and the chain.
 
         Args:
-            design: Per-regime observation matrices ``Z``, ``(K, p, m)``.
-            obs_cov: Per-regime observation covariances ``H``, ``(K, p, p)``.
-            transition: Per-regime state transitions ``T``, ``(K, m, m)``.
-            state_cov: Per-regime state covariances ``Q``, ``(K, m, m)``.
-            regime_transition: Row-stochastic chain matrix ``P``, ``(K, K)``,
-                with ``P[i, j] = Pr(S_t = j | S_{t-1} = i)``.
+            design: Per-regime observation matrices :math:`Z`, ``(K, p, m)``.
+            obs_cov: Per-regime observation covariances :math:`H`, ``(K, p, p)``.
+            transition: Per-regime state transitions :math:`T`, ``(K, m, m)``.
+            state_cov: Per-regime state covariances :math:`Q`, ``(K, m, m)``.
+            regime_transition: Row-stochastic chain matrix :math:`P`, ``(K, K)``,
+                with :math:`P_{ij} = \Pr(S_t = j \mid S_{t-1} = i)`.
             obs_intercept: Per-regime ``d``, ``(K, p)``; zero by default.
             state_intercept: Per-regime ``c``, ``(K, m)``; zero by default.
             initial_state: Prior state mean, ``(m,)``; zero by default.
@@ -2228,7 +2294,7 @@ class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmoothe
 
     @property
     def regime_transition(self) -> npt.NDArray[np.float64]:
-        """The row-stochastic regime chain matrix ``P``, as a copy."""
+        """The row-stochastic regime chain matrix :math:`P`, as a copy."""
         return self._P.copy()
 
     def filter(self, y: npt.ArrayLike) -> _KimFilterResult:
@@ -2239,8 +2305,9 @@ class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmoothe
                 one, and ``numpy.nan`` rows are missing.
 
         Returns:
-            The :class:`_KimFilterResult`; its log-likelihood is the
-            collapse approximation.
+            The
+            :class:`~cultivars.engine._internals._results._KimFilterResult`;
+            its log-likelihood is the collapse approximation.
 
         Raises:
             NumericalError: If an innovation covariance degenerates.
@@ -2359,7 +2426,7 @@ class _RegimeSwitchingLinearStateSpace(_StateSpace[_KimFilterResult, _KimSmoothe
             y: Data, ``(n, p)``; ``numpy.nan`` rows are missing.
 
         Returns:
-            The :class:`_KimSmootherResult` over regimes.
+            The :class:`~cultivars.engine._internals._results._KimSmootherResult` over regimes.
         """
         forward = self.filter(y)
         record = _HamiltonFilterResult(

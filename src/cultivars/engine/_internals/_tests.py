@@ -99,21 +99,42 @@ __all__ = [
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class _JohansenRankTest:
-    """Sequential trace and maximum-eigenvalue tests for the cointegrating rank.
+    r"""Sequential trace and maximum-eigenvalue tests for the cointegrating rank.
 
-    Both sequences read down from ``r = 0``. The trace statistic tests
-    ``rank <= r`` against ``rank = k``; the maximum-eigenvalue statistic tests
-    ``rank = r`` against ``rank = r + 1``. The conventional reading stops at the
-    first ``r`` that is not rejected, which :meth:`selected_rank` implements and
-    which is a sequential procedure whose overall size is not the nominal level
-    of any single step -- a caveat the table states rather than hides.
+    Both sequences read down from :math:`r = 0`. The trace statistic tests
+    :math:`\operatorname{rank} \le r` against :math:`\operatorname{rank} = k`;
+    the maximum-eigenvalue statistic tests :math:`\operatorname{rank} = r`
+    against :math:`\operatorname{rank} = r + 1`. The conventional reading stops
+    at the first :math:`r` that is not rejected, which :meth:`selected_rank`
+    implements and which is a sequential procedure whose overall size is not
+    the nominal level of any single step -- a caveat the table states rather
+    than hides.
+
+    With :math:`\hat\lambda_1 \ge \cdots \ge \hat\lambda_k` the squared canonical
+    correlations and :math:`T^{\ast}` the effective sample size, the two
+    statistics for the null of at most :math:`r` cointegrating relations are
+
+    .. math::
+
+       \lambda_{\mathrm{trace}}(r) = -T^{\ast} \sum_{i=r+1}^{k} \log(1 - \hat\lambda_i),
+       \qquad
+       \lambda_{\max}(r) = -T^{\ast} \log(1 - \hat\lambda_{r+1}),
+       \qquad r = 0, \ldots, k - 1.
+
+    Under the small-sample correction of Reinsel and Ahn (1992),
+    :math:`T^{\ast} = T - (k_y + k_x)\, p` with :math:`p` the lag order;
+    otherwise it is :math:`T`. Neither statistic has a standard limit law: the reference
+    distribution depends on the deterministic case and on the number of weakly
+    exogenous regressors, which is why the record carries simulated p-values
+    together with the settings they were simulated under.
 
     Attributes:
         eigenvalues: The squared canonical correlations, descending. One per
             modelled equation, since a conditional system cannot support more
             cointegrating relations than it has equations.
-        trace_statistic: One entry per null ``rank <= r``, for ``r = 0, ..., k - 1``.
-        max_eigenvalue_statistic: One entry per null ``rank = r``.
+        trace_statistic: One entry per null :math:`\operatorname{rank} \le r`,
+            for :math:`r = 0, \ldots, k - 1`.
+        max_eigenvalue_statistic: One entry per null :math:`\operatorname{rank} = r`.
         trace_pvalue: Empirical p-values from the simulated null.
         max_eigenvalue_pvalue: Empirical p-values from the simulated null.
         nobs: Effective sample the statistics were computed on.
@@ -123,6 +144,16 @@ class _JohansenRankTest:
             visible rather than implied.
         small_sample: Whether the Reinsel-Ahn degrees-of-freedom scaling was
             applied to the statistics.
+
+    See Also:
+        * :class:`~cultivars.diagnostics.cointegration.JohansenRankTest` -- the
+          public name of this class.
+        * :meth:`.VECM.rank_test` -- returns an instance.
+        * :meth:`.VECMX.rank_test` -- returns an instance.
+        * :meth:`._ExogenousVectorErrorCorrectionModel.rank_test` -- returns an
+          instance.
+        * :meth:`._VectorErrorCorrectionModel.rank_test` -- returns an
+          instance.
     """
 
     eigenvalues: npt.NDArray[np.float64]
@@ -132,9 +163,9 @@ class _JohansenRankTest:
     cointegrating relations than it has equations.
     """
     trace_statistic: npt.NDArray[np.float64]
-    """One entry per null ``rank <= r``, for ``r = 0, ..., k - 1``."""
+    r"""One entry per null :math:`\operatorname{rank} \le r`, for :math:`r = 0, \ldots, k - 1`."""
     max_eigenvalue_statistic: npt.NDArray[np.float64]
-    """One entry per null ``rank = r``."""
+    r"""One entry per null :math:`\operatorname{rank} = r`."""
     trace_pvalue: npt.NDArray[np.float64]
     """Empirical p-values from the simulated null."""
     max_eigenvalue_pvalue: npt.NDArray[np.float64]
@@ -269,7 +300,7 @@ class _HypothesisTest:
     a study that collects verdicts wants one type with ``reject`` and
     ``summary``, not a union of seven. Subclasses add the fields their
     construction needs and describe their own table through
-    :meth:`_summary_table`; the renderers -- ``summary()``, ``str()``,
+    :meth:`_summary_table`; the renderers -- :meth:`summary`, ``str()``,
     the notebook HTML -- are derived here once. ``__repr__`` stays a
     one-line verdict, because a test in a REPL should read as a sentence
     and not as a table.
@@ -278,6 +309,10 @@ class _HypothesisTest:
         statistic: The test statistic.
         pvalue: Its p-value, or ``None`` for a test known only through
             tabulated critical values.
+
+    See Also:
+        * :class:`~cultivars.diagnostics.hypothesis.HypothesisTest` -- the
+          public name of this class.
     """
 
     statistic: float
@@ -346,6 +381,10 @@ class _ChiSquaredTest(_HypothesisTest):
         statistic: The chi-squared statistic.
         df: Degrees of freedom.
         pvalue: Upper-tail probability under the chi-squared null.
+
+    See Also:
+        * :class:`~cultivars.diagnostics.hypothesis.ChiSquaredTest` -- the
+          public name of this class.
     """
 
     df: int
@@ -453,6 +492,10 @@ class _TabulatedTest(_HypothesisTest):
         nobs: Observations the statistic was computed on.
         companions: Further statistics of the same test on the same
             sample.
+
+    See Also:
+        * :class:`~cultivars.diagnostics.hypothesis.TabulatedTest` -- the
+          public name of this class.
     """
 
     name: str
@@ -554,6 +597,14 @@ class _LikelihoodRatioTest(_ChiSquaredTest):
         statistic: ``2 * (llf_unrestricted - llf_restricted)``.
         df: Degrees of freedom, the difference in free parameter counts.
         pvalue: Upper-tail probability under a chi-squared null.
+
+    See Also:
+        * :class:`~cultivars.diagnostics.hypothesis.LikelihoodRatioTest` -- the
+          public name of this class.
+        * :meth:`.CalibrationResult.berkowitz` -- returns an instance.
+        * :meth:`.STVARResult.likelihood_ratio_test` -- returns an instance.
+        * :meth:`.TVARResult.likelihood_ratio_test` -- returns an instance.
+        * :meth:`.VECMResult.likelihood_ratio_test` -- returns an instance.
     """
 
     def _label(self) -> str:
@@ -599,6 +650,14 @@ class _WaldTest(_ChiSquaredTest):
         null: The hypothesis being tested, phrased so it reads as a sentence
             in a diagnostics table -- ``"gdp does not Granger-cause infl"``,
             not ``"granger"``.
+
+    See Also:
+        * :class:`~cultivars.diagnostics.hypothesis.WaldTest` -- the public
+          name of this class.
+        * :meth:`.VECMResult.arch_test` -- returns an instance.
+        * :meth:`.VECMResult.granger_causality` -- returns an instance.
+        * :meth:`.VECMResult.normality_test` -- returns an instance.
+        * :meth:`.VECMResult.portmanteau_test` -- returns an instance.
     """
 
     statistic: float
@@ -667,6 +726,14 @@ class _ConvergenceTest:
         min_ess: Effective draws per chain below which a parameter is
             flagged, so the floor applied is ``min_ess * n_chains``.
         source: What was assessed, for the summary title.
+
+    See Also:
+        * :class:`~cultivars.bayes.chains.ConvergenceTest` -- the public name
+          of this class.
+        * :func:`~cultivars.bayes.chains.convergence` -- returns an instance.
+        * :meth:`.BVARResult.convergence` -- returns an instance.
+        * :meth:`.FactorSVResult.convergence` -- returns an instance.
+        * :meth:`.GibbsBVARResult.convergence` -- returns an instance.
     """
 
     names: tuple[str, ...]
@@ -713,7 +780,7 @@ class _ConvergenceTest:
         """Compute every diagnostic from ``(C, N, d)`` draws.
 
         Args:
-            draws: ``C`` chains of ``N`` kept draws of ``d`` scalar quantities.
+            draws: :math:`C` chains of :math:`N` kept draws of ``d`` scalar quantities.
             names: ``d`` labels.
             rhat_tol: Flagging threshold for R-hat.
             min_ess: Flagging floor for effective draws, per chain.

@@ -75,7 +75,7 @@ __all__ = [
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _LagOrderSelection:
-    """Lag-order criteria evaluated over a common sample.
+    r"""Lag-order criteria evaluated over a common sample.
 
     Carries the whole curve for each criterion, not just the winner. The four
     routinely disagree -- Bayesian and Hannan-Quinn penalize harder than Akaike
@@ -93,19 +93,25 @@ class _LagOrderSelection:
         max_lags: Longest order scored; the curves have ``max_lags + 1``
             entries, indexed by order from zero.
         nobs: The common effective sample every order was scored on.
-        aic: Akaike criterion, ``log det Sigma + 2 m / T``.
-        bic: Schwarz criterion, ``log det Sigma + log(T) m / T``.
-        hqic: Hannan-Quinn criterion, ``log det Sigma + 2 log log(T) m / T``.
+        aic: Akaike criterion, :math:`\log \det \Sigma + 2 m / T`.
+        bic: Schwarz criterion, :math:`\log \det \Sigma + m \log(T) / T`.
+        hqic: Hannan-Quinn criterion, :math:`\log \det \Sigma + 2 m \log \log(T) / T`.
         fpe: Final prediction error. On a *determinant* scale rather than a
             log-determinant one, so its values are not comparable with the
             other three -- only its own minimum is meaningful.
 
     Note:
-        The parameter count ``m`` here excludes the innovation covariance,
+        The parameter count :math:`m` here excludes the innovation covariance,
         following Lutkepohl: those terms are common across orders and cancel.
         A fitted result's ``information_criteria`` counts them, so the same
         model scores differently in the two places. Both are right in context;
         do not reconcile them.
+
+    See Also:
+        * :meth:`.BVAR.lag_order_selection` -- returns an instance.
+        * :meth:`.GibbsBVAR.lag_order_selection` -- returns an instance.
+        * :meth:`.GraphicalVAR.lag_order_selection` -- returns an instance.
+        * :meth:`.HierarchicalBVAR.lag_order_selection` -- returns an instance.
     """
 
     max_lags: int
@@ -113,11 +119,11 @@ class _LagOrderSelection:
     nobs: int
     """The common effective sample every order was scored on."""
     aic: npt.NDArray[np.float64]
-    """Akaike criterion by order, ``log det Sigma + 2 m / T``."""
+    r"""Akaike criterion by order, :math:`\log \det \Sigma + 2 m / T`."""
     bic: npt.NDArray[np.float64]
-    """Schwarz criterion by order, ``log det Sigma + log(T) m / T``."""
+    r"""Schwarz criterion by order, :math:`\log \det \Sigma + m \log(T) / T`."""
     hqic: npt.NDArray[np.float64]
-    """Hannan-Quinn criterion by order, ``log det Sigma + 2 log log(T) m / T``."""
+    r"""Hannan-Quinn criterion by order, :math:`\log \det \Sigma + 2 m \log \log(T) / T`."""
     fpe: npt.NDArray[np.float64]
     """Final prediction error by order.
 
@@ -262,6 +268,17 @@ class _MarginalLikelihoodSelection:
             log marginal likelihood by roughly the per-observation log
             density times the difference.
         notes: Caveats that qualify the number.
+
+    See Also:
+        * :class:`~cultivars.bayes.combination.MarginalLikelihoodSelection` --
+          the public name of this class.
+        * :class:`~cultivars.bayes.evidence.MarginalLikelihoodSelection` -- the
+          public name of this class.
+        * :func:`.bridge_sampling` -- returns an instance.
+        * :func:`~cultivars.bayes.evidence.marginal_likelihood` -- returns an
+          instance.
+        * :func:`.modified_harmonic_mean` -- returns an instance.
+        * :meth:`.BVARResult.marginal_likelihood` -- returns an instance.
     """
 
     log_value: float
@@ -287,7 +304,7 @@ class _MarginalLikelihoodSelection:
     """Caveats that qualify the number; :meth:`compare` carries them into its table."""
 
     def log_bayes_factor(self, other: _MarginalLikelihoodSelection) -> float:
-        """``log m_self(y) - log m_other(y)``: positive favours ``self``.
+        r""":math:`\log m_{\text{self}}(y) - \log m_{\text{other}}(y)`: positive favours ``self``.
 
         Meaningful only when both were computed on the same sample; the
         record cannot check that, and the caller must.
@@ -459,6 +476,12 @@ class _ModelCombinationSelection:
         n_origins: Evaluation origins behind stacking weights; ``0`` for
             averaging.
         notes: Caveats that qualify the weights.
+
+    See Also:
+        * :class:`~cultivars.bayes.combination.ModelCombinationSelection` --
+          the public name of this class.
+        * :func:`.bayesian_model_average` -- returns an instance.
+        * :func:`.stacking` -- returns an instance.
     """
 
     names: tuple[str, ...]
@@ -485,7 +508,7 @@ class _ModelCombinationSelection:
         """Models combined.
 
         Returns:
-            The number ``M`` of models.
+            The number :math:`M` of models.
         """
         return len(self.names)
 
@@ -601,10 +624,10 @@ class _ModelCombinationSelection:
 
 @dataclass(frozen=True, kw_only=True, slots=True, repr=False)
 class _ModelConfidenceSetSelection:
-    """The model confidence set: the forecasters not shown to be worse than the best.
+    r"""The model confidence set: the forecasters not shown to be worse than the best.
 
     Hansen, Lunde and Nason (2011): a set that contains the best model
-    with probability at least ``1 - alpha``, reached by eliminating the
+    with probability at least :math:`1 - \alpha`, reached by eliminating the
     worst model while the equivalence of the remaining ones is rejected.
     Like a confidence interval it is honest about what the data can and
     cannot separate: a short or noisy evaluation window keeps many models,
@@ -622,6 +645,11 @@ class _ModelConfidenceSetSelection:
         n_bootstrap: Bootstrap replications.
         block_length: Expected block length of the stationary bootstrap.
         nobs: Evaluation origins.
+
+    See Also:
+        * :class:`~cultivars.forecast.confidence_set.ModelConfidenceSetSelection`
+          -- the public name of this class.
+        * :func:`.model_confidence_set` -- returns an instance.
     """
 
     names: tuple[str, ...]
@@ -633,7 +661,8 @@ class _ModelConfidenceSetSelection:
     elimination_order: tuple[int, ...]
     """Model indices from the first eliminated to the survivor."""
     alpha: float
-    """Level of the set; it contains the best model with probability at least ``1 - alpha``."""
+    r"""Level of the set; it contains the best model with probability at least
+    :math:`1 - \alpha`."""
     statistic: str
     """Equivalence statistic used, ``"range"`` or ``"max"``."""
     n_bootstrap: int

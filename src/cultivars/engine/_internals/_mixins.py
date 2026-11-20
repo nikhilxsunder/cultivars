@@ -344,7 +344,7 @@ class _ComparisonMixin:
             unrestricted: The nesting model, with at least as many parameters.
 
         Returns:
-            The :class:`_LikelihoodRatioTest` verdict.
+            The :class:`~cultivars.engine._internals._tests._LikelihoodRatioTest` verdict.
 
         Raises:
             SpecificationError: If ``unrestricted`` does not have strictly more
@@ -388,7 +388,7 @@ class _ComparisonMixin:
 
 
 class _InvertibilityMixin:
-    """Invertibility assessment over a moving-average polynomial.
+    r"""Invertibility assessment over a moving-average polynomial.
 
     The concrete result declares ``ma_params`` in the observation-equation sign
     convention, so the same companion-eigenvalue test that decides
@@ -398,9 +398,9 @@ class _InvertibilityMixin:
     :meth:`_invertibility_ma` to return that expansion.
 
     Note the sign. The fits store ``ma_params`` as the coefficients of
-    ``theta(L) = 1 + theta_1 L + ...``, while
-    :meth:`_StabilityAssessment.assess_stability` tests
-    ``1 - c_1 z - c_2 z^2 - ...``. The argument is therefore negated. Getting
+    :math:`\theta(L) = 1 + \theta_1 L + \cdots`, while
+    :meth:`._StabilityAssessment.assess_stability` tests
+    :math:`1 - c_1 z - c_2 z^2 - \cdots`. The argument is therefore negated. Getting
     that wrong is not a cosmetic error: across 500 random draws from the
     reparameterized region, passing ``ma_params`` unnegated reports only 181
     as invertible, so two thirds of correctly-invertible fits would be flagged.
@@ -467,7 +467,7 @@ class _VectorInferenceMixin:
             every *inferential* quantity -- Wald tests, the impact matrix --
             because the maximum-likelihood estimator is biased downward by the
             estimated coefficients.
-        sigma_ml: The ``1/T`` estimator. Used for the likelihood and the
+        sigma_ml: The :math:`1/T` estimator. Used for the likelihood and the
             information criteria, where the adjustment does not belong.
             Both are stored deliberately: substituting one for the other
             biases either the criteria or the standard errors, and nothing
@@ -504,7 +504,7 @@ class _VectorInferenceMixin:
     coefficients.
     """
     sigma_ml: npt.NDArray[np.float64]
-    """The ``1/T`` estimator.
+    """The :math:`1/T` estimator.
 
     Used for the likelihood and the information criteria, where the adjustment does
     not belong. Both are stored deliberately: substituting one for the other biases
@@ -563,10 +563,10 @@ class _VectorInferenceMixin:
         return ((0, self.nobs),)
 
     def _impact(self) -> npt.NDArray[np.float64]:
-        """Lower-triangular Cholesky factor of the innovation covariance.
+        r"""Lower-triangular Cholesky factor of the innovation covariance.
 
         Returns:
-            The matrix ``P`` with ``P P' = sigma_u``, which is the *recursive*
+            The matrix :math:`P` with :math:`P P^\top = \Sigma_u`, which is the *recursive*
             structural impact matrix. Overridden by a structural result that
             identifies the impact some other way.
 
@@ -589,7 +589,7 @@ class _VectorInferenceMixin:
     # -- shock accounting --------------------------------------------------
 
     def structural_shocks(self) -> npt.NDArray[np.float64]:
-        """Orthogonalized innovations ``P^{-1} u_t``, shape ``(nobs, k)``.
+        """Orthogonalized innovations :math:`P^{-1} u_t`, shape ``(nobs, k)``.
 
         Unit variance and mutually uncorrelated by construction, under the same
         recursive ordering :meth:`irf` documents.
@@ -635,12 +635,12 @@ class _VectorInferenceMixin:
 
     @property
     def coefficient_covariance(self) -> _CoefficientInference:
-        """Covariance of the coefficient matrix, sampling or posterior.
+        r"""Covariance of the coefficient matrix, sampling or posterior.
 
         Returns whichever object describes how the numbers were produced. A
         shrunk fit carries its posterior covariance from estimation, because it
         cannot be reconstructed here: under a prior the joint covariance stops
-        factoring as ``kron(sigma_u, inv(X'X))`` and there is nothing to
+        factoring as :math:`\Sigma_u \otimes (X^\top X)^{-1}` and there is nothing to
         rebuild it from. Both objects answer the same questions, which is why
         everything downstream -- ``bse``, ``tvalues``, ``conf_int``, the
         coefficient table -- reads one interface and never asks which it has.
@@ -803,7 +803,7 @@ class _VectorInferenceMixin:
             effect: The equation the restriction is applied to.
 
         Returns:
-            A :class:`_WaldTest` naming the non-causality null.
+            A :class:`~cultivars.engine._internals._tests._WaldTest` naming the non-causality null.
 
         Raises:
             SpecificationError: If either name is unknown, they are the same
@@ -833,9 +833,10 @@ class _VectorInferenceMixin:
                 every degree of freedom.
 
         Returns:
-            The :class:`_WaldTest`. Rejection means the lag order is too
-            short, so every other quantity here -- impulse responses included
-            -- is computed from a misspecified system.
+            The :class:`~cultivars.engine._internals._tests._WaldTest`.
+            Rejection means the lag order is too short, so every other quantity
+            here -- impulse responses included -- is computed from a
+            misspecified system.
 
         Raises:
             SpecificationError: If ``lags`` is outside ``1..nobs-1``, or leaves
@@ -872,7 +873,7 @@ class _VectorInferenceMixin:
             variable: Name of the equation to test.
 
         Returns:
-            The :class:`_WaldTest` with two degrees of freedom.
+            The :class:`~cultivars.engine._internals._tests._WaldTest` with two degrees of freedom.
 
         Raises:
             SpecificationError: If ``variable`` is not in ``names``.
@@ -909,7 +910,8 @@ class _VectorInferenceMixin:
             lags: Number of squared-residual lags in the auxiliary regression.
 
         Returns:
-            The :class:`_WaldTest` with ``lags`` degrees of freedom.
+            The :class:`~cultivars.engine._internals._tests._WaldTest` with
+            ``lags`` degrees of freedom.
 
         Raises:
             SpecificationError: If ``variable`` is unknown or ``lags`` is
@@ -978,7 +980,7 @@ class _VectorInferenceMixin:
 
 
 class _VectorPropagationMixin:
-    """How a shock travels through a closed vector system.
+    r"""How a shock travels through a closed vector system.
 
     The half of the reduced-form surface that needs a law of motion for every
     variable in the model: the companion matrix and its roots, the
@@ -996,6 +998,36 @@ class _VectorPropagationMixin:
     added. Now they simply do not mix this in, and
     :class:`_ConditionalSystemMixin` keeps the error messages good without
     claiming the type.
+
+    In symbols, a stable system has the moving-average representation
+
+    .. math::
+
+       y_t = \mu + \sum_{h \ge 0} \Psi_h u_{t-h}, \qquad
+       \Psi_0 = I, \quad
+       \Psi_h = \sum_{i=1}^{\min(h, p)} A_i \Psi_{h-i},
+
+    equivalently :math:`\Psi_h = J C^h J^\top` with :math:`C` the companion matrix
+    and :math:`J = (I, 0, \ldots, 0)`. With :math:`P` the lower Cholesky factor of
+    the innovation covariance, :math:`P P^\top = \Sigma_u`, the orthogonalized
+    responses are :math:`\Theta_h = \Psi_h P`, the :math:`h`-step forecast-error
+    covariance is
+
+    .. math::
+
+       \Sigma_y(h) = \sum_{s=0}^{h-1} \Psi_s \Sigma_u \Psi_s^\top,
+
+    and the share of variable :math:`i`'s :math:`h`-step forecast-error variance
+    attributed to shock :math:`j` is
+
+    .. math::
+
+       \omega_{ij}(h) = \frac{\sum_{s=0}^{h-1} \bigl( e_i^\top \Theta_s e_j \bigr)^2}
+       {\sum_{s=0}^{h-1} e_i^\top \Psi_s \Sigma_u \Psi_s^\top e_i},
+
+    where :math:`e_i` is the :math:`i`-th unit vector. :math:`\Psi_h` does not
+    depend on the ordering of the variables; :math:`\Theta_h` and
+    :math:`\omega_{ij}(h)` do, through :math:`P`.
 
     Attributes:
         coefficients: ``(p, k, k)`` autoregressive matrices of the closed
@@ -1018,7 +1050,7 @@ class _VectorPropagationMixin:
     endog: npt.NDArray[np.float64]
     """The observed sample of the host record, ``(T, k)``."""
     names: tuple[str, ...]
-    """Variable labels, length ``k``."""
+    """Variable labels, length :math:`k`."""
     order: int
     """Autoregressive order ``p``."""
     trend: str
@@ -1097,12 +1129,13 @@ class _VectorPropagationMixin:
         """Eigenvalue verdict for the companion matrix.
 
         Returns:
-            The :class:`_StabilityAssessment`; the process is stable, and so has a
-            convergent moving-average representation, exactly when every
-            companion eigenvalue lies inside the unit circle. Every other
-            method here presumes that: an impulse response computed from an
-            explosive companion diverges rather than decays, and a forecast
-            from one is meaningless at any horizon.
+            The
+            :class:`~cultivars.engine._internals._assessments._StabilityAssessment`;
+            the process is stable, and so has a convergent moving-average
+            representation, exactly when every companion eigenvalue lies inside
+            the unit circle. Every other method here presumes that: an impulse
+            response computed from an explosive companion diverges rather than
+            decays, and a forecast from one is meaningless at any horizon.
         """
         return _StabilityAssessment.assess_stability(self.coefficients)
 
@@ -1112,10 +1145,10 @@ class _VectorPropagationMixin:
         return self.stability_check().is_stable
 
     def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
-        """Moving-average matrices ``Psi_0, ..., Psi_horizon``.
+        r"""Moving-average matrices :math:`\Psi_0, \ldots, \Psi_{\mathrm{horizon}}`.
 
-        Computed as ``J C^h J'`` from the companion rather than by the
-        recursion ``Psi_h = sum_i A_i Psi_{h-i}``. The two agree to machine
+        Computed as :math:`J C^h J^\top` from the companion rather than by the
+        recursion :math:`\Psi_h = \sum_i A_i \Psi_{h-i}`. The two agree to machine
         precision, and the companion form generalizes without change to any
         member of the family that can produce a companion matrix.
 
@@ -1123,7 +1156,7 @@ class _VectorPropagationMixin:
             horizon: Largest lead to return.
 
         Returns:
-            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
+            An array of shape ``(horizon + 1, k, k)`` with :math:`\Psi_0 = I`.
 
         Raises:
             SpecificationError: If ``horizon`` is negative.
@@ -1148,7 +1181,7 @@ class _VectorPropagationMixin:
     def irf(
         self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
     ) -> npt.NDArray[np.float64]:
-        """Impulse responses to a one-standard-deviation shock.
+        r"""Impulse responses to a one-standard-deviation shock.
 
         Args:
             horizon: Largest lead to return.
@@ -1163,14 +1196,14 @@ class _VectorPropagationMixin:
                 SVAR whose identifying restriction happens to be undeclared;
                 :mod:`cultivars.multivariate.structural` is where that restriction gets
                 stated rather than assumed. With ``False`` you get the raw
-                ``Psi_h``, whose columns are responses to correlated
+                :math:`\Psi_h`, whose columns are responses to correlated
                 innovations and are therefore not interpretable one at a time.
             cumulative: Return running sums, which is what you want when the
                 data are differences and the question is about levels.
 
         Returns:
             An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]`` is
-            the response of variable ``i`` at lead ``h`` to shock ``j``.
+            the response of variable :math:`i` at lead :math:`h` to shock :math:`j`.
         """
         psi = self.ma_representation(horizon)
         out = psi @ self._impact() if orthogonalized else psi
@@ -1181,10 +1214,10 @@ class _VectorPropagationMixin:
     ) -> npt.NDArray[np.float64]:
         """Pesaran-Shin impulse responses, which do not depend on variable order.
 
-        The orthogonalized response asks what happens if shock ``j`` moves and
+        The orthogonalized response asks what happens if shock :math:`j` moves and
         the shocks ordered after it are held at zero. That question needs an
         order, and :meth:`irf` takes it from ``names``. The generalized response
-        asks a different question -- what happens if shock ``j`` moves and the
+        asks a different question -- what happens if shock :math:`j` moves and the
         others take their conditional expectations given that move -- which
         needs no order at all, only the covariance.
 
@@ -1202,8 +1235,8 @@ class _VectorPropagationMixin:
 
         Returns:
             An ``(horizon + 1, k, k)`` array whose ``[h, i, j]`` entry is the
-            response of variable ``i`` at horizon ``h`` to a one-standard-
-            deviation shock to variable ``j``.
+            response of variable :math:`i` at horizon :math:`h` to a one-standard-
+            deviation shock to variable :math:`j`.
         """
         psi = self.ma_representation(horizon)
         sigma = self.sigma_u
@@ -1219,13 +1252,13 @@ class _VectorPropagationMixin:
 
         Returns:
             An array of shape ``(horizon + 1, k, k)`` whose entry ``[h, i, j]``
-            is the share of variable ``i``'s ``h + 1``-step forecast-error
-            variance attributable to shock ``j``. Rows sum to one by
+            is the share of variable :math:`i`'s :math:`h + 1`-step forecast-error
+            variance attributable to shock :math:`j`. Rows sum to one by
             construction, so a row that does not is a bug rather than a finding.
 
         Note:
             Inherits the ordering dependence of :meth:`irf` in full, and more
-            visibly: at ``h = 0`` the decomposition is exactly triangular, so
+            visibly: at :math:`h = 0` the decomposition is exactly triangular, so
             the first variable is always attributed 100% of its own impact
             variance purely because of where it sits in ``names``.
         """
@@ -1340,20 +1373,20 @@ class _VectorPropagationMixin:
         return np.asarray(path[burn:], dtype=np.float64)
 
     def historical_decomposition(self) -> npt.NDArray[np.float64]:
-        """Attribute each observation to the shocks that produced it.
+        r"""Attribute each observation to the shocks that produced it.
 
         Returns:
             An array of shape ``(nobs, k, k)`` whose entry ``[t, i, j]`` is
-            shock ``j``'s cumulative contribution to variable ``i`` at time
-            ``t``. Summing over ``j`` recovers the *stochastic* component of
+            shock :math:`j`'s cumulative contribution to variable :math:`i` at time
+            :math:`t`. Summing over :math:`j` recovers the *stochastic* component of
             the path, not the observed series: the deterministic terms and the
             influence of pre-sample initial conditions are excluded by
             construction, since neither is attributable to any shock. Add the
             deterministic path back before comparing against ``endog``.
 
         Note:
-            Costs ``O(nobs^2)`` moving-average terms, because the contribution
-            at ``t`` sums over every shock up to ``t``. Fine for macro samples;
+            Costs :math:`O(\mathrm{nobs}^2)` moving-average terms, because the contribution
+            at :math:`t` sums over every shock up to :math:`t`. Fine for macro samples;
             noticeable past a few thousand observations.
         """
         weights = self.structural_shocks()
@@ -1578,7 +1611,7 @@ class _ConvergenceMixin:
             value: The draw array, kept draws on the leading axis.
 
         Returns:
-            The array flattened to ``(S, m)`` and ``m`` labels: those from
+            The array flattened to ``(S, m)`` and :math:`m` labels: those from
             :meth:`_draw_labels` when the result names them, otherwise the key
             itself for a vector and ``key[i,j,...]`` for anything wider.
 

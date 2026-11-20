@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""The Hamilton filter: forward regime probabilities for a discrete Markov chain.
+r"""The Hamilton filter: forward regime probabilities for a discrete Markov chain.
 
 One function, :func:`_hamilton_filter`. It takes the per-regime log
 conditional densities of the observations as a ``(T, K)`` array, with the
@@ -29,6 +29,21 @@ the densities. A switching autoregression and a switching VAR both reduce
 to that array, which is why the filter is written once here and not inside
 either model. The backward pass is
 :func:`~cultivars.engine._internals._smoothers._kim_smoother`.
+
+In symbols, with :math:`P_{ij} = \Pr(S_t = j \mid S_{t-1} = i)`, the vector
+:math:`f(y_t)` of regime-conditional densities and :math:`\odot` the
+elementwise product, one step of the recursion and the likelihood it
+accumulates are
+
+.. math::
+
+   \xi_{t \mid t-1} = P^\top \xi_{t-1 \mid t-1}, \qquad
+   \xi_{t \mid t} = \frac{\xi_{t \mid t-1} \odot f(y_t)}
+   {\mathbf{1}^\top \bigl( \xi_{t \mid t-1} \odot f(y_t) \bigr)}, \qquad
+   \log L = \sum_{t} \log \mathbf{1}^\top \bigl( \xi_{t \mid t-1} \odot f(y_t) \bigr).
+
+The two probability paths are returned as a
+:class:`~cultivars.engine._internals._results._HamiltonFilterResult`.
 
 References:
     Hamilton, J. D. (1989). A new approach to the economic analysis of
@@ -63,7 +78,7 @@ def _hamilton_filter(
     *,
     initial_prob: npt.ArrayLike | None = None,
 ) -> _HamiltonFilterResult:
-    """Run the Hamilton forward filter over a discrete regime chain.
+    r"""Run the Hamilton forward filter over a discrete regime chain.
 
     At each period the filter predicts the regime distribution one step forward
     through ``transition``, weights it by the per-regime conditional densities,
@@ -73,21 +88,21 @@ def _hamilton_filter(
 
     Args:
         log_conditional_density: Log conditional densities
-            ``log Pr(y_t | S_t = j, past)``, shape ``(T, K)``. ``-inf`` entries
+            :math:`\log \Pr(y_t \mid S_t = j, \text{past})`, shape ``(T, K)``. ``-inf`` entries
             (a regime that assigns zero density) are permitted as long as some
             regime is finite at every period. ``+inf`` is not: it is
             reported with the same error as a period in which every density
             vanished.
         transition: Row-stochastic ``(K, K)`` transition matrix.
-        initial_prob: Optional initial regime distribution ``Pr(S_1 = j)``,
-            length ``K``. Defaults to the ergodic distribution of ``transition``.
+        initial_prob: Optional initial regime distribution :math:`\Pr(S_1 = j)`,
+            length :math:`K`. Defaults to the ergodic distribution of ``transition``.
 
     Returns:
-        A :class:`_HamiltonFilterResult`.
+        A :class:`~cultivars.engine._internals._results._HamiltonFilterResult`.
 
     Raises:
         DimensionError: If shapes are inconsistent.
-        SpecificationError: If ``initial_prob`` is not a length-``K`` distribution.
+        SpecificationError: If ``initial_prob`` is not a length-:math:`K` distribution.
         NumericalError: If every regime density vanishes at some period, or a
             non-finite (NaN) density is supplied.
 

@@ -21,11 +21,11 @@
 # SOFTWARE.
 """Mean coefficients: a conditional-mean draw on its natural scale.
 
-One record, :class:`_MeanCoefficients`. The mean layers in ``_means``
-optimize in search coordinates that need not be the coefficients
-themselves, and they need one shape in which to hand the implied intercept,
-autoregressive, and moving-average coefficients to the objectives, the fit
-records, and the summaries. This is that shape.
+One record, :class:`_MeanCoefficients`. The mean layers in
+:mod:`~cultivars.engine._internals._means` optimize in search coordinates that
+need not be the coefficients themselves, and they need one shape in which to
+hand the implied intercept, autoregressive, and moving-average coefficients to
+the objectives, the fit records, and the summaries. This is that shape.
 """
 
 from __future__ import annotations
@@ -53,6 +53,11 @@ class _MeanCoefficients:
         const: Intercept, or ``None`` when no intercept is estimated.
         ar: Autoregressive coefficients; empty when the order is zero.
         ma: Moving-average coefficients; empty when the order is zero.
+
+    See Also:
+        * :meth:`._ARMAMean.unpack` -- returns an instance.
+        * :meth:`._LinearMean.unpack` -- returns an instance.
+        * :meth:`._MeanLayer.unpack` -- returns an instance.
 
     Example:
         >>> import numpy as np

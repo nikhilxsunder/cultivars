@@ -280,13 +280,13 @@ def _simulate_stochastic_volatility(
     nu: float | None = None,
     rho: float = 0.0,
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """One path of the log-AR(1) stochastic-volatility model from its stationary start.
+    r"""One path of the log-AR(1) stochastic-volatility model from its stationary start.
 
-    ``h_1`` is drawn from the stationary distribution of the log variance,
-    then ``h_{t+1} = mu + phi (h_t - mu) + sigma eta_t`` and ``y_t = mean +
-    exp(h_t / 2) eps_t``. Heavy tails make ``eps_t`` Student-t with ``nu``
+    :math:`h_1` is drawn from the stationary distribution of the log variance,
+    then :math:`h_{t+1} = \mu + \phi (h_t - \mu) + \sigma \eta_t` and ``y_t = mean +
+    exp(h_t / 2) eps_t``. Heavy tails make :math:`\varepsilon_t` Student-t with ``nu``
     degrees of freedom (unscaled, as the model states it); leverage
-    correlates ``eps_t`` with the innovation that moves ``h_{t+1}``.
+    correlates :math:`\varepsilon_t` with the innovation that moves :math:`h_{t+1}`.
 
     Args:
         n: Observations to simulate.
@@ -297,7 +297,7 @@ def _simulate_stochastic_volatility(
         rng: Random generator.
         nu: Degrees of freedom of the observation noise, or ``None`` for
             Gaussian.
-        rho: Correlation between ``eps_t`` and ``eta_t``.
+        rho: Correlation between :math:`\varepsilon_t` and :math:`\eta_t`.
 
     Returns:
         ``(y, h)``, each ``(n,)``.
@@ -340,7 +340,13 @@ def _simulate_arma(
     intercept: npt.NDArray[np.float64] | None = None,
     burn: int = 0,
 ) -> npt.NDArray[np.float64]:
-    """One path of ``u_t = sum phi_i u_{t-i} + e_t + sum theta_j e_{t-j}`` plus an intercept path.
+    r"""One ARMA disturbance path plus an intercept path.
+
+    The disturbance follows
+
+    .. math::
+
+       u_t = \sum_i \phi_i u_{t-i} + e_t + \sum_j \theta_j e_{t-j}.
 
     Started from zeros and run ``burn`` extra periods first, which is how
     a fresh sample from the stationary law is produced; ``intercept`` is
@@ -351,7 +357,7 @@ def _simulate_arma(
         n: Observations kept.
         ar: ``(p,)`` autoregressive coefficients (expanded seasonal
             products included).
-        ma: ``(q,)`` moving-average coefficients of ``1 + theta_1 L + ...``.
+        ma: ``(q,)`` moving-average coefficients of :math:`1 + \theta_1 L + \cdots`.
         sigma: Innovation standard deviation.
         rng: Random generator.
         intercept: ``(n,)`` deterministic mean path added to the kept part.
@@ -434,13 +440,15 @@ def _simulate_conditional_variance(
     rng: np.random.Generator,
     burn: int = 0,
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """One path of an ARMA mean with a GARCH, GJR, or EGARCH variance.
+    r"""One path of an ARMA mean with a GARCH, GJR, or EGARCH variance.
 
     The variance recursions mirror the estimators' exactly: linear in past
     squared residuals and variances (with the sign-asymmetry term for
     GJR), or linear in the log variance driven by standardized residuals
     for EGARCH. Pre-sample terms start at the unconditional variance for
-    the linear families and at ``exp(omega / (1 - sum beta))`` for EGARCH.
+    the linear families and at
+    :math:`\exp\bigl( \omega / (1 - \textstyle\sum_j \beta_j) \bigr)` for
+    EGARCH.
 
     Args:
         n: Observations kept.
@@ -591,12 +599,12 @@ def _simulate_two_regime(
     rng: np.random.Generator,
     burn: int = 0,
 ) -> npt.NDArray[np.float64]:
-    """One path of a self-exciting two-regime autoregression, hard or smooth.
+    r"""One path of a self-exciting two-regime autoregression, hard or smooth.
 
-    ``y_t = (1 - w_t) (c_L + phi_L y) + w_t (c_U + phi_U y) + sigma e_t``
-    with ``w_t = weight(y_{t-d})``: the indicator ``y_{t-d} > threshold``
-    for a threshold model, a logistic or exponential function of it for a
-    smooth-transition one.
+    :math:`y_t = (1 - w_t)(c_L + \phi_L y) + w_t (c_U + \phi_U y) + \sigma e_t`
+    with :math:`w_t = \operatorname{weight}(y_{t-d})`: the indicator
+    :math:`y_{t-d} > \mathrm{threshold}` for a threshold model, a logistic or
+    exponential function of it for a smooth-transition one.
 
     Args:
         n: Observations kept.
@@ -605,7 +613,7 @@ def _simulate_two_regime(
         order: Autoregressive order.
         delay: Delay of the transition variable, at least one.
         sigma: Innovation standard deviation.
-        weight: Upper-regime weight as a function of ``y_{t-d}``.
+        weight: Upper-regime weight as a function of :math:`y_{t-d}`.
         rng: Random generator.
         burn: Periods discarded from the start.
 

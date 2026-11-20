@@ -42,7 +42,7 @@ __all__ = [
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _ConditionalLevels:
-    """One unit's equations written in levels, ready to be linked.
+    r"""One unit's equations written in levels, ready to be linked.
 
     The common currency of a global system. Units may be estimated as a VARX in
     levels or as a conditional error-correction model in differences, and those
@@ -61,13 +61,19 @@ class _ConditionalLevels:
         names: The unit's own variable labels.
         exog_names: The unit's foreign-aggregate labels.
 
-    Read as an equation, with ``x`` the unit's ``k`` variables, ``f`` its
-    ``m`` foreign aggregates, and ``d`` the deterministic terms::
+    Read as an equation, with :math:`x` the unit's :math:`k` variables, :math:`f` its
+    :math:`m` foreign aggregates, and ``d`` the deterministic terms::
 
         x_t = sum_l phi[l] x_{t-l} + impact f_t + sum_l exog_lags[l] f_{t-l}
               + deterministic' d_t + u_t
 
-    with the lag index ``l`` running from one to ``order``.
+    with the lag index :math:`\ell` running from one to ``order``.
+
+    See Also:
+        * :class:`~cultivars.multivariate.reduced_form.vector_autoregression.ConditionalLevels`
+          -- the public name of this class.
+        * :meth:`.VECMXResult.to_varx` -- returns an instance.
+        * :meth:`.VARXResult.to_varx` -- returns an instance.
     """
 
     phi: npt.NDArray[np.float64]
@@ -82,9 +88,9 @@ class _ConditionalLevels:
     deterministic: npt.NDArray[np.float64]
     """Deterministic coefficients, ``(d, k)``, one row per deterministic term."""
     names: tuple[str, ...]
-    """Labels of the unit's own variables, length ``k``."""
+    """Labels of the unit's own variables, length :math:`k`."""
     exog_names: tuple[str, ...]
-    """Labels of the unit's foreign aggregates, length ``m``."""
+    """Labels of the unit's foreign aggregates, length :math:`m`."""
 
     @property
     def order(self) -> int:
@@ -100,7 +106,7 @@ class _ConditionalLevels:
         """Variables the unit models.
 
         Returns:
-            The dimension ``k`` of the unit, read from ``phi``.
+            The dimension :math:`k` of the unit, read from ``phi``.
         """
         return int(self.phi.shape[1])
 
@@ -109,6 +115,6 @@ class _ConditionalLevels:
         """Foreign aggregates the unit reads.
 
         Returns:
-            The number ``m`` of foreign aggregates, read from ``impact``.
+            The number :math:`m` of foreign aggregates, read from ``impact``.
         """
         return int(self.impact.shape[1])

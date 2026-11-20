@@ -55,6 +55,10 @@ class _ParameterLayout:
         passed to :meth:`intercept_col` or :meth:`ar_slice` returns an
         index beyond the design.
 
+    See Also:
+        * :meth:`._MarkovSwitchingModel._parameter_layout` -- returns an
+          instance.
+
     Example:
         Switching intercepts over a shared AR(3) block:
 
@@ -68,7 +72,7 @@ class _ParameterLayout:
     """
 
     n_regimes: int
-    """Number of regimes ``K``."""
+    """Number of regimes :math:`K`."""
     order: int
     """Autoregressive order ``p``."""
     switching_mean: bool

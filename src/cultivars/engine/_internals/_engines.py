@@ -24,11 +24,11 @@
 The neural mean-function models split training from prediction. An engine
 owns training: given a design matrix of lagged values and a target it fits
 a learner and returns a predictor, which the model then treats as given
-(``_predictors``). :class:`MeanFunctionEngine` is the contract, one method
-wide, so that a learner from another library can be adapted to it.
-:class:`NumpyMLPEngine` is the reference implementation, a
-single-hidden-layer perceptron trained by L-BFGS with an analytic gradient
-and no dependency beyond NumPy and SciPy.
+(:mod:`~cultivars.engine._internals._predictors`). :class:`MeanFunctionEngine`
+is the contract, one method wide, so that a learner from another library can be
+adapted to it. :class:`NumpyMLPEngine` is the reference implementation, a
+single-hidden-layer perceptron trained by L-BFGS with an analytic gradient and
+no dependency beyond NumPy and SciPy.
 
 The reference objective, on standardized inputs and target, is::
 
@@ -61,6 +61,10 @@ class MeanFunctionEngine(Protocol):
     Any object exposing ``fit(features, target) -> MeanPredictor`` satisfies
     the contract, so a torch / jax / sklearn learner drops in by adapting to
     this one method.
+
+    See Also:
+        * :class:`~cultivars.univariate.mean_function.MeanFunctionEngine` --
+          the public name of this class.
     """
 
     def fit(
@@ -75,7 +79,9 @@ class MeanFunctionEngine(Protocol):
 
         Returns:
             A fitted predictor. The models that call this do not check the
-            return against the :class:`MeanPredictor` protocol.
+            return against the
+            :class:`~cultivars.engine._internals._predictors.MeanPredictor`
+            protocol.
         """
         ...
 
@@ -118,7 +124,7 @@ class NumpyMLPEngine:
     """
 
     hidden_units: int = 8
-    """Number of hidden units ``h``; at least 1."""
+    """Number of hidden units :math:`h`; at least 1."""
     activation: str = "tanh"
     """Hidden activation, ``"tanh"`` or ``"relu"``."""
     alpha: float = 1e-4
@@ -163,7 +169,7 @@ class NumpyMLPEngine:
             target: Response of shape ``(n,)``.
 
         Returns:
-            The fitted :class:`_FittedMLP`.
+            The fitted :class:`~cultivars.engine._internals._predictors._FittedMLP`.
 
         Raises:
             DimensionError: If the shapes are not conformable.

@@ -55,10 +55,11 @@ because the engine's analytic gradient must differentiate the same function
 the forward pass evaluates.
 
 Layout. Engines, :class:`~cultivars.engine._internals._engines.NumpyMLPEngine`
-among them, live in ``_engines`` and return predictors; the fit records in
-``_fits`` carry them; the mean-function models in ``_models`` consume them.
-``MeanPredictor`` has a public name because it appears in the signatures of
-:mod:`cultivars.univariate.mean_function`.
+among them, live in :mod:`~cultivars.engine._internals._engines` and return
+predictors; the fit records in :mod:`~cultivars.engine._internals._fits` carry
+them; the mean-function models in :mod:`~cultivars.engine._internals._models`
+consume them. :class:`MeanPredictor` has a public name because it appears in
+the signatures of :mod:`cultivars.univariate.mean_function`.
 """
 
 from __future__ import annotations
@@ -154,7 +155,7 @@ class _FittedMLP:
     Carries its own standardization constants so :meth:`predict` reproduces
     training-time scaling exactly on new data.
 
-    With ``k`` features and ``h`` hidden units the map is::
+    With :math:`k` features and :math:`h` hidden units the map is::
 
         z = (x - x_mean) / x_scale
         m(x) = y_mean + y_scale * (act(z @ w1 + b1) @ w2 + b2)
@@ -181,6 +182,9 @@ class _FittedMLP:
         The dataclass is frozen, but its array fields are ordinary writeable
         arrays. As with every frozen record that holds arrays, ``==`` between
         two instances raises ``ValueError`` and ``hash`` raises ``TypeError``.
+
+    See Also:
+        * :meth:`.NumpyMLPEngine.fit` -- returns an instance.
 
     Example:
         A two-feature, two-unit network written out by hand. The first row
@@ -249,7 +253,7 @@ class _FittedMLP:
     def n_parameters(self) -> int:
         """Total weight and bias count.
 
-        For ``k`` features and ``h`` hidden units this is
+        For :math:`k` features and :math:`h` hidden units this is
         ``k * h + h + h + 1``: both weight blocks, the hidden biases, and
         the output bias. The standardization constants are not counted. The
         value is the one stored at construction, not a count of the arrays.
@@ -286,14 +290,14 @@ class _FittedMLP:
 
     @staticmethod
     def _activation_grad(z: npt.NDArray[np.float64], kind: str) -> npt.NDArray[np.float64]:
-        """Derivative of :meth:`_activation`.
+        r"""Derivative of :meth:`_activation`.
 
         Used by the reference engine's analytic gradient; :meth:`predict`
         does not call it.
 
         Args:
             z: Pre-activations, any shape.
-            kind: ``"tanh"`` gives ``1 - tanh(z) ** 2``. Every other value
+            kind: ``"tanh"`` gives :math:`1 - \tanh^2 z`. Every other value
                 gives the rectifier's derivative, the indicator of
                 ``z > 0``, which is ``0`` at the kink.
 
@@ -319,8 +323,8 @@ class _FittedMLP:
         ``nan`` feature gives a ``nan`` prediction for that row.
 
         Args:
-            features: Feature matrix, ``(n, k)`` with ``k`` the training
-                width, columns in training order. ``n`` may be zero.
+            features: Feature matrix, ``(n, k)`` with :math:`k` the training
+                width, columns in training order. :math:`n` may be zero.
 
         Returns:
             The conditional means, shape ``(n,)``.

@@ -24,13 +24,13 @@
 
 Assembles one parametric family, Harvey's structural time-series
 components, into the system matrices of the linear-Gaussian substrate. It
-sits one layer above ``_substrates``, which stays a leaf: the substrate
-knows how to filter and smooth any linear-Gaussian system, and this module
-knows how to construct the particular system a structural model needs. The
-parameter record it reads is the single meeting point between an
-objective's flat optimization vector and the system matrices, so the
-objectives, the fits, and the public results all speak in that record and
-not in raw arrays.
+sits one layer above :mod:`~cultivars.engine._internals._substrates`, which
+stays a leaf: the substrate knows how to filter and smooth any linear-Gaussian
+system, and this module knows how to construct the particular system a
+structural model needs. The parameter record it reads is the single meeting
+point between an objective's flat optimization vector and the system matrices,
+so the objectives, the fits, and the public results all speak in that record
+and not in raw arrays.
 
 The dynamic Nelson-Siegel counterpart is built by the substrate's own
 ``_from_nelson_siegel_system`` constructor.

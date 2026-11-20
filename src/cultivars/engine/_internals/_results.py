@@ -47,9 +47,10 @@ carrying the likelihood summary. :class:`_MeanResult`,
 closed linear system so that the propagation tools can read it.
 
 The raw output of an estimator, before it becomes a result, is in
-``_fits``; the behavior that result records share across groups (summaries,
-series, comparison, inference, convergence) is in ``_mixins``; the posterior
-records of the samplers are in ``_posteriors``.
+:mod:`~cultivars.engine._internals._fits`; the behavior that result records
+share across groups (summaries, series, comparison, inference, convergence) is
+in :mod:`~cultivars.engine._internals._mixins`; the posterior records of the
+samplers are in :mod:`~cultivars.engine._internals._posteriors`.
 """
 
 from __future__ import annotations
@@ -195,8 +196,8 @@ class _SmootherResult:
 
     Deliberately empty of fields: smoothed states and smoothed regime
     probabilities share no data, only the fact that both condition on the
-    full sample. This exists to bound the ``S`` parameter of
-    :class:`_StateSpace`, not to factor out shared state.
+    full sample. This exists to bound the :math:`S` parameter of
+    :class:`~cultivars.engine._internals._substrates._StateSpace`, not to factor out shared state.
     """
 
 
@@ -223,84 +224,208 @@ class _MeanResult(_FittedResult):
 
 @dataclass(frozen=True, kw_only=True)
 class _KalmanFilterResult(_FilterResult):
-    """Output of a linear-Gaussian forward filtering pass.
+    r"""Output of a linear-Gaussian forward filtering pass.
+
+    For the model of
+    :class:`~cultivars.engine._internals._substrates._LinearGaussianStateSpace`
+    the pass carries two conditional laws of the state through the sample, each
+    Gaussian and so summarized by a mean and a covariance:
+
+    .. math::
+
+       a_{t \mid t-1} = \mathbb{E}[\alpha_t \mid y_{1:t-1}], \quad
+       P_{t \mid t-1} = \operatorname{Var}[\alpha_t \mid y_{1:t-1}], \qquad
+       a_{t \mid t} = \mathbb{E}[\alpha_t \mid y_{1:t}], \quad
+       P_{t \mid t} = \operatorname{Var}[\alpha_t \mid y_{1:t}].
+
+    They are tied together by the update and prediction steps. With the
+    innovation :math:`v_t = y_t - d_t - Z_t a_{t \mid t-1}` and its covariance
+    :math:`F_t = Z_t P_{t \mid t-1} Z_t^\top + H_t`,
+
+    .. math::
+
+       a_{t \mid t} = a_{t \mid t-1} + P_{t \mid t-1} Z_t^\top F_t^{-1} v_t,
+       \qquad
+       P_{t \mid t} = P_{t \mid t-1}
+       - P_{t \mid t-1} Z_t^\top F_t^{-1} Z_t P_{t \mid t-1},
+
+       a_{t+1 \mid t} = c_t + T_t a_{t \mid t},
+       \qquad
+       P_{t+1 \mid t} = T_t P_{t \mid t} T_t^\top + R_t Q_t R_t^\top.
+
+    :attr:`predicted_state` and :attr:`predicted_state_cov` hold the first pair,
+    :attr:`filtered_state` and :attr:`filtered_state_cov` the second.
 
     Attributes:
-        predicted_state: One-step-ahead predicted states ``a_{t|t-1}``, ``(n, m)``.
-        predicted_state_cov: Predicted state covariances ``P_{t|t-1}``, ``(n, m, m)``.
-        filtered_state: Contemporaneously filtered states ``a_{t|t}``, ``(n, m)``.
-        filtered_state_cov: Filtered state covariances ``P_{t|t}``, ``(n, m, m)``.
+        predicted_state: One-step-ahead predicted states :math:`a_{t \mid t-1}`, ``(n, m)``.
+        predicted_state_cov: Predicted state covariances :math:`P_{t \mid t-1}`, ``(n, m, m)``.
+        filtered_state: Contemporaneously filtered states :math:`a_{t \mid t}`, ``(n, m)``.
+        filtered_state_cov: Filtered state covariances :math:`P_{t \mid t}`, ``(n, m, m)``.
+
+    See Also:
+        * :class:`~cultivars.state_space.linear_gaussian.KalmanFilterResult` --
+          the public name of this class.
+        * :meth:`.MFVAR.filter` -- returns an instance.
+        * :meth:`.LinearGaussianSSM.filter` -- returns an instance.
+        * :meth:`.NonlinearSSM.extended_filter` -- returns an instance.
+        * :meth:`.NonlinearSSM.unscented_filter` -- returns an instance.
     """
 
     predicted_state: npt.NDArray[np.float64]
-    """One-step-ahead predicted states ``a_{t|t-1}``, ``(n, m)``."""
+    r"""One-step-ahead predicted states :math:`a_{t \mid t-1}`, ``(n, m)``."""
     predicted_state_cov: npt.NDArray[np.float64]
-    """Predicted state covariances ``P_{t|t-1}``, ``(n, m, m)``."""
+    r"""Predicted state covariances :math:`P_{t \mid t-1}`, ``(n, m, m)``."""
     filtered_state: npt.NDArray[np.float64]
-    """Contemporaneously filtered states ``a_{t|t}``, ``(n, m)``."""
+    r"""Contemporaneously filtered states :math:`a_{t \mid t}`, ``(n, m)``."""
     filtered_state_cov: npt.NDArray[np.float64]
-    """Filtered state covariances ``P_{t|t}``, ``(n, m, m)``."""
+    r"""Filtered state covariances :math:`P_{t \mid t}`, ``(n, m, m)``."""
 
 
 @dataclass(frozen=True, kw_only=True)
 class _DurbinKoopmanSmootherResult(_SmootherResult):
-    """Output of a linear-Gaussian backward smoothing pass.
+    r"""Output of a linear-Gaussian backward smoothing pass.
+
+    The pass conditions every state on the whole sample,
+
+    .. math::
+
+       a_{t \mid n} = \mathbb{E}[\alpha_t \mid y_{1:n}], \qquad
+       V_{t \mid n} = \operatorname{Var}[\alpha_t \mid y_{1:n}],
+
+    held in :attr:`smoothed_state` and :attr:`smoothed_state_cov`. The smoothed
+    moments satisfy the backward recursion of Durbin and Koopman (2012, section
+    4.4). With :math:`L_t = T_t - K_t Z_t`, :math:`K_t = T_t P_{t \mid t-1} Z_t^\top
+    F_t^{-1}`, and the terminal values :math:`r_n = 0`, :math:`N_n = 0`,
+
+    .. math::
+
+       r_{t-1} = Z_t^\top F_t^{-1} v_t + L_t^\top r_t,
+       \qquad
+       N_{t-1} = Z_t^\top F_t^{-1} Z_t + L_t^\top N_t L_t,
+
+       a_{t \mid n} = a_{t \mid t-1} + P_{t \mid t-1} r_{t-1},
+       \qquad
+       V_{t \mid n} = P_{t \mid t-1} - P_{t \mid t-1} N_{t-1} P_{t \mid t-1}.
+
+    Smoothing never raises the variance: :math:`V_{t \mid n} \preceq P_{t \mid t}`
+    in the positive semi-definite order, with equality at the last date.
 
     Attributes:
-        smoothed_state: Smoothed states ``a_{t|n}``, shape ``(n, m)``.
-        smoothed_state_cov: Smoothed state covariances ``V_{t|n}``, ``(n, m, m)``.
+        smoothed_state: Smoothed states :math:`a_{t \mid n}`, shape ``(n, m)``.
+        smoothed_state_cov: Smoothed state covariances :math:`V_{t \mid n}`, ``(n, m, m)``.
+
+    See Also:
+        * :class:`~cultivars.state_space.linear_gaussian.DurbinKoopmanSmootherResult`
+          -- the public name of this class.
+        * :meth:`.LinearGaussianSSM.smooth` -- returns an instance.
+        * :meth:`._LinearGaussianStateSpace.smooth` -- returns an instance.
     """
 
     smoothed_state: npt.NDArray[np.float64]
-    """Smoothed states ``a_{t|n}``, shape ``(n, m)``."""
+    r"""Smoothed states :math:`a_{t \mid n}`, shape ``(n, m)``."""
     smoothed_state_cov: npt.NDArray[np.float64]
-    """Smoothed state covariances ``V_{t|n}``, ``(n, m, m)``."""
+    r"""Smoothed state covariances :math:`V_{t \mid n}`, ``(n, m, m)``."""
 
 
 @dataclass(frozen=True, kw_only=True)
 class _HamiltonFilterResult(_FilterResult):
-    """Output of the Hamilton forward filter.
+    r"""Output of the Hamilton forward filter.
+
+    For a regime :math:`S_t` on :math:`K` states with transition matrix
+    :math:`P_{ij} = \Pr(S_t = j \mid S_{t-1} = i)` and regime-conditional
+    densities :math:`f_j(y_t) = p(y_t \mid S_t = j, y_{1:t-1})`, the filter carries
+    two probability vectors,
+
+    .. math::
+
+       \xi_{t \mid t-1}(j) = \Pr(S_t = j \mid y_{1:t-1}), \qquad
+       \xi_{t \mid t}(j) = \Pr(S_t = j \mid y_{1:t}),
+
+    held in :attr:`predicted_prob` and :attr:`filtered_prob`. Each step is a
+    prediction through the chain followed by Bayes' rule,
+
+    .. math::
+
+       \xi_{t \mid t-1} = P^\top \xi_{t-1 \mid t-1}, \qquad
+       \xi_{t \mid t}(j) = \frac{\xi_{t \mid t-1}(j)\, f_j(y_t)}
+       {\sum_{k=1}^{K} \xi_{t \mid t-1}(k)\, f_k(y_t)},
+
+    and the denominator is the one-step predictive density of :math:`y_t`, so the
+    log likelihood is the sum of its logs over the sample.
 
     Attributes:
         filtered_prob: Contemporaneous regime probabilities
-            ``Pr(S_t = j | y_{1..t})``, shape ``(T, K)``.
+            :math:`\Pr(S_t = j \mid y_{1:t})`, shape ``(T, K)``.
         predicted_prob: One-step-ahead regime probabilities
-            ``Pr(S_t = j | y_{1..t-1})``, shape ``(T, K)``.
-        loglikelihood: Total log-likelihood ``sum_t log Pr(y_t | y_{1..t-1})``.
+            :math:`\Pr(S_t = j \mid y_{1:t-1})`, shape ``(T, K)``.
+        loglikelihood: Total log-likelihood :math:`\sum_t \log \Pr(y_t \mid y_{1:t-1})`.
         loglikelihood_contributions: Per-period contributions, shape ``(T,)``.
+
+    See Also:
+        * :class:`~cultivars.state_space.regime_switching.HamiltonFilterResult`
+          -- the public name of this class.
+        * :meth:`.MarkovSwitchingSSM.filter` -- returns an instance.
+        * :meth:`.MarkovSwitchingSSM.filter_densities` -- returns an instance.
+        * :func:`._hamilton_filter` -- returns an instance.
+        * :meth:`._MarkovSwitchingStateSpace.filter` -- returns an instance.
     """
 
     filtered_prob: npt.NDArray[np.float64]
-    """Contemporaneous regime probabilities ``Pr(S_t = j | y_{1..t})``, shape ``(T, K)``."""
+    r"""Contemporaneous regime probabilities :math:`\Pr(S_t = j \mid y_{1:t})`, shape ``(T, K)``."""
     predicted_prob: npt.NDArray[np.float64]
-    """One-step-ahead regime probabilities ``Pr(S_t = j | y_{1..t-1})``, shape ``(T, K)``."""
+    r"""One-step-ahead regime probabilities
+    :math:`\Pr(S_t = j \mid y_{1:t-1})`, shape ``(T, K)``."""
 
 
 @dataclass(frozen=True, kw_only=True)
 class _KimSmootherResult(_SmootherResult):
-    """Output of the Kim backward smoother.
+    r"""Output of the Kim backward smoother.
+
+    The backward pass turns the filtered probabilities into probabilities given
+    the whole sample. With :math:`\xi_{t \mid T}(j) = \Pr(S_t = j \mid y_{1:T})`,
+
+    .. math::
+
+       \Pr(S_t = i, S_{t+1} = j \mid y_{1:T})
+       = \xi_{t \mid t}(i)\, P_{ij}\, \frac{\xi_{t+1 \mid T}(j)}{\xi_{t+1 \mid t}(j)},
+       \qquad
+       \xi_{t \mid T}(i) = \sum_{j=1}^{K} \Pr(S_t = i, S_{t+1} = j \mid y_{1:T}),
+
+    started from :math:`\xi_{T \mid T}`, the last filtered vector.
+    :attr:`smoothed_prob` holds the marginals and :attr:`smoothed_joint_prob` the
+    pairwise terms. The joint terms are what an EM step needs: their sum over
+    :math:`t` is the expected number of :math:`i \to j` transitions, which is the
+    sufficient statistic for the transition matrix.
 
     Attributes:
         smoothed_prob: Full-sample regime probabilities
-            ``Pr(S_t = j | y_{1..T})``, shape ``(T, K)``.
+            :math:`\Pr(S_t = j \mid y_{1:T})`, shape ``(T, K)``.
         smoothed_joint_prob: Consecutive-pair probabilities
-            ``Pr(S_t = i, S_{t+1} = j | y_{1..T})``, shape ``(T - 1, K, K)``;
-            entry ``[t]`` links period ``t`` to ``t + 1``. Empty when ``T == 1``.
+            :math:`\Pr(S_t = i, S_{t+1} = j \mid y_{1:T})`, shape ``(T - 1, K, K)``;
+            entry ``[t]`` links period :math:`t` to :math:`t + 1`. Empty when ``T == 1``.
             These are the expected-transition weights of the EM M-step.
+
+    See Also:
+        * :class:`~cultivars.state_space.regime_switching.KimSmootherResult` --
+          the public name of this class.
+        * :meth:`.MarkovSwitchingSSM.smooth` -- returns an instance.
+        * :meth:`.MarkovSwitchingSSM.smooth_densities` -- returns an instance.
+        * :meth:`.RegimeSwitchingLinearSSM.smooth` -- returns an instance.
+        * :func:`._kim_smoother` -- returns an instance.
     """
 
     smoothed_prob: npt.NDArray[np.float64]
-    """Full-sample regime probabilities ``Pr(S_t = j | y_{1..T})``, shape ``(T, K)``."""
+    r"""Full-sample regime probabilities :math:`\Pr(S_t = j \mid y_{1:T})`, shape ``(T, K)``."""
     smoothed_joint_prob: npt.NDArray[np.float64]
-    """Consecutive-pair probabilities ``Pr(S_t = i, S_{t+1} = j | y_{1..T})``, shape
-    ``(T - 1, K, K)``; entry ``[t]`` links period ``t`` to ``t + 1``. Empty when
+    r"""Consecutive-pair probabilities :math:`\Pr(S_t = i, S_{t+1} = j \mid y_{1:T})`, shape
+    ``(T - 1, K, K)``; entry ``[t]`` links period :math:`t` to :math:`t + 1`. Empty when
     ``T == 1``. These are the expected-transition weights of the EM M-step.
     """
 
 
 @dataclass(frozen=True, kw_only=True)
 class _ParticleFilterResult(_FilterResult):
-    """Output of a sequential-Monte-Carlo forward pass.
+    r"""Output of a sequential-Monte-Carlo forward pass.
 
     The state distribution is carried as moments of the particle cloud
     rather than as the cloud itself, which at ``(T, n_particles, m)`` would
@@ -308,7 +433,7 @@ class _ParticleFilterResult(_FilterResult):
     cloud runs the filter step by step.
 
     Attributes:
-        filtered_state: Particle-cloud means ``E[alpha_t | y_{1..t}]``,
+        filtered_state: Particle-cloud means :math:`\mathbb{E}[\alpha_t \mid y_{1:t}]`,
             shape ``(n, m)``.
         filtered_state_std: Per-component cloud standard deviations,
             shape ``(n, m)``.
@@ -317,10 +442,16 @@ class _ParticleFilterResult(_FilterResult):
             likelihood estimate is untrustworthy at that period.
         n_particles: Particles carried.
         method: ``"bootstrap"`` or ``"auxiliary"``.
+
+    See Also:
+        * :class:`~cultivars.state_space.nonlinear.ParticleFilterResult` -- the
+          public name of this class.
+        * :meth:`.NonlinearSSM.particle_filter` -- returns an instance.
+        * :meth:`._NonlinearStateSpace.particle_filter` -- returns an instance.
     """
 
     filtered_state: npt.NDArray[np.float64]
-    """Particle-cloud means ``E[alpha_t | y_{1..t}]``, shape ``(n, m)``."""
+    r"""Particle-cloud means :math:`\mathbb{E}[\alpha_t \mid y_{1:t}]`, shape ``(n, m)``."""
     filtered_state_std: npt.NDArray[np.float64]
     """Per-component cloud standard deviations, shape ``(n, m)``."""
     effective_sample_size: npt.NDArray[np.float64]
@@ -336,7 +467,30 @@ class _ParticleFilterResult(_FilterResult):
 
 @dataclass(frozen=True, kw_only=True)
 class _KimFilterResult(_FilterResult):
-    """Output of the Kim (1994) regime-switching Kalman forward pass.
+    r"""Output of the Kim (1994) regime-switching Kalman forward pass.
+
+    In a state-space model whose system matrices depend on a Markov regime, the
+    exact filter would have to track one Gaussian per regime history, which is
+    :math:`K^t` components after :math:`t` periods. Kim's (1994) filter keeps
+    :math:`K` of them. At each date it runs the :math:`K \times K` Kalman updates
+    from every regime-:math:`i` posterior into every regime :math:`j`, weights
+    them by Hamilton's recursion, and then collapses over the origin regime by
+    moment matching,
+
+    .. math::
+
+       a^{j}_{t \mid t} = \frac{\sum_{i=1}^{K} \Pr(S_{t-1} = i, S_t = j \mid y_{1:t})\,
+       a^{(i,j)}_{t \mid t}}{\Pr(S_t = j \mid y_{1:t})},
+
+    with the matching expression for the covariance, which adds the spread of the
+    :math:`a^{(i,j)}_{t \mid t}` around :math:`a^{j}_{t \mid t}`. The collapse is
+    the approximation: the result is exact only when the regime does not affect
+    the state law.
+
+    :attr:`filtered_prob` and :attr:`predicted_prob` are the regime probabilities,
+    :attr:`regime_state` the per-regime collapsed states :math:`a^{j}_{t \mid t}`,
+    and :attr:`filtered_state` with :attr:`filtered_state_cov` their mixture over
+    regimes, :math:`\sum_j \Pr(S_t = j \mid y_{1:t})\, a^{j}_{t \mid t}`.
 
     Attributes:
         filtered_prob: Contemporaneous regime probabilities, ``(n, K)``.
@@ -346,6 +500,13 @@ class _KimFilterResult(_FilterResult):
             ``(n, m, m)`` -- mixture covariances, including the
             between-regime spread.
         regime_state: Per-regime collapsed state means, ``(n, K, m)``.
+
+    See Also:
+        * :class:`~cultivars.state_space.regime_switching.KimFilterResult` --
+          the public name of this class.
+        * :meth:`.RegimeSwitchingLinearSSM.filter` -- returns an instance.
+        * :meth:`._RegimeSwitchingLinearStateSpace.filter` -- returns an
+          instance.
     """
 
     filtered_prob: npt.NDArray[np.float64]
@@ -1042,7 +1203,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
         threshold: The regime split point, in the transition variable's units.
         threshold_name: The transition variable's label -- a variable name
             when self-exciting, ``"external"`` otherwise.
-        threshold_values: The *delayed* transition variable ``z_t``, aligned
+        threshold_values: The *delayed* transition variable :math:`z_t`, aligned
             with ``resid``; what the regime weight is evaluated on.
         transition_series: The raw transition series, aligned with ``endog``
             -- the column of ``endog`` when self-exciting, the external
@@ -1076,7 +1237,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
     ``"external"`` otherwise.
     """
     threshold_values: npt.NDArray[np.float64]
-    """The *delayed* transition variable ``z_t``, aligned with ``resid``; what the
+    """The *delayed* transition variable :math:`z_t`, aligned with ``resid``; what the
     regime weight is evaluated on.
     """
     transition_series: npt.NDArray[np.float64]
@@ -1201,14 +1362,14 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
         return self.lower_stability.is_stable and self.upper_stability.is_stable
 
     def ma_representation(self, horizon: int = 20, *, regime: Regime) -> npt.NDArray[np.float64]:
-        """Moving-average matrices of one regime, held frozen.
+        r"""Moving-average matrices of one regime, held frozen.
 
         Args:
             horizon: Largest lead to return.
             regime: Which regime's dynamics to propagate.
 
         Returns:
-            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
+            An array of shape ``(horizon + 1, k, k)`` with :math:`\Psi_0 = I`.
 
         Raises:
             SpecificationError: If ``horizon`` is negative or the regime name
@@ -1257,7 +1418,7 @@ class _VectorObservedRegimeResult(_SummaryMixin, _ComparisonMixin):
 
         Returns:
             An array of shape ``(horizon + 1, k, k)``; entry ``[h, i, j]`` is
-            the response of variable ``i`` at lead ``h`` to shock ``j``.
+            the response of variable :math:`i` at lead :math:`h` to shock :math:`j`.
         """
         psi = self.ma_representation(horizon, regime=regime)
         out = psi @ np.linalg.cholesky(self._regime_sigma(regime)) if orthogonalized else psi
@@ -1480,13 +1641,14 @@ class _RegimeSystemResult:
     """One regime of a fitted regime model, dressed as a closed linear system.
 
     The interchange view of the regime families, on the pattern
-    :class:`_ConditionalLevels` set for the global model: a public result
-    produces it, the identification layer consumes it, and users receive it
-    without ever constructing it. Conditional on its regime the model is a
-    linear VAR, and this view exposes exactly the closed-system surface an
-    identification model reads -- labels, coefficients, an innovation
-    covariance, residuals, and a moving-average representation -- so it
-    passes anywhere a fitted VAR result passes as an identification source.
+    :class:`~cultivars.engine._internals._levels._ConditionalLevels` set for
+    the global model: a public result produces it, the identification layer
+    consumes it, and users receive it without ever constructing it. Conditional
+    on its regime the model is a linear VAR, and this view exposes exactly the
+    closed-system surface an identification model reads -- labels,
+    coefficients, an innovation covariance, residuals, and a moving-average
+    representation -- so it passes anywhere a fitted VAR result passes as an
+    identification source.
 
     Two honesty notes on the statistical members. ``nobs`` is the *expected*
     number of periods governed by this regime -- the sum of its weights, a
@@ -1511,6 +1673,11 @@ class _RegimeSystemResult:
         weight: This regime's weights -- smoothed probabilities for a
             latent chain -- one per effective row.
         nobs: Expected periods governed by this regime.
+
+    See Also:
+        * :class:`~cultivars.multivariate.regime_switching.markov_switching.RegimeSystemResult`
+          -- the public name of this class.
+        * :meth:`.MarkovSwitchingVARResult.regime` -- returns an instance.
     """
 
     index: int
@@ -1551,13 +1718,13 @@ class _RegimeSystemResult:
         return self.stability_check().is_stable
 
     def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
-        """Moving-average matrices of this regime, held frozen.
+        r"""Moving-average matrices of this regime, held frozen.
 
         Args:
             horizon: Largest lead to return.
 
         Returns:
-            An array of shape ``(horizon + 1, k, k)`` with ``Psi_0 = I``.
+            An array of shape ``(horizon + 1, k, k)`` with :math:`\Psi_0 = I`.
 
         Raises:
             SpecificationError: If ``horizon`` is negative.
@@ -1797,8 +1964,8 @@ class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin, _Replication
 
         Returns:
             An array of shape ``(horizon + 1, n_responses, n_shocks)``;
-            entry ``[h, i, j]`` is the response of variable ``i`` at lead
-            ``h`` to shock ``j``.
+            entry ``[h, i, j]`` is the response of variable :math:`i` at lead
+            :math:`h` to shock :math:`j`.
 
         Raises:
             SpecificationError: If ``horizon`` is negative or a name is
@@ -2004,7 +2171,7 @@ class _VectorPosteriorDrawsResult(_SummaryMixin, _ConvergenceMixin, _Replication
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _RtsSmootherResult(_SmootherResult):
-    """Output of a Rauch-Tung-Striebel backward pass on a nonlinear model.
+    r"""Output of a Rauch-Tung-Striebel backward pass on a nonlinear model.
 
     Emitted by both the extended and the unscented smoother -- the
     backward recursion is Rauch's in each case; what differs is how the
@@ -2012,37 +2179,52 @@ class _RtsSmootherResult(_SmootherResult):
     ``method`` records.
 
     Attributes:
-        smoothed_state: Smoothed state means ``a_{t|n}``, shape ``(n, m)``.
-        smoothed_state_cov: Smoothed covariances ``V_{t|n}``, ``(n, m, m)``.
+        smoothed_state: Smoothed state means :math:`a_{t \mid n}`, shape ``(n, m)``.
+        smoothed_state_cov: Smoothed covariances :math:`V_{t \mid n}`, ``(n, m, m)``.
         method: ``"extended"`` or ``"unscented"``.
+
+    See Also:
+        * :class:`~cultivars.state_space.nonlinear.RtsSmootherResult` -- the
+          public name of this class.
+        * :meth:`.NonlinearSSM._rts_backward` -- returns an instance.
+        * :meth:`.NonlinearSSM.extended_smoother` -- returns an instance.
+        * :meth:`.NonlinearSSM.unscented_smoother` -- returns an instance.
+        * :meth:`._NonlinearStateSpace._rts_backward` -- returns an instance.
     """
 
     smoothed_state: npt.NDArray[np.float64]
-    """Smoothed state means ``a_{t|n}``, shape ``(n, m)``."""
+    r"""Smoothed state means :math:`a_{t \mid n}`, shape ``(n, m)``."""
     smoothed_state_cov: npt.NDArray[np.float64]
-    """Smoothed covariances ``V_{t|n}``, ``(n, m, m)``."""
+    r"""Smoothed covariances :math:`V_{t \mid n}`, ``(n, m, m)``."""
     method: str
     """``"extended"`` or ``"unscented"``."""
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class _ParticleSmootherResult(_SmootherResult):
-    """Output of a forward-filtering backward-smoothing particle pass.
+    r"""Output of a forward-filtering backward-smoothing particle pass.
 
     As with the particle filter, the state distribution is carried as
     cloud moments; the smoothed weights themselves are quadratic-cost
     intermediates and are not retained.
 
     Attributes:
-        smoothed_state: Smoothed cloud means ``E[alpha_t | y_{1..n}]``,
+        smoothed_state: Smoothed cloud means :math:`\mathbb{E}[\alpha_t \mid y_{1:n}]`,
             shape ``(n, m)``.
         smoothed_state_std: Per-component smoothed cloud standard
             deviations, shape ``(n, m)``.
         n_particles: Particles carried through the forward pass.
+
+    See Also:
+        * :class:`~cultivars.state_space.nonlinear.ParticleSmootherResult` --
+          the public name of this class.
+        * :meth:`.NonlinearSSM.particle_smoother` -- returns an instance.
+        * :meth:`._NonlinearStateSpace.particle_smoother` -- returns an
+          instance.
     """
 
     smoothed_state: npt.NDArray[np.float64]
-    """Smoothed cloud means ``E[alpha_t | y_{1..n}]``, shape ``(n, m)``."""
+    r"""Smoothed cloud means :math:`\mathbb{E}[\alpha_t \mid y_{1:n}]`, shape ``(n, m)``."""
     smoothed_state_std: npt.NDArray[np.float64]
     """Per-component smoothed cloud standard deviations, shape ``(n, m)``."""
     n_particles: int

@@ -29,27 +29,29 @@ the shock loading, the measurement equation, and the prior as plain methods
 on a class; the engine differentiates, solves, filters, and samples. The
 protocol is structural, so the class inherits from nothing.
 
-The solver that consumes a specification is ``_solve_perturbation`` in
-``_solvers``, the estimation engine is ``_PerturbationModel`` in
-``_models``, and the public front is
+The solver that consumes a specification is
+:func:`~cultivars.engine._internals._solvers._solve_perturbation` in
+:mod:`~cultivars.engine._internals._solvers`, the estimation engine is
+:class:`~cultivars.engine._internals._models._PerturbationModel` in
+:mod:`~cultivars.engine._internals._models`, and the public front is
 :class:`cultivars.multivariate.structural.perturbation.PerturbationDSGE`.
 
 Background: perturbation solution of rational-expectations models, to
 second order.
 
 A model is a system of equilibrium conditions ``E_t f(y', y, x', x) = 0``
-with ``x`` the predetermined states (including any exogenous driving
+with :math:`x` the predetermined states (including any exogenous driving
 processes) and ``y`` the controls, closed by ``x' = h(x, sigma) + sigma
 eta eps'``. Schmitt-Grohe and Uribe (2004) showed that the Taylor
-coefficients of the policy functions ``g`` and ``h`` around the
+coefficients of the policy functions :math:`g` and :math:`h` around the
 deterministic steady state solve a sequence of *linear* problems once the
 first-order coefficients are known: the first order is the Blanchard-Kahn
-/ Klein generalized-Schur problem, the second order in ``x`` is one linear
+/ Klein generalized-Schur problem, the second order in :math:`x` is one linear
 system in ``(g_xx, h_xx)``, and the risk correction is one linear system in
 ``(g_ss, h_ss)`` -- with the cross terms ``g_xs``, ``h_xs`` identically
 zero.
 
-Derivatives of ``f`` are taken numerically (central differences), so the
+Derivatives of :math:`f` are taken numerically (central differences), so the
 model is supplied as a plain callable and no symbolic layer is needed;
 the cost is a step-size floor on accuracy of order ``1e-8`` in the second
 derivatives, immaterial next to the perturbation error itself.
@@ -120,6 +122,10 @@ class _PerturbationModelSpecification(Protocol):
         an implementation against it. A method with the wrong signature or
         a return of the wrong shape surfaces where the engine first uses
         it.
+
+    See Also:
+        * :class:`~cultivars.multivariate.structural.perturbation.PerturbationModelSpecification`
+          -- the public name of this class.
     """
 
     parameter_names: Sequence[str]
