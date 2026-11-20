@@ -11,6 +11,10 @@ listed under Changed.
 
 ## [1.0.0a5] - 2026-11-19
 
+### Added
+
+- Sphinx docs documented docstrings for all objects under engine/\_internals.
+
 ### Fixed
 
 - `VECMResult.normalized_alpha` raises `SpecificationError` for an
@@ -25,6 +29,8 @@ listed under Changed.
 - `ARMA` validates `order` before unpacking it, so a wrong-length or
   non-integer order raises `SpecificationError` naming `p` and `q`
   instead of a bare `ValueError` (#81, #494).
+- `scipy.stats.norm` imported inside volatility_bands (#472).
+- sphinx engine reference templates.
 
 ## [1.0.0a4] - 2026-10-13
 
