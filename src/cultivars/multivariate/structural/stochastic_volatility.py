@@ -151,6 +151,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from scipy.stats import norm
 
 from ...bayes.priors import VolatilityPrior
 from ...engine._core._estimators import _variance_ratio_test
@@ -844,8 +845,6 @@ class LongMemorySVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         """
         if not 0.0 < level < 1.0:
             raise SpecificationError(f"level must lie in (0, 1); got {level}.")
-        from scipy.stats import norm
-
         z = float(norm.ppf(0.5 + 0.5 * level))
         lower = np.exp(0.5 * (self.log_variance - z * self.log_variance_std))
         upper = np.exp(0.5 * (self.log_variance + z * self.log_variance_std))
