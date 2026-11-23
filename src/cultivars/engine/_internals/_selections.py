@@ -73,7 +73,7 @@ class _LagOrderSelection:
 
     Note:
         The parameter count ``m`` here excludes the innovation covariance,
-        following Lutkepohl: those terms are common across orders and cancel.
+        following Lütkepohl: those terms are common across orders and cancel.
         A fitted result's ``information_criteria`` counts them, so the same
         model scores differently in the two places. Both are right in context;
         do not reconcile them.

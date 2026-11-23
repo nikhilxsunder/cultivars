@@ -435,7 +435,7 @@ class _VectorInferenceMixin:
     coefficients are restricted, a panel VAR only in how observations are
     pooled; all three land on the same three arrays and want the same seven
     answers. Writing them here once is what keeps the rest of the family from
-    being seven reimplementations of Lutkepohl chapter 2.
+    being seven reimplementations of Lütkepohl chapter 2.
 
     Concrete results declare the attributes below. ``deterministic`` and
     ``design`` are needed because two of the seven -- forecasting and Granger
