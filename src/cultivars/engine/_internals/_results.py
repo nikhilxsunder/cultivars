@@ -823,7 +823,7 @@ class _VectorResult:
     fittedvalues: npt.NDArray[np.float64]
     design: npt.NDArray[np.float64]
     llf: float
-    nobs: float
+    nobs: int
     n_params: float
     posterior: _CoefficientInference | None = None
     prior_label: str = "none"
