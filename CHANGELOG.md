@@ -9,6 +9,12 @@ listed under Changed.
 
 ## [Unreleased]
 
+### Fixed
+
+- Docstring references spell Lütkepohl with the umlaut throughout (#431).
+- The `closed_global` module docstring credits Harbo, Johansen, Nielsen
+  and Rahbek (1998) for the weak-exogeneity regression (#282).
+
 ## [0.0.2] - 2026-10-29
 
 First release on the stable channel: 1.0.0a4 plus the fixes below.
