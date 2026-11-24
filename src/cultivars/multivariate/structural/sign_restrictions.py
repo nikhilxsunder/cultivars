@@ -408,8 +408,6 @@ class SignRestrictedSVARResult(_SummaryMixin):
             cultivars_engine.exceptions.SpecificationError: quantiles must lie in (0, 1); got ...
         """
         levels = _validate_quantiles(quantiles)
-        if any(not 0.0 < q < 1.0 for q in levels):
-            raise SpecificationError(f"quantiles must lie in (0, 1); got {levels}.")
         draws = self.irf_draws(horizon, cumulative=cumulative)
         return np.quantile(draws, levels, axis=0)
 
@@ -454,8 +452,6 @@ class SignRestrictedSVARResult(_SummaryMixin):
             False
         """
         levels = _validate_quantiles(quantiles)
-        if any(not 0.0 < q < 1.0 for q in levels):
-            raise SpecificationError(f"quantiles must lie in (0, 1); got {levels}.")
         theta = self.irf_draws(horizon)
         explained = np.cumsum(theta**2, axis=1)
         shares = explained / explained.sum(axis=3, keepdims=True)
