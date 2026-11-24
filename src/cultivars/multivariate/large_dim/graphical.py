@@ -462,7 +462,7 @@ class GraphicalVAR(_SparseVectorAutoRegressionModel[GraphicalVARResult]):
             True
             >>> model.fit(n_folds=1)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_folds must be at least 2; got 1.
+            cultivars_engine.exceptions.SpecificationError: n_folds must be at least 2; got 1.
         """
         fit = self._fit_graphical(
             lam=lam,

@@ -292,7 +292,7 @@ class SpectrumEstimate(_SummaryMixin):
             >>> est._index("z")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown series 'z'; the estimate has ...
+            cultivars_engine.exceptions.SpecificationError: unknown series 'z'; the estimate has ...
         """
         try:
             return self.names.index(name)
@@ -432,10 +432,10 @@ class SpectrumEstimate(_SummaryMixin):
             >>> ratio = chi2.ppf(0.975, nu) / chi2.ppf(0.025, nu)
             >>> bool(np.allclose(upper / lower, ratio))
             True
-            >>> est.confidence_interval("y", alpha=1.0)
+            >>> est.confidence_interval("y", alpha=1.0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: alpha must lie strictly inside (0, 1); got 1.0.
+            cultivars_engine.exceptions.SpecificationError: alpha must lie strictly inside (0, ...
         """
         if not 0.0 < alpha < 1.0:
             raise SpecificationError(f"alpha must lie strictly inside (0, 1); got {alpha}.")
@@ -633,11 +633,11 @@ class MultitaperSpectrum:
             >>> MultitaperSpectrum(y, n_tapers=9)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n_tapers must not exceed 2 NW = 8 ... got 9.
+            cultivars_engine.exceptions.SpecificationError: n_tapers must not exceed 2 NW = 8 ...
             >>> MultitaperSpectrum(y[:31])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: a nonparametric spectrum needs at least 32 ...
+            cultivars_engine.exceptions.SpecificationError: a nonparametric spectrum needs at ...
         """
         if not bandwidth >= 1.0:
             raise SpecificationError(f"bandwidth NW must be at least 1; got {bandwidth}.")
@@ -809,11 +809,11 @@ class DaniellSpectrum:
             >>> DaniellSpectrum(y, span=100)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: a span of 100 averages more ordinates than ...
+            cultivars_engine.exceptions.SpecificationError: a span of 100 averages more ...
             >>> DaniellSpectrum(y, span=2.0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: span must be an integer; got 2.0.
+            cultivars_engine.exceptions.SpecificationError: span must be an integer; got 2.0.
         """
         panel, self._detrend, self._names = _validate_spectrum_panel(
             data, detrend, names, minimum=_MIN_SPECTRUM_OBS
@@ -985,11 +985,11 @@ class WelchSpectrum:
             >>> WelchSpectrum(y, segment=1001)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: segment 1001 exceeds the 1000 observations ...
+            cultivars_engine.exceptions.SpecificationError: segment 1001 exceeds the 1000 ...
             >>> WelchSpectrum(y, segment=7)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: segment must be >= 8; got 7.
+            cultivars_engine.exceptions.SpecificationError: segment must be >= 8; got 7.
         """
         panel, self._detrend, self._names = _validate_spectrum_panel(
             data, detrend, names, minimum=_MIN_SPECTRUM_OBS

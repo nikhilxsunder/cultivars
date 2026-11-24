@@ -454,7 +454,7 @@ class FunctionalCoefficientVARResult(_SummaryMixin):
             True
             >>> res.coefficient_curve("y1", "y1.L2")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown regressor 'y1.L2'; expected one of ...
+            cultivars_engine.exceptions.SpecificationError: unknown regressor 'y1.L2'; expected ...
         """
         if equation not in self.names:
             raise SpecificationError(
@@ -549,7 +549,7 @@ class FunctionalCoefficientVARResult(_SummaryMixin):
             True
             >>> res.coefficients_at(10.0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: state value 10.0 lies outside the estimated ...
+            cultivars_engine.exceptions.SpecificationError: state value 10.0 lies outside the ...
         """
         matrix = self._matrix_at(u)
         k, offset = self.k_endog, self._n_deterministic
@@ -648,7 +648,7 @@ class FunctionalCoefficientVARResult(_SummaryMixin):
             True
             >>> res.irf(-1, u=0.0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be non-negative; got -1.
+            cultivars_engine.exceptions.SpecificationError: horizon must be non-negative; got -1.
         """
         if horizon < 0:
             raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
@@ -926,10 +926,10 @@ class FunctionalCoefficientVAR(
             ((11,), 1.0, False)
             >>> model.fit(bandwidth=-1.0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: bandwidth must be positive; got -1.0.
+            cultivars_engine.exceptions.SpecificationError: bandwidth must be positive; got -1.0.
             >>> model.fit(bandwidth=0.05)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.NumericalError: the local system at state value ... is ...
+            cultivars_engine.exceptions.NumericalError: the local system at state value ... is ...
         """
         fit = self._fit_functional(bandwidth=bandwidth, n_grid=n_grid, trim=trim)
         return FunctionalCoefficientVARResult._from_fit(fit, self)

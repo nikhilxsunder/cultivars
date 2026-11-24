@@ -656,13 +656,13 @@ class FunctionalVAR:
             ('bspline', 1)
             >>> FunctionalVAR(curves, np.arange(3), order=1)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: grid must have one entry per curve column (10); ...
+            cultivars_engine.exceptions.DimensionError: grid must have one entry per curve ...
             >>> FunctionalVAR(curves, order=1, basis="nelson-siegel")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: nelson-siegel needs a strictly positive ...
-            >>> FunctionalVAR(curves, order=1, basis="bspline", df=3)
+            cultivars_engine.exceptions.SpecificationError: nelson-siegel needs a strictly ...
+            >>> FunctionalVAR(curves, order=1, basis="bspline", df=3)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: df must be an integer >= degree + 1 = 4; got 3.
+            cultivars_engine.exceptions.SpecificationError: df must be an integer >= degree + 1 ...
         """
         self._curves = _validate_curves(curves)
         n_points = self._curves.shape[1]
@@ -763,7 +763,7 @@ class FunctionalVAR:
             >>> too_many = FunctionalVAR(curves, grid, order=1, n_components=30)
             >>> too_many._fpca_basis()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_components (30) exceeds the sample's ...
+            cultivars_engine.exceptions.SpecificationError: n_components (30) exceeds the ...
         """
         mean = self._curves.mean(axis=0)
         centered = self._curves - mean

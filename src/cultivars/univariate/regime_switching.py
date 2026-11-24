@@ -464,7 +464,7 @@ class MarkovSwitchingARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.probabilities("viterbi")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: kind must be one of ('smoothed', ...
+            cultivars_engine.exceptions.SpecificationError: kind must be one of ('smoothed', ...
         """
         _validate_choice(kind, ProbabilityType, "kind")
         return {
@@ -591,7 +591,7 @@ class MarkovSwitchingARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.regime_stability(2)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: regime must be in 0..1; got 2.
+            cultivars_engine.exceptions.SpecificationError: regime must be in 0..1; got 2.
         """
         if not 0 <= regime < self.n_regimes:
             raise SpecificationError(f"regime must be in 0..{self.n_regimes - 1}; got {regime}.")
@@ -789,7 +789,7 @@ class MarkovSwitchingARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.simulate(0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n must be positive and burn non-negative; ...
+            cultivars_engine.exceptions.SpecificationError: n must be positive and burn ...
         """
         return self.simulate_regimes(n, seed=seed, burn=burn)[0]
 
@@ -1085,7 +1085,7 @@ class MarkovSwitchingAR(_MarkovSwitchingModel[MarkovSwitchingARResult]):
         ... # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: at least one of switching_mean, ...
+        cultivars_engine.exceptions.SpecificationError: at least one of switching_mean, ...
     """
 
     __slots__ = ()

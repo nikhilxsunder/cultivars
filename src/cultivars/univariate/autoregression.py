@@ -384,7 +384,7 @@ class ARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin, _StationarityMixin
             >>> res.simulate(0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: n must be at least 1; got 0.
         """
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         time = np.arange(1, n + 1, dtype=np.float64)
@@ -544,7 +544,7 @@ class AR(_AutoRegressionModel[ARResult]):
         >>> AR(z, order=1, trend="ct", method="exact")  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: exact ML with trend='ct' is not supported ...
+        cultivars_engine.exceptions.SpecificationError: exact ML with trend='ct' is not ...
     """
 
     __slots__ = ()

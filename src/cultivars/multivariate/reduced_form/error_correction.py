@@ -449,7 +449,7 @@ class VECMResult(
             array([-2.02,  1.  ])
             >>> res.normalized_beta(on=2)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: on must index a variable, 0..1; got 2.
+            cultivars_engine.exceptions.SpecificationError: on must index a variable, 0..1; got 2.
         """
         pivots = self._pivot(on)
         if not self.rank:
@@ -487,7 +487,7 @@ class VECMResult(
             array([0.15, 2.63])
             >>> res.normalized_alpha(on=2)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: on must index a variable, 0..1; got 2.
+            cultivars_engine.exceptions.SpecificationError: on must index a variable, 0..1; got 2.
         """
         pivots = self._pivot(on)
         if not self.rank:
@@ -737,7 +737,7 @@ class VECMResult(
             True
             >>> res.forecast(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -792,7 +792,7 @@ class VECMResult(
             'y1 is weakly exogenous for the cointegrating space'
             >>> VECM(y, order=2, rank=0).fit().weak_exogeneity("y1")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a rank-zero model has no cointegrating ...
+            cultivars_engine.exceptions.SpecificationError: a rank-zero model has no ...
         """
         if variable not in self.names:
             raise SpecificationError(
@@ -868,10 +868,10 @@ class VECMResult(
             'y1 does not Granger-cause y2'
             >>> res.granger_causality("y1", "y1")
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a variable cannot Granger-cause itself.
+            cultivars_engine.exceptions.SpecificationError: a variable cannot Granger-cause itself.
             >>> VECM(y, order=1, rank=0).fit().granger_causality("y1", "y2")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: this specification has no lagged ...
+            cultivars_engine.exceptions.SpecificationError: this specification has no lagged ...
         """
         names = self.names
         for label, value in (("cause", cause), ("effect", effect)):
@@ -1175,7 +1175,7 @@ class VECMXResult(VECMResult):
         [True, False]
         >>> res.irf(4)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: a conditional vector error-correction model has ...
+        cultivars_engine.exceptions.SpecificationError: a conditional vector error-correction ...
         >>> path = res.forecast(6, exog_future=np.full((6, 1), x[-1]))
         >>> gap = path[:, 0] - x[-1]
         >>> path.shape, bool(abs(gap[-1]) < abs(gap[0]))
@@ -1302,7 +1302,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res._refuse("a thing")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a conditional vector error-correction model ...
+            cultivars_engine.exceptions.SpecificationError: a conditional vector ...
         """
         raise SpecificationError(_CONDITIONAL_REFUSAL.format(what=what, names=self.exog_names))
 
@@ -1395,7 +1395,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res.to_var()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: ... so a levels vector autoregression is ...
+            cultivars_engine.exceptions.SpecificationError: ... so a levels vector ...
         """
         self._refuse("a levels vector autoregression")
         raise AssertionError  # pragma: no cover
@@ -1485,7 +1485,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res.companion  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: ... so the companion matrix is not defined ...
+            cultivars_engine.exceptions.SpecificationError: ... so the companion matrix is not ...
         """
         self._refuse("the companion matrix")
         raise AssertionError  # pragma: no cover
@@ -1503,7 +1503,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res.stability_check()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: ... so a stability check is not defined ...
+            cultivars_engine.exceptions.SpecificationError: ... so a stability check is not ...
         """
         self._refuse("a stability check")
         raise AssertionError  # pragma: no cover
@@ -1524,7 +1524,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res.ma_representation(4)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: ... so a moving-average representation is ...
+            cultivars_engine.exceptions.SpecificationError: ... so a moving-average ...
         """
         self._refuse("a moving-average representation")
         raise AssertionError  # pragma: no cover
@@ -1549,7 +1549,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res.irf(4)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: ... so an impulse response is not defined ...
+            cultivars_engine.exceptions.SpecificationError: ... so an impulse response is not ...
         """
         self._refuse("an impulse response")
         raise AssertionError  # pragma: no cover
@@ -1570,7 +1570,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res.fevd(4)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: ... so a variance decomposition is not ...
+            cultivars_engine.exceptions.SpecificationError: ... so a variance decomposition is ...
         """
         self._refuse("a variance decomposition")
         raise AssertionError  # pragma: no cover
@@ -1588,7 +1588,7 @@ class VECMXResult(VECMResult):
             >>> res = VECMX(x + rng.standard_normal((200, 1)), x, order=1, rank=1).fit()
             >>> res.historical_decomposition()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: ... so a historical decomposition is not ...
+            cultivars_engine.exceptions.SpecificationError: ... so a historical decomposition ...
         """
         self._refuse("a historical decomposition")
         raise AssertionError  # pragma: no cover
@@ -1637,10 +1637,10 @@ class VECMXResult(VECMResult):
             ((8, 1), True)
             >>> res.forecast(3)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a conditional forecast needs the exogenous ...
+            cultivars_engine.exceptions.SpecificationError: a conditional forecast needs the ...
             >>> res.forecast(3, exog_future=np.zeros((3, 2)))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: exog_future has 2 columns but the model was ...
+            cultivars_engine.exceptions.DimensionError: exog_future has 2 columns but the model ...
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")

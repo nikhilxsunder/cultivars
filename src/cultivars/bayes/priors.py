@@ -463,7 +463,7 @@ class MinnesotaPrior(Prior):
             >>> MinnesotaPrior(decay=-1.0)._check()
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: decay must be non-negative; got -1.0.
+            cultivars_engine.exceptions.SpecificationError: decay must be non-negative; got -1.0.
         """
         for name, value in (
             ("tightness", self.tightness),
@@ -800,7 +800,7 @@ class NormalInverseWishartPrior(Prior):
         >>> model.fit(n_draws=10, seed=0)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: the prior variance does not factor ...
+        cultivars_engine.exceptions.SpecificationError: the prior variance does not factor ...
     """
 
     tightness: float = 0.2
@@ -1075,7 +1075,7 @@ class SumOfCoefficientsPrior(Prior):
         ... # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: the prior leaves some coefficient variances ...
+        cultivars_engine.exceptions.SpecificationError: the prior leaves some coefficient ...
     """
 
     tightness: float = 1.0
@@ -1103,7 +1103,7 @@ class SumOfCoefficientsPrior(Prior):
             >>> SumOfCoefficientsPrior(tightness=0.0)._check()
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: tightness must be positive; got 0.0.
+            cultivars_engine.exceptions.SpecificationError: tightness must be positive; got 0.0.
         """
         if self.tightness <= 0.0:
             raise SpecificationError(f"tightness must be positive; got {self.tightness}.")
@@ -1356,7 +1356,7 @@ class DummyInitialObservationPrior(Prior):
             >>> DummyInitialObservationPrior(tightness=-1.0)._check()
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: tightness must be positive; got -1.0.
+            cultivars_engine.exceptions.SpecificationError: tightness must be positive; got -1.0.
         """
         if self.tightness <= 0.0:
             raise SpecificationError(f"tightness must be positive; got {self.tightness}.")
@@ -1593,7 +1593,7 @@ class IndependentNormalWishartPrior(Prior):
         >>> BVAR(y, order=1, prior=prior).fit(n_draws=10, seed=0)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: the prior variance does not factor ...
+        cultivars_engine.exceptions.SpecificationError: the prior variance does not factor ...
     """
 
     tightness: float = 0.2
@@ -1937,10 +1937,10 @@ class HorseshoePrior(_AdaptivePrior):
             SpecificationError: If ``deterministic_scale`` is not positive.
 
         Example:
-            >>> HorseshoePrior(deterministic_scale=0.0)._check()
+            >>> HorseshoePrior(deterministic_scale=0.0)._check()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: deterministic_scale must be positive; got 0.0.
+            cultivars_engine.exceptions.SpecificationError: deterministic_scale must be ...
         """
         if self.deterministic_scale <= 0.0:
             raise SpecificationError(
@@ -2372,11 +2372,11 @@ class SpikeAndSlabPrior(_AdaptivePrior):
             >>> SpikeAndSlabPrior(spike=1.0, slab=0.5)._check()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: spike and slab must satisfy 0 < spike < ...
+            cultivars_engine.exceptions.SpecificationError: spike and slab must satisfy 0 < ...
             >>> SpikeAndSlabPrior(inclusion=1.0)._check()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: inclusion must be strictly between 0 and 1; ...
+            cultivars_engine.exceptions.SpecificationError: inclusion must be strictly between ...
         """
         if not 0.0 < self.spike < self.slab:
             raise SpecificationError(
@@ -2771,7 +2771,7 @@ class DirichletLaplacePrior(_AdaptivePrior):
             >>> DirichletLaplacePrior(concentration=0.0)._check()
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: concentration must be positive; got 0.0.
+            cultivars_engine.exceptions.SpecificationError: concentration must be positive; got 0.0.
         """
         if self.concentration <= 0.0:
             raise SpecificationError(f"concentration must be positive; got {self.concentration}.")
@@ -3186,7 +3186,7 @@ class NormalGammaPrior(_AdaptivePrior):
             >>> NormalGammaPrior(shape=0.0)._check()
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: shape must be positive; got 0.0.
+            cultivars_engine.exceptions.SpecificationError: shape must be positive; got 0.0.
         """
         if self.shape <= 0.0:
             raise SpecificationError(f"shape must be positive; got {self.shape}.")

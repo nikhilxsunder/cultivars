@@ -270,11 +270,11 @@ class HierarchicalBVARResult(BVARResult):
             True
             >>> full.hyperparameter_interval("rho")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown hyperparameter 'rho'; ...
+            cultivars_engine.exceptions.SpecificationError: unknown hyperparameter 'rho'; ...
             >>> empirical = model.fit(method="empirical", n_draws=50, seed=0)
             >>> empirical.hyperparameter_interval("lambda")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: the empirical-Bayes fit conditions on the ...
+            cultivars_engine.exceptions.SpecificationError: the empirical-Bayes fit conditions ...
         """
         if name not in self.hyper_names:
             raise SpecificationError(
@@ -590,10 +590,10 @@ class HierarchicalBVAR(_BayesianVectorAutoRegressionModel[HierarchicalBVARResult
             True
             >>> model.fit(method="map")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: method must be 'full' or 'empirical'; ...
+            cultivars_engine.exceptions.SpecificationError: method must be 'full' or ...
             >>> model.fit(n_draws=0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_draws must be positive and n_burn ...
+            cultivars_engine.exceptions.SpecificationError: n_draws must be positive and n_burn ...
         """
         names = ["lambda"]
         modes = [0.2]

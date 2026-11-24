@@ -476,7 +476,7 @@ class MFVARResult(_SummaryMixin, _VectorPropagationMixin):
             (['y1', 'y2'], True)
             >>> res.nowcast(24)
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: index 24 is out of range for 24 periods.
+            cultivars_engine.exceptions.DimensionError: index 24 is out of range for 24 periods.
         """
         nobs = self.endog.shape[0]
         pos = index + nobs if index < 0 else index
@@ -682,13 +682,13 @@ class MFVAR:
             (1, 2)
             >>> MFVAR(A, S, kinds=["high", "high"], period=3)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: every variable is marked 'high', so nothing ...
+            cultivars_engine.exceptions.SpecificationError: every variable is marked 'high', so ...
             >>> MFVAR(A, np.eye(3), kinds=["high", "flow"], period=3)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: sigma_u must have shape (2, 2) to match ...
+            cultivars_engine.exceptions.DimensionError: sigma_u must have shape (2, 2) to match ...
             >>> MFVAR(A, S, kinds=["high", "daily"], period=3)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unrecognized frequency roles ['daily']; ...
+            cultivars_engine.exceptions.SpecificationError: unrecognized frequency roles ...
         """
         coef = np.asarray(coefficients, dtype=np.float64)
         if coef.ndim == 2:
@@ -799,7 +799,7 @@ class MFVAR:
             (1, 2)
             >>> MFVAR.from_result(object(), kinds=["high", "flow"], period=3)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: result does not expose ['coefficients', ...
+            cultivars_engine.exceptions.SpecificationError: result does not expose ...
         """
         missing = [a for a in ("coefficients", "sigma_u", "names") if not hasattr(result, a)]
         if missing:
@@ -1266,10 +1266,10 @@ class MIDASVARResult(
             ((2, 2), True)
             >>> res.forecast(2)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a MIDASVAR forecast is conditional on the ...
+            cultivars_engine.exceptions.SpecificationError: a MIDASVAR forecast is conditional ...
             >>> res.forecast(2, exog_high_future=np.ones((6, 2)))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: exog_high_future has 2 columns but the model ...
+            cultivars_engine.exceptions.DimensionError: exog_high_future has 2 columns but the ...
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -1645,13 +1645,13 @@ class MIDASVAR(_VectorAutoRegressionModel[MIDASVARResult]):
             (3, 6, ('ip',), 1)
             >>> MIDASVAR(y, x, order=1, period=1)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: period must be an integer >= 2; got 1. ...
+            cultivars_engine.exceptions.SpecificationError: period must be an integer >= 2; got ...
             >>> MIDASVAR(y, x, order=1, period=4)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: exog_high has 240 rows but the endogenous panel ...
+            cultivars_engine.exceptions.DimensionError: exog_high has 240 rows but the ...
             >>> MIDASVAR(y, x, order=1, period=3, names=["x1", "b"])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: names and exog_names must not overlap, ...
+            cultivars_engine.exceptions.SpecificationError: names and exog_names must not ...
         """
         if int(period) != period or period < 2:
             raise SpecificationError(

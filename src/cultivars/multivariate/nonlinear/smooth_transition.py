@@ -575,7 +575,7 @@ class STVAR(_SmoothTransitionVectorAutoRegressionModel[STVARResult]):
         'exponential'
         >>> STVAR(y, order=1, transition_variable="y1", transition="tanh")  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: transition must be one of ('logistic', ...
+        cultivars_engine.exceptions.SpecificationError: transition must be one of ('logistic', ...
     """
 
     __slots__ = ()

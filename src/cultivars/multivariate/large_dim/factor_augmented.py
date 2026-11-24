@@ -504,7 +504,7 @@ class FAVAR:
         (True, True)
         >>> FAVAR(panel, policy, n_factors=1, order=1, slow=("x1",))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: the cleaning needs more slow series than ...
+        cultivars_engine.exceptions.SpecificationError: the cleaning needs more slow series than ...
     """
 
     __slots__ = (

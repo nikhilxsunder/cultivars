@@ -181,7 +181,7 @@ class SpectralDensityResult(_SummaryMixin):
             >>> density._index("cpi")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown variable 'cpi'; the system has ...
+            cultivars_engine.exceptions.SpecificationError: unknown variable 'cpi'; the system ...
         """
         try:
             return self.names.index(name)
@@ -608,11 +608,11 @@ class SpectralDensity:
             >>> SpectralDensity(VAR(y, order=1))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: SpectralDensity reads a fitted ... got VAR.
+            cultivars_engine.exceptions.SpecificationError: SpectralDensity reads a fitted ... ...
             >>> SpectralDensity(VAR(y, order=1).fit(), n_frequencies=1)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n_frequencies must be at least 2; got 1.
+            cultivars_engine.exceptions.SpecificationError: n_frequencies must be at least 2; got 1.
         """
         if not isinstance(result, ClosedSystemResult):
             raise SpecificationError(

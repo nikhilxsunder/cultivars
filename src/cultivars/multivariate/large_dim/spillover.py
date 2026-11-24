@@ -399,7 +399,7 @@ class Spillover:
         True
         >>> Spillover(y, horizon=10)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: Spillover reads a fitted closed reduced-form ...
+        cultivars_engine.exceptions.SpecificationError: Spillover reads a fitted closed ...
     """
 
     __slots__ = ("_horizon", "_result")
@@ -423,7 +423,7 @@ class Spillover:
             10
             >>> Spillover(fit, horizon=0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: horizon must be at least 1; got 0.
         """
         if not isinstance(result, ClosedSystemResult):
             raise SpecificationError(

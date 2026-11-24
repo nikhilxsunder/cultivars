@@ -392,7 +392,7 @@ class PanelVARResult(
             1
             >>> res._unit_index("d")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown unit 'd'; expected one of ('a', ...
+            cultivars_engine.exceptions.SpecificationError: unknown unit 'd'; expected one of ...
         """
         if unit not in self.unit_names:
             raise SpecificationError(f"unknown unit {unit!r}; expected one of {self.unit_names}.")
@@ -487,7 +487,7 @@ class PanelVARResult(
             >>> pooled = PanelVAR(units, order=1, effects="none", trend="c").fit()
             >>> pooled.unit_effects  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: this model was fitted with effects='none', ...
+            cultivars_engine.exceptions.SpecificationError: this model was fitted with ...
         """
         if self.effects != "unit":
             raise SpecificationError(
@@ -526,7 +526,7 @@ class PanelVARResult(
             ((2, 2), True)
             >>> res.forecast(2)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a panel forecast is unit-specific: pass ...
+            cultivars_engine.exceptions.SpecificationError: a panel forecast is unit-specific: ...
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")

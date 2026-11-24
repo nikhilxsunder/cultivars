@@ -378,7 +378,7 @@ class VARMAResult(
             True
             >>> res.ma_representation(-1)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be non-negative; got -1.
+            cultivars_engine.exceptions.SpecificationError: horizon must be non-negative; got -1.
         """
         if horizon < 0:
             raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
@@ -476,7 +476,7 @@ class VARMAResult(
             True
             >>> res.forecast(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -673,10 +673,10 @@ class VARMA(_VectorAutoRegressionModel[VARMAResult]):
             (2, 1, 7)
             >>> VARMA(y, order=(1, 0))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: q must be at least 1; a VARMA with no ...
+            cultivars_engine.exceptions.SpecificationError: q must be at least 1; a VARMA with ...
             >>> VARMA(y, order=(1,))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: order must have 2 elements ('p', 'q'); ...
+            cultivars_engine.exceptions.SpecificationError: order must have 2 elements ('p', ...
         """
         p, q = _validate_order_tuple(order, ("p", "q"))
         if q < 1:
@@ -801,7 +801,7 @@ class VARMA(_VectorAutoRegressionModel[VARMAResult]):
             >>> y = np.random.default_rng(0).standard_normal((200, 2))
             >>> VARMA(y, order=(1, 1)).lag_order_selection()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: lag-order selection over a single ...
+            cultivars_engine.exceptions.SpecificationError: lag-order selection over a single ...
         """
         raise SpecificationError(
             "lag-order selection over a single autoregressive scan is not "

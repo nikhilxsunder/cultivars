@@ -9,7 +9,54 @@ listed under Changed.
 
 ## [Unreleased]
 
-## [1.0.0a5] - 2026-11-19
+## [1.0.0a6] - 2026-11-24
+
+### Changed
+
+- The private engine is now a separate distribution, `cultivars-engine`
+  (import name `cultivars_engine`), which this release pins at `0.0.3`.
+  The `cultivars.engine` subpackage is gone: code that reached into
+  `cultivars.engine._core` or `cultivars.engine._internals` imports
+  `cultivars_engine._core` or `cultivars_engine._internals` instead. No
+  public model, result or test was renamed.
+- `cultivars.exceptions`, `cultivars.summary` and `cultivars.typing` keep
+  their import paths and now re-export from the engine. The classes are
+  the engine's own objects, so a traceback names
+  `cultivars_engine.exceptions.SpecificationError` where it used to name
+  `cultivars.exceptions.SpecificationError`; `except` clauses written
+  against either module are unaffected.
+- `numpy`, `scipy`, `fedfred` and `matplotlib` are no longer declared by
+  this package and are installed through `cultivars-engine`.
+- `ns-sdn` is no longer pinned to `1.0.0a1`; the stable `1.0.0` is
+  resolved.
+- Docs: each section in the header opens a menu of its pages on hover,
+  and the section title links to the section index.
+- Docs: the engine reference moved to the `cultivars-engine` site. The
+  header links to the reference for the pinned engine release, and
+  cross-references into the engine resolve against that release's
+  inventory.
+
+### Added
+
+- Docs: a logo for the dark theme.
+
+### Removed
+
+- The engine reference pages and their templates from this site.
+
+### Fixed
+
+- Docs: generated reference pages no longer carry the full navigation
+  tree of their section in the sidebar, which had pushed the GitHub Pages
+  deployment past its size limit. The pages are still built and linked
+  from their parent's tables.
+- Doctest examples that showed a traceback or imported from
+  `cultivars.engine` match the names the split package prints.
+- The Pixelmator sources under `assets/source` are restored; pre-commit's
+  whitespace hooks had rewritten them as text. `assets/` is excluded from
+  the hooks and `*.pxd` is marked binary.
+
+## [1.0.0a5] - 2026-11-19 (YANKED)
 
 ### Added
 
@@ -213,7 +260,9 @@ placeholder.
 
 - Initial file dump.
 
-[Unreleased]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...HEAD
+[Unreleased]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a6...HEAD
+[1.0.0a6]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a5...v1.0.0a6
+[1.0.0a5]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...v1.0.0a5
 [1.0.0a4]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a3...v1.0.0a4
 [1.0.0a3]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a2...v1.0.0a3
 [1.0.0a2]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a1...v1.0.0a2

@@ -129,7 +129,7 @@ Example:
     reading the same latent path:
 
     >>> import numpy as np
-    >>> from cultivars.engine._internals._simulators import _simulate_stochastic_volatility
+    >>> from cultivars_engine._internals._simulators import _simulate_stochastic_volatility
     >>> rng = np.random.default_rng(0)
     >>> y, h = _simulate_stochastic_volatility(
     ...     500, mu=-1.0, phi=0.95, sigma2=0.05, mean=0.0, rng=rng
@@ -275,7 +275,7 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         path tracking the true one:
 
         >>> import numpy as np
-        >>> from cultivars.engine._internals._simulators import _simulate_stochastic_volatility
+        >>> from cultivars_engine._internals._simulators import _simulate_stochastic_volatility
         >>> rng = np.random.default_rng(0)
         >>> y, h = _simulate_stochastic_volatility(
         ...     500, mu=-1.0, phi=0.95, sigma2=0.05, mean=0.0, rng=rng
@@ -437,7 +437,7 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars.engine._internals._simulators import _simulate_stochastic_volatility
+            >>> from cultivars_engine._internals._simulators import _simulate_stochastic_volatility
             >>> rng = np.random.default_rng(0)
             >>> y, _ = _simulate_stochastic_volatility(
             ...     300, mu=-1.0, phi=0.95, sigma2=0.05, mean=0.0, rng=rng
@@ -545,7 +545,7 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.forecast_variance(0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -618,7 +618,7 @@ class SVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.simulate(0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n must be positive and burn non-negative; ...
+            cultivars_engine.exceptions.SpecificationError: n must be positive and burn ...
         """
         if n < 1 or burn < 0:
             raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
@@ -808,7 +808,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
         >>> SV(y, dist="t", leverage=True)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: heavy tails and leverage are not offered ...
+        cultivars_engine.exceptions.SpecificationError: heavy tails and leverage are not offered ...
     """
 
     def fit(
@@ -838,7 +838,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
             it and is far slower, so it is not run here:
 
             >>> import numpy as np
-            >>> from cultivars.engine._internals._simulators import _simulate_stochastic_volatility
+            >>> from cultivars_engine._internals._simulators import _simulate_stochastic_volatility
             >>> rng = np.random.default_rng(0)
             >>> y, _ = _simulate_stochastic_volatility(
             ...     300, mu=-1.0, phi=0.95, sigma2=0.05, mean=0.0, rng=rng
@@ -846,10 +846,10 @@ class SV(_StochasticVolatilityModel[SVResult]):
             >>> res = SV(y, mean="zero").fit()
             >>> res.method, bool(0.85 < res.phi < 1.0)
             ('qml', True)
-            >>> SV(y).fit(method="mle")
+            >>> SV(y).fit(method="mle")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: method must be 'qml' or 'particle'; got 'mle'.
+            cultivars_engine.exceptions.SpecificationError: method must be 'qml' or 'particle'; ...
         """
         if method == "qml":
             return SVResult._from_fit(self._fit_quasi(), self)
@@ -907,7 +907,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars.engine._internals._simulators import _simulate_stochastic_volatility
+            >>> from cultivars_engine._internals._simulators import _simulate_stochastic_volatility
             >>> rng = np.random.default_rng(0)
             >>> y, h = _simulate_stochastic_volatility(
             ...     500, mu=-1.0, phi=0.95, sigma2=0.05, mean=0.0, rng=rng
@@ -922,7 +922,7 @@ class SV(_StochasticVolatilityModel[SVResult]):
             >>> SV(y).sample(n_draws=100, n_burn=200)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n_draws (100) must exceed n_burn (200).
+            cultivars_engine.exceptions.SpecificationError: n_draws (100) must exceed n_burn (200).
         """
         if prior is None:
             prior = VolatilityPrior()
@@ -1011,7 +1011,7 @@ class UCSV(_TrendVolatilityModel[UCSVPosterior]):
         >>> UCSV(y, gamma=0.0)
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: gamma must be strictly positive; got 0.0.
+        cultivars_engine.exceptions.SpecificationError: gamma must be strictly positive; got 0.0.
     """
 
     def fit(

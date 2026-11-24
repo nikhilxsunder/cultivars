@@ -125,7 +125,7 @@ Example:
 
     >>> import numpy as np
     >>> from cultivars.univariate.autoregression import AR
-    >>> from cultivars.engine._internals._engines import NumpyMLPEngine
+    >>> from cultivars_engine._internals._engines import NumpyMLPEngine
     >>> rng = np.random.default_rng(0)
     >>> y = np.zeros(600)
     >>> for t in range(1, 600):
@@ -207,7 +207,7 @@ class ARNNResult(_MeanFunctionResult):
         A one-lag map :math:`0.8 \tanh(2 y_{t-1})` recovered on a grid:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._matrices import _lag_matrix
+        >>> from cultivars_engine._core._matrices import _lag_matrix
         >>> rng = np.random.default_rng(0)
         >>> y = np.zeros(500)
         >>> for t in range(1, 500):
@@ -302,7 +302,7 @@ class ARNNResult(_MeanFunctionResult):
             >>> res.predict(np.zeros((4, 3)))
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.DimensionError: features must have shape (n, 2); got (4, 3).
+            cultivars_engine.exceptions.DimensionError: features must have shape (n, 2); got (4, 3).
         """
         x = np.asarray(features, dtype=np.float64)
         if x.ndim != 2 or x.shape[1] != self.order:
@@ -652,17 +652,17 @@ class TARNNResult(_MeanFunctionResult):
             stored threshold variable:
 
             >>> import numpy as np
-            >>> from cultivars.engine._core._matrices import _lag_matrix
+            >>> from cultivars_engine._core._matrices import _lag_matrix
             >>> rng = np.random.default_rng(0)
             >>> y = rng.standard_normal(300)
             >>> res = TARNN(y, order=1).fit()
             >>> means = res.predict(_lag_matrix(y, 1), res.threshold_values)
             >>> bool(np.allclose(means, res.fittedvalues))
             True
-            >>> res.predict(_lag_matrix(y, 1), res.threshold_values[:5])
+            >>> res.predict(_lag_matrix(y, 1), res.threshold_values[:5])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.DimensionError: threshold_values must have shape (299,); got (5,).
+            cultivars_engine.exceptions.DimensionError: threshold_values must have shape ...
         """
         x = np.asarray(features, dtype=np.float64)
         z = np.asarray(threshold_values, dtype=np.float64)
@@ -719,7 +719,7 @@ class TARNNResult(_MeanFunctionResult):
             >>> external.nonlinear_state_space(0.1)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: the threshold variable is an external ...
+            cultivars_engine.exceptions.SpecificationError: the threshold variable is an ...
         """
         if not self.self_exciting:
             raise SpecificationError(
@@ -953,7 +953,7 @@ class TARNN(_NeuralThresholdModel[TARNNResult]):
         >>> TARNN(z, order=1, threshold=5.0).fit()  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.NumericalError: threshold 5.0 leaves a regime with too few ...
+        cultivars_engine.exceptions.NumericalError: threshold 5.0 leaves a regime with too few ...
     """
 
     __slots__ = ()

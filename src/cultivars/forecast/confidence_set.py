@@ -249,7 +249,7 @@ def model_confidence_set(
         >>> model_confidence_set(losses, n_bootstrap=50)
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: n_bootstrap must be at least 100; got 50.
+        cultivars_engine.exceptions.SpecificationError: n_bootstrap must be at least 100; got 50.
     """
     panel = np.asarray(losses, dtype=np.float64)
     if panel.ndim != 2:

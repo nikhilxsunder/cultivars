@@ -103,7 +103,7 @@ Example:
     A long-memory series is not a short-memory one with a large root:
 
     >>> import numpy as np
-    >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+    >>> from cultivars_engine._core._transforms import _fractional_difference_weights
     >>> from cultivars.univariate.box_jenkins import ARMA
     >>> rng = np.random.default_rng(0)
     >>> n = 600
@@ -224,7 +224,7 @@ class ARFIMAResult(
         white noise with the weights of :math:`(1 - L)^{-0.3}`:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+        >>> from cultivars_engine._core._transforms import _fractional_difference_weights
         >>> rng = np.random.default_rng(0)
         >>> n = 600
         >>> w = _fractional_difference_weights(-0.3, n)
@@ -507,7 +507,7 @@ class ARFIMA(_FractionalIntegrationModel[ARFIMAResult]):
         integrated series:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+        >>> from cultivars_engine._core._transforms import _fractional_difference_weights
         >>> rng = np.random.default_rng(0)
         >>> n = 600
         >>> w = _fractional_difference_weights(-0.3, n)

@@ -299,7 +299,7 @@ class STARResult(_ObservedRegimeResult):
             The weights reproduce the fitted values from the two blocks:
 
             >>> import numpy as np
-            >>> from cultivars.engine._core._matrices import _lag_matrix
+            >>> from cultivars_engine._core._matrices import _lag_matrix
             >>> rng = np.random.default_rng(0)
             >>> y = rng.standard_normal(300)
             >>> res = LSTAR(y, order=1).fit()
@@ -413,7 +413,7 @@ class STARResult(_ObservedRegimeResult):
             >>> ssm = LSTAR(y, order=1).fit().nonlinear_state_space(0.0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: measurement_variance must be strictly ...
+            cultivars_engine.exceptions.SpecificationError: measurement_variance must be ...
         """
         lower = np.asarray(self.lower_params, dtype=np.float64)
         upper = np.asarray(self.upper_params, dtype=np.float64)
@@ -605,7 +605,7 @@ class LSTAR(_SmoothTransitionModel[STARResult]):
             >>> LSTAR(np.arange(50.0), order=0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: order must be >= 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: order must be >= 1; got 0.
         """
         super().__init__(endog, order=order, transition="logistic", delay=delay)
 
@@ -627,7 +627,7 @@ class LSTAR(_SmoothTransitionModel[STARResult]):
             >>> LSTAR(np.ones(100), order=1).fit()
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.NumericalError: transition variable has zero variance.
+            cultivars_engine.exceptions.NumericalError: transition variable has zero variance.
         """
         return STARResult._from_fit(self._fit_family(), self)
 
@@ -722,7 +722,7 @@ class ESTAR(_SmoothTransitionModel[STARResult]):
             >>> ESTAR(np.arange(6.0), order=1)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.DimensionError: series of length 6 is too short for STAR(1) ...
+            cultivars_engine.exceptions.DimensionError: series of length 6 is too short for ...
         """
         super().__init__(endog, order=order, transition="exponential", delay=delay)
 

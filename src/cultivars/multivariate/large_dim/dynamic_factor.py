@@ -365,7 +365,7 @@ class DFMResult(_SummaryMixin):
             True
             >>> res.forecast(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         scores = self.factors.forecast(steps)
         return scores @ self.loadings.T * self.scales + self.means
@@ -499,7 +499,7 @@ class DFM:
         (3, (0,), 2)
         >>> DFM(panel, order=1, n_factors=31)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.DimensionError: n_factors (31) exceeds what a (200, 30) panel ...
+        cultivars_engine.exceptions.DimensionError: n_factors (31) exceeds what a (200, 30) ...
     """
 
     __slots__ = ("_max_factors", "_n_factors", "_order", "_panel", "_series_names")

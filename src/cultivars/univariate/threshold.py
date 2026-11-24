@@ -129,7 +129,7 @@ Example:
     (True, True)
     >>> hard.likelihood_ratio_test(linear)  # doctest: +ELLIPSIS
     Traceback (most recent call last):
-    cultivars.exceptions.SpecificationError: ...
+    cultivars_engine.exceptions.SpecificationError: ...
 """
 
 from __future__ import annotations
@@ -375,7 +375,7 @@ class SETARResult(_ObservedRegimeResult):
             True
             >>> res.nonlinear_state_space(0.0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: measurement_variance must be strictly ...
+            cultivars_engine.exceptions.SpecificationError: measurement_variance must be ...
         """
         if not self.self_exciting:
             raise SpecificationError(
@@ -476,7 +476,7 @@ class SETARResult(_ObservedRegimeResult):
             >>> tar = TAR(x, order=1, delay=1, threshold_variable=z).fit()
             >>> tar.simulate(10)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a TAR fit cannot simulate its own sample: ...
+            cultivars_engine.exceptions.SpecificationError: a TAR fit cannot simulate its own ...
         """
         if not self.self_exciting:
             raise SpecificationError(
@@ -641,7 +641,7 @@ class SETAR(_ThresholdModel[SETARResult]):
         (2, True, 'SETAR(2, d=2)')
         >>> SETAR(y, order=1, trim=0.5)
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: trim must lie in (0.0, 0.5); got 0.5.
+        cultivars_engine.exceptions.SpecificationError: trim must lie in (0.0, 0.5); got 0.5.
     """
 
     __slots__ = ()
@@ -780,7 +780,7 @@ class TAR(_ThresholdModel[SETARResult]):
         (True, True)
         >>> TAR(y, order=1, threshold_variable=z[:300])  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.DimensionError: threshold_variable must be one-dimensional with ...
+        cultivars_engine.exceptions.DimensionError: threshold_variable must be one-dimensional ...
     """
 
     __slots__ = ()

@@ -290,10 +290,10 @@ class TurningPointsResult(_SummaryMixin):
             >>> lagged = TurningPoints().date(np.roll(y, 3))
             >>> res.concordance(lagged), res.concordance(np.where(res.contraction, 0.8, 0.2))
             (0.75, 1.0)
-            >>> res.concordance(np.zeros(50))
+            >>> res.concordance(np.zeros(50))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.DimensionError: chronologies must align; got lengths 120 and 50.
+            cultivars_engine.exceptions.DimensionError: chronologies must align; got lengths ...
         """
         return concordance(self.contraction, other)
 
@@ -486,7 +486,7 @@ class TurningPoints:
             >>> TurningPoints(convention="weekly")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: convention must be one of ('quarterly', ...
+            cultivars_engine.exceptions.SpecificationError: convention must be one of ...
         """
         if convention not in _TURNING_POINT_RULES:
             raise SpecificationError(
@@ -538,7 +538,7 @@ class TurningPoints:
             >>> TurningPoints().date(np.zeros(8))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: a series of 8 observations is too short ...
+            cultivars_engine.exceptions.SpecificationError: a series of 8 observations is too ...
         """
         y = _validate_endog(endog)
         n = y.shape[0]
@@ -637,7 +637,7 @@ def concordance(
         >>> concordance(a, np.zeros(4))
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.DimensionError: chronologies must align; got lengths 5 and 4.
+        cultivars_engine.exceptions.DimensionError: chronologies must align; got lengths 5 and 4.
     """
     a = first.contraction if isinstance(first, TurningPointsResult) else _validate_chronology(first)
     b = (

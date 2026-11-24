@@ -387,7 +387,7 @@ class SparseVARResult(_SummaryMixin):
             True
             >>> res.ma_representation(-1)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be non-negative; got -1.
+            cultivars_engine.exceptions.SpecificationError: horizon must be non-negative; got -1.
         """
         if horizon < 0:
             raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
@@ -584,7 +584,7 @@ class SparseVAR(_SparseVectorAutoRegressionModel[SparseVARResult]):
         True
         >>> SparseVAR(y, order=2).fit(penalty="ridge")  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: penalty must be one of ('lasso', 'adaptive', ...
+        cultivars_engine.exceptions.SpecificationError: penalty must be one of ('lasso', ...
     """
 
     __slots__ = ()
@@ -639,9 +639,9 @@ class SparseVAR(_SparseVectorAutoRegressionModel[SparseVARResult]):
             >>> per_lag = [int(np.count_nonzero(block)) for block in grouped.coefficients]
             >>> all(count in (0, k * k) for count in per_lag)
             True
-            >>> model.fit(lam=0.0)
+            >>> model.fit(lam=0.0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: lam must be positive when given; got 0.0.
+            cultivars_engine.exceptions.SpecificationError: lam must be positive when given; ...
         """
         return SparseVARResult._from_fit(
             self._fit_sparse(
