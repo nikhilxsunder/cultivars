@@ -62,7 +62,7 @@ only if the foreign aggregate is weakly exogenous for that unit's
 parameters, and that is a property of the data: a dominant unit whose
 partners adjust toward it fails it, by design, and should be modelled
 with a reduced foreign set. :meth:`GVARResult.weak_exogeneity_test` runs
-the Johansen-style auxiliary regression for an error-correction unit,
+the Harbo et al. (1998) auxiliary regression for an error-correction unit,
 :meth:`GVARResult.exogeneity_table` runs it for every unit that supports
 it, and the summary names any unit that fails. The other diagnostic the
 result keeps is :attr:`GVARResult.linkage_condition`, the condition number
@@ -107,6 +107,10 @@ References:
     Johansen, S. (1992). Cointegration in partial systems and the
     efficiency of single-equation analysis. *Journal of Econometrics*,
     52(3), 389-402.
+
+    Harbo, I., Johansen, S., Nielsen, B., & Rahbek, A. (1998). Asymptotic
+    inference on cointegrating rank in partial systems. *Journal of Business
+    & Economic Statistics*, 16(4), 388-399.
 
 Example:
     A dominant unit and two satellites that error-correct toward it, each
