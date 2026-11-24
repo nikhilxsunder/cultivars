@@ -10,6 +10,7 @@ import inspect
 import os
 import sys
 import tomllib
+from importlib.metadata import version as _distribution_version
 from pathlib import Path
 from types import FunctionType, MethodType, ModuleType
 from typing import TypeAliasType
@@ -165,6 +166,22 @@ napoleon_custom_sections: list[tuple[str, str]] = [
 ]
 
 # -- intersphinx -------------------------------------------------------------
+# The engine reference is built and published from the cultivars-engine
+# repository, one directory per release. This site links to the directory of
+# the release that is installed while it builds, which is the release that
+# pyproject.toml pins: the header link and the cross-references into the engine
+# then describe the code this version of cultivars actually runs on, and keep
+# doing so when an older tag is rebuilt. That release's reference has to be
+# published before this site is built, or the link and the inventory are
+# missing. DOCS_ENGINE_URL overrides the address, for a preview or for a build
+# against an engine release that has no published reference yet.
+_ENGINE_DOCS_URL: str = os.environ.get(
+    "DOCS_ENGINE_URL",
+    f"https://nikhilxsunder.github.io/cultivars-engine/{_distribution_version('cultivars-engine')}/",
+)
+if not _ENGINE_DOCS_URL.endswith("/"):
+    _ENGINE_DOCS_URL += "/"
+
 intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
@@ -174,6 +191,7 @@ intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "fedfred": ("https://nikhilxsunder.github.io/fedfred/", None),
     "ns-sdn": ("https://nikhilxsunder.github.io/ns-sdn/stable/", None),
+    "cultivars-engine": (_ENGINE_DOCS_URL, None),
 }
 intersphinx_timeout: int = 10
 
@@ -229,7 +247,6 @@ html_theme_options: dict[str, object] = {
         "image_light": "_static/cultivars-logo.png",
         "image_dark": "_static/cultivars-logo-dark.png",
     },
-    "header_links_before_dropdown": 6,
     "navbar_start": ["navbar-logo", "version-switcher"],
     "switcher": {
         "json_url": _DOCS_SITE_URL + "switcher.json",
@@ -237,7 +254,7 @@ html_theme_options: dict[str, object] = {
     },
     "check_switcher": False,
     "show_version_warning_banner": False,
-    "navbar_center": ["navbar-nav"],
+    "navbar_center": ["navbar-dropdowns"],
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
     "navbar_align": "left",
     "icon_links": [
@@ -273,11 +290,105 @@ html_theme_options: dict[str, object] = {
     "pygments_dark_style": "monokai",
 }
 
-html_context: dict[str, str] = {
+# Repository files that are linked from the header menu but not built into the
+# site, at the branch or tag this build documents.
+_GITHUB_BLOB: str = f"https://github.com/nikhilxsunder/cultivars/blob/{_DOCS_GIT_REF}"
+
+html_context: dict[str, object] = {
     "github_user": "nikhilxsunder",
     "github_repo": "cultivars",
     "doc_path": "docs/source",
     "github_version": _DOCS_GIT_REF,
+    # Header menus, read by _templates/navbar-dropdowns.html. ``doc`` is the
+    # page a section title links to; ``children`` are (target, label) pairs
+    # shown in its dropdown, and an empty list renders a plain link. ``doc``
+    # and each target are a docname relative to this directory, or an absolute
+    # URL for a page that lives outside the site. This list is maintained by hand: it
+    # does not follow the toctree, so a new section, guide, example or
+    # subpackage has to be added here as well.
+    "navbar_dropdowns": [
+        {
+            "title": "Getting started",
+            "doc": "getting_started/index",
+            "children": [
+                ("getting_started/installation", "Installation"),
+                ("getting_started/quickstart", "Quickstart"),
+                ("getting_started/concepts", "Core concepts"),
+            ],
+        },
+        {
+            "title": "User guide",
+            "doc": "user_guide/index",
+            "children": [
+                ("user_guide/choosing_a_model", "Choosing a model"),
+                ("user_guide/diagnostics", "Diagnostics and testing"),
+                ("user_guide/univariate_linear", "Univariate linear models"),
+                ("user_guide/volatility", "Volatility models"),
+                ("user_guide/var", "Vector autoregressions"),
+                ("user_guide/structural_identification", "Structural identification"),
+                ("user_guide/bayesian_vars", "Bayesian VARs"),
+                ("user_guide/state_space", "State-space models"),
+                ("user_guide/spectral", "Spectral analysis"),
+                ("user_guide/forecasting", "Forecasting and evaluation"),
+            ],
+        },
+        {
+            "title": "Examples",
+            "doc": "auto_examples/index",
+            "children": [
+                ("auto_examples/plot_01_monetary_policy_var", "Monetary policy VAR"),
+                ("auto_examples/plot_02_blanchard_quah", "Long-run restrictions"),
+                (
+                    "auto_examples/plot_03_oil_market_sign_restrictions",
+                    "Oil market sign restrictions",
+                ),
+                (
+                    "auto_examples/plot_04_heteroskedasticity_and_proxy",
+                    "Heteroskedasticity and proxies",
+                ),
+                ("auto_examples/plot_05_nelson_siegel_yield_curve", "Nelson-Siegel yield curve"),
+                ("auto_examples/plot_06_business_cycle_regimes", "Business-cycle regimes"),
+                ("auto_examples/plot_07_great_ratios_vecm", "Cointegration and a VECM"),
+                ("auto_examples/plot_08_large_bvar_forecasting", "Bayesian VAR forecasting"),
+                (
+                    "auto_examples/plot_09_volatility_models_var_backtest",
+                    "Equity volatility models",
+                ),
+                (
+                    "auto_examples/plot_10_inflation_forecast_evaluation",
+                    "Inflation forecast evaluation",
+                ),
+            ],
+        },
+        {
+            "title": "API reference",
+            "doc": "api/index",
+            "children": [
+                ("api/generated/cultivars.univariate", "cultivars.univariate"),
+                ("api/generated/cultivars.multivariate", "cultivars.multivariate"),
+                ("api/generated/cultivars.state_space", "cultivars.state_space"),
+                ("api/generated/cultivars.diagnostics", "cultivars.diagnostics"),
+                ("api/generated/cultivars.forecast", "cultivars.forecast"),
+                ("api/generated/cultivars.spectral", "cultivars.spectral"),
+                ("api/generated/cultivars.bayes", "cultivars.bayes"),
+                ("api/generated/cultivars.data", "cultivars.data"),
+                ("api/generated/cultivars.experimental", "cultivars.experimental"),
+            ],
+        },
+        {"title": "Engine reference", "doc": _ENGINE_DOCS_URL, "children": []},
+        {
+            "title": "Project",
+            "doc": "project/index",
+            "children": [
+                ("project/release_notes", "Release notes"),
+                (f"{_GITHUB_BLOB}/ROADMAP.md", "Roadmap"),
+                (f"{_GITHUB_BLOB}/CONTRIBUTING.md", "Contributing"),
+                (f"{_GITHUB_BLOB}/SECURITY.md", "Security policy"),
+                (f"{_GITHUB_BLOB}/CODE_OF_CONDUCT.md", "Code of conduct"),
+                ("https://github.com/nikhilxsunder/cultivars/issues", "Issue tracker"),
+            ],
+        },
+    ],
 }
 
 html_meta: dict[str, str] = {
@@ -451,7 +562,8 @@ def _document_type_alias(
     lines[:] = [f"Alias of ``{value}``.", "", *doc]
 
 
-_ENGINE_PACKAGE: str = "cultivars.engine"
+_ENGINE_PACKAGE: str = "cultivars_engine"
+
 _LOGGER = sphinx_logging.getLogger(__name__)
 
 
