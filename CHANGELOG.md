@@ -9,6 +9,34 @@ listed under Changed.
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-11-24
+
+Stable-channel republish of 1.0.0a6: the code is identical and only the
+version string differs. `pip install cultivars` resolves to it without
+`--pre`; pre-release installs keep resolving to 1.0.0a6. Relative to
+0.0.2 it carries everything listed under 1.0.0a6 plus the one 1.0.0a5
+fix that 0.0.2 did not have. The entries below are the parts an upgrade
+from 0.0.2 can notice; docs changes are listed under 1.0.0a6.
+
+### Changed
+
+- The private engine is now a separate distribution, `cultivars-engine`
+  (import name `cultivars_engine`), pinned at `0.0.3`. The
+  `cultivars.engine` subpackage is gone: imports of
+  `cultivars.engine._core` or `cultivars.engine._internals` become
+  `cultivars_engine._core` or `cultivars_engine._internals`. No public
+  model, result or test was renamed. See 1.0.0a6 for the re-exported
+  modules and the names a traceback now prints.
+- `numpy`, `scipy`, `fedfred` and `matplotlib` are no longer declared by
+  this package and are installed through `cultivars-engine`.
+- `ns-sdn` is no longer pinned to `1.0.0a1`; the stable `1.0.0` is
+  resolved.
+
+### Fixed
+
+- `scipy.stats.norm` is imported at module level in
+  `cultivars.multivariate.structural.stochastic_volatility` (#472).
+
 ## [1.0.0a6] - 2026-11-24
 
 ### Changed
@@ -78,6 +106,27 @@ listed under Changed.
   instead of a bare `ValueError` (#81, #494).
 - `scipy.stats.norm` imported inside volatility_bands (#472).
 - sphinx engine reference templates.
+
+## [0.0.2] - 2026-10-29
+
+First release on the stable channel: 1.0.0a4 plus the fixes below.
+`pip install cultivars` resolves to it without `--pre`; pre-release
+installs keep resolving to 1.0.0a4 until 1.0.0a5.
+
+### Fixed
+
+- `VECMResult.normalized_alpha` raises `SpecificationError` for an
+  out-of-range or zero-loading `on`, matching `normalized_beta`; both
+  methods validate through one shared helper (#286).
+- The "declare at least one narrative event" error from
+  `NarrativeSignRestrictedSVAR` names `SignRestrictedSVAR` instead of the
+  pre-a2 `SignSVAR` (#497).
+- `cultivars.multivariate.structural.sign_restrictions.__all__` lists
+  `NarrativeSignRestrictedSVAR`, so star imports and the API reference
+  see it (#452, #496).
+- `ARMA` validates `order` before unpacking it, so a wrong-length or
+  non-integer order raises `SpecificationError` naming `p` and `q`
+  instead of a bare `ValueError` (#81, #494).
 
 ## [1.0.0a4] - 2026-10-13
 
@@ -260,9 +309,11 @@ placeholder.
 
 - Initial file dump.
 
-[Unreleased]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a6...HEAD
+[Unreleased]: https://github.com/nikhilxsunder/cultivars/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/nikhilxsunder/cultivars/compare/v0.0.2...v0.0.3
 [1.0.0a6]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a5...v1.0.0a6
 [1.0.0a5]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...v1.0.0a5
+[0.0.2]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a4...v0.0.2
 [1.0.0a4]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a3...v1.0.0a4
 [1.0.0a3]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a2...v1.0.0a3
 [1.0.0a2]: https://github.com/nikhilxsunder/cultivars/compare/v1.0.0a1...v1.0.0a2
