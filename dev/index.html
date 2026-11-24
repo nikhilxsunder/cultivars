@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="cultivars Documentation" />
 <meta property="og:image:alt" content="cultivars Logo" />
 
-    <meta property="article:modified_time" content="2026-10-13T21:01:40+00:00" />
+    <meta property="article:modified_time" content="2026-11-24T13:18:33+00:00" />
     <title>cultivars &#8212; cultivars</title>
   
   
@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="_static/tippy/index.729a3422-969c-4c57-86b9-25e13d86246b.js"></script>
+    <script defer="defer" src="_static/tippy/index.73cca000-bc0b-46d5-b7ce-dec2718dde67.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -107,7 +107,7 @@
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.0" />
-    <meta name="docbuild:last-update" content="2026-10-13"/>
+    <meta name="docbuild:last-update" content="2026-11-24"/>
   
     
     <script src="_static/searchtools.js"></script>
@@ -1142,15 +1142,17 @@ API reference</div>
 <section id="release-status">
 <h2>Release status<a class="headerlink" href="#release-status" title="Link to this heading">#</a></h2>
 <div class="warning admonition">
-<p class="admonition-title">cultivars 1.0.0a6 is a pre-release</p>
+<p class="admonition-title">cultivars 1.0.0a6 is an early release</p>
 <p><span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">API: stable in shape, not frozen</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">numerics: settling</span></p>
-<p>The model-fit-result pattern, the subpackage layout and the names of
-the public classes will not change before 1.0.0. Argument names, result
-fields and summary wording may still be renamed; each rename is listed
-in the <a class="reference internal" href="project/release_notes.html"><span class="doc">release notes</span></a>. The public API
-freezes at <code class="docutils literal notranslate"><span class="pre">1.0.0b1</span></code>, after which only fixes land. Pin the exact
-version in anything that must not move:</p>
-<pre class="literal-block">pip install --pre "cultivars==1.0.0a6"</pre>
+<p><code class="docutils literal notranslate"><span class="pre">0.0.2</span></code> is a stable-channel republish of <code class="docutils literal notranslate"><span class="pre">1.0.0a4</span></code>: the code is
+identical, so a plain <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cultivars</span></code> resolves to it without
+<code class="docutils literal notranslate"><span class="pre">--pre</span></code>. The model-fit-result pattern, the subpackage layout and the
+names of the public classes will not change before 1.0.0. Argument
+names, result fields and summary wording may still be renamed; each
+rename is listed in the <a class="reference internal" href="project/release_notes.html"><span class="doc">release notes</span></a>.
+The public API freezes at <code class="docutils literal notranslate"><span class="pre">1.0.0b1</span></code>, after which only fixes land.
+Pin the exact version in anything that must not move:</p>
+<pre class="literal-block">pip install "cultivars==1.0.0a6"</pre>
 </div>
 </section>
 <section id="install">
@@ -1163,16 +1165,16 @@ every result.</p>
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio"/>
 <label aria-controls="sd-tab-item-0-content" class="sd-tab-label" for="sd-tab-item-0">
 pip</label><div class="sd-tab-content docutils" id="sd-tab-item-0-content">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--pre<span class="w"> </span>cultivars
-pip<span class="w"> </span>install<span class="w"> </span>--pre<span class="w"> </span><span class="s2">"cultivars[pandas]"</span><span class="w">      </span><span class="c1"># or [polars]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>cultivars
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"cultivars[pandas]"</span><span class="w">      </span><span class="c1"># or [polars]</span>
 </pre></div>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio"/>
 <label aria-controls="sd-tab-item-1-content" class="sd-tab-label" for="sd-tab-item-1">
 uv</label><div class="sd-tab-content docutils" id="sd-tab-item-1-content">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span>--prerelease<span class="w"> </span>allow<span class="w"> </span>cultivars
-uv<span class="w"> </span>add<span class="w"> </span>--prerelease<span class="w"> </span>allow<span class="w"> </span><span class="s2">"cultivars[pandas]"</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span>cultivars
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">"cultivars[pandas]"</span>
 </pre></div>
 </div>
 </div>
@@ -1186,7 +1188,10 @@ uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </
 </div>
 </div>
 </div>
-<p>A conda-forge package follows the first stable release.</p>
+<p>Later alphas (<code class="docutils literal notranslate"><span class="pre">1.0.0a5</span></code> and onward) are pre-releases, so installers
+skip them unless asked: add <code class="docutils literal notranslate"><span class="pre">--pre</span></code> (pip) or <code class="docutils literal notranslate"><span class="pre">--prerelease</span> <span class="pre">allow</span></code>
+(uv), or pin the exact version. A conda-forge package follows the first
+stable release.</p>
 </section>
 <section id="in-sixty-seconds">
 <h2>In sixty seconds<a class="headerlink" href="#in-sixty-seconds" title="Link to this heading">#</a></h2>
@@ -1720,7 +1725,7 @@ a form GitHub and Zenodo read directly.</p>
           registered trademark of the Federal Reserve Bank of St. Louis.
         </p>
         <p class="cv-footer__build">
-          cultivars 1.0.0a6 &middot; updated 2026-10-13 &middot; built with
+          cultivars 1.0.0a6 &middot; updated 2026-11-24 &middot; built with
           <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0
           and the
           <a href="https://pydata-sphinx-theme.readthedocs.io/"

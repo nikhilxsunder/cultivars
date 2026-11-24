@@ -44,21 +44,23 @@ read a result that states its verdict and the assumptions behind it.
 Release status
 --------------
 
-.. admonition:: cultivars |release| is a pre-release
+.. admonition:: cultivars |release| is an early release
    :class: warning
 
    :bdg-warning:`API: stable in shape, not frozen` :bdg-secondary:`numerics: settling`
 
-   The model-fit-result pattern, the subpackage layout and the names of
-   the public classes will not change before 1.0.0. Argument names, result
-   fields and summary wording may still be renamed; each rename is listed
-   in the :doc:`release notes <project/release_notes>`. The public API
-   freezes at ``1.0.0b1``, after which only fixes land. Pin the exact
-   version in anything that must not move:
+   ``0.0.2`` is a stable-channel republish of ``1.0.0a4``: the code is
+   identical, so a plain ``pip install cultivars`` resolves to it without
+   ``--pre``. The model-fit-result pattern, the subpackage layout and the
+   names of the public classes will not change before 1.0.0. Argument
+   names, result fields and summary wording may still be renamed; each
+   rename is listed in the :doc:`release notes <project/release_notes>`.
+   The public API freezes at ``1.0.0b1``, after which only fixes land.
+   Pin the exact version in anything that must not move:
 
    .. parsed-literal::
 
-      pip install --pre "cultivars==\ |release|\ "
+      pip install "cultivars==\ |release|\ "
 
 Install
 -------
@@ -74,15 +76,15 @@ every result.
 
       .. code-block:: bash
 
-         pip install --pre cultivars
-         pip install --pre "cultivars[pandas]"      # or [polars]
+         pip install cultivars
+         pip install "cultivars[pandas]"      # or [polars]
 
    .. tab-item:: uv
 
       .. code-block:: bash
 
-         uv add --prerelease allow cultivars
-         uv add --prerelease allow "cultivars[pandas]"
+         uv add cultivars
+         uv add "cultivars[pandas]"
 
    .. tab-item:: From source
 
@@ -92,7 +94,10 @@ every result.
          cd cultivars
          uv sync --group dev
 
-A conda-forge package follows the first stable release.
+Later alphas (``1.0.0a5`` and onward) are pre-releases, so installers
+skip them unless asked: add ``--pre`` (pip) or ``--prerelease allow``
+(uv), or pin the exact version. A conda-forge package follows the first
+stable release.
 
 In sixty seconds
 ----------------
