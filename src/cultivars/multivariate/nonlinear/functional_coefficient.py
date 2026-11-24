@@ -553,8 +553,6 @@ class FunctionalCoefficientVARResult(_SummaryMixin):
         """
         matrix = self._matrix_at(u)
         k, offset = self.k_endog, self._n_deterministic
-        if not self.order:
-            return np.zeros((0, k, k))
         return np.stack(
             [matrix[offset + lag * k : offset + (lag + 1) * k].T for lag in range(self.order)]
         )
@@ -743,7 +741,7 @@ class FunctionalCoefficientVARResult(_SummaryMixin):
         rows: list[tuple[str, ...]] = []
         for i, name in enumerate(self.names):
             own = f"{name}.L1"
-            if self.order and own in labels:
+            if own in labels:
                 column = labels.index(own)
                 rows.append(
                     (
