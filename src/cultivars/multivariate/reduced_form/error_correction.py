@@ -141,7 +141,7 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Self, cast
+from typing import NoReturn, Self, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -1284,7 +1284,7 @@ class VECMXResult(VECMResult):
         """
         return self.k_endog + self.k_exog - self.rank
 
-    def _refuse(self, what: str) -> None:
+    def _refuse(self, what: str) -> NoReturn:
         """Raise the shared explanation for a quantity the conditional model lacks.
 
         Args:
@@ -1398,7 +1398,6 @@ class VECMXResult(VECMResult):
             cultivars_engine.exceptions.SpecificationError: ... so a levels vector ...
         """
         self._refuse("a levels vector autoregression")
-        raise AssertionError  # pragma: no cover
 
     def to_varx(self) -> _ConditionalLevels:
         r"""The conditional levels form this error-correction model implies.
@@ -1488,7 +1487,6 @@ class VECMXResult(VECMResult):
             cultivars_engine.exceptions.SpecificationError: ... so the companion matrix is not ...
         """
         self._refuse("the companion matrix")
-        raise AssertionError  # pragma: no cover
 
     def stability_check(self) -> _StabilityAssessment:
         """Unavailable: stability is a property of the closed system.
@@ -1506,7 +1504,6 @@ class VECMXResult(VECMResult):
             cultivars_engine.exceptions.SpecificationError: ... so a stability check is not ...
         """
         self._refuse("a stability check")
-        raise AssertionError  # pragma: no cover
 
     def ma_representation(self, horizon: int = 20) -> npt.NDArray[np.float64]:
         """Unavailable: propagation needs a law of motion for the exogenous block.
@@ -1527,7 +1524,6 @@ class VECMXResult(VECMResult):
             cultivars_engine.exceptions.SpecificationError: ... so a moving-average ...
         """
         self._refuse("a moving-average representation")
-        raise AssertionError  # pragma: no cover
 
     def irf(
         self, horizon: int = 20, *, orthogonalized: bool = True, cumulative: bool = False
@@ -1552,7 +1548,6 @@ class VECMXResult(VECMResult):
             cultivars_engine.exceptions.SpecificationError: ... so an impulse response is not ...
         """
         self._refuse("an impulse response")
-        raise AssertionError  # pragma: no cover
 
     def fevd(self, horizon: int = 20) -> npt.NDArray[np.float64]:
         """Unavailable: propagation needs a law of motion for the exogenous block.
@@ -1573,7 +1568,6 @@ class VECMXResult(VECMResult):
             cultivars_engine.exceptions.SpecificationError: ... so a variance decomposition is ...
         """
         self._refuse("a variance decomposition")
-        raise AssertionError  # pragma: no cover
 
     def historical_decomposition(self) -> npt.NDArray[np.float64]:
         """Unavailable: propagation needs a law of motion for the exogenous block.
@@ -1591,7 +1585,6 @@ class VECMXResult(VECMResult):
             cultivars_engine.exceptions.SpecificationError: ... so a historical decomposition ...
         """
         self._refuse("a historical decomposition")
-        raise AssertionError  # pragma: no cover
 
     def forecast(
         self, steps: int = 1, *, exog_future: npt.ArrayLike | None = None
