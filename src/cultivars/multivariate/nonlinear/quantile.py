@@ -132,13 +132,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _companion_matrix
-from ...engine._internals._fits import _VectorQuantileFit
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _QuantileVectorAutoRegressionModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._core._matrices import _companion_matrix
+from cultivars_engine._internals._fits import _VectorQuantileFit
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _QuantileVectorAutoRegressionModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["QVAR", "QVARResult"]
 
@@ -357,7 +356,7 @@ class QVARResult(_SummaryMixin):
             (2, 0)
             >>> res._index_of(0.3)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: quantile 0.3 was not estimated; available ...
+            cultivars_engine.exceptions.SpecificationError: quantile 0.3 was not estimated; ...
         """
         for i, tau in enumerate(self.quantiles):
             if abs(tau - quantile) <= 1e-9:
@@ -452,7 +451,7 @@ class QVARResult(_SummaryMixin):
             ((299,), True)
             >>> res.quantile_path("y3", 0.25)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown variable 'y3'; expected one of ...
+            cultivars_engine.exceptions.SpecificationError: unknown variable 'y3'; expected one ...
         """
         if name not in self.names:
             raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
@@ -562,7 +561,7 @@ class QVARResult(_SummaryMixin):
             True
             >>> res.ma_representation(-1, quantile=0.5)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be non-negative; got -1.
+            cultivars_engine.exceptions.SpecificationError: horizon must be non-negative; got -1.
         """
         if horizon < 0:
             raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
@@ -918,12 +917,12 @@ class QVAR(_QuantileVectorAutoRegressionModel[QVARResult]):
             True
             >>> model.fit(quantiles=())
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: quantiles must name at least one level.
-            >>> model.fit(quantiles=(0.5, 0.5))
+            cultivars_engine.exceptions.SpecificationError: quantiles must name at least one level.
+            >>> model.fit(quantiles=(0.5, 0.5))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: quantiles must be distinct; got (0.5, 0.5).
-            >>> model.fit(quantiles=(1.0,))
+            cultivars_engine.exceptions.SpecificationError: quantiles must be distinct; got ...
+            >>> model.fit(quantiles=(1.0,))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: quantiles must lie in (0.0, 1.0); got 1.0.
+            cultivars_engine.exceptions.SpecificationError: quantiles must lie in (0.0, 1.0); ...
         """
         return QVARResult._from_fit(self._fit_quantile(quantiles), self)

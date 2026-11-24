@@ -10,12 +10,15 @@ import inspect
 import os
 import sys
 import tomllib
+from importlib.metadata import version as _distribution_version
 from pathlib import Path
 from types import FunctionType, MethodType, ModuleType
 from typing import TypeAliasType
 
+import sphinx
 from sphinx.application import Sphinx
 from sphinx.pycode import ModuleAnalyzer
+from sphinx.util import logging as sphinx_logging
 
 # -- Path setup --------------------------------------------------------------
 _ROOT = Path(__file__).resolve().parents[2]
@@ -163,6 +166,22 @@ napoleon_custom_sections: list[tuple[str, str]] = [
 ]
 
 # -- intersphinx -------------------------------------------------------------
+# The engine reference is built and published from the cultivars-engine
+# repository, one directory per release. This site links to the directory of
+# the release that is installed while it builds, which is the release that
+# pyproject.toml pins: the header link and the cross-references into the engine
+# then describe the code this version of cultivars actually runs on, and keep
+# doing so when an older tag is rebuilt. That release's reference has to be
+# published before this site is built, or the link and the inventory are
+# missing. DOCS_ENGINE_URL overrides the address, for a preview or for a build
+# against an engine release that has no published reference yet.
+_ENGINE_DOCS_URL: str = os.environ.get(
+    "DOCS_ENGINE_URL",
+    f"https://nikhilxsunder.github.io/cultivars-engine/{_distribution_version('cultivars-engine')}/",
+)
+if not _ENGINE_DOCS_URL.endswith("/"):
+    _ENGINE_DOCS_URL += "/"
+
 intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
@@ -171,7 +190,8 @@ intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "polars": ("https://docs.pola.rs/api/python/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "fedfred": ("https://nikhilxsunder.github.io/fedfred/", None),
-    "ns-sdn": ("https://nikhilxsunder.github.io/ns-sdn/", None),
+    "ns-sdn": ("https://nikhilxsunder.github.io/ns-sdn/stable/", None),
+    "cultivars-engine": (_ENGINE_DOCS_URL, None),
 }
 intersphinx_timeout: int = 10
 
@@ -225,9 +245,8 @@ html_theme_options: dict[str, object] = {
     "analytics": {"google_analytics_id": "G-QPCZ8H078M"},
     "logo": {
         "image_light": "_static/cultivars-logo.png",
-        "image_dark": "_static/cultivars-logo.png",
+        "image_dark": "_static/cultivars-logo-dark.png",
     },
-    "header_links_before_dropdown": 6,
     "navbar_start": ["navbar-logo", "version-switcher"],
     "switcher": {
         "json_url": _DOCS_SITE_URL + "switcher.json",
@@ -235,7 +254,7 @@ html_theme_options: dict[str, object] = {
     },
     "check_switcher": False,
     "show_version_warning_banner": False,
-    "navbar_center": ["navbar-nav"],
+    "navbar_center": ["navbar-dropdowns"],
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
     "navbar_align": "left",
     "icon_links": [
@@ -271,11 +290,105 @@ html_theme_options: dict[str, object] = {
     "pygments_dark_style": "monokai",
 }
 
-html_context: dict[str, str] = {
+# Repository files that are linked from the header menu but not built into the
+# site, at the branch or tag this build documents.
+_GITHUB_BLOB: str = f"https://github.com/nikhilxsunder/cultivars/blob/{_DOCS_GIT_REF}"
+
+html_context: dict[str, object] = {
     "github_user": "nikhilxsunder",
     "github_repo": "cultivars",
     "doc_path": "docs/source",
     "github_version": _DOCS_GIT_REF,
+    # Header menus, read by _templates/navbar-dropdowns.html. ``doc`` is the
+    # page a section title links to; ``children`` are (target, label) pairs
+    # shown in its dropdown, and an empty list renders a plain link. ``doc``
+    # and each target are a docname relative to this directory, or an absolute
+    # URL for a page that lives outside the site. This list is maintained by hand: it
+    # does not follow the toctree, so a new section, guide, example or
+    # subpackage has to be added here as well.
+    "navbar_dropdowns": [
+        {
+            "title": "Getting started",
+            "doc": "getting_started/index",
+            "children": [
+                ("getting_started/installation", "Installation"),
+                ("getting_started/quickstart", "Quickstart"),
+                ("getting_started/concepts", "Core concepts"),
+            ],
+        },
+        {
+            "title": "User guide",
+            "doc": "user_guide/index",
+            "children": [
+                ("user_guide/choosing_a_model", "Choosing a model"),
+                ("user_guide/diagnostics", "Diagnostics and testing"),
+                ("user_guide/univariate_linear", "Univariate linear models"),
+                ("user_guide/volatility", "Volatility models"),
+                ("user_guide/var", "Vector autoregressions"),
+                ("user_guide/structural_identification", "Structural identification"),
+                ("user_guide/bayesian_vars", "Bayesian VARs"),
+                ("user_guide/state_space", "State-space models"),
+                ("user_guide/spectral", "Spectral analysis"),
+                ("user_guide/forecasting", "Forecasting and evaluation"),
+            ],
+        },
+        {
+            "title": "Examples",
+            "doc": "auto_examples/index",
+            "children": [
+                ("auto_examples/plot_01_monetary_policy_var", "Monetary policy VAR"),
+                ("auto_examples/plot_02_blanchard_quah", "Long-run restrictions"),
+                (
+                    "auto_examples/plot_03_oil_market_sign_restrictions",
+                    "Oil market sign restrictions",
+                ),
+                (
+                    "auto_examples/plot_04_heteroskedasticity_and_proxy",
+                    "Heteroskedasticity and proxies",
+                ),
+                ("auto_examples/plot_05_nelson_siegel_yield_curve", "Nelson-Siegel yield curve"),
+                ("auto_examples/plot_06_business_cycle_regimes", "Business-cycle regimes"),
+                ("auto_examples/plot_07_great_ratios_vecm", "Cointegration and a VECM"),
+                ("auto_examples/plot_08_large_bvar_forecasting", "Bayesian VAR forecasting"),
+                (
+                    "auto_examples/plot_09_volatility_models_var_backtest",
+                    "Equity volatility models",
+                ),
+                (
+                    "auto_examples/plot_10_inflation_forecast_evaluation",
+                    "Inflation forecast evaluation",
+                ),
+            ],
+        },
+        {
+            "title": "API reference",
+            "doc": "api/index",
+            "children": [
+                ("api/generated/cultivars.univariate", "cultivars.univariate"),
+                ("api/generated/cultivars.multivariate", "cultivars.multivariate"),
+                ("api/generated/cultivars.state_space", "cultivars.state_space"),
+                ("api/generated/cultivars.diagnostics", "cultivars.diagnostics"),
+                ("api/generated/cultivars.forecast", "cultivars.forecast"),
+                ("api/generated/cultivars.spectral", "cultivars.spectral"),
+                ("api/generated/cultivars.bayes", "cultivars.bayes"),
+                ("api/generated/cultivars.data", "cultivars.data"),
+                ("api/generated/cultivars.experimental", "cultivars.experimental"),
+            ],
+        },
+        {"title": "Engine reference", "doc": _ENGINE_DOCS_URL, "children": []},
+        {
+            "title": "Project",
+            "doc": "project/index",
+            "children": [
+                ("project/release_notes", "Release notes"),
+                (f"{_GITHUB_BLOB}/ROADMAP.md", "Roadmap"),
+                (f"{_GITHUB_BLOB}/CONTRIBUTING.md", "Contributing"),
+                (f"{_GITHUB_BLOB}/SECURITY.md", "Security policy"),
+                (f"{_GITHUB_BLOB}/CODE_OF_CONDUCT.md", "Code of conduct"),
+                ("https://github.com/nikhilxsunder/cultivars/issues", "Issue tracker"),
+            ],
+        },
+    ],
 }
 
 html_meta: dict[str, str] = {
@@ -340,8 +453,29 @@ sphinx_gallery_conf: dict[str, object] = {
     "default_thumb_file": str(_ROOT / "docs" / "source" / "_static" / "cultivars-logo.png"),
 }
 
-# Keep generated backreference stubs out of the sidebar toctree.
-remove_from_toctrees: list[str] = ["gen_modules/backreferences/*"]
+# Keep the generated reference out of the sidebar below a fixed depth.
+#
+# pydata-sphinx-theme writes the whole toctree of a section into every page of
+# it, so a section of N pages costs N links on each of N pages. With a page per
+# member that was 4,067 links and 775 KB of sidebar on every engine page and
+# 4.5 GB for one version of the site, against the 10 GB that GitHub Pages
+# accepts for all versions together. The pages are still built and still
+# linked from the tables on their parent page; they are only left out of the
+# navigation tree. The API reference keeps modules, classes and functions in
+# the sidebar; the engine reference keeps modules.
+#
+# sphinx-remove-toctrees matches these as filesystem globs over the stub
+# files, suffix included. A class is the first dotted segment that starts with
+# a capital, and in the engine anything three segments below
+# ``cultivars.engine`` sits under a module. ``.github/workflows/docs.yml``
+# passes the same list on the command line, so that a release tag cut before
+# this change is rebuilt with it; keep the two in step.
+remove_from_toctrees: list[str] = [
+    "gen_modules/backreferences/*",
+    "api/generated/*.[A-Z]*.*.rst",
+    "engine/generated/cultivars.engine.*.*.*.rst",
+    "engine/generated/*.[A-Z]*.rst",
+]
 
 # -- sphinx-tippy ------------------------------------------------------------
 tippy_props: dict[str, object] = {
@@ -428,6 +562,97 @@ def _document_type_alias(
     lines[:] = [f"Alias of ``{value}``.", "", *doc]
 
 
+_ENGINE_PACKAGE: str = "cultivars_engine"
+
+_LOGGER = sphinx_logging.getLogger(__name__)
+
+
+def _document_reexports_as_classes() -> None:
+    """Document engine classes under their public names as classes, not aliases.
+
+    The public modules re-export their records, results and tests from the
+    engine (``from cultivars_engine._internals._tests import _JohansenRankTest as
+    JohansenRankTest``), so the object autodoc imports for
+    ``cultivars.diagnostics.cointegration.JohansenRankTest`` carries the
+    private ``__name__``. autodoc reads any name mismatch as an alias and
+    renders ``alias of _JohansenRankTest`` with no signature, docstring or
+    members. That is right for ``Short = LongName`` inside one module and
+    wrong here, where the public name is the one a reader is meant to see.
+
+    autodoc exposes no event for that decision, so the two properties that
+    carry it are wrapped. ``doc_as_attr`` answers ``False`` for a top-level
+    class defined under ``cultivars.engine`` and documented outside it.
+    ``canonical_full_name`` answers ``None`` for the same objects: the engine
+    reference documents the private name in its own right, and a
+    ``:canonical:`` alias from each public home would collide when a class
+    has two of them. The classes themselves are not touched, so attribute
+    docstrings and source links keep resolving through the defining module.
+
+    ``_ClassDefProperties`` is private to Sphinx and identical in 9.1.1 and
+    9.2.0, the two versions the lockfile resolves. If a later release moves
+    it, a warning is logged and the pages fall back to ``alias of``; the
+    strict build turns that warning into a failure.
+    """
+    try:
+        from sphinx.ext.autodoc._property_types import _ClassDefProperties
+
+        inherited_alias = _ClassDefProperties.doc_as_attr.fget
+        inherited_canonical = _ClassDefProperties.canonical_full_name.fget
+    except (ImportError, AttributeError):
+        inherited_alias = inherited_canonical = None
+    if inherited_alias is None or inherited_canonical is None:
+        _LOGGER.warning(
+            "autodoc internals moved in Sphinx %s: engine classes re-exported by the "
+            "public modules will render as 'alias of ...'. Update "
+            "_document_reexports_as_classes in conf.py.",
+            sphinx.__version__,
+        )
+        return
+
+    def is_reexport(props: _ClassDefProperties) -> bool:
+        defined_in = props._obj___module__ or ""
+        return (
+            len(props.parts) == 1
+            and props._obj___name__ is not None
+            and defined_in.startswith(f"{_ENGINE_PACKAGE}.")
+            and props.module_name != _ENGINE_PACKAGE
+            and not props.module_name.startswith(f"{_ENGINE_PACKAGE}.")
+        )
+
+    def doc_as_attr(props: _ClassDefProperties) -> bool:
+        return False if is_reexport(props) else inherited_alias(props)
+
+    def canonical_full_name(props: _ClassDefProperties) -> str | None:
+        return None if is_reexport(props) else inherited_canonical(props)
+
+    _ClassDefProperties.doc_as_attr = property(doc_as_attr)
+    _ClassDefProperties.canonical_full_name = property(canonical_full_name)
+
+
+def _skip_foreign_modules(
+    app: Sphinx,
+    what: str,
+    name: str,
+    obj: object,
+    skip: bool,
+    options: object,
+) -> bool | None:
+    """Keep third-party modules re-exported by the public surface out of the reference.
+
+    ``cultivars.data`` re-exports ``fedfred`` as ``economic`` and lists it in
+    ``__all__``. autosummary would otherwise recurse into it as a submodule
+    and write a stub for every fedfred object under a module path
+    (``economic.FredAPI``) that autodoc cannot import, which is one failed
+    page per object. Those packages are documented at their own sites, as the
+    ``cultivars.data`` docstring says.
+    """
+    if isinstance(obj, ModuleType) and obj.__name__.partition(".")[0] != project:
+        return True
+    return None
+
+
 def setup(app: Sphinx) -> None:
     """Setup hook for Sphinx."""
+    _document_reexports_as_classes()
     app.connect("autodoc-process-docstring", _document_type_alias)
+    app.connect("autodoc-skip-member", _skip_foreign_modules)

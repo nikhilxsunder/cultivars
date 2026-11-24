@@ -134,18 +134,18 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._samplers import _gamma_from_mode
+from cultivars_engine._core._types import Trend
+from cultivars_engine._internals._models import _BayesianVectorAutoRegressionModel
+from cultivars_engine._internals._priors import _Prior
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 from ...bayes.priors import (
     DummyInitialObservationPrior,
     NormalInverseWishartPrior,
     SumOfCoefficientsPrior,
 )
-from ...engine._core._samplers import _gamma_from_mode
-from ...engine._core._types import Trend
-from ...engine._internals._models import _BayesianVectorAutoRegressionModel
-from ...engine._internals._priors import _Prior
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
 from .bayesian import BVARResult
 
 __all__ = ["HierarchicalBVAR", "HierarchicalBVARResult"]
@@ -270,11 +270,11 @@ class HierarchicalBVARResult(BVARResult):
             True
             >>> full.hyperparameter_interval("rho")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown hyperparameter 'rho'; ...
+            cultivars_engine.exceptions.SpecificationError: unknown hyperparameter 'rho'; ...
             >>> empirical = model.fit(method="empirical", n_draws=50, seed=0)
             >>> empirical.hyperparameter_interval("lambda")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: the empirical-Bayes fit conditions on the ...
+            cultivars_engine.exceptions.SpecificationError: the empirical-Bayes fit conditions ...
         """
         if name not in self.hyper_names:
             raise SpecificationError(
@@ -590,10 +590,10 @@ class HierarchicalBVAR(_BayesianVectorAutoRegressionModel[HierarchicalBVARResult
             True
             >>> model.fit(method="map")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: method must be 'full' or 'empirical'; ...
+            cultivars_engine.exceptions.SpecificationError: method must be 'full' or ...
             >>> model.fit(n_draws=0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_draws must be positive and n_burn ...
+            cultivars_engine.exceptions.SpecificationError: n_draws must be positive and n_burn ...
         """
         names = ["lambda"]
         modes = [0.2]

@@ -121,7 +121,7 @@ Example:
     ('MSIH(2)-VAR(1)', True)
     >>> res.likelihood_ratio_test(VAR(y, order=1).fit())  # doctest: +ELLIPSIS
     Traceback (most recent call last):
-    cultivars.exceptions.SpecificationError: a chi-squared likelihood-ratio test cannot compare ...
+    cultivars_engine.exceptions.SpecificationError: a chi-squared likelihood-ratio test cannot ...
     >>> nested = MarkovSwitchingVAR(y, order=1, n_regimes=2, switching_variance=False)
     >>> nested.fit(seed=0).likelihood_ratio_test(res).df
     3
@@ -137,27 +137,27 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize
-
-from ...engine._core._protocols import StructuralResult
-from ...engine._core._types import ProbabilityType
-from ...engine._core._validators import (
+from cultivars_engine._core._protocols import StructuralResult
+from cultivars_engine._core._types import ProbabilityType
+from cultivars_engine._core._validators import (
     _validate_choice,
     _validate_endog_matrix,
 )
-from ...engine._internals._fits import _VectorMarkovSwitchingFit
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._fits import _VectorMarkovSwitchingFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import _MarkovSwitchingVectorAutoRegressionModel
-from ...engine._internals._results import _RegimeSystemResult as RegimeSystemResult
-from ...engine._internals._substrates import _RegimeSwitchingLinearStateSpace
-from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ...summary import (
+from cultivars_engine._internals._models import _MarkovSwitchingVectorAutoRegressionModel
+from cultivars_engine._internals._results import _RegimeSystemResult as RegimeSystemResult
+from cultivars_engine._internals._substrates import _RegimeSwitchingLinearStateSpace
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )
+from scipy.optimize import minimize
+
 from ..structural.zero_restrictions import RecursiveSVAR
 
 __all__ = [
@@ -552,7 +552,7 @@ class MarkovSwitchingVARResult(_SummaryMixin, _ComparisonMixin):
             (True, 1, True, (3, 2, 2))
             >>> res.regime(2)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: regime must be in 0..1; got 2.
+            cultivars_engine.exceptions.SpecificationError: regime must be in 0..1; got 2.
         """
         if not 0 <= index < self.n_regimes:
             raise SpecificationError(f"regime must be in 0..{self.n_regimes - 1}; got {index}.")
@@ -589,7 +589,7 @@ class MarkovSwitchingVARResult(_SummaryMixin, _ComparisonMixin):
             True
             >>> res.probabilities("viterbi")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: kind must be one of ('smoothed', ...
+            cultivars_engine.exceptions.SpecificationError: kind must be one of ('smoothed', ...
         """
         _validate_choice(kind, ProbabilityType, "kind")
         return {
@@ -927,7 +927,7 @@ class MarkovSwitchingVAR(_MarkovSwitchingVectorAutoRegressionModel[MarkovSwitchi
         ...     y, order=1, switching_mean=False, switching_variance=False
         ... )  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: at least one of switching_mean, ...
+        cultivars_engine.exceptions.SpecificationError: at least one of switching_mean, ...
     """
 
     __slots__ = ()
@@ -1146,7 +1146,7 @@ class MarkovSwitchingSVARResult(_SummaryMixin):
             ('SVARResult', 'recursive', (5, 2, 2))
             >>> svar.structural(2)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: regime must be in 0..1; got 2.
+            cultivars_engine.exceptions.SpecificationError: regime must be in 0..1; got 2.
         """
         if not 0 <= regime < self.n_regimes:
             raise SpecificationError(f"regime must be in 0..{self.n_regimes - 1}; got {regime}.")
@@ -1339,7 +1339,7 @@ class MarkovSwitchingSVAR:
         >>> theirs = [RecursiveSVAR(other.regime(m)).identify() for m in range(2)]
         >>> MarkovSwitchingSVAR(res, theirs)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: structurals[0] was not built from this MS-VAR's ...
+        cultivars_engine.exceptions.SpecificationError: structurals[0] was not built from this ...
     """
 
     __slots__ = ("_msvar", "_order", "_structurals")
@@ -1377,15 +1377,15 @@ class MarkovSwitchingSVAR:
             >>> res = MarkovSwitchingVAR(y, order=1, n_regimes=2).fit(seed=0)
             >>> MarkovSwitchingSVAR(res.regime(0))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: MarkovSwitchingSVAR constructs with a ...
+            cultivars_engine.exceptions.SpecificationError: MarkovSwitchingSVAR constructs with ...
             >>> from cultivars.multivariate.structural.zero_restrictions import RecursiveSVAR
             >>> mine = [RecursiveSVAR(res.regime(m)).identify() for m in range(2)]
             >>> MarkovSwitchingSVAR(res, mine[:1])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: structurals must supply one identification ...
+            cultivars_engine.exceptions.SpecificationError: structurals must supply one ...
             >>> MarkovSwitchingSVAR(res, mine, order=("y2", "y1"))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: pass either per-regime identifications to ...
+            cultivars_engine.exceptions.SpecificationError: pass either per-regime ...
         """
         if not isinstance(msvar, MarkovSwitchingVARResult):
             raise SpecificationError(
@@ -1444,7 +1444,7 @@ class MarkovSwitchingSVAR:
             (('b', 'a'), [0.0, 0.0])
             >>> MarkovSwitchingSVAR(res, order=("b", "c")).identify()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: order must be a permutation of the variable ...
+            cultivars_engine.exceptions.SpecificationError: order must be a permutation of the ...
         """
         structurals: tuple[StructuralResult, ...] = (
             self._structurals
@@ -1831,10 +1831,10 @@ class MarkovSwitchingDFM:
             ('x1', 'x2', 'x3')
             >>> MarkovSwitchingDFM(rng.standard_normal((50, 3)))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: a switching factor model needs at least 60 ...
-            >>> MarkovSwitchingDFM(rng.standard_normal((80, 1)))
+            cultivars_engine.exceptions.DimensionError: a switching factor model needs at least ...
+            >>> MarkovSwitchingDFM(rng.standard_normal((80, 1)))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: a factor model needs at least 2 series; got 1.
+            cultivars_engine.exceptions.DimensionError: a factor model needs at least 2 series; ...
         """
         self._panel = _validate_endog_matrix(panel)
         nobs, n_series = self._panel.shape

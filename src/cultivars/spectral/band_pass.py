@@ -113,12 +113,11 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._spectra import _ideal_weights
-from ..engine._core._validators import _validate_band, _validate_endog_matrix
-from ..engine._internals._mixins import _SummaryMixin
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._core._spectra import _ideal_weights
+from cultivars_engine._core._validators import _validate_band, _validate_endog_matrix
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["BandPassResult", "BaxterKingFilter", "ChristianoFitzgeraldFilter"]
 
@@ -383,7 +382,7 @@ class BaxterKingFilter:
             >>> BaxterKingFilter(low=32, high=6)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: the band needs 2 <= low < high in periods ...
+            cultivars_engine.exceptions.SpecificationError: the band needs 2 <= low < high in ...
         """
         _validate_band(low, high)
         if truncation < 1:
@@ -425,7 +424,7 @@ class BaxterKingFilter:
             >>> BaxterKingFilter(truncation=12).filter(np.zeros(24))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: a sample of 24 rows is too short for ...
+            cultivars_engine.exceptions.SpecificationError: a sample of 24 rows is too short for ...
         """
         panel = _validate_endog_matrix(data)
         nobs = panel.shape[0]
@@ -536,7 +535,7 @@ class ChristianoFitzgeraldFilter:
             >>> ChristianoFitzgeraldFilter(low=1, high=32)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: the band needs 2 <= low < high in periods ...
+            cultivars_engine.exceptions.SpecificationError: the band needs 2 <= low < high in ...
         """
         _validate_band(low, high)
         self._low = float(low)

@@ -130,23 +130,21 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import chi2
-
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _COHERENCE_SURROGATES,
     _DEFAULT_ALPHA,
     _MIN_SPECTRUM_OBS,
     _MORLET_OMEGA0,
     _SCALES_PER_OCTAVE,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_aligned,
     _validate_choice,
     _validate_endog,
     _validate_open_interval,
     _validate_order,
 )
-from ..engine._core._wavelets import (
+from cultivars_engine._core._wavelets import (
     _coherence_surrogates,
     _cone_of_influence,
     _modwt,
@@ -156,9 +154,10 @@ from ..engine._core._wavelets import (
     _morlet_scales,
     _wavelet_coherence,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import chi2
 
 __all__ = ["MODWT", "MODWTResult", "WaveletCoherence", "WaveletCoherenceResult"]
 
@@ -534,11 +533,11 @@ class MODWT:
             >>> MODWT(wavelet="sym8")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: wavelet must be one of ... got 'sym8'.
+            cultivars_engine.exceptions.SpecificationError: wavelet must be one of ... got 'sym8'.
             >>> MODWT(levels=0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: levels must be >= 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: levels must be >= 1; got 0.
         """
         self._wavelet = _validate_choice(wavelet, ("haar", "d4", "la8"), "wavelet")
         self._levels = None if levels is None else _validate_order(levels, "levels", minimum=1)
@@ -570,7 +569,7 @@ class MODWT:
             >>> MODWT(levels=6).transform(y)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: 6 levels of the la8 wavelet exceed what 256 ...
+            cultivars_engine.exceptions.SpecificationError: 6 levels of the la8 wavelet exceed ...
         """
         y = _validate_endog(endog)
         n = y.shape[0]
@@ -747,7 +746,7 @@ class WaveletCoherenceResult(_SummaryMixin):
             >>> WaveletCoherence(surrogates=0).compute(a, b).significant()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: no significance level: rerun ...
+            cultivars_engine.exceptions.SpecificationError: no significance level: rerun ...
         """
         if self.significance is None:
             raise SpecificationError(
@@ -786,10 +785,10 @@ class WaveletCoherenceResult(_SummaryMixin):
             2.1
             >>> round(wc.compute(y, x).lead((14.0, 18.0)), 1)
             -2.1
-            >>> wc.compute(x, y).lead((1000.0, 2000.0))
+            >>> wc.compute(x, y).lead((1000.0, 2000.0))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: no scale has a period in [1000.0, 2000.0].
+            cultivars_engine.exceptions.SpecificationError: no scale has a period in [1000.0, ...
         """
         low, high = scale_band
         rows = (self.periods >= low) & (self.periods <= high)
@@ -1009,11 +1008,11 @@ class WaveletCoherence:
             >>> WaveletCoherence(omega0=4)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: omega0 must lie in (4.0, inf); got 4.0.
+            cultivars_engine.exceptions.SpecificationError: omega0 must lie in (4.0, inf); got 4.0.
             >>> WaveletCoherence(surrogates=-1)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: surrogates must be >= 0; got -1.
+            cultivars_engine.exceptions.SpecificationError: surrogates must be >= 0; got -1.
         """
         self._omega0 = _validate_open_interval(omega0, "omega0", low=4.0, high=np.inf)
         self._per_octave = _validate_order(per_octave, "per_octave", minimum=1)
@@ -1052,7 +1051,7 @@ class WaveletCoherence:
             >>> WaveletCoherence(surrogates=0).compute(a, b[:100])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.DimensionError: second must be one-dimensional with length 128; ...
+            cultivars_engine.exceptions.DimensionError: second must be one-dimensional with ...
         """
         x = _validate_endog(first)
         n = x.shape[0]

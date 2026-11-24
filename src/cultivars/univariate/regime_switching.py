@@ -148,22 +148,21 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _SIMULATION_BURN
-from ..engine._core._types import ProbabilityType
-from ..engine._core._validators import _validate_choice
-from ..engine._internals._assessments import _StabilityAssessment
-from ..engine._internals._fits import _MarkovSwitchingFit
-from ..engine._internals._mixins import (
+from cultivars_engine._core._defaults import _SIMULATION_BURN
+from cultivars_engine._core._types import ProbabilityType
+from cultivars_engine._core._validators import _validate_choice
+from cultivars_engine._internals._assessments import _StabilityAssessment
+from cultivars_engine._internals._fits import _MarkovSwitchingFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import _MarkovSwitchingModel
-from ..engine._internals._simulators import _simulate_markov_switching
-from ..engine._internals._substrates import _MarkovSwitchingStateSpace
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine._internals._models import _MarkovSwitchingModel
+from cultivars_engine._internals._simulators import _simulate_markov_switching
+from cultivars_engine._internals._substrates import _MarkovSwitchingStateSpace
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )
@@ -465,7 +464,7 @@ class MarkovSwitchingARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.probabilities("viterbi")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: kind must be one of ('smoothed', ...
+            cultivars_engine.exceptions.SpecificationError: kind must be one of ('smoothed', ...
         """
         _validate_choice(kind, ProbabilityType, "kind")
         return {
@@ -592,7 +591,7 @@ class MarkovSwitchingARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.regime_stability(2)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: regime must be in 0..1; got 2.
+            cultivars_engine.exceptions.SpecificationError: regime must be in 0..1; got 2.
         """
         if not 0 <= regime < self.n_regimes:
             raise SpecificationError(f"regime must be in 0..{self.n_regimes - 1}; got {regime}.")
@@ -790,7 +789,7 @@ class MarkovSwitchingARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> res.simulate(0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n must be positive and burn non-negative; ...
+            cultivars_engine.exceptions.SpecificationError: n must be positive and burn ...
         """
         return self.simulate_regimes(n, seed=seed, burn=burn)[0]
 
@@ -1086,7 +1085,7 @@ class MarkovSwitchingAR(_MarkovSwitchingModel[MarkovSwitchingARResult]):
         ... # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: at least one of switching_mean, ...
+        cultivars_engine.exceptions.SpecificationError: at least one of switching_mean, ...
     """
 
     __slots__ = ()

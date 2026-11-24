@@ -146,15 +146,14 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _companion_matrix
-from ...engine._internals._mixins import (
+from cultivars_engine._core._matrices import _companion_matrix
+from cultivars_engine._internals._mixins import (
     _ConvergenceMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import _TimeVaryingVectorAutoRegressionModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _TimeVaryingVectorAutoRegressionModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = [
     "TVPSVAR",
@@ -410,7 +409,7 @@ class TVPVARResult(_SummaryMixin, _ConvergenceMixin):
             True
             >>> res.coefficient_path("y1", "y1.L2")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown regressor 'y1.L2'; expected one of ...
+            cultivars_engine.exceptions.SpecificationError: unknown regressor 'y1.L2'; expected ...
         """
         if equation not in self.names:
             raise SpecificationError(
@@ -452,7 +451,7 @@ class TVPVARResult(_SummaryMixin, _ConvergenceMixin):
             True
             >>> res.coefficients_at(res.nobs)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: t must be in 0..98; got 99.
+            cultivars_engine.exceptions.SpecificationError: t must be in 0..98; got 99.
         """
         if not 0 <= t < self.nobs:
             raise SpecificationError(f"t must be in 0..{self.nobs - 1}; got {t}.")
@@ -692,7 +691,7 @@ class TVPVARSVResult(TVPVARResult):
             True
             >>> res.volatility_path("y3")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown variable 'y3'; expected one of ...
+            cultivars_engine.exceptions.SpecificationError: unknown variable 'y3'; expected one ...
         """
         if name not in self.names:
             raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
@@ -837,7 +836,7 @@ class TVPSVARResult(_SummaryMixin, _ConvergenceMixin):
             (True, True)
             >>> svar.impact(99)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: t must be in 0..98; got 99.
+            cultivars_engine.exceptions.SpecificationError: t must be in 0..98; got 99.
         """
         if not 0 <= t < self.nobs:
             raise SpecificationError(f"t must be in 0..{self.nobs - 1}; got {t}.")
@@ -887,7 +886,7 @@ class TVPSVARResult(_SummaryMixin, _ConvergenceMixin):
             True
             >>> svar.irf(-1, t=0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be non-negative; got -1.
+            cultivars_engine.exceptions.SpecificationError: horizon must be non-negative; got -1.
         """
         if horizon < 0:
             raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
@@ -1037,7 +1036,7 @@ class TVPVAR(_TimeVaryingVectorAutoRegressionModel[TVPVARResult]):
         (40, 20)
         >>> TVPVAR(y, order=1, training=4)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: a training sample of 4 rows cannot identify ...
+        cultivars_engine.exceptions.SpecificationError: a training sample of 4 rows cannot ...
     """
 
     __slots__ = ()
@@ -1101,7 +1100,7 @@ class TVPVAR(_TimeVaryingVectorAutoRegressionModel[TVPVARResult]):
             (13, 40, 15, 2)
             >>> model.fit(n_draws=10, n_burn=10)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_draws (10) must exceed n_burn (10).
+            cultivars_engine.exceptions.SpecificationError: n_draws (10) must exceed n_burn (10).
         """
         fit = self._fit_tvp(
             sv=False,
@@ -1356,10 +1355,10 @@ class TVPSVAR:
         (5, 2, 2)
         >>> TVPSVAR(y)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: TVPSVAR constructs with a fitted ...
+        cultivars_engine.exceptions.SpecificationError: TVPSVAR constructs with a fitted ...
         >>> TVPSVAR(res, order=("y2", "y3"))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: order must be a permutation of ('y1', 'y2'); ...
+        cultivars_engine.exceptions.SpecificationError: order must be a permutation of ('y1', ...
     """
 
     __slots__ = ("_order", "_source")
@@ -1394,7 +1393,7 @@ class TVPSVAR:
             True
             >>> TVPSVAR(sv, order=("y2", "y1"))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: the SV model's recursive ordering is ...
+            cultivars_engine.exceptions.SpecificationError: the SV model's recursive ordering is ...
         """
         if not isinstance(source, TVPVARResult):
             raise SpecificationError(

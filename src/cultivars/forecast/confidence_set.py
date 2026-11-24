@@ -114,20 +114,19 @@ from collections.abc import Sequence
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _MCS_ALPHA,
     _MCS_BOOTSTRAP,
 )
-from ..engine._core._estimators import _model_confidence_set
-from ..engine._core._validators import (
+from cultivars_engine._core._estimators import _model_confidence_set
+from cultivars_engine._core._validators import (
     _validate_names,
     _variable_names,
 )
-from ..engine._internals._selections import (
+from cultivars_engine._internals._selections import (
     _ModelConfidenceSetSelection as ModelConfidenceSetSelection,
 )
-from ..exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
 
 __all__ = ["ModelConfidenceSetSelection", "model_confidence_set"]
 
@@ -250,7 +249,7 @@ def model_confidence_set(
         >>> model_confidence_set(losses, n_bootstrap=50)
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: n_bootstrap must be at least 100; got 50.
+        cultivars_engine.exceptions.SpecificationError: n_bootstrap must be at least 100; got 50.
     """
     panel = np.asarray(losses, dtype=np.float64)
     if panel.ndim != 2:

@@ -107,16 +107,15 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._scores import (
+from cultivars_engine._core._scores import (
     _crps_from_draws,
     _energy_score,
     _kernel_log_score,
     _pinball_loss,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..exceptions import DimensionError, NumericalError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import DimensionError, NumericalError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["DensityScore", "DensityScoreResult", "pinball_loss"]
 
@@ -431,7 +430,7 @@ class DensityScore:
             >>> DensityScore(paths, outcome)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.DimensionError: paths must be (n_draws, h, k) against (h, k) ...
+            cultivars_engine.exceptions.DimensionError: paths must be (n_draws, h, k) against ...
         """
         block = np.asarray(paths, dtype=np.float64)
         if block.ndim == 2:
@@ -601,10 +600,10 @@ def pinball_loss(
         array([0.1, 0.9])
         >>> bool(np.allclose(pinball_loss([2.0, -3.0], [0.0, 0.0], 0.5), [1.0, 1.5]))
         True
-        >>> pinball_loss([1.0], [0.0], 1.0)
+        >>> pinball_loss([1.0], [0.0], 1.0)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: tau must lie strictly inside (0, 1); got 1.0.
+        cultivars_engine.exceptions.SpecificationError: tau must lie strictly inside (0, 1); ...
     """
     y = np.asarray(realized, dtype=np.float64)
     q = np.asarray(quantile, dtype=np.float64)

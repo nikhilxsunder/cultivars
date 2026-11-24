@@ -153,16 +153,16 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._types import Trend
+from cultivars_engine._internals._fits import _VectorGibbsFit
+from cultivars_engine._internals._models import _GibbsBayesianVectorAutoRegressionModel
+from cultivars_engine._internals._priors import _Prior
+from cultivars_engine._internals._results import _VectorPosteriorDrawsResult
+from cultivars_engine._internals._selections import _MarginalLikelihoodSelection
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 from ...bayes.priors import IndependentNormalWishartPrior
-from ...engine._core._types import Trend
-from ...engine._internals._fits import _VectorGibbsFit
-from ...engine._internals._models import _GibbsBayesianVectorAutoRegressionModel
-from ...engine._internals._priors import _Prior
-from ...engine._internals._results import _VectorPosteriorDrawsResult
-from ...engine._internals._selections import _MarginalLikelihoodSelection
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
 
 __all__ = ["GibbsBVAR", "GibbsBVARResult"]
 
@@ -408,7 +408,7 @@ class GibbsBVARResult(_VectorPosteriorDrawsResult):
             ... )
             >>> adaptive.marginal_likelihood()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: Chib's estimator here covers the two-block ...
+            cultivars_engine.exceptions.SpecificationError: Chib's estimator here covers the ...
         """
         return self._engine._marginal_likelihood(
             self.beta_draws,
@@ -481,7 +481,7 @@ class GibbsBVARResult(_VectorPosteriorDrawsResult):
             ...     n_draws=60, n_burn=20, seed=0
             ... ).inclusion_probabilities()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: inclusion probabilities exist only under ...
+            cultivars_engine.exceptions.SpecificationError: inclusion probabilities exist only ...
         """
         if "inclusion" not in self.shrinkage_label:
             raise SpecificationError(
@@ -525,7 +525,7 @@ class GibbsBVARResult(_VectorPosteriorDrawsResult):
             >>> static = GibbsBVAR(y, order=1).fit(n_draws=60, n_burn=20, seed=0)
             >>> static.shrinkage_scales()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: shrinkage scales exist only under a ...
+            cultivars_engine.exceptions.SpecificationError: shrinkage scales exist only under a ...
         """
         if "scale" not in self.shrinkage_label:
             raise SpecificationError(
@@ -707,7 +707,7 @@ class GibbsBVAR(_GibbsBayesianVectorAutoRegressionModel[GibbsBVARResult]):
         >>> composed = GibbsBVAR(y, order=1, prior=HorseshoePrior() + SumOfCoefficientsPrior())
         >>> composed.fit(n_draws=60, n_burn=20, seed=0)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: adaptive shrinkage priors do not compose: ...
+        cultivars_engine.exceptions.SpecificationError: adaptive shrinkage priors do not ...
     """
 
     __slots__ = ()
@@ -790,7 +790,7 @@ class GibbsBVAR(_GibbsBayesianVectorAutoRegressionModel[GibbsBVARResult]):
             True
             >>> model.fit(n_draws=50, n_burn=50)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_draws (50) must exceed n_burn (50).
+            cultivars_engine.exceptions.SpecificationError: n_draws (50) must exceed n_burn (50).
         """
         return GibbsBVARResult._from_fit(
             self._fit_gibbs(n_draws=n_draws, n_burn=n_burn, thin=thin, seed=seed),

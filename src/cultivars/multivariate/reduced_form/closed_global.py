@@ -150,17 +150,17 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import chi2
-
-from ...engine._core._validators import _validate_weights
-from ...engine._internals._mixins import (
+from cultivars_engine._core._validators import _validate_weights
+from cultivars_engine._internals._mixins import (
     _SummaryMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._solvers import _solve_global
-from ...engine._internals._tests import _WaldTest
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._solvers import _solve_global
+from cultivars_engine._internals._tests import _WaldTest
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import chi2
+
 from .error_correction import VECMXResult
 from .vector_autoregression import VARXResult
 
@@ -412,7 +412,7 @@ class GVARResult(_SummaryMixin, _VectorPropagationMixin):
             1
             >>> res._unit_index("uk")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown unit 'uk'; expected one of ('us', ...
+            cultivars_engine.exceptions.SpecificationError: unknown unit 'uk'; expected one of ...
         """
         if unit not in self.unit_names:
             raise SpecificationError(f"unknown unit {unit!r}; expected one of {self.unit_names}.")
@@ -554,7 +554,7 @@ class GVARResult(_SummaryMixin, _VectorPropagationMixin):
             >>> mixed = GVAR([levels, units[1]], swap, variable_labels=["p", "p"]).solve()
             >>> mixed.weak_exogeneity_test("unit1")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unit 'unit1' was fitted in levels, which ...
+            cultivars_engine.exceptions.SpecificationError: unit 'unit1' was fitted in levels, ...
         """
         index = self._unit_index(unit)
         fitted = self.units[index]
@@ -915,13 +915,14 @@ class GVAR:
             (0, 1)
             >>> GVAR(units, swap, variable_labels=["p"])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: variable_labels must have one entry per ...
+            cultivars_engine.exceptions.SpecificationError: variable_labels must have one entry ...
             >>> GVAR(units, swap, variable_labels=["p", "p"], unit_names=("a", "a"))
+            ... # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unit_names must be unique; got ('a', 'a').
+            cultivars_engine.exceptions.SpecificationError: unit_names must be unique; got ...
             >>> GVAR(units, np.eye(2), variable_labels=["p", "p"])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: weights must have a zero diagonal; units ...
+            cultivars_engine.exceptions.SpecificationError: weights must have a zero diagonal; ...
         """
         self._units = tuple(units)
         if not self._units:

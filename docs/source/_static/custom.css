@@ -273,3 +273,63 @@ html[data-theme="dark"] .cv-footer {
     gap: 1.5rem;
   }
 }
+
+/* ---- Header menus -------------------------------------------------------- */
+
+/* _templates/navbar-dropdowns.html: a section title is a link to the section
+   index, and its menu opens on hover or keyboard focus, as on the PyTorch
+   docs. The theme hides `.dropdown-menu:not(.show)` and only Bootstrap's
+   click handler adds `.show`, so the rules below have to out-rank that. */
+.bd-header ul.navbar-nav li.nav-item.dropdown.cv-nav-menu > .dropdown-menu {
+  top: 100%;
+  left: 0;
+  margin: 0.5rem 0 0;
+}
+.bd-header
+  ul.navbar-nav
+  li.nav-item.dropdown.cv-nav-menu:hover
+  > .dropdown-menu,
+.bd-header
+  ul.navbar-nav
+  li.nav-item.dropdown.cv-nav-menu:focus-within
+  > .dropdown-menu {
+  display: block;
+}
+
+/* Bridge the gap between the title and its menu, so the pointer does not
+   leave the item (and close the menu) on the way down. */
+.bd-header
+  ul.navbar-nav
+  li.nav-item.dropdown.cv-nav-menu
+  > .dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -0.75rem;
+  left: 0;
+  right: 0;
+  height: 0.75rem;
+}
+
+/* Caret after the title: the one Bootstrap draws for `.dropdown-toggle`. */
+.bd-header .cv-nav-menu__title::after {
+  content: "";
+  display: inline-block;
+  margin-left: 0.3em;
+  vertical-align: 0.2em;
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-left: 0.3em solid transparent;
+}
+
+/* Narrow screens: the same component is rendered in the slide-out sidebar,
+   where there is no hover. Show each menu as an indented list instead. */
+.bd-sidebar-primary .cv-nav-menu > .dropdown-menu {
+  display: block;
+  position: static;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 0 1rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}

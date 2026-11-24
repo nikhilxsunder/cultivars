@@ -1,0 +1,52 @@
+{# Header navigation with a hover dropdown per top-level section. Replaces the
+theme's navbar-nav component, which only offers a single "More" overflow menu.
+The sections and their menu entries come from ``navbar_dropdowns`` in
+``html_context`` (conf.py); a section with no children renders as a plain link.
+A section title is itself a link to the section's index page; its menu opens on
+hover and on keyboard focus, with no script, through the ``cv-nav-menu`` rules
+in ``_static/custom.css``. The ``dropdown`` and ``dropdown-menu`` classes are
+kept so that the theme's own colours, border and shadow apply to the menu. A
+section's ``doc`` and each entry's target are a docname, or an absolute URL,
+which is linked as it is and marked as an external link. A section that lives
+outside the site is never the current one. #} {%- macro nav_href(target) -%} {%-
+if target.startswith("http://") or target.startswith("https://") -%} {{ target
+}} {%- else -%} {{ pathto(target) }} {%- endif -%} {%- endmacro -%} {%- macro
+nav_kind(target) -%} {{ "nav-external" if target.startswith("http://") or
+target.startswith("https://") else "nav-internal" }} {%- endmacro -%}
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    {%- for section in navbar_dropdowns %} {%- set external =
+    section.doc.startswith("http://") or section.doc.startswith("https://") %}
+    {%- set root = section.doc.rsplit("/", 1)[0] %} {%- set active = not
+    external and (pagename == section.doc or pagename.startswith(root + "/")) %}
+    {%- if section.children %}
+    <li class="nav-item dropdown cv-nav-menu{{ ' current active' if active }}">
+      <a
+        class="nav-link {{ nav_kind(section.doc) }} cv-nav-menu__title"
+        href="{{ nav_href(section.doc) }}"
+      >
+        {{ section.title }}
+      </a>
+      <ul class="dropdown-menu">
+        {%- for target, title in section.children %}
+        <li>
+          <a
+            class="nav-link dropdown-item {{ nav_kind(target) }}"
+            href="{{ nav_href(target) }}"
+            >{{ title }}</a
+          >
+        </li>
+        {%- endfor %}
+      </ul>
+    </li>
+    {%- else %}
+    <li class="nav-item{{ ' current active' if active }}">
+      <a
+        class="nav-link {{ nav_kind(section.doc) }}"
+        href="{{ nav_href(section.doc) }}"
+        >{{ section.title }}</a
+      >
+    </li>
+    {%- endif %} {%- endfor %}
+  </ul>
+</nav>

@@ -139,12 +139,11 @@ from itertools import pairwise
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _CRITICAL_ALPHAS,
     _CRITICAL_LEVELS,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _bai_perron_partition,
     _bridge_functionals,
     _cusum_squares_quantiles,
@@ -152,15 +151,15 @@ from ..engine._core._estimators import (
     _segment_ssr,
     _simulated_critical_values,
 )
-from ..engine._core._mappings import (
+from cultivars_engine._core._mappings import (
     _CUSUM_BOUNDARY,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_regression,
 )
-from ..engine._internals._tests import _TabulatedTest
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine._internals._tests import _TabulatedTest
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     SummaryTable,
 )
 
@@ -264,7 +263,7 @@ class BreakTest(_TabulatedTest):
         >>> test.reject(alpha=0.03)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: CUSUM carries no p-value; ...
+        cultivars_engine.exceptions.SpecificationError: CUSUM carries no p-value; ...
     """
 
     break_index: int | None
@@ -971,7 +970,7 @@ def bai_perron(
         >>> bai_perron(y, max_breaks=10)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: 10 breaks with segments of at least 30 ...
+        cultivars_engine.exceptions.SpecificationError: 10 breaks with segments of at least 30 ...
     """
     if criterion not in ("bic", "lwz", "sequential"):
         raise SpecificationError(

@@ -133,17 +133,16 @@ from collections.abc import Callable, Sequence
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _MHM_TAU
-from ..engine._core._estimators import (
+from cultivars_engine._core._defaults import _MHM_TAU
+from cultivars_engine._core._estimators import (
     _bridge_sampling,
     _modified_harmonic_mean,
 )
-from ..engine._internals._selections import (
+from cultivars_engine._internals._selections import (
     _MarginalLikelihoodSelection as MarginalLikelihoodSelection,
 )
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = [
     "MarginalLikelihoodSelection",
@@ -242,7 +241,7 @@ def marginal_likelihood(result: object) -> MarginalLikelihoodSelection:
         >>> marginal_likelihood(VAR(y, order=1).fit())  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: VARResult offers no marginal likelihood. ...
+        cultivars_engine.exceptions.SpecificationError: VARResult offers no marginal likelihood. ...
     """
     method = getattr(result, "marginal_likelihood", None)
     if not callable(method):

@@ -150,24 +150,26 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._defaults import _SIMULATION_BURN
-from ...engine._internals._fits import _PerturbationFit
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _PerturbationModel
-from ...engine._internals._posteriors import _PerturbationDSGEPosterior as PerturbationDSGEPosterior
-from ...engine._internals._simulators import (
+from cultivars_engine._core._defaults import _SIMULATION_BURN
+from cultivars_engine._internals._fits import _PerturbationFit
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _PerturbationModel
+from cultivars_engine._internals._posteriors import (
+    _PerturbationDSGEPosterior as PerturbationDSGEPosterior,
+)
+from cultivars_engine._internals._simulators import (
     _impulse_responses,
     _simulate_perturbation,
 )
-from ...engine._internals._solutions import _PerturbationSolution as PerturbationDSGESolution
-from ...engine._internals._specifications import (
+from cultivars_engine._internals._solutions import _PerturbationSolution as PerturbationDSGESolution
+from cultivars_engine._internals._specifications import (
     _PerturbationModelSpecification as PerturbationModelSpecification,
 )
-from ...exceptions import SpecificationError
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
 from ...state_space.linear_gaussian import LinearGaussianSSM
 from ...state_space.nonlinear import NonlinearSSM
-from ...summary import SummaryTable
 
 __all__ = [
     "PerturbationDSGE",
@@ -472,7 +474,7 @@ class PerturbationDSGEResult(_SummaryMixin):
             True
             >>> res.impulse_responses(horizon=0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: horizon must be at least 1; got 0.
         """
         if horizon < 1:
             raise SpecificationError(f"horizon must be at least 1; got {horizon}.")
@@ -525,7 +527,7 @@ class PerturbationDSGEResult(_SummaryMixin):
             ((50, 1), True)
             >>> res.simulate(0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n must be positive and burn non-negative; ...
+            cultivars_engine.exceptions.SpecificationError: n must be positive and burn ...
         """
         rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         design, intercept, obs_cov = self._engine._measurement(self.theta, self.solution)
@@ -902,10 +904,10 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
             ('extended', {'rho': 0.82, 'sigma': 0.48})
             >>> second.fit()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: theta0 is required: supply starting ...
+            cultivars_engine.exceptions.SpecificationError: theta0 is required: supply starting ...
             >>> second.fit([0.5, 0.3], filter="kalman")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: filter='kalman' is exact only at order=1; ...
+            cultivars_engine.exceptions.SpecificationError: filter='kalman' is exact only at ...
         """
         if theta0 is None:
             raise SpecificationError(

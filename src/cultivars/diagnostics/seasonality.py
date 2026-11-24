@@ -112,14 +112,13 @@ from dataclasses import dataclass, replace
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._converters import (
+from cultivars_engine._core._converters import (
     _frequency_labels,
 )
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _HEGY_REPLICATIONS,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _canova_hansen,
     _hegy_null_draws,
     _hegy_statistics,
@@ -129,12 +128,13 @@ from ..engine._core._estimators import (
     _simulated_critical_values,
     _von_mises_draws,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_choice,
     _validate_order,
     _validate_seasonal,
 )
-from ..exceptions import SpecificationError
+from cultivars_engine.exceptions import SpecificationError
+
 from .unit_roots import UnitRootTest
 
 __all__ = ["SeasonalUnitRootTest", "canova_hansen", "hegy"]

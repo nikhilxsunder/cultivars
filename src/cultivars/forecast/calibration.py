@@ -120,13 +120,12 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
-
-from ..engine._core._estimators import _berkowitz_likelihood_ratio
-from ..engine._core._scores import _pit_from_draws
-from ..engine._internals._mixins import _SummaryMixin
-from ..engine._internals._tests import _LikelihoodRatioTest
-from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._core._estimators import _berkowitz_likelihood_ratio
+from cultivars_engine._core._scores import _pit_from_draws
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._tests import _LikelihoodRatioTest
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["Calibration", "CalibrationResult"]
 
@@ -260,10 +259,10 @@ class CalibrationResult(_SummaryMixin):
             >>> record = Calibration(paths, outcomes)
             >>> record.compute()._index("y2")
             1
-            >>> record.compute()._index("z")
+            >>> record.compute()._index("z")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown series 'z'; the panel has ('y1', 'y2').
+            cultivars_engine.exceptions.SpecificationError: unknown series 'z'; the panel has ...
         """
         try:
             return self.names.index(name)
@@ -325,7 +324,7 @@ class CalibrationResult(_SummaryMixin):
             >>> record.compute().histogram(1)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: bins must be at least 2; got 1.
+            cultivars_engine.exceptions.SpecificationError: bins must be at least 2; got 1.
         """
         if bins < 2:
             raise SpecificationError(f"bins must be at least 2; got {bins}.")
@@ -517,12 +516,12 @@ class Calibration:
             >>> Calibration(paths, outcomes)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.DimensionError: paths must be (T, n_draws, k) against (T, k) ...
+            cultivars_engine.exceptions.DimensionError: paths must be (T, n_draws, k) against ...
             >>> short = rng.standard_normal((5, 100)), rng.standard_normal(5)
             >>> Calibration(*short)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: a calibration record over 5 origins cannot ...
+            cultivars_engine.exceptions.SpecificationError: a calibration record over 5 origins ...
         """
         block = np.asarray(paths, dtype=np.float64)
         if block.ndim == 2:

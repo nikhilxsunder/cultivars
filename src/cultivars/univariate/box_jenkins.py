@@ -129,32 +129,31 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _SIMULATION_BURN
-from ..engine._core._matrices import (
+from cultivars_engine._core._defaults import _SIMULATION_BURN
+from cultivars_engine._core._matrices import (
     _deterministic_columns,
     _n_deterministic,
 )
-from ..engine._core._polynomials import (
+from cultivars_engine._core._polynomials import (
     _expand_ar,
     _expand_ma,
 )
-from ..engine._core._validators import _validate_order_tuple
-from ..engine._internals._fits import _BoxJenkinsFit
-from ..engine._internals._mixins import (
+from cultivars_engine._core._validators import _validate_order_tuple
+from cultivars_engine._internals._fits import _BoxJenkinsFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _InvertibilityMixin,
     _SeriesMixin,
     _StationarityMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import _BoxJenkinsModel
-from ..engine._internals._simulators import (
+from cultivars_engine._internals._models import _BoxJenkinsModel
+from cultivars_engine._internals._simulators import (
     _integrate,
     _simulate_arma,
 )
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )
@@ -455,7 +454,7 @@ class ARMAResult(
             >>> ARIMA(np.cumsum(y), order=(1, 1, 1)).fit().simulate(1)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n must exceed the integration orders (1); ...
+            cultivars_engine.exceptions.SpecificationError: n must exceed the integration ...
         """
         if self.k_exog:
             raise SpecificationError(
@@ -835,11 +834,11 @@ class ARIMAX(SARIMAX):
             >>> ARIMAX(y, order=(1, 0, 0), exog=None)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: ARIMAX requires exogenous regressors; ...
+            cultivars_engine.exceptions.SpecificationError: ARIMAX requires exogenous ...
             >>> ARIMAX(y, order=(1, 0, 0), exog=np.zeros((100, 0)))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: ARIMAX requires at least one exogenous ...
+            cultivars_engine.exceptions.SpecificationError: ARIMAX requires at least one ...
         """
         if exog is None:
             raise SpecificationError(
@@ -1081,11 +1080,11 @@ class ARMA(SARIMAX):
             >>> ARMA(np.arange(50.0), order=(1, -1))
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: q must be >= 0; got -1.
+            cultivars_engine.exceptions.SpecificationError: q must be >= 0; got -1.
             >>> ARMA(np.arange(50.0), order=(1, 0, 1))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: order must have 2 elements ('p', 'q'); got ...
+            cultivars_engine.exceptions.SpecificationError: order must have 2 elements ('p', ...
         """
         p, q = _validate_order_tuple(order, ("p", "q"))
         super().__init__(endog, order=(p, 0, q), trend=trend)

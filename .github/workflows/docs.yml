@@ -77,9 +77,16 @@ jobs:
           DOCS_VERSION: ${{ matrix.version }}
           DOCS_GIT_REF: ${{ matrix.ref }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          # Sidebar pruning for the generated reference: the same list as
+          # remove_from_toctrees in docs/source/conf.py, passed on the command
+          # line so that a release tag cut before that setting existed is
+          # rebuilt with it. Without it one version of the site is 1.2-4.5 GB
+          # and the Pages deployment of all versions exceeds its 10 GB cap.
+          DOCS_SIDEBAR_PRUNE: >-
+            gen_modules/backreferences/*,api/generated/*.[A-Z]*.*.rst,engine/generated/cultivars.engine.*.*.*.rst,engine/generated/*.[A-Z]*.rst
         run: |
           rm -rf docs/source/*/generated
-          uv run --no-sync make -C docs html
+          uv run --no-sync make -C docs html O="-D remove_from_toctrees=${DOCS_SIDEBAR_PRUNE}"
       - name: Deploy ${{ matrix.version }}
         uses: peaceiris/actions-gh-pages@v3
         with:

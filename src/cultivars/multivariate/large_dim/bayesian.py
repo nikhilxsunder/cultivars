@@ -96,21 +96,21 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...bayes.priors import NormalInverseWishartPrior
-from ...engine._core._matrices import _companion_matrix
-from ...engine._core._types import Trend
-from ...engine._internals._fits import _VectorConjugateFit
-from ...engine._internals._mixins import (
+from cultivars_engine._core._matrices import _companion_matrix
+from cultivars_engine._core._types import Trend
+from cultivars_engine._internals._fits import _VectorConjugateFit
+from cultivars_engine._internals._mixins import (
     _ConvergenceMixin,
     _ReplicationMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import _BayesianVectorAutoRegressionModel
-from ...engine._internals._priors import _Prior
-from ...engine._internals._selections import _MarginalLikelihoodSelection
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _BayesianVectorAutoRegressionModel
+from cultivars_engine._internals._priors import _Prior
+from cultivars_engine._internals._selections import _MarginalLikelihoodSelection
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
+from ...bayes.priors import NormalInverseWishartPrior
 
 __all__ = ["BVAR", "BVARResult"]
 
@@ -696,7 +696,7 @@ class BVARResult(_SummaryMixin, _ConvergenceMixin, _ReplicationMixin):
             >>> res.credible_interval("growth", "growth.L2")  # doctest: +NORMALIZE_WHITESPACE
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown regressor 'growth.L2';
+            cultivars_engine.exceptions.SpecificationError: unknown regressor 'growth.L2';
             expected one of ('const', 'growth.L1', 'inflation.L1').
         """
         if equation not in self.names:
@@ -1598,7 +1598,7 @@ class BVAR(_BayesianVectorAutoRegressionModel[BVARResult]):
         >>> VAR(wide, order=2)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.DimensionError: a sample of 30 rows is too short for VAR(2); ...
+        cultivars_engine.exceptions.DimensionError: a sample of 30 rows is too short for VAR(2); ...
         >>> BVAR(wide, order=2).fit(n_draws=100, seed=0).beta_draws.shape
         (100, 41, 20)
 
@@ -1630,7 +1630,7 @@ class BVAR(_BayesianVectorAutoRegressionModel[BVARResult]):
         >>> model.fit(n_draws=10, seed=0)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: the prior variance does not factor as ...
+        cultivars_engine.exceptions.SpecificationError: the prior variance does not factor as ...
 
         The order is chosen on a common sample with the inherited
         information criteria:
@@ -1838,7 +1838,7 @@ class BVAR(_BayesianVectorAutoRegressionModel[BVARResult]):
             >>> model.fit(n_draws=0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n_draws must be positive; got 0.
+            cultivars_engine.exceptions.SpecificationError: n_draws must be positive; got 0.
 
         See Also:
             * :class:`BVARResult` -- what the fit returns, with the update

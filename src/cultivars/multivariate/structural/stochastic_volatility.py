@@ -151,35 +151,36 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...bayes.priors import VolatilityPrior
-from ...engine._core._estimators import _variance_ratio_test
-from ...engine._core._notes import (
+from cultivars_engine._core._estimators import _variance_ratio_test
+from cultivars_engine._core._notes import (
     _LABEL_NOTE,
     _SCALE_NOTE,
 )
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._core._spectra import _fractional_spectrum
-from ...engine._core._validators import _validate_quantiles
-from ...engine._internals._emitters import _long_memory_quasi_state_space
-from ...engine._internals._fits import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._spectra import _fractional_spectrum
+from cultivars_engine._core._validators import _validate_quantiles
+from cultivars_engine._internals._emitters import _long_memory_quasi_state_space
+from cultivars_engine._internals._fits import (
     _LongMemoryVolatilityFit,
     _VolatilityStructuralFit,
 )
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _ConvergenceMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import (
+from cultivars_engine._internals._models import (
     _LongMemoryVolatilityModel,
     _VolatilityIdentificationModel,
 )
-from ...engine._internals._parameters import _LongMemoryVolatilityParameters
-from ...exceptions import SpecificationError
+from cultivars_engine._internals._parameters import _LongMemoryVolatilityParameters
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import norm
+
+from ...bayes.priors import VolatilityPrior
 from ...state_space.linear_gaussian import LinearGaussianSSM
-from ...summary import SummaryTable
 from .zero_restrictions import SVARResult
 
 __all__ = [
@@ -657,7 +658,7 @@ class LongMemorySVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         hyperbolically:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+        >>> from cultivars_engine._core._transforms import _fractional_difference_weights
         >>> rng = np.random.default_rng(0)
         >>> n, burn = 1500, 2000
         >>> eta = 0.5 * rng.standard_normal(n + burn)
@@ -840,11 +841,10 @@ class LongMemorySVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             True
             >>> res.volatility_bands(1.0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: level must lie in (0, 1); got 1.0.
+            cultivars_engine.exceptions.SpecificationError: level must lie in (0, 1); got 1.0.
         """
         if not 0.0 < level < 1.0:
             raise SpecificationError(f"level must lie in (0, 1); got {level}.")
-        from scipy.stats import norm
 
         z = float(norm.ppf(0.5 + 0.5 * level))
         lower = np.exp(0.5 * (self.log_variance - z * self.log_variance_std))
@@ -871,7 +871,7 @@ class LongMemorySVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+            >>> from cultivars_engine._core._transforms import _fractional_difference_weights
             >>> rng = np.random.default_rng(0)
             >>> n, burn = 1500, 2000
             >>> eta = 0.5 * rng.standard_normal(n + burn)
@@ -886,7 +886,7 @@ class LongMemorySVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             [0.62, 0.42, 0.35]
             >>> res.autocorrelation(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: lags must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: lags must be at least 1; got 0.
         """
         if lags < 1:
             raise SpecificationError(f"lags must be at least 1; got {lags}.")
@@ -926,7 +926,7 @@ class LongMemorySVResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             ('_LinearGaussianStateSpace', 20, 1)
             >>> res.quasi_state_space(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: truncation must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: truncation must be at least 1; got 0.
         """
         return _long_memory_quasi_state_space(self._params, truncation=truncation)
 
@@ -1100,7 +1100,7 @@ class LongMemorySV(_LongMemoryVolatilityModel[LongMemorySVResult]):
         unable to separate the two:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+        >>> from cultivars_engine._core._transforms import _fractional_difference_weights
         >>> rng = np.random.default_rng(0)
         >>> n, burn = 1500, 2000
         >>> eta = 0.5 * rng.standard_normal(n + burn)
@@ -1115,9 +1115,9 @@ class LongMemorySV(_LongMemoryVolatilityModel[LongMemorySVResult]):
         (0.01, 0.86, 3.0)
         >>> bool(pure.likelihood_ratio_test(mixed).pvalue > 0.05)
         True
-        >>> LongMemorySV(y, mean="median")
+        >>> LongMemorySV(y, mean="median")  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: mean must be 'constant' or 'zero'; got 'median'.
+        cultivars_engine.exceptions.SpecificationError: mean must be 'constant' or 'zero'; got ...
     """
 
     def fit(self) -> LongMemorySVResult:

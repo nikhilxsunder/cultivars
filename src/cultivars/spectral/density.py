@@ -53,16 +53,15 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._protocols import ClosedSystemResult
-from ..engine._core._spectra import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._spectra import (
     _frequency_grid,
     _spectral_matrix,
     _transfer_function,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["SpectralDensity", "SpectralDensityResult"]
 
@@ -182,7 +181,7 @@ class SpectralDensityResult(_SummaryMixin):
             >>> density._index("cpi")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown variable 'cpi'; the system has ...
+            cultivars_engine.exceptions.SpecificationError: unknown variable 'cpi'; the system ...
         """
         try:
             return self.names.index(name)
@@ -609,11 +608,11 @@ class SpectralDensity:
             >>> SpectralDensity(VAR(y, order=1))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: SpectralDensity reads a fitted ... got VAR.
+            cultivars_engine.exceptions.SpecificationError: SpectralDensity reads a fitted ... ...
             >>> SpectralDensity(VAR(y, order=1).fit(), n_frequencies=1)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n_frequencies must be at least 2; got 1.
+            cultivars_engine.exceptions.SpecificationError: n_frequencies must be at least 2; got 1.
         """
         if not isinstance(result, ClosedSystemResult):
             raise SpecificationError(

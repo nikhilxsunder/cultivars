@@ -106,10 +106,10 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
 
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._internals._models import _IdentificationModel
-from ...exceptions import DimensionError, NumericalError, SpecificationError
 from .zero_restrictions import SVARResult
 
 __all__ = ["ProxySVAR"]
@@ -247,13 +247,13 @@ class ProxySVAR(_IdentificationModel[SVARResult]):
             (1, 1, 'proxied')
             >>> ProxySVAR(res, rng.standard_normal(120))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: instruments must have one row per residual row ...
+            cultivars_engine.exceptions.DimensionError: instruments must have one row per ...
             >>> ProxySVAR(res, np.full(118, np.nan))
             Traceback (most recent call last):
-            cultivars.exceptions.NumericalError: instruments must be finite.
+            cultivars_engine.exceptions.NumericalError: instruments must be finite.
             >>> ProxySVAR(res, rng.standard_normal(118), normalize="q")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown normalization variable 'q'; ...
+            cultivars_engine.exceptions.SpecificationError: unknown normalization variable 'q'; ...
         """
         super().__init__(result)
         n = int(np.asarray(result.resid).shape[0])
@@ -336,7 +336,7 @@ class ProxySVAR(_IdentificationModel[SVARResult]):
             True
             >>> ProxySVAR(res, np.ones(301)).identify()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.NumericalError: the instrument has no first-stage relationship ...
+            cultivars_engine.exceptions.NumericalError: the instrument has no first-stage ...
         """
         resid = np.asarray(self.source.resid, dtype=np.float64)
         n = resid.shape[0]

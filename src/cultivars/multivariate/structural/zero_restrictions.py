@@ -132,34 +132,33 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import chi2
-
-from ...engine._core._defaults import _LOG_2PI
-from ...engine._core._matrices import (
+from cultivars_engine._core._defaults import _LOG_2PI
+from cultivars_engine._core._matrices import (
     _long_run_matrix,
     _lower_cholesky,
 )
-from ...engine._core._notes import (
+from cultivars_engine._core._notes import (
     _PARTIAL_IDENTIFICATION_NOTE,
     _UNIT_SHOCK_NOTE,
 )
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._core._validators import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._validators import (
     _validate_impact_pattern,
     _validate_ordering,
 )
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _IdentificationModel
-from ...engine._internals._objectives import (
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine._internals._objectives import (
     _MixedHorizonObjective,
     _ShortRunObjective,
 )
-from ...engine._internals._solvers import (
+from cultivars_engine._internals._solvers import (
     _maximize_likelihood,
     _solve,
 )
-from ...exceptions import NumericalError, SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine.exceptions import NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import chi2
 
 __all__ = ["LongRunSVAR", "MixedSVAR", "RecursiveSVAR", "SVARResult", "ShortRunSVAR"]
 
@@ -490,7 +489,7 @@ class LongRunSVAR(_IdentificationModel[SVARResult]):
             False
             >>> LongRunSVAR(explosive)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: long-run identification needs a stationary ...
+            cultivars_engine.exceptions.SpecificationError: long-run identification needs a ...
         """
         super().__init__(result)
         if getattr(result, "is_stable", True) is False:
@@ -718,17 +717,17 @@ class ShortRunSVAR(_IdentificationModel[SVARResult]):
             (((1, 0),), ((0, 0), (1, 1)), 0, ('r', 'x'))
             >>> ShortRunSVAR(res)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: declare at least one pattern: with neither ...
+            cultivars_engine.exceptions.SpecificationError: declare at least one pattern: with ...
             >>> ShortRunSVAR(res, a=[[nan, 0.0], [0.0, 1.0]])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: the diagonal of a must be fixed ...
+            cultivars_engine.exceptions.SpecificationError: the diagonal of a must be fixed ...
             >>> ShortRunSVAR(res, b=[[1.0, 0.0], [0.0, 1.0]])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: every coefficient is fixed; there is ...
+            cultivars_engine.exceptions.SpecificationError: every coefficient is fixed; there is ...
             >>> ShortRunSVAR(res, a=[[1.0, nan], [nan, 1.0]], b=[[nan, nan], [nan, nan]])
             ...     # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: the order condition fails: 6 free ...
+            cultivars_engine.exceptions.SpecificationError: the order condition fails: 6 free ...
         """
         super().__init__(result)
         k = self.k_endog
@@ -1043,11 +1042,11 @@ class MixedSVAR(_IdentificationModel[SVARResult]):
             ((), ((0, 1, 0.0),), ('dy', 'u'))
             >>> MixedSVAR(res, impact=[[nan, 0.0], [nan, nan]])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: long_run must fix at least one cell; ...
+            cultivars_engine.exceptions.SpecificationError: long_run must fix at least one cell; ...
             >>> MixedSVAR(res, impact=[[nan, 0.0], [nan, nan]], long_run=[[nan, 0.0], [nan, nan]])
             ...     # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a rotation-solved mixed pattern needs ...
+            cultivars_engine.exceptions.SpecificationError: a rotation-solved mixed pattern ...
         """
         super().__init__(result)
         if getattr(result, "is_stable", True) is False:
@@ -1182,10 +1181,10 @@ class MixedSVAR(_IdentificationModel[SVARResult]):
             >>> MixedSVAR(res, impact=[[nan, 5.0], [nan, nan]], long_run=[[nan, nan], [nan, 0.0]])
             ...     # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a rotation-solved mixed pattern needs ...
+            cultivars_engine.exceptions.SpecificationError: a rotation-solved mixed pattern ...
             >>> MixedSVAR(res, long_run=[[nan, 5.0], [nan, nan]]).identify()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.NumericalError: no factorization of the innovation covariance ...
+            cultivars_engine.exceptions.NumericalError: no factorization of the innovation ...
         """
         k = self.k_endog
         sigma = np.asarray(self.source.sigma_u, dtype=np.float64)

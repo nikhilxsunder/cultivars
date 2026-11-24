@@ -126,12 +126,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._estimators import _principal_components
+from cultivars_engine._core._validators import _validate_endog_matrix
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import DimensionError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
-from ...engine._core._estimators import _principal_components
-from ...engine._core._validators import _validate_endog_matrix
-from ...engine._internals._mixins import _SummaryMixin
-from ...exceptions import DimensionError, SpecificationError
-from ...summary import SummaryTable
 from ..reduced_form.vector_autoregression import VAR, VARResult
 
 __all__ = ["DFM", "DFMResult"]
@@ -365,7 +365,7 @@ class DFMResult(_SummaryMixin):
             True
             >>> res.forecast(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         scores = self.factors.forecast(steps)
         return scores @ self.loadings.T * self.scales + self.means
@@ -499,7 +499,7 @@ class DFM:
         (3, (0,), 2)
         >>> DFM(panel, order=1, n_factors=31)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.DimensionError: n_factors (31) exceeds what a (200, 30) panel ...
+        cultivars_engine.exceptions.DimensionError: n_factors (31) exceeds what a (200, 30) ...
     """
 
     __slots__ = ("_max_factors", "_n_factors", "_order", "_panel", "_series_names")

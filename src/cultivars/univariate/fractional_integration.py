@@ -103,7 +103,7 @@ Example:
     A long-memory series is not a short-memory one with a large root:
 
     >>> import numpy as np
-    >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+    >>> from cultivars_engine._core._transforms import _fractional_difference_weights
     >>> from cultivars.univariate.box_jenkins import ARMA
     >>> rng = np.random.default_rng(0)
     >>> n = 600
@@ -123,18 +123,17 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _D_MAX
-from ..engine._internals._fits import _FractionalIntegrationFit
-from ..engine._internals._mixins import (
+from cultivars_engine._core._defaults import _D_MAX
+from cultivars_engine._internals._fits import _FractionalIntegrationFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _InvertibilityMixin,
     _SeriesMixin,
     _StationarityMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import _FractionalIntegrationModel
-from ..summary import (
+from cultivars_engine._internals._models import _FractionalIntegrationModel
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )
@@ -225,7 +224,7 @@ class ARFIMAResult(
         white noise with the weights of :math:`(1 - L)^{-0.3}`:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+        >>> from cultivars_engine._core._transforms import _fractional_difference_weights
         >>> rng = np.random.default_rng(0)
         >>> n = 600
         >>> w = _fractional_difference_weights(-0.3, n)
@@ -508,7 +507,7 @@ class ARFIMA(_FractionalIntegrationModel[ARFIMAResult]):
         integrated series:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._transforms import _fractional_difference_weights
+        >>> from cultivars_engine._core._transforms import _fractional_difference_weights
         >>> rng = np.random.default_rng(0)
         >>> n = 600
         >>> w = _fractional_difference_weights(-0.3, n)

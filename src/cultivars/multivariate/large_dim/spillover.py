@@ -134,11 +134,10 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._internals._mixins import _SummaryMixin
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["Spillover", "SpilloverResult"]
 
@@ -400,7 +399,7 @@ class Spillover:
         True
         >>> Spillover(y, horizon=10)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: Spillover reads a fitted closed reduced-form ...
+        cultivars_engine.exceptions.SpecificationError: Spillover reads a fitted closed ...
     """
 
     __slots__ = ("_horizon", "_result")
@@ -424,7 +423,7 @@ class Spillover:
             10
             >>> Spillover(fit, horizon=0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: horizon must be at least 1; got 0.
         """
         if not isinstance(result, ClosedSystemResult):
             raise SpecificationError(

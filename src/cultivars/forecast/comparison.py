@@ -123,25 +123,24 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
-
-from ..engine._core._defaults import _MIN_COMPARISON_ORIGINS
-from ..engine._core._estimators import (
+from cultivars_engine._core._defaults import _MIN_COMPARISON_ORIGINS
+from cultivars_engine._core._estimators import (
     _bartlett_long_run_variance,
     _clark_west,
     _forecast_encompassing,
     _giacomini_white,
     _mincer_zarnowitz,
 )
-from ..engine._core._matrices import (
+from cultivars_engine._core._matrices import (
     _conditional_instruments,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_aligned_series,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..engine._internals._tests import _ForecastComparisonTest as ForecastComparisonTest
-from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._tests import _ForecastComparisonTest as ForecastComparisonTest
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = [
     "ClarkWestTest",
@@ -1009,7 +1008,7 @@ class ForecastComparison:
             >>> ForecastComparison(*short)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: a comparison over 5 origins has no power ...
+            cultivars_engine.exceptions.SpecificationError: a comparison over 5 origins has no ...
         """
         first = np.asarray(losses_a, dtype=np.float64).ravel()
         second = np.asarray(losses_b, dtype=np.float64).ravel()
@@ -1066,7 +1065,7 @@ class ForecastComparison:
             >>> ForecastComparison(a, a).compute()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: the two loss series are numerically ...
+            cultivars_engine.exceptions.SpecificationError: the two loss series are numerically ...
         """
         if horizon < 1:
             raise SpecificationError(f"horizon must be at least 1; got {horizon}.")
@@ -1189,7 +1188,7 @@ def clark_west(
         >>> clark_west(y, np.zeros(200), 0.5 * x, horizon=150)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: a horizon of 150 needs more than 300 ...
+        cultivars_engine.exceptions.SpecificationError: a horizon of 150 needs more than 300 ...
     """
     series, count = _validate_aligned_series(
         realized,
@@ -1281,7 +1280,7 @@ def mincer_zarnowitz(
         >>> mincer_zarnowitz(f, np.ones(200))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.NumericalError: the forecasts are constant; the efficiency ...
+        cultivars_engine.exceptions.NumericalError: the forecasts are constant; the efficiency ...
     """
     (y, f), count = _validate_aligned_series(
         realized,
@@ -1379,7 +1378,7 @@ def encompassing(
         >>> encompassing(y, x, x)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: the two forecasts are numerically identical; ...
+        cultivars_engine.exceptions.SpecificationError: the two forecasts are numerically ...
     """
     (y, a, b), count = _validate_aligned_series(
         realized,

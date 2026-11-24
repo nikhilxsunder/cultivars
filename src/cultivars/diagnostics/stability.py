@@ -110,7 +110,7 @@ Example:
 
 from __future__ import annotations
 
-from ..engine._internals._assessments import _StabilityAssessment as StabilityAssessment
-from ..engine._internals._selections import _LagOrderSelection as LagOrderSelection
+from cultivars_engine._internals._assessments import _StabilityAssessment as StabilityAssessment
+from cultivars_engine._internals._selections import _LagOrderSelection as LagOrderSelection
 
 __all__ = ["LagOrderSelection", "StabilityAssessment"]

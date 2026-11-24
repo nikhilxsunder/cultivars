@@ -125,19 +125,19 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._internals._fits import _StructuralFit
-from ..engine._internals._mixins import (
+from cultivars_engine._internals._fits import _StructuralFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import _UnobservedComponentsModel
-from ..engine._internals._parameters import _StructuralParameters
-from ..engine._internals._systems import _structural_matrices
-from ..exceptions import SpecificationError
+from cultivars_engine._internals._models import _UnobservedComponentsModel
+from cultivars_engine._internals._parameters import _StructuralParameters
+from cultivars_engine._internals._systems import _structural_matrices
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
 from ..state_space.linear_gaussian import LinearGaussianSSM
-from ..summary import SummaryTable
 
 __all__ = ["UnobservedComponents", "UnobservedComponentsResult"]
 
@@ -415,7 +415,7 @@ class UnobservedComponentsResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             (200,)
             >>> res._component("cycle")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: this specification has no cycle component; ...
+            cultivars_engine.exceptions.SpecificationError: this specification has no cycle ...
         """
         if name not in self._slices:
             raise SpecificationError(
@@ -531,7 +531,7 @@ class UnobservedComponentsResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             True
             >>> UnobservedComponents(y, trend="level").fit().slope  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: this specification has no slope component; ...
+            cultivars_engine.exceptions.SpecificationError: this specification has no slope ...
         """
         return self._component("slope")
 
@@ -548,7 +548,7 @@ class UnobservedComponentsResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> y = np.cumsum(0.2 * rng.standard_normal(200)) + rng.standard_normal(200)
             >>> UnobservedComponents(y).fit().cycle  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: this specification has no cycle component; ...
+            cultivars_engine.exceptions.SpecificationError: this specification has no cycle ...
         """
         return self._component("cycle")
 
@@ -563,9 +563,9 @@ class UnobservedComponentsResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             >>> import numpy as np
             >>> rng = np.random.default_rng(0)
             >>> y = np.cumsum(0.2 * rng.standard_normal(200)) + rng.standard_normal(200)
-            >>> UnobservedComponents(y).fit().cycle_period
+            >>> UnobservedComponents(y).fit().cycle_period  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: this specification has no cycle component.
+            cultivars_engine.exceptions.SpecificationError: this specification has no cycle ...
         """
         if self.cycle_freq is None:
             raise SpecificationError("this specification has no cycle component.")
@@ -703,7 +703,7 @@ class UnobservedComponentsResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             True
             >>> res.forecast(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -793,7 +793,7 @@ class UnobservedComponentsResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
             True
             >>> res.simulate(0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n must be positive and burn non-negative; ...
+            cultivars_engine.exceptions.SpecificationError: n must be positive and burn ...
         """
         if n < 1 or burn < 0:
             raise SpecificationError(f"n must be positive and burn non-negative; got {n}, {burn}.")
@@ -976,7 +976,7 @@ class UnobservedComponents(_UnobservedComponentsModel[UnobservedComponentsResult
         True
         >>> UnobservedComponents(y, trend="quadratic")  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: trend must be 'level', 'lltrend', or 'smooth'; ...
+        cultivars_engine.exceptions.SpecificationError: trend must be 'level', 'lltrend', or ...
     """
 
     __slots__ = ()

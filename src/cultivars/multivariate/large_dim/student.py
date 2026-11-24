@@ -125,15 +125,15 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._types import Trend
+from cultivars_engine._internals._fits import _VectorStudentFit
+from cultivars_engine._internals._models import _StudentBayesianVectorAutoRegressionModel
+from cultivars_engine._internals._priors import _Prior
+from cultivars_engine._internals._results import _VectorPosteriorDrawsResult
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 from ...bayes.priors import NormalInverseWishartPrior
-from ...engine._core._types import Trend
-from ...engine._internals._fits import _VectorStudentFit
-from ...engine._internals._models import _StudentBayesianVectorAutoRegressionModel
-from ...engine._internals._priors import _Prior
-from ...engine._internals._results import _VectorPosteriorDrawsResult
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
 
 __all__ = ["StudentBVAR", "StudentBVARResult"]
 
@@ -375,7 +375,7 @@ class StudentBVARResult(_VectorPosteriorDrawsResult):
             >>> fixed = StudentBVAR(y, order=1).fit(df=5.0, n_draws=30, n_burn=10, seed=0)
             >>> fixed.df_interval()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: df was fixed at 5.0 by the caller and has ...
+            cultivars_engine.exceptions.SpecificationError: df was fixed at 5.0 by the caller ...
         """
         if not self.df_estimated:
             raise SpecificationError(
@@ -784,10 +784,10 @@ class StudentBVAR(_StudentBayesianVectorAutoRegressionModel[StudentBVARResult]):
             (True, (10,))
             >>> model.fit(df=2.0, n_draws=30, n_burn=10)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: df must exceed 2 for the innovations to ...
+            cultivars_engine.exceptions.SpecificationError: df must exceed 2 for the ...
             >>> model.fit(n_draws=10, n_burn=10)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_draws (10) must exceed n_burn (10).
+            cultivars_engine.exceptions.SpecificationError: n_draws (10) must exceed n_burn (10).
         """
         return StudentBVARResult._from_fit(
             self._fit_student(df=df, n_draws=n_draws, n_burn=n_burn, thin=thin, seed=seed),

@@ -99,7 +99,7 @@ Example:
     on data where the decay is constant:
 
     >>> import numpy as np
-    >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+    >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
     >>> rng = np.random.default_rng(0)
     >>> taus = np.array([0.25, 0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0])
     >>> mu = np.array([5.0, -1.5, 1.0])
@@ -125,28 +125,28 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._polynomials import _nelson_siegel_loadings
-from ...engine._internals._emitters import _decay_nelson_siegel_state_space
-from ...engine._internals._fits import (
+from cultivars_engine._core._polynomials import _nelson_siegel_loadings
+from cultivars_engine._internals._emitters import _decay_nelson_siegel_state_space
+from cultivars_engine._internals._fits import (
     _DecayNelsonSiegelFit,
     _NelsonSiegelFit,
 )
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import _DecayNelsonSiegelModel
-from ...engine._internals._objectives import _NelsonSiegelObjective
-from ...engine._internals._parameters import (
+from cultivars_engine._internals._models import _DecayNelsonSiegelModel
+from cultivars_engine._internals._objectives import _NelsonSiegelObjective
+from cultivars_engine._internals._parameters import (
     _DecayNelsonSiegelParameters,
     _NelsonSiegelParameters,
 )
-from ...engine._internals._solvers import _maximize_likelihood
-from ...exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine._internals._solvers import _maximize_likelihood
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
+
 from ...state_space.linear_gaussian import LinearGaussianSSM
 from ...state_space.nonlinear import NonlinearSSM
-from ...summary import SummaryTable
 
 __all__ = [
     "DynamicNelsonSiegel",
@@ -238,7 +238,7 @@ class DynamicNelsonSiegelResult(_SummaryMixin, _ComparisonMixin):
         standard errors that grow with the horizon:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+        >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
         >>> rng = np.random.default_rng(0)
         >>> taus = np.array([0.5, 2.0, 5.0, 10.0])
         >>> basis = _nelson_siegel_loadings(taus, 0.6)
@@ -440,7 +440,7 @@ class DynamicNelsonSiegelResult(_SummaryMixin, _ComparisonMixin):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+            >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
             >>> rng = np.random.default_rng(0)
             >>> taus = np.array([0.5, 2.0, 5.0, 10.0])
             >>> basis = _nelson_siegel_loadings(taus, 0.6)
@@ -516,7 +516,7 @@ class DynamicNelsonSiegelResult(_SummaryMixin, _ComparisonMixin):
             ((50,), True, True)
             >>> res.curve(0, maturities=[0.0, 1.0])
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: maturities must be strictly positive.
+            cultivars_engine.exceptions.SpecificationError: maturities must be strictly positive.
         """
         grid = (
             self.maturities
@@ -556,7 +556,7 @@ class DynamicNelsonSiegelResult(_SummaryMixin, _ComparisonMixin):
 
         Example:
             >>> import numpy as np
-            >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+            >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
             >>> rng = np.random.default_rng(0)
             >>> taus = np.array([0.5, 2.0, 5.0, 10.0])
             >>> basis = _nelson_siegel_loadings(taus, 0.6)
@@ -575,7 +575,7 @@ class DynamicNelsonSiegelResult(_SummaryMixin, _ComparisonMixin):
             True
             >>> res.forecast(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -729,7 +729,7 @@ class DynamicNelsonSiegel:
 
     Example:
         >>> import numpy as np
-        >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+        >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
         >>> rng = np.random.default_rng(0)
         >>> taus = np.array([0.25, 1.0, 2.0, 5.0, 10.0])
         >>> basis = _nelson_siegel_loadings(taus, 0.6)
@@ -780,18 +780,18 @@ class DynamicNelsonSiegel:
             >>> model = DynamicNelsonSiegel(curves, taus, decay=0.6)
             >>> DynamicNelsonSiegel(curves[:, :3], taus[:3])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: the three factors need at least 4 maturities ...
-            >>> DynamicNelsonSiegel(curves[:20], taus)
+            cultivars_engine.exceptions.DimensionError: the three factors need at least 4 ...
+            >>> DynamicNelsonSiegel(curves[:20], taus)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: the factor dynamics need at least 30 dates; got 20.
+            cultivars_engine.exceptions.DimensionError: the factor dynamics need at least 30 ...
             >>> DynamicNelsonSiegel(curves, taus, decay=0.0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a fixed decay must be strictly positive; ...
+            cultivars_engine.exceptions.SpecificationError: a fixed decay must be strictly ...
             >>> gap = curves.copy()
             >>> gap[3] = np.nan
             >>> DynamicNelsonSiegel(gap, taus)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.NumericalError: every date must observe at least one maturity; ...
+            cultivars_engine.exceptions.NumericalError: every date must observe at least one ...
         """
         block = np.asarray(panel, dtype=np.float64)
         if block.ndim != 2:
@@ -843,7 +843,7 @@ class DynamicNelsonSiegel:
             recovered near the truth and costs one:
 
             >>> import numpy as np
-            >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+            >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
             >>> rng = np.random.default_rng(0)
             >>> taus = np.array([0.5, 2.0, 5.0, 10.0])
             >>> basis = _nelson_siegel_loadings(taus, 0.6)
@@ -973,7 +973,7 @@ class TimeVaryingNelsonSiegelResult(_SummaryMixin, _ComparisonMixin):
         to move the fitted hump with it:
 
         >>> import numpy as np
-        >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+        >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
         >>> rng = np.random.default_rng(0)
         >>> taus = np.array([0.25, 0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0])
         >>> mu, bar = np.array([5.0, -1.5, 1.0]), np.log(0.6)
@@ -1472,7 +1472,7 @@ class TimeVaryingNelsonSiegel(_DecayNelsonSiegelModel[TimeVaryingNelsonSiegelRes
 
     Example:
         >>> import numpy as np
-        >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+        >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
         >>> rng = np.random.default_rng(0)
         >>> taus = np.array([0.25, 1.0, 2.0, 5.0, 10.0])
         >>> f = np.zeros((120, 3))
@@ -1508,7 +1508,7 @@ class TimeVaryingNelsonSiegel(_DecayNelsonSiegelModel[TimeVaryingNelsonSiegelRes
             one, and the parameter count is the same under both:
 
             >>> import numpy as np
-            >>> from cultivars.engine._core._polynomials import _nelson_siegel_loadings
+            >>> from cultivars_engine._core._polynomials import _nelson_siegel_loadings
             >>> rng = np.random.default_rng(0)
             >>> taus = np.array([0.25, 0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0])
             >>> mu, bar = np.array([5.0, -1.5, 1.0]), np.log(0.6)
@@ -1525,6 +1525,6 @@ class TimeVaryingNelsonSiegel(_DecayNelsonSiegelModel[TimeVaryingNelsonSiegelRes
             ('extended', 23.0, True)
             >>> TimeVaryingNelsonSiegel(curves, taus).fit(filter="particle")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: filter must be 'extended' or 'unscented'; ...
+            cultivars_engine.exceptions.SpecificationError: filter must be 'extended' or ...
         """
         return TimeVaryingNelsonSiegelResult._from_fit(self._fit_decay(filter_name=filter), self)

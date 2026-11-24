@@ -129,18 +129,17 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._protocols import ClosedSystemResult
-from ..engine._core._spectra import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._spectra import (
     _frequency_grid,
     _pairwise_measure,
     _spectral_matrix,
     _transfer_function,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..engine._internals._solvers import _spectral_factor
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._solvers import _spectral_factor
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = [
     "ConditionalSpectralCausality",
@@ -273,7 +272,7 @@ class SpectralCausalityResult(_SummaryMixin):
             >>> causal._index("cpi")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown variable 'cpi'; the system has ...
+            cultivars_engine.exceptions.SpecificationError: unknown variable 'cpi'; the system ...
         """
         try:
             return self.names.index(name)
@@ -387,7 +386,7 @@ class SpectralCausalityResult(_SummaryMixin):
             >>> causal.band("rate", "gdp", low_period=32, high_period=6)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: periods must satisfy 0 < low_period < ...
+            cultivars_engine.exceptions.SpecificationError: periods must satisfy 0 < low_period ...
         """
         if not 0.0 < low_period < high_period:
             raise SpecificationError(
@@ -577,11 +576,11 @@ class SpectralCausality:
             >>> SpectralCausality(VAR(y, order=1))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: SpectralCausality reads a fitted closed ...
+            cultivars_engine.exceptions.SpecificationError: SpectralCausality reads a fitted ...
             >>> SpectralCausality(VAR(y, order=1).fit(), n_frequencies=1)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: n_frequencies must be at least 2; got 1.
+            cultivars_engine.exceptions.SpecificationError: n_frequencies must be at least 2; got 1.
         """
         if not isinstance(result, ClosedSystemResult):
             raise SpecificationError(
@@ -787,7 +786,7 @@ class ConditionalSpectralCausalityResult(_SummaryMixin):
             >>> given._index("y2")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown effect 'y2'; the conditional system ...
+            cultivars_engine.exceptions.SpecificationError: unknown effect 'y2'; the ...
         """
         try:
             return self.effect_names.index(name)
@@ -996,7 +995,7 @@ class ConditionalSpectralCausality:
         >>> ConditionalSpectralCausality(full, swapped)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: the restricted system must contain the full ...
+        cultivars_engine.exceptions.SpecificationError: the restricted system must contain the ...
     """
 
     __slots__ = ("_cause_index", "_n_frequencies", "_restricted", "_result")
@@ -1035,11 +1034,11 @@ class ConditionalSpectralCausality:
             >>> ConditionalSpectralCausality(full, full)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: the restricted system must contain the full ...
+            cultivars_engine.exceptions.SpecificationError: the restricted system must contain ...
             >>> ConditionalSpectralCausality(VAR(y, order=1), full)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: result must be a fitted closed reduced-form ...
+            cultivars_engine.exceptions.SpecificationError: result must be a fitted closed ...
         """
         for label, candidate in (("result", result), ("restricted", restricted)):
             if not isinstance(candidate, ClosedSystemResult):

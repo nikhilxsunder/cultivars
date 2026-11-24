@@ -137,27 +137,26 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _lower_cholesky
-from ...engine._core._notes import (
+from cultivars_engine._core._matrices import _lower_cholesky
+from cultivars_engine._core._notes import (
     _NARRATIVE_NOTE,
     _SIGN_QUANTILE_NOTE,
     _UNIT_SHOCK_NOTE,
 )
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._core._rotations import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._rotations import (
     _accepted_rotations,
     _narrative_rotations,
 )
-from ...engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_narrative_events,
     _validate_quantiles,
     _validate_sign_patterns,
 )
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _IdentificationModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["NarrativeSignRestrictedSVAR", "SignRestrictedSVAR", "SignRestrictedSVARResult"]
 
@@ -404,9 +403,9 @@ class SignRestrictedSVARResult(_SummaryMixin):
             True
             >>> bool(np.all(bands[0, 0, 0, 0] > 0.0))
             True
-            >>> sset.irf(3, quantiles=(0.0, 1.0))
+            >>> sset.irf(3, quantiles=(0.0, 1.0))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: quantiles must lie in (0, 1); got (0.0, 1.0).
+            cultivars_engine.exceptions.SpecificationError: quantiles must lie in (0, 1); got ...
         """
         levels = _validate_quantiles(quantiles)
         if any(not 0.0 < q < 1.0 for q in levels):
@@ -590,7 +589,7 @@ class SignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]):
         [[1.0, 1.0], [1.0, -1.0]]
         >>> SignRestrictedSVAR(res, {**signs, "third": {"gdp": "+"}})  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: 3 restricted shocks exceed the 2 shocks ...
+        cultivars_engine.exceptions.SpecificationError: 3 restricted shocks exceed the 2 shocks ...
     """
 
     __slots__ = ("_budget", "_compiled", "_draws", "_labels", "_leads", "_restriction", "_seed")
@@ -633,17 +632,17 @@ class SignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]):
             (('demand', 'unrestricted1'), (0,), (((0, 1.0), (1, 1.0)),), 5, 5000)
             >>> SignRestrictedSVAR(res, {"demand": {"gdp": "+"}}, draws=0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: draws must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: draws must be at least 1; got 0.
             >>> SignRestrictedSVAR(res, {"demand": {"gdp": "+"}}, max_attempts=0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: max_attempts must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: max_attempts must be at least 1; got 0.
             >>> SignRestrictedSVAR(res, {"demand": {"gdp": "+"}}, horizons=(-1,))
             ...     # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizons must be a non-empty collection ...
+            cultivars_engine.exceptions.SpecificationError: horizons must be a non-empty ...
             >>> SignRestrictedSVAR(res, {})  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: restrictions must declare at least one ...
+            cultivars_engine.exceptions.SpecificationError: restrictions must declare at least ...
         """
         super().__init__(result)
         if draws < 1:
@@ -714,7 +713,7 @@ class SignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]):
             ...     alternating, signs, horizons=(0, 1), draws=10, max_attempts=200
             ... ).identify()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: no rotation satisfied the declared signs ...
+            cultivars_engine.exceptions.SpecificationError: no rotation satisfied the declared ...
         """
         sigma = np.asarray(self.source.sigma_u, dtype=np.float64)
         factor = _lower_cholesky(sigma, "sigma_u")
@@ -928,20 +927,20 @@ class NarrativeSignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]
             ((((0, 1.0),), ((1, -1.0),)), ((0, 0, 0, False),))
             >>> NarrativeSignRestrictedSVAR(res, {"demand": {"gdp": "+"}})  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: declare at least one narrative event; ...
+            cultivars_engine.exceptions.SpecificationError: declare at least one narrative ...
             >>> NarrativeSignRestrictedSVAR(res, shock_signs=(("demand", 120, "+"),))
             ...     # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: shock-sign event on 'demand' references ...
+            cultivars_engine.exceptions.SpecificationError: shock-sign event on 'demand' ...
             >>> NarrativeSignRestrictedSVAR(res, contributions=(("demand", "gdp", 3, "all"),))
             ...     # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: contribution kind must be 'most' or ...
+            cultivars_engine.exceptions.SpecificationError: contribution kind must be 'most' or ...
             >>> NarrativeSignRestrictedSVAR(
             ...     res, shock_signs=(("a", 1, "+"), ("b", 1, "+"), ("c", 1, "+"))
             ... )  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: 3 labelled shocks exceed the 2 shocks ...
+            cultivars_engine.exceptions.SpecificationError: 3 labelled shocks exceed the 2 ...
         """
         super().__init__(result)
         k = self.k_endog
@@ -1067,7 +1066,7 @@ class NarrativeSignRestrictedSVAR(_IdentificationModel[SignRestrictedSVARResult]
             ...     draws=10, max_attempts=500,
             ... ).identify()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: no rotation satisfied the declared signs ...
+            cultivars_engine.exceptions.SpecificationError: no rotation satisfied the declared ...
         """
         sigma = np.asarray(self.source.sigma_u, dtype=np.float64)
         factor = _lower_cholesky(sigma, "sigma_u")

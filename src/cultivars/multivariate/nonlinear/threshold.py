@@ -126,7 +126,7 @@ Example:
     True
     >>> res.likelihood_ratio_test(res)  # doctest: +ELLIPSIS
     Traceback (most recent call last):
-    cultivars.exceptions.SpecificationError: a chi-squared likelihood-ratio test is not valid ...
+    cultivars_engine.exceptions.SpecificationError: a chi-squared likelihood-ratio test is not ...
 """
 
 from __future__ import annotations
@@ -135,13 +135,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._types import Regime
-from ...engine._core._validators import _validate_choice
-from ...engine._internals._fits import _VectorThresholdFit
-from ...engine._internals._models import _ThresholdVectorAutoRegressionModel
-from ...engine._internals._results import _VectorObservedRegimeResult
-from ...summary import SummaryTable
+from cultivars_engine._core._types import Regime
+from cultivars_engine._core._validators import _validate_choice
+from cultivars_engine._internals._fits import _VectorThresholdFit
+from cultivars_engine._internals._models import _ThresholdVectorAutoRegressionModel
+from cultivars_engine._internals._results import _VectorObservedRegimeResult
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["TVAR", "TVARResult"]
 
@@ -364,7 +363,7 @@ class TVARResult(_VectorObservedRegimeResult):
             True
             >>> res._regime_sigma("middle")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: regime must be one of ('lower', 'upper'); ...
+            cultivars_engine.exceptions.SpecificationError: regime must be one of ('lower', ...
         """
         choice = _validate_choice(regime, Regime, "regime")
         return self.lower_sigma_u if choice == "lower" else self.upper_sigma_u
@@ -530,7 +529,7 @@ class TVAR(_ThresholdVectorAutoRegressionModel[TVARResult]):
         False
         >>> TVAR(y, order=1, transition_variable=np.sin(np.arange(300) / 10))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: the delay is searched only for a self-exciting ...
+        cultivars_engine.exceptions.SpecificationError: the delay is searched only for a ...
     """
 
     __slots__ = ()

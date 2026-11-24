@@ -160,17 +160,17 @@ Example:
     >>> volatility.extended_filter(y)  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
-    cultivars.exceptions.SpecificationError: the extended filter is defined only for ...
+    cultivars_engine.exceptions.SpecificationError: the extended filter is defined only for ...
     >>> volatility.particle_filter(y, n_particles=1000, seed=0).filtered_state.shape
     (200, 1)
 """
 
 from __future__ import annotations
 
-from ..engine._internals._results import _ParticleFilterResult as ParticleFilterResult
-from ..engine._internals._results import _ParticleSmootherResult as ParticleSmootherResult
-from ..engine._internals._results import _RtsSmootherResult as RtsSmootherResult
-from ..engine._internals._substrates import _NonlinearStateSpace as NonlinearSSM
+from cultivars_engine._internals._results import _ParticleFilterResult as ParticleFilterResult
+from cultivars_engine._internals._results import _ParticleSmootherResult as ParticleSmootherResult
+from cultivars_engine._internals._results import _RtsSmootherResult as RtsSmootherResult
+from cultivars_engine._internals._substrates import _NonlinearStateSpace as NonlinearSSM
 
 __all__ = [
     "NonlinearSSM",

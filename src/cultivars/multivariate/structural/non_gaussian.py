@@ -118,14 +118,14 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 import numpy as np
+from cultivars_engine._core._estimators import _cumulant_slices
+from cultivars_engine._core._matrices import _lower_cholesky
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine._internals._objectives import _CoDiagonalObjective
+from cultivars_engine._internals._solvers import _solve
+from cultivars_engine.exceptions import SpecificationError
 
-from ...engine._core._estimators import _cumulant_slices
-from ...engine._core._matrices import _lower_cholesky
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._internals._models import _IdentificationModel
-from ...engine._internals._objectives import _CoDiagonalObjective
-from ...engine._internals._solvers import _solve
-from ...exceptions import SpecificationError
 from .zero_restrictions import SVARResult
 
 __all__ = ["NonGaussianSVAR"]
@@ -250,11 +250,11 @@ class NonGaussianSVAR(_IdentificationModel[SVARResult]):
             ('u', 'v')
             >>> NonGaussianSVAR(res, shock_names=("u",))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: shock_names must be 2 unique labels; ...
+            cultivars_engine.exceptions.SpecificationError: shock_names must be 2 unique labels; ...
             >>> short = VAR(rng.standard_normal((15, 2)), order=1).fit()
             >>> NonGaussianSVAR(short)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: an effective sample of 14 rows is too short ...
+            cultivars_engine.exceptions.SpecificationError: an effective sample of 14 rows is ...
         """
         super().__init__(result)
         k = self.k_endog

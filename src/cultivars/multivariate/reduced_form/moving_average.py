@@ -129,31 +129,30 @@ from typing import NoReturn
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import (
+from cultivars_engine._core._matrices import (
     _deterministic_columns,
     _lag_matrix,
 )
-from ...engine._core._notes import (
+from cultivars_engine._core._notes import (
     _CHOLESKY_NOTE,
     _HR_CONDITIONAL_NOTE,
     _UNSTABLE_NOTE,
     _VARMA_IDENTIFICATION_NOTE,
 )
-from ...engine._core._types import Trend
-from ...engine._core._validators import _validate_order_tuple
-from ...engine._internals._assessments import _StabilityAssessment
-from ...engine._internals._mixins import (
+from cultivars_engine._core._types import Trend
+from cultivars_engine._core._validators import _validate_order_tuple
+from cultivars_engine._internals._assessments import _StabilityAssessment
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import _VectorAutoRegressionModel
-from ...engine._internals._moments import _VectorMoments
-from ...engine._internals._results import _VectorResult
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _VectorAutoRegressionModel
+from cultivars_engine._internals._moments import _VectorMoments
+from cultivars_engine._internals._results import _VectorResult
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["VARMA", "VARMAResult"]
 
@@ -379,7 +378,7 @@ class VARMAResult(
             True
             >>> res.ma_representation(-1)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: horizon must be non-negative; got -1.
+            cultivars_engine.exceptions.SpecificationError: horizon must be non-negative; got -1.
         """
         if horizon < 0:
             raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
@@ -477,7 +476,7 @@ class VARMAResult(
             True
             >>> res.forecast(0)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: steps must be at least 1; got 0.
+            cultivars_engine.exceptions.SpecificationError: steps must be at least 1; got 0.
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -674,10 +673,10 @@ class VARMA(_VectorAutoRegressionModel[VARMAResult]):
             (2, 1, 7)
             >>> VARMA(y, order=(1, 0))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: q must be at least 1; a VARMA with no ...
+            cultivars_engine.exceptions.SpecificationError: q must be at least 1; a VARMA with ...
             >>> VARMA(y, order=(1,))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: order must have 2 elements ('p', 'q'); ...
+            cultivars_engine.exceptions.SpecificationError: order must have 2 elements ('p', ...
         """
         p, q = _validate_order_tuple(order, ("p", "q"))
         if q < 1:
@@ -802,7 +801,7 @@ class VARMA(_VectorAutoRegressionModel[VARMAResult]):
             >>> y = np.random.default_rng(0).standard_normal((200, 2))
             >>> VARMA(y, order=(1, 1)).lag_order_selection()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: lag-order selection over a single ...
+            cultivars_engine.exceptions.SpecificationError: lag-order selection over a single ...
         """
         raise SpecificationError(
             "lag-order selection over a single autoregressive scan is not "

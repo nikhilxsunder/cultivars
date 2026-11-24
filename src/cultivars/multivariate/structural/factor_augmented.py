@@ -116,12 +116,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._protocols import StructuralResult
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
-from ...engine._core._protocols import StructuralResult
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _IdentificationModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
 from ..large_dim.factor_augmented import FAVARResult
 from .zero_restrictions import RecursiveSVAR
 
@@ -475,7 +475,7 @@ class FactorAugmentedSVAR(_IdentificationModel[FactorAugmentedSVARResult]):
         >>> other = FAVAR(panel, policy[:, None], n_factors=1, order=2).fit()
         >>> FactorAugmentedSVAR(res, RecursiveSVAR(other.factors).identify())  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: the supplied identification was not built from ...
+        cultivars_engine.exceptions.SpecificationError: the supplied identification was not ...
     """
 
     __slots__ = ("_favar", "_order", "_structural")
@@ -512,11 +512,11 @@ class FactorAugmentedSVAR(_IdentificationModel[FactorAugmentedSVARResult]):
             >>> res = FAVAR(panel, policy, n_factors=1, order=1).fit()
             >>> FactorAugmentedSVAR(res.factors)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: FactorAugmentedSVAR constructs with a ...
+            cultivars_engine.exceptions.SpecificationError: FactorAugmentedSVAR constructs with ...
             >>> mine = RecursiveSVAR(res.factors).identify()
             >>> FactorAugmentedSVAR(res, mine, order=("y1", "f1"))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: pass either a factor-space identification ...
+            cultivars_engine.exceptions.SpecificationError: pass either a factor-space ...
         """
         if not isinstance(favar, FAVARResult):
             raise SpecificationError(
@@ -573,7 +573,7 @@ class FactorAugmentedSVAR(_IdentificationModel[FactorAugmentedSVARResult]):
             (0.0, True)
             >>> FactorAugmentedSVAR(res, order=("r", "z")).identify()  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: order must be a permutation of the variable ...
+            cultivars_engine.exceptions.SpecificationError: order must be a permutation of the ...
         """
         structural: StructuralResult = (
             self._structural

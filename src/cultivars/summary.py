@@ -21,14 +21,13 @@
 # SOFTWARE.
 r"""The reporting surface: the records every fitted result renders itself through.
 
-A fitted result is a frozen record, and ``summary()`` does not format
-it; it returns a :class:`SummaryTable`, a second record holding the
-*structure* of the report -- a title, a block of scalar metadata, one
-coefficient table, and the closing notes that state what the numbers
-assume -- which renders on demand as fixed-width text, as HTML in a
-notebook, or as a dataframe. :class:`InformationCriteria` is the record
-behind every ``information_criteria`` property: the three penalized
-likelihoods,
+A fitted result is a frozen record, and ``summary()`` does not format it; it
+returns a :class:`SummaryTable`, a second record holding the structure of
+the report -- a title, a block of scalar metadata, one coefficient table,
+and the closing notes that state what the numbers assume -- which renders
+on demand as fixed-width text, as HTML in a notebook, or as a dataframe.
+:class:`InformationCriteria` is the record behind every
+``information_criteria`` property: the three penalized likelihoods,
 
 .. math::
 
@@ -36,24 +35,14 @@ likelihoods,
    \mathrm{BIC} = -2\ell + k \log n, \qquad
    \mathrm{HQIC} = -2\ell + 2k \log\log n,
 
-for a maximized log-likelihood :math:`\ell`, parameter count :math:`k`
-and sample size :math:`n`, with the convention for :math:`k` stated by
-the result that produced it.
+for a maximized log-likelihood :math:`\ell`, parameter count :math:`k` and
+sample size :math:`n`, with the convention for :math:`k` stated by the
+result that produced it.
 
-Two commitments shape the surface. First, the two records are defined
-once, in ``_core``, and this module is their public name: every
+The two records are defined in ``cultivars_engine.summary`` and this module
+is their public name. They are the same objects, not subclasses, so every
 ``summary()`` and ``information_criteria`` in the package returns an
-instance of the classes documented here, so their methods and fields are
-stable API, and the engine pages document the same objects only as
-internals. Second, nothing here is specific to a model family; a record
-that needs more structure than a title, metadata, one table and notes
-belongs beside the result that needs it.
-
-Layout. :class:`SummaryTable` with its ``to_text``, ``to_html``,
-``to_pandas`` and ``to_polars`` renderers, and :class:`InformationCriteria`
-with ``from_likelihood``. Both live in ``_core._containers`` and are bound
-to this module so that annotations, pickles and the API reference all
-name them here.
+instance of the classes imported from here.
 
 Example:
     >>> import numpy as np
@@ -64,23 +53,13 @@ Example:
     True
     >>> isinstance(res.information_criteria, InformationCriteria)
     True
-    >>> SummaryTable.__module__, SummaryTable.__qualname__
-    ('cultivars.summary', 'SummaryTable')
+    >>> ic = InformationCriteria.from_likelihood(-100.0, 50, 3)
+    >>> round(ic.aic, 1), bool(ic.aic < ic.hqic < ic.bic)
+    (206.0, True)
 """
 
-from .engine._core._containers import _InformationCriteria as InformationCriteria
-from .engine._core._containers import _SummaryTable as SummaryTable
+from __future__ import annotations
+
+from cultivars_engine.summary import InformationCriteria, SummaryTable
 
 __all__ = ["InformationCriteria", "SummaryTable"]
-
-# Bind the records to their public name, so reprs, pickles, annotations and
-# the API reference all say ``cultivars.summary.SummaryTable`` rather than
-# the private ``_core`` spelling. Pickles resolve ``__module__.__qualname__``,
-# so both must name an attribute that exists here.
-for _record, _public in (
-    (InformationCriteria, "InformationCriteria"),
-    (SummaryTable, "SummaryTable"),
-):
-    _record.__module__ = __name__
-    _record.__name__ = _record.__qualname__ = _public
-del _record, _public

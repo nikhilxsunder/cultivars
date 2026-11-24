@@ -121,33 +121,32 @@ from typing import Self
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _deterministic_columns
-from ...engine._core._notes import (
+from cultivars_engine._core._matrices import _deterministic_columns
+from cultivars_engine._core._notes import (
     _CHOLESKY_NOTE,
     _UNSTABLE_NOTE,
 )
-from ...engine._core._validators import _validate_exog_matrix
-from ...engine._internals._fits import (
+from cultivars_engine._core._validators import _validate_exog_matrix
+from cultivars_engine._internals._fits import (
     _ExogenousVectorAutoRegressionFit,
     _VectorAutoRegressionFit,
 )
-from ...engine._internals._inferences import _CoefficientInference as CoefficientInference
-from ...engine._internals._levels import _ConditionalLevels
-from ...engine._internals._levels import _ConditionalLevels as ConditionalLevels
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._inferences import _CoefficientInference as CoefficientInference
+from cultivars_engine._internals._levels import _ConditionalLevels
+from cultivars_engine._internals._levels import _ConditionalLevels as ConditionalLevels
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import (
+from cultivars_engine._internals._models import (
     _ExogenousVectorAutoRegressionModel,
     _VectorAutoRegressionModel,
 )
-from ...engine._internals._results import _VectorResult
-from ...exceptions import DimensionError, SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._results import _VectorResult
+from cultivars_engine.exceptions import DimensionError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["VAR", "VARX", "CoefficientInference", "ConditionalLevels", "VARResult", "VARXResult"]
 
@@ -550,7 +549,7 @@ class VARXResult(
         (2, 2)
         >>> res.forecast(2)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: a VARX forecast is conditional on the ...
+        cultivars_engine.exceptions.SpecificationError: a VARX forecast is conditional on the ...
     """
 
     coefficients: npt.NDArray[np.float64]
@@ -739,10 +738,10 @@ class VARXResult(
             True
             >>> res.forecast(2, exog_future=np.zeros((3, 1)))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: exog_future has 3 rows but the endogenous ...
+            cultivars_engine.exceptions.DimensionError: exog_future has 3 rows but the ...
             >>> res.forecast(2, exog_future=np.zeros((2, 2)))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.DimensionError: exog_future has 2 columns but the model was ...
+            cultivars_engine.exceptions.DimensionError: exog_future has 2 columns but the model ...
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")
@@ -798,7 +797,7 @@ class VARXResult(
             ['const', 'a.L1', 'b.L1', 'z', 'z.L1']
             >>> res.equation("z")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown variable 'z'; expected one of ...
+            cultivars_engine.exceptions.SpecificationError: unknown variable 'z'; expected one ...
         """
         if name not in self.names:
             raise SpecificationError(f"unknown variable {name!r}; expected one of {self.names}.")
@@ -958,7 +957,7 @@ class VARX(_ExogenousVectorAutoRegressionModel[VARXResult]):
         (3, 2)
         >>> VARX(y, x, order=1, names=("a", "b"), exog_names=("a",))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.SpecificationError: names and exog_names must not overlap, ...
+        cultivars_engine.exceptions.SpecificationError: names and exog_names must not overlap, ...
     """
 
     __slots__ = ()

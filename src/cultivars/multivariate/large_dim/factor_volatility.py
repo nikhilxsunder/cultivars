@@ -132,17 +132,17 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...bayes.priors import VolatilityPrior
-from ...engine._core._validators import _validate_quantiles
-from ...engine._internals._fits import _FactorVolatilityFit
-from ...engine._internals._mixins import (
+from cultivars_engine._core._validators import _validate_quantiles
+from cultivars_engine._internals._fits import _FactorVolatilityFit
+from cultivars_engine._internals._mixins import (
     _ConvergenceMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import _FactorVolatilityModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _FactorVolatilityModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
+from ...bayes.priors import VolatilityPrior
 
 __all__ = ["FactorSV", "FactorSVResult"]
 
@@ -461,7 +461,7 @@ class FactorSVResult(_SummaryMixin, _ConvergenceMixin):
             True
             >>> res.factor_volatility(1)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: factor index 1 is out of range for 1.
+            cultivars_engine.exceptions.SpecificationError: factor index 1 is out of range for 1.
         """
         levels = _validate_quantiles(quantiles)
         if not 0 <= int(factor) < self.n_factors:
@@ -501,9 +501,9 @@ class FactorSVResult(_SummaryMixin, _ConvergenceMixin):
             ((3, 200), True)
             >>> bool(0.2 < band[1].mean() < 0.4)
             True
-            >>> res.idiosyncratic_volatility("d")
+            >>> res.idiosyncratic_volatility("d")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown series 'd'; have ('a', 'b', 'c').
+            cultivars_engine.exceptions.SpecificationError: unknown series 'd'; have ('a', 'b', ...
         """
         levels = _validate_quantiles(quantiles)
         column = self._column(series)
@@ -627,7 +627,7 @@ class FactorSVResult(_SummaryMixin, _ConvergenceMixin):
             (2, 0)
             >>> res._column(3)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: series index 3 is out of range for 3.
+            cultivars_engine.exceptions.SpecificationError: series index 3 is out of range for 3.
         """
         if isinstance(series, str):
             if series not in self.series_names:
@@ -795,9 +795,9 @@ class FactorSV(_FactorVolatilityModel[FactorSVResult]):
         (5, 1)
         >>> bool(res.communality()[0] > res.communality()[-1])
         True
-        >>> FactorSV(y, n_factors=5)
+        >>> FactorSV(y, n_factors=5)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
-        cultivars.exceptions.DimensionError: n_factors (5) must be below the number of series (5).
+        cultivars_engine.exceptions.DimensionError: n_factors (5) must be below the number of ...
     """
 
     __slots__ = ()
@@ -863,7 +863,7 @@ class FactorSV(_FactorVolatilityModel[FactorSVResult]):
             True
             >>> model.fit(n_draws=100, n_burn=100)
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: n_draws (100) must exceed n_burn (100).
+            cultivars_engine.exceptions.SpecificationError: n_draws (100) must exceed n_burn (100).
         """
         fit = self._sample(
             n_draws=n_draws,

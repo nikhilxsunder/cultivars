@@ -127,23 +127,22 @@ from typing import Self
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _deterministic_columns
-from ...engine._core._notes import (
+from cultivars_engine._core._matrices import _deterministic_columns
+from cultivars_engine._core._notes import (
     _CHOLESKY_NOTE,
     _UNSTABLE_NOTE,
 )
-from ...engine._internals._fits import _VectorAutoRegressionFit
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._fits import _VectorAutoRegressionFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import _PanelVectorAutoRegressionModel
-from ...engine._internals._results import _VectorResult
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _PanelVectorAutoRegressionModel
+from cultivars_engine._internals._results import _VectorResult
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["PanelVAR", "PanelVARResult"]
 
@@ -393,7 +392,7 @@ class PanelVARResult(
             1
             >>> res._unit_index("d")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: unknown unit 'd'; expected one of ('a', ...
+            cultivars_engine.exceptions.SpecificationError: unknown unit 'd'; expected one of ...
         """
         if unit not in self.unit_names:
             raise SpecificationError(f"unknown unit {unit!r}; expected one of {self.unit_names}.")
@@ -488,7 +487,7 @@ class PanelVARResult(
             >>> pooled = PanelVAR(units, order=1, effects="none", trend="c").fit()
             >>> pooled.unit_effects  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: this model was fitted with effects='none', ...
+            cultivars_engine.exceptions.SpecificationError: this model was fitted with ...
         """
         if self.effects != "unit":
             raise SpecificationError(
@@ -527,7 +526,7 @@ class PanelVARResult(
             ((2, 2), True)
             >>> res.forecast(2)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: a panel forecast is unit-specific: pass ...
+            cultivars_engine.exceptions.SpecificationError: a panel forecast is unit-specific: ...
         """
         if steps < 1:
             raise SpecificationError(f"steps must be at least 1; got {steps}.")

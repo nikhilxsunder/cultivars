@@ -135,31 +135,30 @@ from typing import Any, cast
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._converters import (
+from cultivars_engine._core._converters import (
     _source_label,
     _variable_names,
 )
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _DISCREPANCY_STATISTICS,
     _EXTREME_PVALUE,
     _MIN_REPLICATIONS,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _DISCREPANCY_NAMES,
     _discrepancy_statistics,
     _predictive_pvalues,
 )
-from ..engine._core._protocols import (
+from cultivars_engine._core._protocols import (
     ReplicatingModel,
     ReplicatingResult,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_replications,
     _validate_statistics,
 )
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     SummaryTable,
 )
 
@@ -436,7 +435,7 @@ class PredictiveCheckTest:
             >>> check.pvalue("median")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: unknown statistic 'median'; ...
+            cultivars_engine.exceptions.SpecificationError: unknown statistic 'median'; ...
         """
         if statistic not in self.statistics:
             raise SpecificationError(
@@ -824,7 +823,7 @@ def replication_check(
         >>> replication_check(y, rep[:10])  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.DimensionError: 10 replications; at least 20 are needed ...
+        cultivars_engine.exceptions.DimensionError: 10 replications; at least 20 are needed ...
     """
     if kind not in ("posterior", "prior"):
         raise SpecificationError(f"kind must be 'posterior' or 'prior'; got {kind!r}.")
@@ -959,7 +958,7 @@ def posterior_predictive_check(
         >>> posterior_predictive_check(ols)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: VARResult cannot replicate its sample: ...
+        cultivars_engine.exceptions.SpecificationError: VARResult cannot replicate its sample: ...
     """
     if not isinstance(result, ReplicatingResult):
         raise SpecificationError(
@@ -1095,7 +1094,7 @@ def prior_predictive_check(
         >>> prior_predictive_check(BVAR(y, order=2), df=5)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: BVAR.prior_replications does not take ['df']; ...
+        cultivars_engine.exceptions.SpecificationError: BVAR.prior_replications does not take ...
     """
     if not isinstance(model, ReplicatingModel):
         raise SpecificationError(

@@ -115,14 +115,14 @@ from collections.abc import Sequence
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._matrices import _lower_cholesky
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._validators import _validate_regimes
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine._internals._objectives import _CoDiagonalObjective
+from cultivars_engine._internals._solvers import _solve
+from cultivars_engine.exceptions import NumericalError, SpecificationError
 
-from ...engine._core._matrices import _lower_cholesky
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._core._validators import _validate_regimes
-from ...engine._internals._models import _IdentificationModel
-from ...engine._internals._objectives import _CoDiagonalObjective
-from ...engine._internals._solvers import _solve
-from ...exceptions import NumericalError, SpecificationError
 from .zero_restrictions import SVARResult
 
 __all__ = ["HeteroskedasticSVAR"]
@@ -266,16 +266,16 @@ class HeteroskedasticSVAR(_IdentificationModel[SVARResult]):
             (('a', 'b'), 2, ('u', 'v'))
             >>> HeteroskedasticSVAR(res, labels[:10])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: regimes must assign one label per residual ...
+            cultivars_engine.exceptions.SpecificationError: regimes must assign one label per ...
             >>> HeteroskedasticSVAR(res, ["a"] * 120)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: heteroskedasticity identifies through ...
+            cultivars_engine.exceptions.SpecificationError: heteroskedasticity identifies ...
             >>> HeteroskedasticSVAR(res, ["a"] * 119 + ["b"])  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: regime 'b' has 1 observations, too few ...
+            cultivars_engine.exceptions.SpecificationError: regime 'b' has 1 observations, too ...
             >>> HeteroskedasticSVAR(res, labels, shock_names=("u",))  # doctest: +ELLIPSIS
             Traceback (most recent call last):
-            cultivars.exceptions.SpecificationError: shock_names must be 2 unique labels; ...
+            cultivars_engine.exceptions.SpecificationError: shock_names must be 2 unique labels; ...
         """
         super().__init__(result)
         k = self.k_endog

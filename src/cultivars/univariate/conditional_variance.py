@@ -159,28 +159,27 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._converters import _mean_label
-from ..engine._core._defaults import (
+from cultivars_engine._core._converters import _mean_label
+from cultivars_engine._core._defaults import (
     _DEFAULT_TRUNCATION,
     _SIMULATION_BURN,
 )
-from ..engine._internals._fits import (
+from cultivars_engine._internals._fits import (
     _FractionalVarianceFit,
     _ShortMemoryVarianceFit,
 )
-from ..engine._internals._mixins import (
+from cultivars_engine._internals._mixins import (
     _InvertibilityMixin,
     _StationarityMixin,
 )
-from ..engine._internals._models import (
+from cultivars_engine._internals._models import (
     _FractionalVarianceModel,
     _ShortMemoryVarianceModel,
 )
-from ..engine._internals._results import _ConditionalVarianceResult
-from ..engine._internals._simulators import _simulate_conditional_variance
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine._internals._results import _ConditionalVarianceResult
+from cultivars_engine._internals._simulators import _simulate_conditional_variance
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )
@@ -819,7 +818,7 @@ class FIGARCHResult(_ConditionalVarianceResult):
             >>> FIGARCH(rng.standard_normal(600)).fit().simulate(10)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: FIGARCH results do not simulate: ...
+            cultivars_engine.exceptions.SpecificationError: FIGARCH results do not simulate: ...
         """
         raise SpecificationError(
             "FIGARCH results do not simulate: the long-memory variance recursion has no "
@@ -1579,7 +1578,7 @@ class GARCH(_ShortMemoryVarianceModel[GARCHResult]):
             >>> GARCH(np.arange(50.0), p=1.5)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: p must be an integer; got 1.5.
+            cultivars_engine.exceptions.SpecificationError: p must be an integer; got 1.5.
         """
         super().__init__(endog, vol="GARCH", p=p, o=0, q=q, ar_lags=ar_lags, mean=mean)
 
@@ -1719,7 +1718,7 @@ class GJR(_ShortMemoryVarianceModel[GARCHResult]):
             >>> GJR(np.arange(50.0), o=0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: GJR requires an asymmetry order o >= 1.
+            cultivars_engine.exceptions.SpecificationError: GJR requires an asymmetry order o >= 1.
         """
         super().__init__(endog, vol="GJR", p=p, o=o, q=q, ar_lags=ar_lags, mean=mean)
 
@@ -1856,10 +1855,10 @@ class EGARCH(_ShortMemoryVarianceModel[GARCHResult]):
             >>> import numpy as np
             >>> EGARCH(np.arange(50.0), p=2, o=1, q=1).order
             (2, 1, 1)
-            >>> EGARCH(np.arange(50.0), o=0)
+            >>> EGARCH(np.arange(50.0), o=0)  # doctest: +ELLIPSIS
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: EGARCH requires an asymmetry order o >= 1.
+            cultivars_engine.exceptions.SpecificationError: EGARCH requires an asymmetry order ...
         """
         super().__init__(endog, vol="EGARCH", p=p, o=o, q=q, ar_lags=ar_lags, mean=mean)
 
@@ -2204,7 +2203,7 @@ class ARMAGJR(_ShortMemoryVarianceModel[ARMAGARCHResult]):
             >>> ARMAGJR(np.arange(50.0), o=0)
             Traceback (most recent call last):
                 ...
-            cultivars.exceptions.SpecificationError: GJR requires an asymmetry order o >= 1.
+            cultivars_engine.exceptions.SpecificationError: GJR requires an asymmetry order o >= 1.
         """
         super().__init__(
             endog, vol="GJR", p=p, o=o, q=q, ar_lags=ar_lags, ma_lags=ma_lags, mean=mean

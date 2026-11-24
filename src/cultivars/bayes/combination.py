@@ -120,21 +120,23 @@ from collections.abc import Sequence
 
 import numpy as np
 import numpy.typing as npt
-from scipy.special import logsumexp
-
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _stacking_weights,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_log_density_matrix,
     _validate_names,
     _validate_predictive,
 )
-from ..engine._internals._selections import (
+from cultivars_engine._internals._selections import (
     _MarginalLikelihoodSelection as MarginalLikelihoodSelection,
 )
-from ..engine._internals._selections import _ModelCombinationSelection as ModelCombinationSelection
-from ..exceptions import DimensionError, SpecificationError
+from cultivars_engine._internals._selections import (
+    _ModelCombinationSelection as ModelCombinationSelection,
+)
+from cultivars_engine.exceptions import DimensionError, SpecificationError
+from scipy.special import logsumexp
+
 from .evidence import marginal_likelihood
 
 __all__ = [
@@ -287,7 +289,7 @@ def bayesian_model_average(
         >>> bayesian_model_average(loose, two)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: The marginal likelihoods score different ...
+        cultivars_engine.exceptions.SpecificationError: The marginal likelihoods score different ...
     """
     predictive = _validate_predictive(results)
     evidence = (

@@ -74,8 +74,7 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
-
-from ..exceptions import DimensionError, SpecificationError
+from cultivars_engine.exceptions import DimensionError, SpecificationError
 
 __all__ = ["fan_chart"]
 
@@ -152,7 +151,7 @@ def fan_chart(
         >>> fan_chart(rng.standard_normal((100, 3, 1)), quantiles=(0.5, 0.2))  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        cultivars.exceptions.SpecificationError: quantiles must be strictly increasing levels ...
+        cultivars_engine.exceptions.SpecificationError: quantiles must be strictly increasing ...
     """
     block = np.asarray(paths, dtype=np.float64)
     if block.ndim != 3:
