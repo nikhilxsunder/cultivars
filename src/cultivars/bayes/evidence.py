@@ -133,17 +133,16 @@ from collections.abc import Callable, Sequence
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _MHM_TAU
-from ..engine._core._estimators import (
+from cultivars_engine._core._defaults import _MHM_TAU
+from cultivars_engine._core._estimators import (
     _bridge_sampling,
     _modified_harmonic_mean,
 )
-from ..engine._internals._selections import (
+from cultivars_engine._internals._selections import (
     _MarginalLikelihoodSelection as MarginalLikelihoodSelection,
 )
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = [
     "MarginalLikelihoodSelection",

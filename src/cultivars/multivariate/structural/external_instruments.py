@@ -106,10 +106,10 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
 
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._internals._models import _IdentificationModel
-from ...exceptions import DimensionError, NumericalError, SpecificationError
 from .zero_restrictions import SVARResult
 
 __all__ = ["ProxySVAR"]

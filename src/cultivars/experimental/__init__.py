@@ -76,7 +76,8 @@ from __future__ import annotations
 
 import warnings
 
-from ..exceptions import ExperimentalWarning
+from cultivars_engine.exceptions import ExperimentalWarning
+
 from . import spectral
 
 __all__ = ["spectral"]

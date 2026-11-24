@@ -148,22 +148,21 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _SIMULATION_BURN
-from ..engine._core._types import ProbabilityType
-from ..engine._core._validators import _validate_choice
-from ..engine._internals._assessments import _StabilityAssessment
-from ..engine._internals._fits import _MarkovSwitchingFit
-from ..engine._internals._mixins import (
+from cultivars_engine._core._defaults import _SIMULATION_BURN
+from cultivars_engine._core._types import ProbabilityType
+from cultivars_engine._core._validators import _validate_choice
+from cultivars_engine._internals._assessments import _StabilityAssessment
+from cultivars_engine._internals._fits import _MarkovSwitchingFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import _MarkovSwitchingModel
-from ..engine._internals._simulators import _simulate_markov_switching
-from ..engine._internals._substrates import _MarkovSwitchingStateSpace
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine._internals._models import _MarkovSwitchingModel
+from cultivars_engine._internals._simulators import _simulate_markov_switching
+from cultivars_engine._internals._substrates import _MarkovSwitchingStateSpace
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )

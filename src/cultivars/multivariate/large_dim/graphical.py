@@ -131,10 +131,10 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._internals._fits import _VectorGraphicalFit
+from cultivars_engine._internals._models import _SparseVectorAutoRegressionModel
+from cultivars_engine.summary import SummaryTable
 
-from ...engine._internals._fits import _VectorGraphicalFit
-from ...engine._internals._models import _SparseVectorAutoRegressionModel
-from ...summary import SummaryTable
 from .sparse import SparseVARResult
 
 __all__ = ["GraphicalVAR", "GraphicalVARResult"]

@@ -133,16 +133,16 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._estimators import _principal_components
-from ...engine._core._types import Trend
-from ...engine._core._validators import (
+from cultivars_engine._core._estimators import _principal_components
+from cultivars_engine._core._types import Trend
+from cultivars_engine._core._validators import (
     _validate_exog_matrix,
     _validate_wide_panel,
 )
-from ...engine._internals._mixins import _SummaryMixin
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
 from ..reduced_form.vector_autoregression import VAR, VARResult
 
 __all__ = ["FAVAR", "FAVARResult"]

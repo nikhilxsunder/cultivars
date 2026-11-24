@@ -58,8 +58,8 @@ section says how.
 
 import matplotlib.pyplot as plt
 import numpy as np
-
 from cultivars.exceptions import SpecificationError
+
 from cultivars.multivariate.reduced_form.vector_autoregression import VAR
 from cultivars.multivariate.structural.set_identification import SetIdentifiedSVAR
 from cultivars.multivariate.structural.sign_restrictions import (

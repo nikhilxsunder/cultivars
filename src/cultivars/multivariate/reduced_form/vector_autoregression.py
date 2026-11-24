@@ -121,33 +121,32 @@ from typing import Self
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _deterministic_columns
-from ...engine._core._notes import (
+from cultivars_engine._core._matrices import _deterministic_columns
+from cultivars_engine._core._notes import (
     _CHOLESKY_NOTE,
     _UNSTABLE_NOTE,
 )
-from ...engine._core._validators import _validate_exog_matrix
-from ...engine._internals._fits import (
+from cultivars_engine._core._validators import _validate_exog_matrix
+from cultivars_engine._internals._fits import (
     _ExogenousVectorAutoRegressionFit,
     _VectorAutoRegressionFit,
 )
-from ...engine._internals._inferences import _CoefficientInference as CoefficientInference
-from ...engine._internals._levels import _ConditionalLevels
-from ...engine._internals._levels import _ConditionalLevels as ConditionalLevels
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._inferences import _CoefficientInference as CoefficientInference
+from cultivars_engine._internals._levels import _ConditionalLevels
+from cultivars_engine._internals._levels import _ConditionalLevels as ConditionalLevels
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import (
+from cultivars_engine._internals._models import (
     _ExogenousVectorAutoRegressionModel,
     _VectorAutoRegressionModel,
 )
-from ...engine._internals._results import _VectorResult
-from ...exceptions import DimensionError, SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._results import _VectorResult
+from cultivars_engine.exceptions import DimensionError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["VAR", "VARX", "CoefficientInference", "ConditionalLevels", "VARResult", "VARXResult"]
 

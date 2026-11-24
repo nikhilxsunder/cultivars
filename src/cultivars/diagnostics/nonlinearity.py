@@ -143,15 +143,14 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _BDS_RADIUS,
     _CRITICAL_LEVELS,
     _DEFAULT_GRID,
     _DEFAULT_TRIM,
     _HANSEN_REPLICATIONS,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _bds,
     _hansen_threshold,
     _reset_test,
@@ -159,18 +158,18 @@ from ..engine._core._estimators import (
     _terasvirta_lm,
     _tsay_arranged,
 )
-from ..engine._core._notes import (
+from cultivars_engine._core._notes import (
     _NULL,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_endog,
     _validate_open_interval,
     _validate_order,
     _validate_specification,
 )
-from ..engine._internals._tests import _HypothesisTest
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine._internals._tests import _HypothesisTest
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     SummaryTable,
 )
 

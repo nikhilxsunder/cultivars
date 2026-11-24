@@ -140,13 +140,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _companion_matrix
-from ...engine._internals._fits import _VectorFunctionalFit
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _FunctionalCoefficientVectorAutoRegressionModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._core._matrices import _companion_matrix
+from cultivars_engine._internals._fits import _VectorFunctionalFit
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _FunctionalCoefficientVectorAutoRegressionModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["FunctionalCoefficientVAR", "FunctionalCoefficientVARResult"]
 

@@ -125,19 +125,19 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._internals._fits import _StructuralFit
-from ..engine._internals._mixins import (
+from cultivars_engine._internals._fits import _StructuralFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import _UnobservedComponentsModel
-from ..engine._internals._parameters import _StructuralParameters
-from ..engine._internals._systems import _structural_matrices
-from ..exceptions import SpecificationError
+from cultivars_engine._internals._models import _UnobservedComponentsModel
+from cultivars_engine._internals._parameters import _StructuralParameters
+from cultivars_engine._internals._systems import _structural_matrices
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
 from ..state_space.linear_gaussian import LinearGaussianSSM
-from ..summary import SummaryTable
 
 __all__ = ["UnobservedComponents", "UnobservedComponentsResult"]
 

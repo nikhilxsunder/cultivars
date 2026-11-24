@@ -116,12 +116,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._protocols import StructuralResult
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
-from ...engine._core._protocols import StructuralResult
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _IdentificationModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
 from ..large_dim.factor_augmented import FAVARResult
 from .zero_restrictions import RecursiveSVAR
 

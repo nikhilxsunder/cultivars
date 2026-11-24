@@ -129,18 +129,17 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._protocols import ClosedSystemResult
-from ..engine._core._spectra import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._spectra import (
     _frequency_grid,
     _pairwise_measure,
     _spectral_matrix,
     _transfer_function,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..engine._internals._solvers import _spectral_factor
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._solvers import _spectral_factor
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = [
     "ConditionalSpectralCausality",

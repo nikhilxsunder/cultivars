@@ -132,34 +132,33 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import chi2
-
-from ...engine._core._defaults import _LOG_2PI
-from ...engine._core._matrices import (
+from cultivars_engine._core._defaults import _LOG_2PI
+from cultivars_engine._core._matrices import (
     _long_run_matrix,
     _lower_cholesky,
 )
-from ...engine._core._notes import (
+from cultivars_engine._core._notes import (
     _PARTIAL_IDENTIFICATION_NOTE,
     _UNIT_SHOCK_NOTE,
 )
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._core._validators import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._validators import (
     _validate_impact_pattern,
     _validate_ordering,
 )
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _IdentificationModel
-from ...engine._internals._objectives import (
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine._internals._objectives import (
     _MixedHorizonObjective,
     _ShortRunObjective,
 )
-from ...engine._internals._solvers import (
+from cultivars_engine._internals._solvers import (
     _maximize_likelihood,
     _solve,
 )
-from ...exceptions import NumericalError, SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine.exceptions import NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import chi2
 
 __all__ = ["LongRunSVAR", "MixedSVAR", "RecursiveSVAR", "SVARResult", "ShortRunSVAR"]
 

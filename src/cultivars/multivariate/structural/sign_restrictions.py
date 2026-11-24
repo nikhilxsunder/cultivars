@@ -137,27 +137,26 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _lower_cholesky
-from ...engine._core._notes import (
+from cultivars_engine._core._matrices import _lower_cholesky
+from cultivars_engine._core._notes import (
     _NARRATIVE_NOTE,
     _SIGN_QUANTILE_NOTE,
     _UNIT_SHOCK_NOTE,
 )
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._core._rotations import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._rotations import (
     _accepted_rotations,
     _narrative_rotations,
 )
-from ...engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_narrative_events,
     _validate_quantiles,
     _validate_sign_patterns,
 )
-from ...engine._internals._mixins import _SummaryMixin
-from ...engine._internals._models import _IdentificationModel
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._models import _IdentificationModel
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["NarrativeSignRestrictedSVAR", "SignRestrictedSVAR", "SignRestrictedSVARResult"]
 

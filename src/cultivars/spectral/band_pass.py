@@ -113,12 +113,11 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._spectra import _ideal_weights
-from ..engine._core._validators import _validate_band, _validate_endog_matrix
-from ..engine._internals._mixins import _SummaryMixin
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._core._spectra import _ideal_weights
+from cultivars_engine._core._validators import _validate_band, _validate_endog_matrix
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["BandPassResult", "BaxterKingFilter", "ChristianoFitzgeraldFilter"]
 

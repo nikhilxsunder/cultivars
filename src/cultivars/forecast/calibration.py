@@ -120,13 +120,12 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 import scipy.stats as sst
-
-from ..engine._core._estimators import _berkowitz_likelihood_ratio
-from ..engine._core._scores import _pit_from_draws
-from ..engine._internals._mixins import _SummaryMixin
-from ..engine._internals._tests import _LikelihoodRatioTest
-from ..exceptions import DimensionError, NumericalError, SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._core._estimators import _berkowitz_likelihood_ratio
+from cultivars_engine._core._scores import _pit_from_draws
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine._internals._tests import _LikelihoodRatioTest
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["Calibration", "CalibrationResult"]
 

@@ -139,12 +139,11 @@ from itertools import pairwise
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _CRITICAL_ALPHAS,
     _CRITICAL_LEVELS,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _bai_perron_partition,
     _bridge_functionals,
     _cusum_squares_quantiles,
@@ -152,15 +151,15 @@ from ..engine._core._estimators import (
     _segment_ssr,
     _simulated_critical_values,
 )
-from ..engine._core._mappings import (
+from cultivars_engine._core._mappings import (
     _CUSUM_BOUNDARY,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_regression,
 )
-from ..engine._internals._tests import _TabulatedTest
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine._internals._tests import _TabulatedTest
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     SummaryTable,
 )
 

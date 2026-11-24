@@ -135,31 +135,30 @@ from typing import Any, cast
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._converters import (
+from cultivars_engine._core._converters import (
     _source_label,
     _variable_names,
 )
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _DISCREPANCY_STATISTICS,
     _EXTREME_PVALUE,
     _MIN_REPLICATIONS,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _DISCREPANCY_NAMES,
     _discrepancy_statistics,
     _predictive_pvalues,
 )
-from ..engine._core._protocols import (
+from cultivars_engine._core._protocols import (
     ReplicatingModel,
     ReplicatingResult,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_replications,
     _validate_statistics,
 )
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     SummaryTable,
 )
 

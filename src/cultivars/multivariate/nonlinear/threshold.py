@@ -135,13 +135,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._types import Regime
-from ...engine._core._validators import _validate_choice
-from ...engine._internals._fits import _VectorThresholdFit
-from ...engine._internals._models import _ThresholdVectorAutoRegressionModel
-from ...engine._internals._results import _VectorObservedRegimeResult
-from ...summary import SummaryTable
+from cultivars_engine._core._types import Regime
+from cultivars_engine._core._validators import _validate_choice
+from cultivars_engine._internals._fits import _VectorThresholdFit
+from cultivars_engine._internals._models import _ThresholdVectorAutoRegressionModel
+from cultivars_engine._internals._results import _VectorObservedRegimeResult
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["TVAR", "TVARResult"]
 

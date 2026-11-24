@@ -96,21 +96,21 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...bayes.priors import NormalInverseWishartPrior
-from ...engine._core._matrices import _companion_matrix
-from ...engine._core._types import Trend
-from ...engine._internals._fits import _VectorConjugateFit
-from ...engine._internals._mixins import (
+from cultivars_engine._core._matrices import _companion_matrix
+from cultivars_engine._core._types import Trend
+from cultivars_engine._internals._fits import _VectorConjugateFit
+from cultivars_engine._internals._mixins import (
     _ConvergenceMixin,
     _ReplicationMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import _BayesianVectorAutoRegressionModel
-from ...engine._internals._priors import _Prior
-from ...engine._internals._selections import _MarginalLikelihoodSelection
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _BayesianVectorAutoRegressionModel
+from cultivars_engine._internals._priors import _Prior
+from cultivars_engine._internals._selections import _MarginalLikelihoodSelection
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
+from ...bayes.priors import NormalInverseWishartPrior
 
 __all__ = ["BVAR", "BVARResult"]
 

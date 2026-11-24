@@ -137,8 +137,10 @@ Example:
 
 from __future__ import annotations
 
-from ..engine._internals._results import _DurbinKoopmanSmootherResult as DurbinKoopmanSmootherResult
-from ..engine._internals._results import _KalmanFilterResult as KalmanFilterResult
-from ..engine._internals._substrates import _LinearGaussianStateSpace as LinearGaussianSSM
+from cultivars_engine._internals._results import (
+    _DurbinKoopmanSmootherResult as DurbinKoopmanSmootherResult,
+)
+from cultivars_engine._internals._results import _KalmanFilterResult as KalmanFilterResult
+from cultivars_engine._internals._substrates import _LinearGaussianStateSpace as LinearGaussianSSM
 
 __all__ = ["DurbinKoopmanSmootherResult", "KalmanFilterResult", "LinearGaussianSSM"]

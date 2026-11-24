@@ -122,9 +122,7 @@ from dataclasses import dataclass, replace
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import norm
-
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _ELW_BOUNDS,
     _GPH_EXPONENT,
     _LW_BOUNDS,
@@ -132,17 +130,18 @@ from ..engine._core._defaults import (
     _MIN_LONG_MEMORY_OBS,
     _WHITTLE_EXPONENT,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _exact_local_whittle,
     _gph,
     _local_whittle_d,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_semiparametric,
 )
-from ..engine._internals._tests import _HypothesisTest
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._tests import _HypothesisTest
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import norm
 
 __all__ = ["LongMemoryEstimate", "exact_local_whittle", "gph", "local_whittle"]
 

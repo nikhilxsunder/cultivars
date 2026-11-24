@@ -126,23 +126,23 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.interpolate import BSpline
-
-from ...engine._core._polynomials import (
+from cultivars_engine._core._polynomials import (
     _nelson_siegel_loadings,
     _projection_scores,
 )
-from ...engine._core._types import (
+from cultivars_engine._core._types import (
     FunctionalBasis,
     Trend,
 )
-from ...engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_choice,
     _validate_curves,
 )
-from ...engine._internals._mixins import _SummaryMixin
-from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.interpolate import BSpline
+
 from .vector_autoregression import VAR, VARResult
 
 __all__ = ["FunctionalVAR", "FunctionalVARResult"]

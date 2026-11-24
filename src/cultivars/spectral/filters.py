@@ -136,24 +136,24 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _METHOD_TITLES
-from ..engine._core._estimators import (
+from cultivars_engine._core._defaults import _METHOD_TITLES
+from cultivars_engine._core._estimators import (
     _beveridge_nelson,
     _hamilton_regression,
 )
-from ..engine._core._spectra import (
+from cultivars_engine._core._spectra import (
     _butterworth_penalty,
     _penalty_cutoff_period,
 )
-from ..engine._core._transforms import _penalized_trend
-from ..engine._core._validators import (
+from cultivars_engine._core._transforms import _penalized_trend
+from cultivars_engine._core._validators import (
     _validate_endog_matrix,
     _validate_order,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
 from ..univariate.box_jenkins import ARMAResult
 
 __all__ = [

@@ -127,23 +127,22 @@ from typing import Self
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import _deterministic_columns
-from ...engine._core._notes import (
+from cultivars_engine._core._matrices import _deterministic_columns
+from cultivars_engine._core._notes import (
     _CHOLESKY_NOTE,
     _UNSTABLE_NOTE,
 )
-from ...engine._internals._fits import _VectorAutoRegressionFit
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._fits import _VectorAutoRegressionFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import _PanelVectorAutoRegressionModel
-from ...engine._internals._results import _VectorResult
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _PanelVectorAutoRegressionModel
+from cultivars_engine._internals._results import _VectorResult
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["PanelVAR", "PanelVARResult"]
 

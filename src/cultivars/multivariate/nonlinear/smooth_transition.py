@@ -140,12 +140,11 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._types import Regime
-from ...engine._internals._fits import _VectorSmoothTransitionFit
-from ...engine._internals._models import _SmoothTransitionVectorAutoRegressionModel
-from ...engine._internals._results import _VectorObservedRegimeResult
-from ...summary import SummaryTable
+from cultivars_engine._core._types import Regime
+from cultivars_engine._internals._fits import _VectorSmoothTransitionFit
+from cultivars_engine._internals._models import _SmoothTransitionVectorAutoRegressionModel
+from cultivars_engine._internals._results import _VectorObservedRegimeResult
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["STVAR", "STVARResult"]
 

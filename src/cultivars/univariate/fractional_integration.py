@@ -123,18 +123,17 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._defaults import _D_MAX
-from ..engine._internals._fits import _FractionalIntegrationFit
-from ..engine._internals._mixins import (
+from cultivars_engine._core._defaults import _D_MAX
+from cultivars_engine._internals._fits import _FractionalIntegrationFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _InvertibilityMixin,
     _SeriesMixin,
     _StationarityMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import _FractionalIntegrationModel
-from ..summary import (
+from cultivars_engine._internals._models import _FractionalIntegrationModel
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )

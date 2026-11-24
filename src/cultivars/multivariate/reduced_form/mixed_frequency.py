@@ -156,48 +156,47 @@ from typing import Self
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._converters import _mixed_frequency_system
-from ...engine._core._matrices import (
+from cultivars_engine._core._converters import _mixed_frequency_system
+from cultivars_engine._core._matrices import (
     _deterministic_columns,
     _lag_matrix,
 )
-from ...engine._core._notes import (
+from cultivars_engine._core._notes import (
     _AGGREGATION_NOTE,
     _CHOLESKY_NOTE,
     _MIDAS_CONDITIONAL_NOTE,
     _UNSTABLE_NOTE,
 )
-from ...engine._core._polynomials import (
+from cultivars_engine._core._polynomials import (
     _aggregation_weights,
     _midas_weights,
     _midas_windows,
 )
-from ...engine._core._types import (
+from cultivars_engine._core._types import (
     Frequency,
     Trend,
 )
-from ...engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_exog_matrix,
     _validate_observed,
 )
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import _VectorAutoRegressionModel
-from ...engine._internals._objectives import _MidasProfileObjective
-from ...engine._internals._results import (
+from cultivars_engine._internals._models import _VectorAutoRegressionModel
+from cultivars_engine._internals._objectives import _MidasProfileObjective
+from cultivars_engine._internals._results import (
     _DurbinKoopmanSmootherResult,
     _KalmanFilterResult,
     _VectorResult,
 )
-from ...engine._internals._solvers import _maximize_likelihood
-from ...engine._internals._substrates import _LinearGaussianStateSpace
-from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._solvers import _maximize_likelihood
+from cultivars_engine._internals._substrates import _LinearGaussianStateSpace
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["MFVAR", "MIDASVAR", "MFVARResult", "MIDASVARResult"]
 

@@ -145,36 +145,35 @@ from typing import Self, cast
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._mappings import (
+from cultivars_engine._core._mappings import (
     _LEVELS_TREND,
     _UNRESTRICTED_TREND,
 )
-from ...engine._core._matrices import _deterministic_columns
-from ...engine._core._notes import (
+from cultivars_engine._core._matrices import _deterministic_columns
+from cultivars_engine._core._notes import (
     _CHOLESKY_NOTE,
     _CONDITIONAL_REFUSAL,
     _UNSTABLE_NOTE,
 )
-from ...engine._core._types import CointegrationTrend
-from ...engine._core._validators import _validate_exog_matrix
-from ...engine._internals._assessments import _StabilityAssessment
-from ...engine._internals._fits import _VectorErrorCorrectionFit
-from ...engine._internals._levels import _ConditionalLevels
-from ...engine._internals._mixins import (
+from cultivars_engine._core._types import CointegrationTrend
+from cultivars_engine._core._validators import _validate_exog_matrix
+from cultivars_engine._internals._assessments import _StabilityAssessment
+from cultivars_engine._internals._fits import _VectorErrorCorrectionFit
+from cultivars_engine._internals._levels import _ConditionalLevels
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import (
+from cultivars_engine._internals._models import (
     _ExogenousVectorErrorCorrectionModel,
     _VectorErrorCorrectionModel,
 )
-from ...engine._internals._results import _ErrorCorrectionResult
-from ...engine._internals._tests import _WaldTest
-from ...exceptions import DimensionError, SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._results import _ErrorCorrectionResult
+from cultivars_engine._internals._tests import _WaldTest
+from cultivars_engine.exceptions import DimensionError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["VECM", "VECMX", "VECMResult", "VECMXResult"]
 

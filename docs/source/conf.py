@@ -342,8 +342,29 @@ sphinx_gallery_conf: dict[str, object] = {
     "default_thumb_file": str(_ROOT / "docs" / "source" / "_static" / "cultivars-logo.png"),
 }
 
-# Keep generated backreference stubs out of the sidebar toctree.
-remove_from_toctrees: list[str] = ["gen_modules/backreferences/*"]
+# Keep the generated reference out of the sidebar below a fixed depth.
+#
+# pydata-sphinx-theme writes the whole toctree of a section into every page of
+# it, so a section of N pages costs N links on each of N pages. With a page per
+# member that was 4,067 links and 775 KB of sidebar on every engine page and
+# 4.5 GB for one version of the site, against the 10 GB that GitHub Pages
+# accepts for all versions together. The pages are still built and still
+# linked from the tables on their parent page; they are only left out of the
+# navigation tree. The API reference keeps modules, classes and functions in
+# the sidebar; the engine reference keeps modules.
+#
+# sphinx-remove-toctrees matches these as filesystem globs over the stub
+# files, suffix included. A class is the first dotted segment that starts with
+# a capital, and in the engine anything three segments below
+# ``cultivars.engine`` sits under a module. ``.github/workflows/docs.yml``
+# passes the same list on the command line, so that a release tag cut before
+# this change is rebuilt with it; keep the two in step.
+remove_from_toctrees: list[str] = [
+    "gen_modules/backreferences/*",
+    "api/generated/*.[A-Z]*.*.rst",
+    "engine/generated/cultivars.engine.*.*.*.rst",
+    "engine/generated/*.[A-Z]*.rst",
+]
 
 # -- sphinx-tippy ------------------------------------------------------------
 tippy_props: dict[str, object] = {
@@ -438,7 +459,7 @@ def _document_reexports_as_classes() -> None:
     """Document engine classes under their public names as classes, not aliases.
 
     The public modules re-export their records, results and tests from the
-    engine (``from ..engine._internals._tests import _JohansenRankTest as
+    engine (``from cultivars_engine._internals._tests import _JohansenRankTest as
     JohansenRankTest``), so the object autodoc imports for
     ``cultivars.diagnostics.cointegration.JohansenRankTest`` carries the
     private ``__name__``. autodoc reads any name mismatch as an alias and

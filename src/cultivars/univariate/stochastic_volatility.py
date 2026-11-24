@@ -152,30 +152,30 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-
-from ..bayes.priors import RandomWalkVolatilityPrior, VolatilityPrior
-from ..engine._internals._emitters import (
+from cultivars_engine._internals._emitters import (
     _quasi_volatility_state_space,
     _volatility_state_space,
 )
-from ..engine._internals._fits import _StochasticVolatilityFit
-from ..engine._internals._mixins import (
+from cultivars_engine._internals._fits import _StochasticVolatilityFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
-from ..engine._internals._models import (
+from cultivars_engine._internals._models import (
     _StochasticVolatilityModel,
     _TrendVolatilityModel,
 )
-from ..engine._internals._parameters import _StochasticVolatilityParameters
-from ..engine._internals._posteriors import _SVPosterior as SVPosterior
-from ..engine._internals._posteriors import _UCSVPosterior as UCSVPosterior
-from ..engine._internals._simulators import _simulate_stochastic_volatility
-from ..exceptions import SpecificationError
+from cultivars_engine._internals._parameters import _StochasticVolatilityParameters
+from cultivars_engine._internals._posteriors import _SVPosterior as SVPosterior
+from cultivars_engine._internals._posteriors import _UCSVPosterior as UCSVPosterior
+from cultivars_engine._internals._simulators import _simulate_stochastic_volatility
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+
+from ..bayes.priors import RandomWalkVolatilityPrior, VolatilityPrior
 from ..state_space.linear_gaussian import LinearGaussianSSM
 from ..state_space.nonlinear import NonlinearSSM
-from ..summary import SummaryTable
 
 __all__ = [
     "SV",

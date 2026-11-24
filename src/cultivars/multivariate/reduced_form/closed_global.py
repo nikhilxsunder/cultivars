@@ -150,17 +150,17 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import chi2
-
-from ...engine._core._validators import _validate_weights
-from ...engine._internals._mixins import (
+from cultivars_engine._core._validators import _validate_weights
+from cultivars_engine._internals._mixins import (
     _SummaryMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._solvers import _solve_global
-from ...engine._internals._tests import _WaldTest
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._solvers import _solve_global
+from cultivars_engine._internals._tests import _WaldTest
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import chi2
+
 from .error_correction import VECMXResult
 from .vector_autoregression import VARXResult
 

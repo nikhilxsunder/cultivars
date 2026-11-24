@@ -129,31 +129,30 @@ from typing import NoReturn
 
 import numpy as np
 import numpy.typing as npt
-
-from ...engine._core._matrices import (
+from cultivars_engine._core._matrices import (
     _deterministic_columns,
     _lag_matrix,
 )
-from ...engine._core._notes import (
+from cultivars_engine._core._notes import (
     _CHOLESKY_NOTE,
     _HR_CONDITIONAL_NOTE,
     _UNSTABLE_NOTE,
     _VARMA_IDENTIFICATION_NOTE,
 )
-from ...engine._core._types import Trend
-from ...engine._core._validators import _validate_order_tuple
-from ...engine._internals._assessments import _StabilityAssessment
-from ...engine._internals._mixins import (
+from cultivars_engine._core._types import Trend
+from cultivars_engine._core._validators import _validate_order_tuple
+from cultivars_engine._internals._assessments import _StabilityAssessment
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
     _VectorInferenceMixin,
     _VectorPropagationMixin,
 )
-from ...engine._internals._models import _VectorAutoRegressionModel
-from ...engine._internals._moments import _VectorMoments
-from ...engine._internals._results import _VectorResult
-from ...exceptions import SpecificationError
-from ...summary import SummaryTable
+from cultivars_engine._internals._models import _VectorAutoRegressionModel
+from cultivars_engine._internals._moments import _VectorMoments
+from cultivars_engine._internals._results import _VectorResult
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
 
 __all__ = ["VARMA", "VARMAResult"]
 

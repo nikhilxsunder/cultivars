@@ -127,13 +127,13 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._matrices import _trailing_lag
+from cultivars_engine._internals._fits import _SmoothTransitionFit
+from cultivars_engine._internals._models import _SmoothTransitionModel
+from cultivars_engine._internals._results import _ObservedRegimeResult
+from cultivars_engine.summary import SummaryTable
 
-from ..engine._core._matrices import _trailing_lag
-from ..engine._internals._fits import _SmoothTransitionFit
-from ..engine._internals._models import _SmoothTransitionModel
-from ..engine._internals._results import _ObservedRegimeResult
 from ..state_space.nonlinear import NonlinearSSM
-from ..summary import SummaryTable
 
 __all__ = ["ESTAR", "LSTAR", "STARResult"]
 

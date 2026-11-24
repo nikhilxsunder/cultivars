@@ -167,15 +167,16 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._samplers import _draw_generalized_inverse_gaussian
-from ..engine._internals._priors import _AdaptivePrior
-from ..engine._internals._priors import _NoPrior as NoPrior
-from ..engine._internals._priors import _Prior as Prior
-from ..engine._internals._priors import _PriorContext as PriorContext
-from ..engine._internals._priors import _RandomWalkVolatilityPrior as RandomWalkVolatilityPrior
-from ..engine._internals._priors import _VolatilityPrior as VolatilityPrior
-from ..exceptions import DimensionError, SpecificationError
+from cultivars_engine._core._samplers import _draw_generalized_inverse_gaussian
+from cultivars_engine._internals._priors import _AdaptivePrior
+from cultivars_engine._internals._priors import _NoPrior as NoPrior
+from cultivars_engine._internals._priors import _Prior as Prior
+from cultivars_engine._internals._priors import _PriorContext as PriorContext
+from cultivars_engine._internals._priors import (
+    _RandomWalkVolatilityPrior as RandomWalkVolatilityPrior,
+)
+from cultivars_engine._internals._priors import _VolatilityPrior as VolatilityPrior
+from cultivars_engine.exceptions import DimensionError, SpecificationError
 
 __all__ = [
     "DirichletLaplacePrior",

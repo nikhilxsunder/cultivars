@@ -151,36 +151,36 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import norm
-
-from ...bayes.priors import VolatilityPrior
-from ...engine._core._estimators import _variance_ratio_test
-from ...engine._core._notes import (
+from cultivars_engine._core._estimators import _variance_ratio_test
+from cultivars_engine._core._notes import (
     _LABEL_NOTE,
     _SCALE_NOTE,
 )
-from ...engine._core._protocols import ClosedSystemResult
-from ...engine._core._spectra import _fractional_spectrum
-from ...engine._core._validators import _validate_quantiles
-from ...engine._internals._emitters import _long_memory_quasi_state_space
-from ...engine._internals._fits import (
+from cultivars_engine._core._protocols import ClosedSystemResult
+from cultivars_engine._core._spectra import _fractional_spectrum
+from cultivars_engine._core._validators import _validate_quantiles
+from cultivars_engine._internals._emitters import _long_memory_quasi_state_space
+from cultivars_engine._internals._fits import (
     _LongMemoryVolatilityFit,
     _VolatilityStructuralFit,
 )
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _ConvergenceMixin,
     _SeriesMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import (
+from cultivars_engine._internals._models import (
     _LongMemoryVolatilityModel,
     _VolatilityIdentificationModel,
 )
-from ...engine._internals._parameters import _LongMemoryVolatilityParameters
-from ...exceptions import SpecificationError
+from cultivars_engine._internals._parameters import _LongMemoryVolatilityParameters
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import norm
+
+from ...bayes.priors import VolatilityPrior
 from ...state_space.linear_gaussian import LinearGaussianSSM
-from ...summary import SummaryTable
 from .zero_restrictions import SVARResult
 
 __all__ = [

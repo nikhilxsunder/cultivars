@@ -148,22 +148,22 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._matrices import _trailing_lag
-from ..engine._internals._engines import MeanFunctionEngine
-from ..engine._internals._fits import (
+from cultivars_engine._core._matrices import _trailing_lag
+from cultivars_engine._internals._engines import MeanFunctionEngine
+from cultivars_engine._internals._fits import (
     _NeuralAutoRegressionFit,
     _NeuralThresholdFit,
 )
-from ..engine._internals._models import (
+from cultivars_engine._internals._models import (
     _NeuralAutoRegressionModel,
     _NeuralThresholdModel,
 )
-from ..engine._internals._predictors import MeanPredictor
-from ..engine._internals._results import _MeanFunctionResult
-from ..exceptions import DimensionError, SpecificationError
+from cultivars_engine._internals._predictors import MeanPredictor
+from cultivars_engine._internals._results import _MeanFunctionResult
+from cultivars_engine.exceptions import DimensionError, SpecificationError
+from cultivars_engine.summary import SummaryTable
+
 from ..state_space.nonlinear import NonlinearSSM
-from ..summary import SummaryTable
 
 __all__ = ["ARNN", "TARNN", "ARNNResult", "MeanFunctionEngine", "TARNNResult"]
 

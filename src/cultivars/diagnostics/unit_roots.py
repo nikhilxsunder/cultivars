@@ -156,11 +156,10 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._converters import (
+from cultivars_engine._core._converters import (
     _critical_value_table,
 )
-from ..engine._core._estimators import (
+from cultivars_engine._core._estimators import (
     _dickey_fuller_regression,
     _kpss_pvalue,
     _kpss_statistic,
@@ -174,22 +173,22 @@ from ..engine._core._estimators import (
     _schwert_max_lags,
     _zivot_andrews,
 )
-from ..engine._core._mappings import (
+from cultivars_engine._core._mappings import (
     _DFGLS_CRITICAL,
     _GLS_DETREND_C,
     _KPSS_CRITICAL,
     _NG_PERRON_CRITICAL,
     _ZIVOT_ANDREWS_CRITICAL,
 )
-from ..engine._core._transforms import (
+from cultivars_engine._core._transforms import (
     _gls_detrend,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_choice,
     _validate_endog,
 )
-from ..engine._internals._tests import _TabulatedTest
-from ..exceptions import SpecificationError
+from cultivars_engine._internals._tests import _TabulatedTest
+from cultivars_engine.exceptions import SpecificationError
 
 __all__ = [
     "UnitRootTest",

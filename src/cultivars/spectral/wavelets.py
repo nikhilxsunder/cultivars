@@ -130,23 +130,21 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.stats import chi2
-
-from ..engine._core._defaults import (
+from cultivars_engine._core._defaults import (
     _COHERENCE_SURROGATES,
     _DEFAULT_ALPHA,
     _MIN_SPECTRUM_OBS,
     _MORLET_OMEGA0,
     _SCALES_PER_OCTAVE,
 )
-from ..engine._core._validators import (
+from cultivars_engine._core._validators import (
     _validate_aligned,
     _validate_choice,
     _validate_endog,
     _validate_open_interval,
     _validate_order,
 )
-from ..engine._core._wavelets import (
+from cultivars_engine._core._wavelets import (
     _coherence_surrogates,
     _cone_of_influence,
     _modwt,
@@ -156,9 +154,10 @@ from ..engine._core._wavelets import (
     _morlet_scales,
     _wavelet_coherence,
 )
-from ..engine._internals._mixins import _SummaryMixin
-from ..exceptions import SpecificationError
-from ..summary import SummaryTable
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import SummaryTable
+from scipy.stats import chi2
 
 __all__ = ["MODWT", "MODWTResult", "WaveletCoherence", "WaveletCoherenceResult"]
 

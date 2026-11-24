@@ -159,28 +159,27 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
-
-from ..engine._core._converters import _mean_label
-from ..engine._core._defaults import (
+from cultivars_engine._core._converters import _mean_label
+from cultivars_engine._core._defaults import (
     _DEFAULT_TRUNCATION,
     _SIMULATION_BURN,
 )
-from ..engine._internals._fits import (
+from cultivars_engine._internals._fits import (
     _FractionalVarianceFit,
     _ShortMemoryVarianceFit,
 )
-from ..engine._internals._mixins import (
+from cultivars_engine._internals._mixins import (
     _InvertibilityMixin,
     _StationarityMixin,
 )
-from ..engine._internals._models import (
+from cultivars_engine._internals._models import (
     _FractionalVarianceModel,
     _ShortMemoryVarianceModel,
 )
-from ..engine._internals._results import _ConditionalVarianceResult
-from ..engine._internals._simulators import _simulate_conditional_variance
-from ..exceptions import SpecificationError
-from ..summary import (
+from cultivars_engine._internals._results import _ConditionalVarianceResult
+from cultivars_engine._internals._simulators import _simulate_conditional_variance
+from cultivars_engine.exceptions import SpecificationError
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )

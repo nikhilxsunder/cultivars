@@ -137,27 +137,27 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize
-
-from ...engine._core._protocols import StructuralResult
-from ...engine._core._types import ProbabilityType
-from ...engine._core._validators import (
+from cultivars_engine._core._protocols import StructuralResult
+from cultivars_engine._core._types import ProbabilityType
+from cultivars_engine._core._validators import (
     _validate_choice,
     _validate_endog_matrix,
 )
-from ...engine._internals._fits import _VectorMarkovSwitchingFit
-from ...engine._internals._mixins import (
+from cultivars_engine._internals._fits import _VectorMarkovSwitchingFit
+from cultivars_engine._internals._mixins import (
     _ComparisonMixin,
     _SummaryMixin,
 )
-from ...engine._internals._models import _MarkovSwitchingVectorAutoRegressionModel
-from ...engine._internals._results import _RegimeSystemResult as RegimeSystemResult
-from ...engine._internals._substrates import _RegimeSwitchingLinearStateSpace
-from ...exceptions import DimensionError, NumericalError, SpecificationError
-from ...summary import (
+from cultivars_engine._internals._models import _MarkovSwitchingVectorAutoRegressionModel
+from cultivars_engine._internals._results import _RegimeSystemResult as RegimeSystemResult
+from cultivars_engine._internals._substrates import _RegimeSwitchingLinearStateSpace
+from cultivars_engine.exceptions import DimensionError, NumericalError, SpecificationError
+from cultivars_engine.summary import (
     InformationCriteria,
     SummaryTable,
 )
+from scipy.optimize import minimize
+
 from ..structural.zero_restrictions import RecursiveSVAR
 
 __all__ = [

@@ -126,12 +126,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from cultivars_engine._core._estimators import _principal_components
+from cultivars_engine._core._validators import _validate_endog_matrix
+from cultivars_engine._internals._mixins import _SummaryMixin
+from cultivars_engine.exceptions import DimensionError, SpecificationError
+from cultivars_engine.summary import SummaryTable
 
-from ...engine._core._estimators import _principal_components
-from ...engine._core._validators import _validate_endog_matrix
-from ...engine._internals._mixins import _SummaryMixin
-from ...exceptions import DimensionError, SpecificationError
-from ...summary import SummaryTable
 from ..reduced_form.vector_autoregression import VAR, VARResult
 
 __all__ = ["DFM", "DFMResult"]
