@@ -39,8 +39,9 @@ Dataframe export is optional and comes in through an extra:
 Install a pre-release
 ---------------------
 
-Every release so far is a pre-release, so installers skip cultivars
-unless asked for pre-releases explicitly.
+The default install resolves to 0.0.2, a stable-channel republish of
+1.0.0a4 with identical code. To get later pre-releases as they ship,
+installers must be asked for them explicitly.
 
 .. tab-set::
 
@@ -48,15 +49,15 @@ unless asked for pre-releases explicitly.
 
       .. code-block:: bash
 
-         pip install --pre cultivars
-         pip install --pre "cultivars[pandas]"
+         pip install cultivars
+         pip install "cultivars[pandas]"
 
    .. tab-item:: uv
 
       .. code-block:: bash
 
-         uv add --prerelease allow cultivars
-         uv add --prerelease allow "cultivars[pandas]"
+         uv add cultivars
+         uv add "cultivars[pandas]"
 
    .. tab-item:: Pinned
 
@@ -64,8 +65,7 @@ unless asked for pre-releases explicitly.
 
          pip install "cultivars==\ |release|\ "
 
-      An exact pin needs no ``--pre`` flag, since the version string
-      already names the pre-release.
+      An exact pin needs no ``--pre`` flag.
 
 Pin the exact version in anything that must reproduce: a paper's
 replication package, a CI job, a lockfile. Between pre-releases,
