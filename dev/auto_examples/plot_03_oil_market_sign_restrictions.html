@@ -86,7 +86,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/auto_examples/plot_03_oil_market_sign_restrictions.79fcb3a9-5553-480d-bd05-4f2cd11345bc.js"></script>
+    <script defer="defer" src="../_static/tippy/auto_examples/plot_03_oil_market_sign_restrictions.285ff986-5459-4679-882b-f9c16f5f2e2a.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_03_oil_market_sign_restrictions';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -1207,13 +1207,13 @@ price as 100 times the log of WTI deflated by the CPI.</p>
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>         prod     act     rpo
 count  564.00  564.00  564.00
-mean     0.05  427.45 -154.56
-std      2.12   29.89   46.28
-min    -23.95  368.95 -267.93
-25%     -0.72  399.91 -190.16
-50%     -0.01  432.35 -154.70
-75%      0.87  456.28 -117.94
-max     17.13  464.54  -48.47
+mean     0.05  426.23 -154.56
+std      2.12   29.97   46.28
+min    -23.95  367.68 -267.93
+25%     -0.72  398.52 -190.16
+50%     -0.01  431.18 -154.70
+75%      0.87  455.14 -117.94
+max     17.13  463.43  -48.47
 </pre></div>
 </div>
 </section>
@@ -1231,13 +1231,13 @@ search fast; the portmanteau test says whether it is too few.</p>
 Observations:                      552  Equations:                           3
 --------------------------------------------------------------------------------
 test                   statistic    df   p-value
-portmanteau(24)          100.127   105    0.6162
-jarque-bera[prod]     106682.476     2    0.0000
-jarque-bera[act]         434.277     2    0.0000
-jarque-bera[rpo]        8651.736     2    0.0000
-arch-lm(12)[prod]          6.293    12    0.9006
-arch-lm(12)[act]          17.981    12    0.1163
-arch-lm(12)[rpo]          40.058    12    0.0001
+portmanteau(24)           98.590   105    0.6574
+jarque-bera[prod]     107010.758     2    0.0000
+jarque-bera[act]         420.009     2    0.0000
+jarque-bera[rpo]        8685.713     2    0.0000
+arch-lm(12)[prod]          6.344    12    0.8977
+arch-lm(12)[act]          18.184    12    0.1102
+arch-lm(12)[rpo]          39.949    12    0.0001
 ================================================================================
 Small p-values reject the null named by each test. A rejected portmanteau means
 the lag order is too short, which invalidates every other quantity the result
@@ -1267,8 +1267,8 @@ at each horizon.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                     Sign-Restricted SVAR (identified set)
 ================================================================================
 Scheme:              sign restrictions  Accepted:                          500
-Requested:                         500  Draws:                            9225
-Acceptance rate:                 5.42%  Horizons:                            0
+Requested:                         500  Draws:                            9310
+Acceptance rate:                 5.37%  Horizons:                            0
 Variables:                           3  Observations:                      552
 ================================================================================
 Declared signs, holding at horizons (0,): supply: prod -, act -, rpo +;
@@ -1282,7 +1282,7 @@ structural model traces the median band: at each horizon the quantile may come
 from a different rotation, which is the Fry-Pagan critique, and the honest
 reading is as a summary of the identified set rather than as the impulse
 response of a representative model.
-Acceptance rate 5.42% over 9225 rotations
+Acceptance rate 5.37% over 9310 rotations
 </pre></div>
 </div>
 </section>
@@ -1329,8 +1329,8 @@ be drawn from the plain sign-restricted set.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                     Sign-Restricted SVAR (identified set)
 ================================================================================
 Scheme:              sign restrictions  Accepted:                          300
-Requested:                         300  Draws:                           10981
-Acceptance rate:                 2.73%  Horizons:                            0
+Requested:                         300  Draws:                           10484
+Acceptance rate:                 2.86%  Horizons:                            0
 Variables:                           3  Observations:                      552
 ================================================================================
 Traditional signs at horizons (0,): supply: prod -, act -, rpo +; agg_demand:
@@ -1349,7 +1349,7 @@ structural model traces the median band: at each horizon the quantile may come
 from a different rotation, which is the Fry-Pagan critique, and the honest
 reading is as a summary of the identified set rather than as the impulse
 response of a representative model.
-Acceptance rate 2.73% over 10981 rotations
+Acceptance rate 2.86% over 10484 rotations
 </pre></div>
 </div>
 </section>
@@ -1371,9 +1371,9 @@ Sign horizons:                       0  Variables:                           3
 Observations:                      552
 --------------------------------------------------------------------------------
 impact of supply       lower    upper
-prod                 -2.0607   0.0000
-act                  -0.6305   0.0000
-rpo                  -0.0000   8.1364
+prod                 -2.0609   0.0000
+act                  -0.6312   0.0000
+rpo                   0.0000   8.1377
 ================================================================================
 Declared signs on the 'supply' shock, holding at horizons (0,): prod -, act -,
 rpo +. Every other shock is left entirely unrestricted.
@@ -1435,10 +1435,10 @@ draw by draw per shock, so the three need not sum to one.</p>
 </span>    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/builtins/functions.html#print"><span class="nb">print</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="s2">  h = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">h</span></a><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2">   </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">shares</span></a><span class="si">}</span><span class="s2">"</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Median share of the real oil price forecast error variance
-  h =  1   supply:  31.6%, agg_demand:  33.6%, oil_demand:  12.5%
-  h =  6   supply:  21.5%, agg_demand:  44.9%, oil_demand:  13.2%
-  h = 12   supply:  23.7%, agg_demand:  44.7%, oil_demand:  11.2%
-  h = 24   supply:  28.2%, agg_demand:  43.1%, oil_demand:   8.6%
+  h =  1   supply:  31.4%, agg_demand:  33.7%, oil_demand:  12.5%
+  h =  6   supply:  21.2%, agg_demand:  45.0%, oil_demand:  13.2%
+  h = 12   supply:  23.6%, agg_demand:  44.6%, oil_demand:  11.2%
+  h = 24   supply:  28.1%, agg_demand:  43.1%, oil_demand:   8.6%
 </pre></div>
 </div>
 </section>

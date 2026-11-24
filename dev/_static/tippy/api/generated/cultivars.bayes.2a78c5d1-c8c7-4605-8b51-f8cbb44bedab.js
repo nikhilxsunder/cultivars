@@ -1,0 +1,22 @@
+selector_to_html = {"a[href=\"#modules\"]": "<h2 class=\"tippy-header\" style=\"margin-top: 0;\">Modules<a class=\"headerlink\" href=\"#modules\" title=\"Link to this heading\">#</a></h2>", "a[href=\"#module-cultivars.bayes\"]": "<h1 class=\"tippy-header\" style=\"margin-top: 0;\">cultivars.bayes<a class=\"headerlink\" href=\"#module-cultivars.bayes\" title=\"Link to this heading\">#</a></h1><p>Bayesian workflow for the package\u2019s samplers: priors, chains, checks, evidence, combination.</p><p>The Bayesian models live with their frequentist counterparts, a\n<a class=\"reference internal\" href=\"cultivars.multivariate.large_dim.bayesian.BVAR.html#cultivars.multivariate.large_dim.bayesian.BVAR\" title=\"cultivars.multivariate.large_dim.bayesian.BVAR\"><code class=\"xref py py-class docutils literal notranslate\"><span class=\"pre\">BVAR</span></code></a> beside the\n<a class=\"reference internal\" href=\"cultivars.multivariate.reduced_form.vector_autoregression.VAR.html#cultivars.multivariate.reduced_form.vector_autoregression.VAR\" title=\"cultivars.multivariate.reduced_form.vector_autoregression.VAR\"><code class=\"xref py py-class docutils literal notranslate\"><span class=\"pre\">VAR</span></code></a>,\na <a class=\"reference internal\" href=\"cultivars.univariate.stochastic_volatility.SV.html#cultivars.univariate.stochastic_volatility.SV\" title=\"cultivars.univariate.stochastic_volatility.SV\"><code class=\"xref py py-class docutils literal notranslate\"><span class=\"pre\">SV</span></code></a> among the\nunivariate models. This package holds what surrounds a fit rather than\nthe fit itself, in the order a Bayesian analysis runs. A prior is chosen\nand stated as a record (<a class=\"reference internal\" href=\"cultivars.bayes.priors.html#module-cultivars.bayes.priors\" title=\"cultivars.bayes.priors\"><code class=\"xref py py-mod docutils literal notranslate\"><span class=\"pre\">priors</span></code></a>); the sampler\u2019s\ndraws are checked for convergence before they are read as a posterior\n(<a class=\"reference internal\" href=\"cultivars.bayes.chains.html#module-cultivars.bayes.chains\" title=\"cultivars.bayes.chains\"><code class=\"xref py py-mod docutils literal notranslate\"><span class=\"pre\">chains</span></code></a>); the fitted model is run as a\ndata-generating machine and compared with the sample it was fitted to,\nand the prior is run the same way before any sample is touched\n(<a class=\"reference internal\" href=\"cultivars.bayes.checks.html#module-cultivars.bayes.checks\" title=\"cultivars.bayes.checks\"><code class=\"xref py py-mod docutils literal notranslate\"><span class=\"pre\">checks</span></code></a>); competing models are weighed by\nmarginal likelihood, Bayes factor, and posterior model probability\n(<a class=\"reference internal\" href=\"cultivars.bayes.evidence.html#module-cultivars.bayes.evidence\" title=\"cultivars.bayes.evidence\"><code class=\"xref py py-mod docutils literal notranslate\"><span class=\"pre\">evidence</span></code></a>); and, when no model deserves the\nwhole verdict, their predictive densities are combined by model\naveraging or stacking (<a class=\"reference internal\" href=\"cultivars.bayes.combination.html#module-cultivars.bayes.combination\" title=\"cultivars.bayes.combination\"><code class=\"xref py py-mod docutils literal notranslate\"><span class=\"pre\">combination</span></code></a>). Each module\nis a leaf: names are imported from the module, not from this package,\nand nothing here depends on which model produced the draws beyond the\nresult protocols in <code class=\"docutils literal notranslate\"><span class=\"pre\">_core</span></code>.</p>"}
+skip_classes = ["headerlink", "sd-stretched-link"]
+
+window.onload = function () {
+    for (const [select, tip_html] of Object.entries(selector_to_html)) {
+        const links = document.querySelectorAll(`article.bd-article ${select}`);
+        for (const link of links) {
+            if (skip_classes.some(c => link.classList.contains(c))) {
+                continue;
+            }
+            link.classList.add('has-tippy');
+            tippy(link, {
+                content: tip_html,
+                allowHTML: true,
+                arrow: true,
+                placement: 'auto-start', maxWidth: 500, interactive: true, theme: 'material', delay: [200, 0],
+                onShow(instance) {MathJax.typesetPromise([instance.popper]).then(() => {});},
+            });
+        };
+    };
+    console.log("tippy tips loaded!");
+};
