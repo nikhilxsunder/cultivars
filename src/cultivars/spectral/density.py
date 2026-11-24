@@ -433,7 +433,7 @@ class SpectralDensityResult(_SummaryMixin):
         why zero is excluded from the peak search.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -524,7 +524,7 @@ class SpectralDensity:
 
     Args:
         result: A fitted closed reduced-form result: anything satisfying
-            :class:`~cultivars._core.ClosedSystemResult`.
+            :class:`~cultivars_engine._core.ClosedSystemResult`.
         n_frequencies: Grid points on :math:`[0, \pi]`, endpoints
             included; at least two.
 

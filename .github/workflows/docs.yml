@@ -83,7 +83,7 @@ jobs:
           # rebuilt with it. Without it one version of the site is 1.2-4.5 GB
           # and the Pages deployment of all versions exceeds its 10 GB cap.
           DOCS_SIDEBAR_PRUNE: >-
-            gen_modules/backreferences/*,api/generated/*.[A-Z]*.*.rst,engine/generated/cultivars.engine.*.*.*.rst,engine/generated/*.[A-Z]*.rst
+            gen_modules/backreferences/*,api/generated/*.[A-Z]*.*.rst,engine/generated/cultivars_engine.*.*.*.rst,engine/generated/*.[A-Z]*.rst
         run: |
           rm -rf docs/source/*/generated
           uv run --no-sync make -C docs html O="-D remove_from_toctrees=${DOCS_SIDEBAR_PRUNE}"

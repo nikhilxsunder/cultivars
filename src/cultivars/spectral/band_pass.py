@@ -244,7 +244,7 @@ class BandPassResult(_SummaryMixin):
         detrending is upstream.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:

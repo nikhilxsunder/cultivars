@@ -308,7 +308,7 @@ class TurningPointsResult(_SummaryMixin):
         what the ends of the sample cannot show.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:

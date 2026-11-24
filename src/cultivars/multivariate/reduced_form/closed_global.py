@@ -892,7 +892,7 @@ class GVAR:
                 ``i`` says how unit ``i`` sees the rest of the world; it must
                 have a zero diagonal, non-negative entries and unit row sums,
                 and is checked by
-                :func:`~cultivars._core._validators.validate_weights`.
+                :func:`~cultivars_engine._core._validators.validate_weights`.
             variable_labels: One entry per global column giving the *shared*
                 variable identity, so that a unit's foreign aggregate averages
                 like with like. Repeated across units: two entries labelled

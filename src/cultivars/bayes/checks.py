@@ -64,12 +64,12 @@ and replications of any provenance, and is the whole comparison;
 :func:`posterior_predictive_check` and :func:`prior_predictive_check` are
 that function preceded by the simulation and the labelling. The
 simulation belongs to the models: a result that can replicate its sample
-satisfies :class:`~cultivars._core.ReplicatingResult` by exposing
+satisfies :class:`~cultivars_engine._core.ReplicatingResult` by exposing
 ``observed`` and ``posterior_replications()`` -- the conjugate, Gibbs,
 Student-t, and stochastic-volatility BVARs through
-:class:`~cultivars._internals._ReplicationMixin`, and the
+:class:`~cultivars_engine._internals._ReplicationMixin`, and the
 stochastic-volatility posterior on its own -- and a model that can draw
-from its prior satisfies :class:`~cultivars._core.ReplicatingModel` by
+from its prior satisfies :class:`~cultivars_engine._core.ReplicatingModel` by
 exposing ``prior_replications()``: the conjugate and Student-t BVARs with
 any dummy observations folded into the prior, the Gibbs BVAR under a
 static prior without dummies, and the stochastic-volatility model with
@@ -608,7 +608,7 @@ class PredictiveCheckTest:
             level: The tail size on each side that marks a row.
 
         Returns:
-            The :class:`~cultivars._core._SummaryTable`, titled
+            The :class:`~cultivars_engine._core._SummaryTable`, titled
             ``"{Kind} predictive check: {source}"``; ``print`` it, display
             it in a notebook, or call its ``to_pandas()``.
 
@@ -884,7 +884,7 @@ def posterior_predictive_check(
 
     Args:
         result: A fitted result that can replicate its sample, that is,
-            one satisfying :class:`~cultivars._core.ReplicatingResult` by
+            one satisfying :class:`~cultivars_engine._core.ReplicatingResult` by
             exposing ``observed`` and ``posterior_replications()``: the
             Bayesian VAR family
             (:class:`~cultivars.multivariate.large_dim.bayesian.BVAR`,
@@ -1015,7 +1015,7 @@ def prior_predictive_check(
 
     Args:
         model: An unfitted model that can draw from its prior, that is,
-            one satisfying :class:`~cultivars._core.ReplicatingModel` by
+            one satisfying :class:`~cultivars_engine._core.ReplicatingModel` by
             exposing ``observed`` and ``prior_replications()``:
             :class:`~cultivars.multivariate.large_dim.bayesian.BVAR`,
             :class:`~cultivars.multivariate.large_dim.student.StudentBVAR`,

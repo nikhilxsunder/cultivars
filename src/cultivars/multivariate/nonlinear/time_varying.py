@@ -82,7 +82,7 @@ covariance and volatility blocks, and a ``_TimeVaryingFit`` is packed.
 :class:`TVPVARResult` and :class:`TVPVARSVResult` take their summary from
 ``_SummaryMixin`` and their chain diagnostics from ``_ConvergenceMixin``;
 :class:`TVPSVAR` reads either into a :class:`TVPSVARResult` through
-:func:`~cultivars._core.companion_matrix`. The constant-coefficient
+:func:`~cultivars_engine._core.companion_matrix`. The constant-coefficient
 posteriors these paths relax are in
 :mod:`~cultivars.multivariate.large_dim.bayesian` and
 :mod:`~cultivars.multivariate.large_dim.volatility`; the models whose

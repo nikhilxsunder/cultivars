@@ -702,7 +702,7 @@ How the pieces connect
 
 * **Structural identification.** A fitted ``VARResult`` (and
   ``VARXResult``) satisfies the ``ClosedSystemResult`` protocol in
-  ``cultivars.engine._core._protocols`` -- ``names``, ``nobs``,
+  ``cultivars_engine._core._protocols`` -- ``names``, ``nobs``,
   ``sigma_u``, ``resid``, ``coefficients``, ``k_endog``,
   ``ma_representation`` -- which is everything an identification scheme
   reads. Schemes take the result in their constructor and identify with

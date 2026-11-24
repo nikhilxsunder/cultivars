@@ -159,7 +159,7 @@ class ARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin, _StationarityMixin
     ``compare``, ``likelihood_ratio_test``), and stationarity assessment
     (``stability``, ``is_stationary`` from the companion matrix of the
     autoregressive coefficients). ``repr=False`` is required -- see
-    :class:`~cultivars._internals._SummaryMixin` -- so the summary is
+    :class:`~cultivars_engine._internals._SummaryMixin` -- so the summary is
     what a bare result prints.
 
     Attributes:
@@ -430,7 +430,7 @@ class ARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin, _StationarityMixin
         with the largest companion root.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)

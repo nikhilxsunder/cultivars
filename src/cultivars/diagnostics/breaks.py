@@ -76,7 +76,7 @@ corrected for: include the lags the dynamics call for in ``exog``, or
 read the result as a diagnostic rather than a test.
 
 Layout. :class:`BreakTest` is the single-break record, a
-:class:`~cultivars._internals._TabulatedTest` that reads its statistic
+:class:`~cultivars_engine._internals._TabulatedTest` that reads its statistic
 against simulated or tabulated critical values and carries the path;
 :class:`MultipleBreakTest` is the Bai-Perron record with its own summary
 table over counts. :func:`sup_wald`, :func:`bai_perron`, and
@@ -581,7 +581,7 @@ class MultipleBreakTest:
         follow as notes, one line each with statistic and p-value.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`, rendered by its
+            The :class:`~cultivars_engine._core.SummaryTable`, rendered by its
             ``to_text()`` and ``_repr_html_()``.
 
         Example:

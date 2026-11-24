@@ -86,7 +86,7 @@ bandwidth, evaluates the curves and their sandwich standard errors, and
 packs a ``_VectorFunctionalFit``. :class:`FunctionalCoefficientVARResult`
 takes its summary from ``_SummaryMixin`` and builds the state-frozen
 companion for ``irf`` and ``stability_curve`` through
-:func:`~cultivars._core.companion_matrix`. The two-system and two-anchor
+:func:`~cultivars_engine._core.companion_matrix`. The two-system and two-anchor
 members of the family are :mod:`~cultivars.multivariate.nonlinear.threshold`
 and :mod:`~cultivars.multivariate.nonlinear.smooth_transition`; the
 model whose coefficients drift in time rather than in a state is

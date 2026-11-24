@@ -370,7 +370,7 @@ class LinearityTest(_HypothesisTest):
         values and Teräsvirta's model-selection reading.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``str()``
+            The :class:`~cultivars_engine._core.SummaryTable` that ``str()``
             and the notebook renderer display.
 
         Example:
@@ -545,7 +545,7 @@ class BDSTest(_HypothesisTest):
         below 500 observations, the size warning.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``str()``
+            The :class:`~cultivars_engine._core.SummaryTable` that ``str()``
             and the notebook renderer display.
 
         Example:

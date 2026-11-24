@@ -67,7 +67,7 @@ linear-Gaussian, switching and nonlinear engines both build on.
 evidence and combination that surround a sampler.
 :mod:`~cultivars.typing` holds the categorical option aliases,
 :mod:`~cultivars.exceptions` the error hierarchy every module raises
-from, and :mod:`~cultivars.engine` exposes the private ``_core`` and
+from, and :mod:`~cultivars_engine` exposes the private ``_core`` and
 ``_internals`` layers for anyone extending the package.
 
 Example:

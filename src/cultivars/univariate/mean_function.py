@@ -283,7 +283,7 @@ class ARNNResult(_MeanFunctionResult):
                 ``[y_{t-1}, ..., y_{t-order}]`` to match how the learner was
                 trained. Passing them in the other order will not raise -- the
                 widths match -- it will silently return nonsense, so build the
-                matrix with :func:`~cultivars._core.lag_matrix` rather than by
+                matrix with :func:`~cultivars_engine._core.lag_matrix` rather than by
                 hand.
 
         Returns:
@@ -384,7 +384,7 @@ class ARNNResult(_MeanFunctionResult):
         header plus diagnostics rather than as a table with a hole in it.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> import numpy as np
@@ -769,7 +769,7 @@ class TARNNResult(_MeanFunctionResult):
         external-variable flag when it applies.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> import numpy as np

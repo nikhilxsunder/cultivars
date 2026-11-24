@@ -586,7 +586,7 @@ class ARMAResult(
         :meth:`_notes`.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)

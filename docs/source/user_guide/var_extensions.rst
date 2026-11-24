@@ -664,7 +664,7 @@ How the pieces connect
 Structural identification schemes in
 :mod:`cultivars.multivariate.structural` read a fitted reduced form
 through the ``ClosedSystemResult`` protocol
-(``cultivars.engine._core._protocols``): ``names``, ``nobs``,
+(``cultivars_engine._core._protocols``): ``names``, ``nobs``,
 ``sigma_u``, ``resid``, ``coefficients``, ``k_endog`` and
 ``ma_representation(horizon)``. The scheme takes the result in its
 constructor, e.g. ``RecursiveSVAR(result).identify()``.

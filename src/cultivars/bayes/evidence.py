@@ -571,7 +571,7 @@ def compare(
             every model the same prior probability.
 
     Returns:
-        The :class:`~cultivars._core._SummaryTable` with columns ``model``,
+        The :class:`~cultivars_engine._core._SummaryTable` with columns ``model``,
         ``log ML``, ``mcse``, ``log BF vs best``, ``evidence``,
         ``post. prob.``, and ``method``; ``print`` it or call its
         ``to_pandas()``.

@@ -236,7 +236,7 @@ Names are imported from the leaf module that defines them:
 The subpackages and the top-level ``cultivars`` package re-export
 nothing, so an import path always tells you the model family. Names
 beginning with an underscore, and everything under
-:mod:`cultivars.engine`, are implementation detail and may change
+:mod:`cultivars_engine`, are implementation detail and may change
 without notice. Until ``1.0.0b1``, public argument names, result fields
 and summary wording may still change between pre-releases; each change
 is listed in the :doc:`release notes <../project/release_notes>`.

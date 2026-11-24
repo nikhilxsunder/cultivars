@@ -70,7 +70,7 @@ FFT ``_autocovariance``; the rank normalization and the split are
 :meth:`ConvergenceTest._assess`, the classmethod on the frozen record in
 ``_internals``, which computes every column and applies the thresholds;
 the ``convergence()`` method of every sampled result reaches the same
-classmethod through :class:`~cultivars._internals._ConvergenceMixin`, so
+classmethod through :class:`~cultivars_engine._internals._ConvergenceMixin`, so
 a report built here and one built by a result are the same object and
 render the same table. The thresholds ``_RHAT_TOL`` and
 ``_MIN_ESS_PER_CHAIN``, and the eight-draw minimum chain length

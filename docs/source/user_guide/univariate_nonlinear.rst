@@ -924,7 +924,7 @@ Nuances and gotchas
   for anything that must be real time.
 - **Configuring the reference network.** The default engine class,
   ``NumpyMLPEngine``, lives in the private module
-  ``cultivars.engine._internals._engines``; there is no public import path
+  ``cultivars_engine._internals._engines``; there is no public import path
   for it. To change ``hidden_units``, ``alpha``, ``n_restarts`` or the
   training ``seed`` you either import that private name or write your own
   engine. ``engine_config`` on the result records the full configuration.

@@ -268,7 +268,7 @@ class DensityScoreResult(_SummaryMixin):
         are exact, and that the averaging is for display only.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:

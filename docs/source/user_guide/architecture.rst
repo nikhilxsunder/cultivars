@@ -39,7 +39,7 @@ Two supporting modules sit beside them. :mod:`cultivars.typing` holds the
 literal option sets (``Trend = "n" | "c" | "ct"`` and so on), and
 :mod:`cultivars.exceptions` holds the error hierarchy. A third,
 :mod:`cultivars.summary`, holds the two records every result renders
-through. :mod:`cultivars.engine` contains the private numerical layers;
+through. :mod:`cultivars_engine` contains the private numerical layers;
 nothing in it is public API.
 
 Five kinds of objects
