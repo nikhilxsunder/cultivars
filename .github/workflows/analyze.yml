@@ -23,15 +23,15 @@ jobs:
 
       - name: Run ruff (Linting)
         continue-on-error: true
-        run: uv run ruff check --exclude "*.pyi" src/fedfred/
+        run: uv run ruff check --exclude "*.pyi" src/cultivars/
 
       - name: Run mypy (Type Checking)
         continue-on-error: true
-        run: uv run mypy src/fedfred/
+        run: uv run mypy src/cultivars/
 
       - name: Run Bandit (Security Check)
         continue-on-error: true
-        run: uv run bandit -r src/fedfred/
+        run: uv run bandit -r src/cultivars/
 
       - name: Run pip-audit (Dependency Security Check)
         continue-on-error: true
