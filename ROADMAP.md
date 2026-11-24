@@ -27,24 +27,24 @@ Last updated: 2026-10-01
 
 The alpha shipped the model surface. The beta is the evidence that the core of it is correct.
 
-**Stable core.** VAR, VARX, VECM, RecursiveSVAR, ShortRunSVAR, LongRunSVAR, SignRestrictedSVAR, ProxySVAR, BVAR, HierarchicalBVAR, BVARSV, DFM, LinearGaussianSSM, UnobservedComponents, MSAR, SETAR, TVAR, TVPVARSV, MarkovSwitchingVAR, RegimeSwitchingLinearSSM, plus the `diagnostics` tests and the `forecast` comparison functions. Every other public class carries an `Experimental` admonition and is excluded from the stability guarantee.
+**Stable core.** VAR, VARX, VECM, RecursiveSVAR, ShortRunSVAR, LongRunSVAR, SignRestrictedSVAR, ProxySVAR, BVAR, HierarchicalBVAR, BVARSV, DFM, LinearGaussianSSM, UnobservedComponents, MarkovSwitchingAR, SETAR, TVAR, TVPVARSV, MarkovSwitchingVAR, RegimeSwitchingLinearSSM, plus the `diagnostics` tests and the `forecast` comparison functions. Every other public class carries an `Experimental` admonition and is excluded from the stability guarantee.
 
 **Work**
 
 - Test tree: `tests/` mirrors `src/`, with unit tests and Hypothesis property tests on the `_core` primitives (companion roots, difference and undifference round trips, validator failure paths).
 - Reference fixtures: pinned outputs so comparisons run in CI without the external dependency.
 
-  | Models                                                              | Oracle                            |
-  | ------------------------------------------------------------------- | --------------------------------- |
-  | VAR, VARX, VECM, MSAR, UnobservedComponents, LinearGaussianSSM, DFM | statsmodels                       |
-  | BVAR, HierarchicalBVAR                                              | R `BVAR` on FRED-QD               |
-  | TVPVARSV                                                            | R `bvarsv` (`usmacro`)            |
-  | SETAR, TVAR                                                         | R `tsDyn` (`lynx` for SETAR)      |
-  | RecursiveSVAR, ShortRunSVAR, LongRunSVAR                            | R `svars` (`USA`)                 |
-  | SignRestrictedSVAR                                                  | R `bsvarSIGNs`                    |
-  | ProxySVAR                                                           | Mertens and Ravn published tables |
-  | RegimeSwitchingLinearSSM                                            | Kim and Nelson published tables   |
-  | BVARSV, MarkovSwitchingVAR                                          | To be selected                    |
+  | Models                                                                           | Oracle                            |
+  | -------------------------------------------------------------------------------- | --------------------------------- |
+  | VAR, VARX, VECM, MarkovSwitchingAR, UnobservedComponents, LinearGaussianSSM, DFM | statsmodels                       |
+  | BVAR, HierarchicalBVAR                                                           | R `BVAR` on FRED-QD               |
+  | TVPVARSV                                                                         | R `bvarsv` (`usmacro`)            |
+  | SETAR, TVAR                                                                      | R `tsDyn` (`lynx` for SETAR)      |
+  | RecursiveSVAR, ShortRunSVAR, LongRunSVAR                                         | R `svars` (`USA`)                 |
+  | SignRestrictedSVAR                                                               | R `bsvarSIGNs`                    |
+  | ProxySVAR                                                                        | Mertens and Ravn published tables |
+  | RegimeSwitchingLinearSSM                                                         | Kim and Nelson published tables   |
+  | BVARSV, MarkovSwitchingVAR                                                       | To be selected                    |
 
 - Docstrings: every core class has Args, Example, and References.
 - Doctests run in CI with `--doctest-modules`; the Sphinx build runs with `-W`.

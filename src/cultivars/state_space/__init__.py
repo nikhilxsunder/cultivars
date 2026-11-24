@@ -50,7 +50,7 @@ recursions and nothing else. Parameterization, estimation, the mapping
 from a model's parameters to system matrices, and the interpretation of
 a state all belong to the model that uses the engine, which is why a
 fitted result elsewhere in the package can expose its engine (an
-``MSAR`` result's ``state_space``) and why the same instance can be
+``MarkovSwitchingAR`` result's ``state_space``) and why the same instance can be
 handed a series it was not fitted on. The other half of the rule is
 that every likelihood says what it is: the linear and discrete engines
 return exact Gaussian likelihoods, the switching-linear engine an
