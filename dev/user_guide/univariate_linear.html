@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/user_guide/univariate_linear.cac456ce-8b10-424c-bc27-4741eaa47f5b.js"></script>
+    <script defer="defer" src="../_static/tippy/user_guide/univariate_linear.133b6687-f570-45ac-bbd1-8cef52ed6bcb.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/univariate_linear';</script>
@@ -1296,7 +1296,7 @@ terms alone.</p>
 <dt><code class="docutils literal notranslate"><span class="pre">trend</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">"n"</span></code> (none), <code class="docutils literal notranslate"><span class="pre">"c"</span></code> (constant, default) or <code class="docutils literal notranslate"><span class="pre">"ct"</span></code> (constant and
 linear trend). <code class="docutils literal notranslate"><span class="pre">"ct"</span></code> is available under CSS only; combining it
 with <code class="docutils literal notranslate"><span class="pre">method="exact"</span></code> raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> at construction.</p>
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> at construction.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">method</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">"css"</span></code> (OLS, <span class="math notranslate nohighlight">\(n - p\)</span> observations) or <code class="docutils literal notranslate"><span class="pre">"exact"</span></code> (exact ML,
 <span class="math notranslate nohighlight">\(n\)</span> observations).</p>
@@ -1597,7 +1597,7 @@ when the component is absent), plus <code class="docutils literal notranslate"><
 <li><p>Smoothed paths <code class="docutils literal notranslate"><span class="pre">level</span></code>, <code class="docutils literal notranslate"><span class="pre">level_std</span></code>, <code class="docutils literal notranslate"><span class="pre">slope</span></code>, <code class="docutils literal notranslate"><span class="pre">cycle</span></code>,
 <code class="docutils literal notranslate"><span class="pre">seasonal</span></code>, <code class="docutils literal notranslate"><span class="pre">signal</span></code> (everything but the irregular) and
 <code class="docutils literal notranslate"><span class="pre">irregular</span></code>. Asking for a component the specification lacks raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code>.</p></li>
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">forecast(steps)</span></code> returning a <code class="docutils literal notranslate"><span class="pre">(mean,</span> <span class="pre">std)</span></code> pair of arrays; the
 standard errors include state uncertainty and the irregular, not
 parameter uncertainty.</p></li>
@@ -1615,7 +1615,7 @@ not from the diffuse prior.</p></li>
 <p>Every result on this page shares one comparison surface.
 <code class="docutils literal notranslate"><span class="pre">information_criteria</span></code> is a named tuple <code class="docutils literal notranslate"><span class="pre">(aic,</span> <span class="pre">bic,</span> <span class="pre">hqic)</span></code> computed
 from <code class="docutils literal notranslate"><span class="pre">llf</span></code>, <code class="docutils literal notranslate"><span class="pre">nobs</span></code> and <code class="docutils literal notranslate"><span class="pre">n_params</span></code>. <code class="docutils literal notranslate"><span class="pre">compare(*others,</span>
-<span class="pre">criterion="aic")</span></code> returns a ranked <code class="xref py py-class docutils literal notranslate"><span class="pre">SummaryTable</span></code>
+<span class="pre">criterion="aic")</span></code> returns a ranked <a class="reference internal" href="../api/generated/cultivars.summary.SummaryTable.html#cultivars.summary.SummaryTable" title="cultivars.summary.SummaryTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">SummaryTable</span></code></a>
 (columns <code class="docutils literal notranslate"><span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">llf</span></code>, <code class="docutils literal notranslate"><span class="pre">k</span></code>, the criterion and its gap to the
 best); there are deliberately no <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> / <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> operators.
 <code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test(unrestricted)</span></code> treats the caller as the
@@ -1745,7 +1745,7 @@ errors, t-statistics or confidence intervals; each summary says
 shorten it; the exact likelihood uses every differenced observation),
 <span class="math notranslate nohighlight">\(n\)</span> for ARFIMA and <code class="docutils literal notranslate"><span class="pre">UnobservedComponents</span></code>. <code class="docutils literal notranslate"><span class="pre">compare</span></code> and
 <code class="docutils literal notranslate"><span class="pre">likelihood_ratio_test</span></code> raise
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code> on differing <code class="docutils literal notranslate"><span class="pre">nobs</span></code>, so
+<a class="reference internal" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a> on differing <code class="docutils literal notranslate"><span class="pre">nobs</span></code>, so
 AR orders fitted by CSS cannot be ranked against each other: use
 <code class="docutils literal notranslate"><span class="pre">method="exact"</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.exceptions.html#module-cultivars.exceptions"><span class="nn">cultivars.exceptions</span></a><span class="w"> </span><span class="kn">import</span> <span class="n">DimensionError</span>
@@ -1834,7 +1834,7 @@ samples; keep <code class="docutils literal notranslate"><span class="pre">order
 A result with regressors refuses <code class="docutils literal notranslate"><span class="pre">simulate</span></code>.</p></li>
 <li><p><strong>Linear trend under exact ML is refused.</strong>
 <code class="docutils literal notranslate"><span class="pre">AR(y,</span> <span class="pre">order=p,</span> <span class="pre">trend="ct",</span> <span class="pre">method="exact")</span></code> raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code>.</p></li>
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a>.</p></li>
 <li><p><strong>Unobserved-components likelihoods are approximate-diffuse.</strong> <code class="docutils literal notranslate"><span class="pre">llf</span></code>
 is comparable across specifications on one sample, not with software
 that uses an exact-diffuse initialization. The result has no <code class="docutils literal notranslate"><span class="pre">params</span></code>

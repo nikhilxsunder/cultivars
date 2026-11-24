@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/user_guide/state_space.d2fe463a-8520-4f96-b229-b5845a8c6a19.js"></script>
+    <script defer="defer" src="../_static/tippy/user_guide/state_space.b8b0479d-d1f1-4094-ba00-9d2b649c01bf.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/state_space';</script>
@@ -1440,8 +1440,8 @@ Durbin and Koopman (2002).</p>
 A 3-D matrix is time-varying with time on the leading axis, and each
 matrix may be static or time-varying independently of the others.
 Inconsistent trailing shapes raise
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code>; non-finite entries raise
-<code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code>.</p>
+<a class="reference internal" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a>; non-finite entries raise
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>.</p>
 </section>
 <section id="a-local-level-end-to-end">
 <h3>A local level, end to end<a class="headerlink" href="#a-local-level-end-to-end" title="Link to this heading">#</a></h3>
@@ -1525,7 +1525,7 @@ circle, <span class="math notranslate nohighlight">\(P_1\)</span> is the station
 <span class="math notranslate nohighlight">\(P = TPT' + RQR'\)</span>. The classmethod
 <a class="reference internal" href="../api/generated/cultivars.state_space.linear_gaussian.LinearGaussianSSM.stationary_covariance.html#cultivars.state_space.linear_gaussian.LinearGaussianSSM.stationary_covariance" title="cultivars.state_space.linear_gaussian.LinearGaussianSSM.stationary_covariance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stationary_covariance()</span></code></a>
 solves the same Lyapunov equation on its own and raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code> for an unstable
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a> for an unstable
 <span class="math notranslate nohighlight">\(T\)</span>.</p></li>
 <li><p>Otherwise <span class="math notranslate nohighlight">\(P_1 = 10^6 I\)</span>: the <em>approximate</em> diffuse prior, not
 the exact diffuse initialization of Durbin and Koopman (2012, ch. 5).</p></li>
@@ -1596,7 +1596,7 @@ of the full state disturbance. The two maps are positional and
 <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">m)</span></code> and <code class="docutils literal notranslate"><span class="pre">observation</span></code> maps it to <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">p)</span></code>, so sigma points
 and particle clouds pass through them in one call. The constructor
 probes both maps with a two-row batch and raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code> if the shapes are wrong;
+<a class="reference internal" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a> if the shapes are wrong;
 <code class="docutils literal notranslate"><span class="pre">p</span></code> is read from <code class="docutils literal notranslate"><span class="pre">obs_cov</span></code>. <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> and
 <code class="docutils literal notranslate"><span class="pre">initial_state_cov</span></code> are required: there is no default initialization.</p>
 </section>
@@ -1718,7 +1718,7 @@ log-densities. <code class="docutils literal notranslate"><span class="pre">obs_
 </dl>
 <p>With any hook set, <code class="docutils literal notranslate"><span class="pre">is_additive_gaussian</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> and the
 extended and unscented filters and smoothers raise
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> instead of
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> instead of
 linearizing. The particle filter accepts all three hooks. The particle
 smoother accepts <code class="docutils literal notranslate"><span class="pre">observation_loglik</span></code> but refuses
 <code class="docutils literal notranslate"><span class="pre">transition_sampler</span></code>, because the backward pass needs the transition
@@ -2057,7 +2057,7 @@ diffuse default even when every <span class="math notranslate nohighlight">\(T_t
 <li><p><strong>Missing-data rules differ by engine.</strong> <code class="docutils literal notranslate"><span class="pre">LinearGaussianSSM</span></code>
 accepts <code class="docutils literal notranslate"><span class="pre">nan</span></code> in any element. <code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> and
 <code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code> accept only whole missing rows and raise
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> on a partially
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> on a partially
 observed row. <code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM.filter</span></code> raises on any non-finite
 value, because the lags of a missing value poison later densities;
 interpolate first or use <code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code>.</p></li>
@@ -2089,8 +2089,8 @@ True
 </li>
 <li><p><strong>A bad chain raises different exceptions.</strong> A transition matrix that
 is not row-stochastic raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> in
-<code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code>
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> in
+<code class="docutils literal notranslate"><span class="pre">MarkovSwitchingSSM</span></code> and <a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>
 in <code class="docutils literal notranslate"><span class="pre">RegimeSwitchingLinearSSM</span></code>. Catch both if you validate user input.</p></li>
 <li><p><strong>The two nonlinear notations.</strong> The <code class="docutils literal notranslate"><span class="pre">NonlinearSSM</span></code> docstrings call
 the measurement covariance <span class="math notranslate nohighlight">\(R\)</span>; on this page it is <span class="math notranslate nohighlight">\(H\)</span>, to

@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/user_guide/structural_identification.40e46492-6ef2-4940-8fbb-54cbc7ee38d7.js"></script>
+    <script defer="defer" src="../_static/tippy/user_guide/structural_identification.0cf11481-0976-48b7-a72b-fa24cef2e452.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/structural_identification';</script>
@@ -1375,7 +1375,7 @@ by the <code class="docutils literal notranslate"><span class="pre">ClosedSystem
 <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>, <code class="docutils literal notranslate"><span class="pre">resid</span></code>, <code class="docutils literal notranslate"><span class="pre">coefficients</span></code>, <code class="docutils literal notranslate"><span class="pre">k_endog</span></code> and
 <code class="docutils literal notranslate"><span class="pre">ma_representation(horizon)</span></code>. The constructor checks for these members
 (<code class="docutils literal notranslate"><span class="pre">k_endog</span></code> aside) and raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> naming the missing ones.
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> naming the missing ones.
 In practice:</p>
 <ul class="simple">
 <li><p>accepted: <code class="docutils literal notranslate"><span class="pre">VARResult</span></code>, <code class="docutils literal notranslate"><span class="pre">VARXResult</span></code>, <code class="docutils literal notranslate"><span class="pre">VECMResult</span></code>, <code class="docutils literal notranslate"><span class="pre">VARMAResult</span></code>
@@ -1612,10 +1612,10 @@ True
 </pre></div>
 </div>
 <p>The constructor refuses a result with <code class="docutils literal notranslate"><span class="pre">is_stable</span></code> false; <code class="docutils literal notranslate"><span class="pre">identify()</span></code>
-raises <code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> when the AR
+raises <a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> when the AR
 polynomial has a (near-)unit root, which is what an error-correction
 model in levels has (difference the integrated variables first), and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code> if the factorization fails
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a> if the factorization fails
 to reproduce <span class="math notranslate nohighlight">\(\Sigma_u\)</span> because <span class="math notranslate nohighlight">\(F\)</span> is ill-conditioned.</p>
 </section>
 <section id="short-run-ab-model">
@@ -1632,7 +1632,7 @@ cells over-identify the model and the likelihood-ratio statistic against
 the unrestricted covariance is put in <code class="docutils literal notranslate"><span class="pre">diagnostics</span></code>. The rank condition
 is checked at <code class="docutils literal notranslate"><span class="pre">identify()</span></code> time: a just-identified pattern that cannot
 reproduce <span class="math notranslate nohighlight">\(\Sigma_u\)</span> raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code>.</p>
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.html#module-cultivars.multivariate.structural.zero_restrictions"><span class="nn">cultivars.multivariate.structural.zero_restrictions</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../api/generated/cultivars.multivariate.structural.zero_restrictions.ShortRunSVAR.html#cultivars.multivariate.structural.zero_restrictions.ShortRunSVAR" title="cultivars.multivariate.structural.zero_restrictions.ShortRunSVAR"><span class="n">ShortRunSVAR</span></a>
 
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -1705,9 +1705,9 @@ exact
 </pre></div>
 </div>
 <p>Fewer or more than <span class="math notranslate nohighlight">\(k(k-1)/2\)</span> restrictions is a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> at construction (an
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> at construction (an
 over-identified mixed pattern is not estimated); a pattern no rotation can
-satisfy raises <code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code> at
+satisfy raises <a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a> at
 <code class="docutils literal notranslate"><span class="pre">identify()</span></code>.</p>
 </section>
 </section>
@@ -1794,7 +1794,7 @@ Hamilton 2015). For the exact range of the set use
 which can only shrink the set. On a system whose responses oscillate,
 multi-horizon signs can become unsatisfiable. If no rotation is accepted
 within <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">identify()</span></code> raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code>; if some but fewer than
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a>; if some but fewer than
 <code class="docutils literal notranslate"><span class="pre">draws</span></code> are accepted, it returns the partial set without an error, and
 <code class="docutils literal notranslate"><span class="pre">n_accepted</span> <span class="pre">&lt;</span> <span class="pre">requested</span></code> is the only signal:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">impact_only</span> <span class="o">=</span> <span class="n">SignRestrictedSVAR</span><span class="p">(</span><span class="n">var_s</span><span class="p">,</span> <span class="n">signs</span><span class="p">,</span> <span class="n">draws</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">identify</span><span class="p">()</span>
@@ -1874,7 +1874,7 @@ residual row <code class="docutils literal notranslate"><span class="pre">t</spa
 in period 238, cuts the accepted set in half and lifts the 16th
 percentile of output’s impact response from 0.39 toward the true 1.0.
 A period outside <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">..</span> <span class="pre">nobs</span> <span class="pre">-</span> <span class="pre">1</span></code> of the residuals raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> at construction.</p>
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> at construction.</p>
 <p>A shock-sign event on a shock that has no traditional signs binds
 nothing: the sampler may flip any column, and flipping a column flips its
 recovered shock. The accepted set is the same as without the event:</p>
@@ -1950,9 +1950,9 @@ the recursive column with the zero-restricted variable ordered first:</p>
 <p>Limits: joint declarations across several shocks have no face-enumeration
 form and are not offered (use the sampled scheme); the face count is
 capped, so many signs over many horizons in a large system raise
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> rather than being
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> rather than being
 approximated; an empty set raises
-<code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code> at <code class="docutils literal notranslate"><span class="pre">identify()</span></code>. The
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a> at <code class="docutils literal notranslate"><span class="pre">identify()</span></code>. The
 bounds are computed at the reduced-form point estimate; they are not the
 robust-Bayes credible region of Giacomini and Kitagawa (2021), which would
 also integrate over reduced-form uncertainty.</p>
@@ -2049,7 +2049,7 @@ Identification: distinct ratios
 ratio is about <span class="math notranslate nohighlight">\(3^2 = 9\)</span>, and the direction of its impact column
 matches the truth to within 0.02. If both shocks’ variances shift by the same factor, the ratios tie and
 the <code class="docutils literal notranslate"><span class="pre">Identification</span></code> entry reads <code class="docutils literal notranslate"><span class="pre">WEAK:</span> <span class="pre">separation</span> <span class="pre">within</span> <span class="pre">sampling</span>
-<span class="pre">noise</span></code>; an exact tie raises <code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code>.
+<span class="pre">noise</span></code>; an exact tie raises <a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a>.
 The impact matrix reproduces the first regime’s residual second moment,
 not <code class="docutils literal notranslate"><span class="pre">sigma_u</span></code>, so the scale is “one standard deviation in the first
 regime”. The inherited <code class="docutils literal notranslate"><span class="pre">SVARResult</span></code> methods do not account for this:
@@ -2379,8 +2379,8 @@ the working form is <code class="docutils literal notranslate"><span class="pre"
 <li><p><strong>Effective sample.</strong> Proxy instrument rows, heteroskedasticity regime
 labels and narrative event periods all index the residual rows,
 <code class="docutils literal notranslate"><span class="pre">nobs</span></code> of them, which start at data row <code class="docutils literal notranslate"><span class="pre">p</span></code>. Passing a full-length
-series raises <code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code> (proxy) or
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code> (regimes); a narrative
+series raises <a class="reference internal" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a> (proxy) or
+<a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a> (regimes); a narrative
 period <code class="docutils literal notranslate"><span class="pre">t</span></code> silently refers to data row <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">+</span> <span class="pre">p</span></code>.</p></li>
 <li><p><strong>Index order.</strong> <code class="docutils literal notranslate"><span class="pre">SVARResult.irf</span></code> is <code class="docutils literal notranslate"><span class="pre">[h,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>; quantile surfaces
 (sign sets, SV posteriors) are <code class="docutils literal notranslate"><span class="pre">[q,</span> <span class="pre">h,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>; draws are

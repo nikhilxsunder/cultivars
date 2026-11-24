@@ -87,7 +87,7 @@
             </script>
     <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
     <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
-    <script defer="defer" src="../_static/tippy/getting_started/concepts.4d708e3c-6944-48a2-aab2-5f5f355aa949.js"></script>
+    <script defer="defer" src="../_static/tippy/getting_started/concepts.dc17165c-6b4d-44b6-b34f-93202ba4f3c8.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/concepts';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
@@ -1196,7 +1196,7 @@ exactly as it was.</p>
 </section>
 <section id="summaries-state-their-assumptions">
 <h2>Summaries state their assumptions<a class="headerlink" href="#summaries-state-their-assumptions" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">summary()</span></code> returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">SummaryTable</span></code>, a
+<p><code class="docutils literal notranslate"><span class="pre">summary()</span></code> returns a <a class="reference internal" href="../api/generated/cultivars.summary.SummaryTable.html#cultivars.summary.SummaryTable" title="cultivars.summary.SummaryTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">SummaryTable</span></code></a>, a
 record with four parts:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: the specification;</p></li>
@@ -1297,7 +1297,7 @@ dataframe are not read, and without <code class="docutils literal notranslate"><
 to per-observation output, pass them when exporting, for example
 <code class="docutils literal notranslate"><span class="pre">result.to_pandas(index=dates)</span></code>.</p></li>
 <li><p><strong>Missing values.</strong> Non-finite values are refused with a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code> rather than dropped or
+<a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a> rather than dropped or
 filled silently. Handle gaps before fitting, so that the choice is
 yours and visible.</p></li>
 </ul>
@@ -1313,7 +1313,7 @@ seed in anything you intend to publish.</p>
 <section id="when-something-is-wrong">
 <h2>When something is wrong<a class="headerlink" href="#when-something-is-wrong" title="Link to this heading">#</a></h2>
 <p>Every error cultivars raises on purpose derives from
-<code class="xref py py-class docutils literal notranslate"><span class="pre">CultivarsError</span></code>. The class tells you what
+<a class="reference internal" href="../api/generated/cultivars.exceptions.CultivarsError.html#cultivars.exceptions.CultivarsError" title="cultivars.exceptions.CultivarsError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CultivarsError</span></code></a>. The class tells you what
 to fix, and the message names the argument and the values it accepts:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -1328,17 +1328,17 @@ to fix, and the message names the argument and the values it accepts:</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.exceptions.DimensionError.html#cultivars.exceptions.DimensionError" title="cultivars.exceptions.DimensionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionError</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
 <td><p>An input has the wrong shape, rank or length.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api/generated/cultivars.exceptions.SpecificationError.html#cultivars.exceptions.SpecificationError" title="cultivars.exceptions.SpecificationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecificationError</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
 <td><p>An option is outside its allowed values, an order is too small,
 the sample is too short for what was asked, or a set of
 restrictions cannot be satisfied.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api/generated/cultivars.exceptions.NumericalError.html#cultivars.exceptions.NumericalError" title="cultivars.exceptions.NumericalError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericalError</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code></p></td>
 <td><p>The arithmetic fails: non-finite data, a covariance that is not
 positive semidefinite, a singular system.</p></td>
