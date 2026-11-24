@@ -227,7 +227,7 @@ html_theme_options: dict[str, object] = {
     "analytics": {"google_analytics_id": "G-QPCZ8H078M"},
     "logo": {
         "image_light": "_static/cultivars-logo.png",
-        "image_dark": "_static/cultivars-logo.png",
+        "image_dark": "_static/cultivars-logo-dark.png",
     },
     "header_links_before_dropdown": 6,
     "navbar_start": ["navbar-logo", "version-switcher"],
