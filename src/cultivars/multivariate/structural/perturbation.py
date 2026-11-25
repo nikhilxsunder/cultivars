@@ -151,6 +151,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import numpy.typing as npt
 from cultivars_engine._core._defaults import _SIMULATION_BURN
+from cultivars_engine._core._validators import _validate_order
 from cultivars_engine._internals._fits import _PerturbationFit
 from cultivars_engine._internals._mixins import _SummaryMixin
 from cultivars_engine._internals._models import _PerturbationModel
@@ -812,6 +813,10 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
         Returns:
             The criterion value; exact only under ``"kalman"``.
 
+        Raises:
+            SpecificationError: If the filter is ``"particle"`` and
+                ``n_particles`` is not an integer of at least 2.
+
         Example:
             On a linear model the first-order exact likelihood, the
             second-order unscented approximation and a well-resourced
@@ -845,7 +850,12 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
             (True, True)
             >>> bool(poor < exact - 50)
             True
+            >>> second.loglikelihood([0.8, 0.5], filter="particle", n_particles=1)
+            Traceback (most recent call last):
+            cultivars_engine.exceptions.SpecificationError: n_particles must be >= 2; got 1.
         """
+        if filter == "particle":
+            n_particles = _validate_order(n_particles, "n_particles", minimum=2)
         return self._loglikelihood(
             np.asarray(theta, dtype=np.float64),
             filter_name=filter,
@@ -876,8 +886,9 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
             The :class:`PerturbationDSGEResult` at the optimum.
 
         Raises:
-            SpecificationError: If ``theta0`` is missing or the filter is
-                incompatible with the order.
+            SpecificationError: If ``theta0`` is missing, the filter is
+                incompatible with the order, or the filter is ``"particle"``
+                and ``n_particles`` is not an integer of at least 2.
 
         Example:
             >>> import numpy as np
@@ -908,6 +919,9 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
             >>> second.fit([0.5, 0.3], filter="kalman")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
             cultivars_engine.exceptions.SpecificationError: filter='kalman' is exact only at ...
+            >>> second.fit([0.5, 0.3], filter="particle", n_particles=2.5)
+            Traceback (most recent call last):
+            cultivars_engine.exceptions.SpecificationError: n_particles must be an integer; got 2.5.
         """
         if theta0 is None:
             raise SpecificationError(
@@ -918,6 +932,8 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
                 "filter='kalman' is exact only at order=1; construct the model with "
                 "order=1 or choose 'extended', 'unscented', or 'particle'."
             )
+        if filter == "particle":
+            n_particles = _validate_order(n_particles, "n_particles", minimum=2)
         fit = self._fit_point(
             np.asarray(theta0, dtype=np.float64),
             filter_name=filter,
@@ -963,6 +979,10 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
             log-likelihood and log-posterior values, the acceptance rate
             and convergence diagnostics.
 
+        Raises:
+            SpecificationError: If ``n_particles`` is not an integer of at
+                least 2.
+
         Example:
             A short chain, far too short for inference, shows the shape of
             the surface:
@@ -990,7 +1010,11 @@ class PerturbationDSGE(_PerturbationModel[PerturbationDSGEResult]):
             >>> post = model.sample(res.theta, n_particles=100, n_draws=40, n_burn=10, seed=0)
             >>> post.n_kept, post.n_particles, bool(0.0 <= post.acceptance_rate <= 1.0)
             (30, 100, True)
+            >>> model.sample(res.theta, n_particles=0)
+            Traceback (most recent call last):
+            cultivars_engine.exceptions.SpecificationError: n_particles must be >= 2; got 0.
         """
+        n_particles = _validate_order(n_particles, "n_particles", minimum=2)
         fit = self._sample_chain(
             np.asarray(theta0, dtype=np.float64),
             n_particles=n_particles,

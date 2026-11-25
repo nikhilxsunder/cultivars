@@ -9,6 +9,14 @@ listed under Changed.
 
 ## [Unreleased]
 
+### Fixed
+
+- `PerturbationDSGE.loglikelihood` and `fit` with `filter="particle"`, and
+  `sample`, now raise `SpecificationError` up front when `n_particles` is not
+  an integer of at least 2. A fractional count such as `2.5` was silently
+  truncated, and `sample` reported a too-small count as an inadmissible
+  `theta0`.
+
 ## [1.0.0a6] - 2026-11-24
 
 ### Changed
