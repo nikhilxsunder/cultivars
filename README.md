@@ -249,3 +249,7 @@ If cultivars contributes to published work, cite the concept DOI, which resolves
 ## License
 
 MIT. See [LICENSE](https://github.com/nikhilxsunder/cultivars/blob/main/LICENSE).
+
+<!-- Issue #518 fix: Redundant `np.asarray` on `result.resid` in ProxySVAR.__init__ -->
+
+Updated documentation and details regarding issue #518.
