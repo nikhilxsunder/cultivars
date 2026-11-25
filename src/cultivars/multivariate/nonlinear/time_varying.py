@@ -1220,7 +1220,7 @@ class TVPVARSV(TVPVAR):
 
     __slots__ = ()
 
-    def fit(  # type: ignore[override]
+    def fit(
         self,
         *,
         n_draws: int = 2000,
