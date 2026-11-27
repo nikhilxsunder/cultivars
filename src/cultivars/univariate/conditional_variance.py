@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/univariate/garch.py
+# filepath: /src/cultivars/univariate/conditional_variance.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
@@ -895,6 +895,7 @@ class ARMAGARCHResult(GARCHResult, _StationarityMixin, _InvertibilityMixin):
     :math:`c / (1 - \sum_i \phi_i)`; that is the
     :class:`~cultivars.univariate.autoregression.ARResult` convention,
     not the :class:`~cultivars.univariate.box_jenkins.ARMAResult` one.
+    :attr:`unconditional_mean` reports the latter.
 
     Subclasses :class:`GARCHResult` rather than reimplementing it: every
     variance property it exposes -- persistence, the unconditional
@@ -947,6 +948,8 @@ class ARMAGARCHResult(GARCHResult, _StationarityMixin, _InvertibilityMixin):
         >>> res.is_stationary, res.is_invertible, res.is_structurally_constrained
         (True, True, True)
         >>> bool(abs(res.persistence - 0.95) < 0.05)
+        True
+        >>> bool(abs(res.unconditional_mean - y.mean()) < 0.1)
         True
     """
 
@@ -1024,6 +1027,31 @@ class ARMAGARCHResult(GARCHResult, _StationarityMixin, _InvertibilityMixin):
             True
         """
         return self.mean_order[1] > 0
+
+    @property
+    def unconditional_mean(self) -> float | None:
+        """The long-run mean ``const / (1 - sum(ar_params))``.
+
+        Returns:
+            ``0.0`` for a zero mean, and ``None`` when the autoregressive
+            block is not stationary, since such a process has no
+            unconditional mean.
+
+        Example:
+            >>> rng = np.random.default_rng(0)
+            >>> y = 1.0 + rng.standard_normal(500)
+            >>> res = ARGARCH(y, ar_lags=1).fit()
+            >>> expected = res.const / (1.0 - res.ar_params.sum())
+            >>> bool(np.isclose(res.unconditional_mean, expected))
+            True
+            >>> ARGARCH(y - y.mean(), ar_lags=1, mean="zero").fit().unconditional_mean
+            0.0
+        """
+        if not self.is_stationary:
+            return None
+        if self.const is None:
+            return 0.0
+        return self.const / (1.0 - float(self.ar_params.sum()))
 
     @property
     def params(self) -> dict[str, float]:
@@ -1222,7 +1250,8 @@ class ARMAFIGARCHResult(FIGARCHResult, _StationarityMixin, _InvertibilityMixin):
     hyperbolically. :attr:`is_stationary` speaks only to the first,
     :attr:`is_covariance_stationary` only to the second, and the latter
     is ``False`` by construction for any ``d > 0``. ``const`` is the
-    recursion intercept :math:`c`, not the unconditional mean.
+    recursion intercept :math:`c`, not the unconditional mean, which
+    :attr:`unconditional_mean` reports.
 
     Everything on the variance side -- ``persistence``, ``half_life``,
     ``has_long_memory``, the refusal to ``simulate`` -- is inherited
@@ -1272,6 +1301,8 @@ class ARMAFIGARCHResult(FIGARCHResult, _StationarityMixin, _InvertibilityMixin):
         (True, True)
         >>> res.is_stationary, res.is_covariance_stationary, res.half_life
         (True, False, inf)
+        >>> bool(abs(res.unconditional_mean - y.mean()) < 0.1)
+        True
     """
 
     mean_order: tuple[int, int]
@@ -1349,6 +1380,31 @@ class ARMAFIGARCHResult(FIGARCHResult, _StationarityMixin, _InvertibilityMixin):
             True
         """
         return self.mean_order[1] > 0
+
+    @property
+    def unconditional_mean(self) -> float | None:
+        """The long-run mean ``const / (1 - sum(ar_params))``.
+
+        Computed exactly as :attr:`ARMAGARCHResult.unconditional_mean`; the
+        fractional variance does not enter it.
+
+        Returns:
+            ``0.0`` for a zero mean, and ``None`` when the autoregressive
+            block is not stationary.
+
+        Example:
+            >>> rng = np.random.default_rng(0)
+            >>> y = 1.0 + rng.standard_normal(600)
+            >>> res = ARMAFIGARCH(y, ar_lags=1, ma_lags=0).fit()
+            >>> expected = res.const / (1.0 - res.ar_params.sum())
+            >>> bool(np.isclose(res.unconditional_mean, expected))
+            True
+        """
+        if not self.is_stationary:
+            return None
+        if self.const is None:
+            return 0.0
+        return self.const / (1.0 - float(self.ar_params.sum()))
 
     @property
     def params(self) -> dict[str, float]:
