@@ -14,6 +14,12 @@ listed under Changed.
 - `cultivars.multivariate.structural.heteroskedacity` is renamed to
   `heteroskedasticity` (#389).
 
+### Deprecated
+
+- The old `heteroskedacity` path still imports for one release and emits a
+  `FutureWarning`; `from cultivars.multivariate.structural import *` no
+  longer binds it.
+
 ## [1.0.0a6] - 2026-11-24
 
 ### Changed

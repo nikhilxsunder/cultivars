@@ -1341,6 +1341,10 @@ Nuances and gotchas
 * **No inference on point schemes.** ``SVARResult`` has no confidence
   bands. For recursive bands on a Bayesian VAR, use
   ``BVARResult.irf_bands`` (:doc:`bayesian_vars`).
+* **Old module name.** The misspelled
+  ``cultivars.multivariate.structural.heteroskedacity`` still imports
+  for one release and emits a ``FutureWarning``; import from
+  ``heteroskedasticity`` instead.
 * **Narrative class import.** ``NarrativeSignRestrictedSVAR`` is not in
   the module's ``__all__``, so ``from ...sign_restrictions import *`` does
   not bring it in; import it by name.
