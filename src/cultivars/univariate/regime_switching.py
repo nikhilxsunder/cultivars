@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/univariate/markov_switching.py
+# filepath: /src/cultivars/univariate/regime_switching.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #

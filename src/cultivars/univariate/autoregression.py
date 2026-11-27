@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/univariate/ar.py
+# filepath: /src/cultivars/univariate/autoregression.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
