@@ -9,6 +9,10 @@ listed under Changed.
 
 ## [Unreleased]
 
+### Added
+
+- `unconditional_mean` on `ARMAGARCHResult` and `ARMAFIGARCHResult` (#54).
+
 ## [1.0.0a6] - 2026-11-24
 
 ### Changed
