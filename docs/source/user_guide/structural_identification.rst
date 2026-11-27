@@ -70,8 +70,8 @@ All classes live under ``cultivars.multivariate.structural``; the column
      - ``external_instruments``
      - External instrument for one shock, Mertens and Ravn (2013)
      - ``SVARResult``, one column
-   * - :class:`~cultivars.multivariate.structural.heteroskedacity.HeteroskedasticSVAR`
-     - ``heteroskedacity``
+   * - :class:`~cultivars.multivariate.structural.heteroskedasticity.HeteroskedasticSVAR`
+     - ``heteroskedasticity``
      - Declared variance regimes, Rigobon (2003)
      - ``SVARResult``, complete, statistically labelled
    * - :class:`~cultivars.multivariate.structural.non_gaussian.NonGaussianSVAR`
@@ -890,7 +890,7 @@ signed so its largest entry is positive.
 
 .. testcode::
 
-   from cultivars.multivariate.structural.heteroskedacity import HeteroskedasticSVAR
+   from cultivars.multivariate.structural.heteroskedasticity import HeteroskedasticSVAR
 
    rng = np.random.default_rng(0)
    eps_h = rng.standard_normal((402, 2))
@@ -1341,8 +1341,10 @@ Nuances and gotchas
 * **No inference on point schemes.** ``SVARResult`` has no confidence
   bands. For recursive bands on a Bayesian VAR, use
   ``BVARResult.irf_bands`` (:doc:`bayesian_vars`).
-* **Module spelling.** The heteroskedasticity module is
-  ``cultivars.multivariate.structural.heteroskedacity``.
+* **Old module name.** The misspelled
+  ``cultivars.multivariate.structural.heteroskedacity`` still imports
+  for one release and emits a ``FutureWarning``; import from
+  ``heteroskedasticity`` instead.
 * **Narrative class import.** ``NarrativeSignRestrictedSVAR`` is not in
   the module's ``__all__``, so ``from ...sign_restrictions import *`` does
   not bring it in; import it by name.
@@ -1369,7 +1371,7 @@ See also
   :mod:`cultivars.multivariate.structural.sign_restrictions`,
   :mod:`cultivars.multivariate.structural.set_identification`,
   :mod:`cultivars.multivariate.structural.external_instruments`,
-  :mod:`cultivars.multivariate.structural.heteroskedacity`,
+  :mod:`cultivars.multivariate.structural.heteroskedasticity`,
   :mod:`cultivars.multivariate.structural.non_gaussian`,
   :mod:`cultivars.multivariate.structural.stochastic_volatility`,
   :mod:`cultivars.multivariate.structural.factor_augmented`,

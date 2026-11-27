@@ -73,7 +73,7 @@ rotation is ``_MixedHorizonObjective`` under ``_solve``, all in
 ``_PARTIAL_IDENTIFICATION_NOTE``; it is also the record returned by the
 partial and statistical schemes in
 :mod:`~cultivars.multivariate.structural.external_instruments`,
-:mod:`~cultivars.multivariate.structural.heteroskedacity` and
+:mod:`~cultivars.multivariate.structural.heteroskedasticity` and
 :mod:`~cultivars.multivariate.structural.non_gaussian`, and the point
 surface :mod:`~cultivars.multivariate.structural.stochastic_volatility`
 lands on. Restrictions that do not point-identify belong to

@@ -38,7 +38,7 @@ ways, sampled under a named prior or bounded exactly with none. Outside
 series are :mod:`~cultivars.multivariate.structural.external_instruments`, a
 proxy that identifies one column and reports its own strength. Statistical
 properties of the shocks are
-:mod:`~cultivars.multivariate.structural.heteroskedacity`,
+:mod:`~cultivars.multivariate.structural.heteroskedasticity`,
 :mod:`~cultivars.multivariate.structural.stochastic_volatility` and
 :mod:`~cultivars.multivariate.structural.non_gaussian` -- declared variance
 regimes, estimated variance paths, and independence with non-Gaussianity --
@@ -78,10 +78,13 @@ Example:
     (100, ('demand', 'unrestricted1'))
 """
 
+import sys
+from types import ModuleType
+
 from . import (
     external_instruments,
     factor_augmented,
-    heteroskedacity,
+    heteroskedasticity,
     non_gaussian,
     perturbation,
     set_identification,
@@ -93,7 +96,7 @@ from . import (
 __all__ = [
     "external_instruments",
     "factor_augmented",
-    "heteroskedacity",
+    "heteroskedasticity",
     "non_gaussian",
     "perturbation",
     "set_identification",
@@ -101,3 +104,44 @@ __all__ = [
     "stochastic_volatility",
     "zero_restrictions",
 ]
+
+
+def __getattr__(name: str) -> ModuleType:
+    """Load the deprecated ``heteroskedacity`` alias on first attribute access.
+
+    Keeps ``structural.heteroskedacity`` working, with its ``FutureWarning``,
+    for code that reaches the old module through the package rather than
+    importing it by name. Remove together with the alias before 1.0.0b1.
+
+    Args:
+        name: The attribute that normal lookup did not find.
+
+    Returns:
+        The alias module when ``name`` is ``"heteroskedacity"``.
+
+    Raises:
+        AttributeError: For any other missing attribute.
+
+    Example:
+        >>> import sys, warnings
+        >>> import cultivars.multivariate.structural as structural
+        >>> _ = sys.modules.pop(f"{structural.__name__}.heteroskedacity", None)
+        >>> _ = structural.__dict__.pop("heteroskedacity", None)
+        >>> with warnings.catch_warnings(record=True) as caught:
+        ...     warnings.simplefilter("always")
+        ...     old = structural.heteroskedacity
+        >>> [w.category.__name__ for w in caught]
+        ['FutureWarning']
+        >>> old.HeteroskedasticSVAR is structural.heteroskedasticity.HeteroskedasticSVAR
+        True
+        >>> structural.not_a_module  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        AttributeError: module 'cultivars.multivariate.structural' has no attribute ...
+    """
+    if name == "heteroskedacity":
+        # ``__import__`` rather than ``importlib.import_module``: the latter adds
+        # a frame the warning machinery does not skip, so the alias's
+        # FutureWarning would name importlib instead of the caller's line.
+        __import__(f"{__name__}.heteroskedacity")
+        return sys.modules[f"{__name__}.heteroskedacity"]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
