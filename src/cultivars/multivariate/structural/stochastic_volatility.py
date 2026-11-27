@@ -89,7 +89,7 @@ through ``to_point()``, and convergence is read through
 criterion over ``_fractional_spectrum`` from ``_core`` and emits the
 truncated AR(inf) law through ``_long_memory_quasi_state_space`` in
 ``_internals``. The declared-regime version of the identification is
-:mod:`~cultivars.multivariate.structural.heteroskedacity`.
+:mod:`~cultivars.multivariate.structural.heteroskedasticity`.
 
 References:
     Lewis, D. J. (2021). Identifying shocks via time-varying volatility.

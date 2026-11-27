@@ -38,7 +38,7 @@ ways, sampled under a named prior or bounded exactly with none. Outside
 series are :mod:`~cultivars.multivariate.structural.external_instruments`, a
 proxy that identifies one column and reports its own strength. Statistical
 properties of the shocks are
-:mod:`~cultivars.multivariate.structural.heteroskedacity`,
+:mod:`~cultivars.multivariate.structural.heteroskedasticity`,
 :mod:`~cultivars.multivariate.structural.stochastic_volatility` and
 :mod:`~cultivars.multivariate.structural.non_gaussian` -- declared variance
 regimes, estimated variance paths, and independence with non-Gaussianity --
@@ -81,7 +81,7 @@ Example:
 from . import (
     external_instruments,
     factor_augmented,
-    heteroskedacity,
+    heteroskedasticity,
     non_gaussian,
     perturbation,
     set_identification,
@@ -93,7 +93,7 @@ from . import (
 __all__ = [
     "external_instruments",
     "factor_augmented",
-    "heteroskedacity",
+    "heteroskedasticity",
     "non_gaussian",
     "perturbation",
     "set_identification",

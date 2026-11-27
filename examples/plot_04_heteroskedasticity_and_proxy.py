@@ -55,7 +55,7 @@ import numpy as np
 
 from cultivars.multivariate.reduced_form.vector_autoregression import VAR
 from cultivars.multivariate.structural.external_instruments import ProxySVAR
-from cultivars.multivariate.structural.heteroskedacity import HeteroskedasticSVAR
+from cultivars.multivariate.structural.heteroskedasticity import HeteroskedasticSVAR
 from cultivars.multivariate.structural.zero_restrictions import RecursiveSVAR
 
 from _fred import fetch

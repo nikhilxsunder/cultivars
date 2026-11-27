@@ -70,7 +70,7 @@ the rotation into ``SVARResult`` from
 :mod:`~cultivars.multivariate.structural.zero_restrictions` with
 ``scheme="non-Gaussian"``. The second-moment route to the same kind of
 statistical identification is
-:mod:`~cultivars.multivariate.structural.heteroskedacity`.
+:mod:`~cultivars.multivariate.structural.heteroskedasticity`.
 
 References:
     Comon, P. (1994). Independent component analysis, a new concept? *Signal
@@ -171,7 +171,7 @@ class NonGaussianSVAR(_IdentificationModel[SVARResult]):
     See Also:
         * :class:`~cultivars.multivariate.structural.zero_restrictions.SVARResult`
           -- the complete result returned.
-        * :class:`~cultivars.multivariate.structural.heteroskedacity.HeteroskedasticSVAR`
+        * :class:`~cultivars.multivariate.structural.heteroskedasticity.HeteroskedasticSVAR`
           -- identification from second-moment shifts across declared
           regimes, on the same joint-diagonalization surface.
 

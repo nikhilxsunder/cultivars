@@ -172,7 +172,7 @@ assume. All of them take a fitted reduced form; see
      - :class:`~cultivars.multivariate.structural.external_instruments.ProxySVAR`
      - :doc:`structural_identification`
    * - volatility regimes or non-Gaussian shocks do the identifying
-     - :class:`~cultivars.multivariate.structural.heteroskedacity.HeteroskedasticSVAR`,
+     - :class:`~cultivars.multivariate.structural.heteroskedasticity.HeteroskedasticSVAR`,
        :class:`~cultivars.multivariate.structural.non_gaussian.NonGaussianSVAR`
      - :doc:`structural_identification`
    * - shocks whose effects drift over time

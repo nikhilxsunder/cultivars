@@ -9,6 +9,11 @@ listed under Changed.
 
 ## [Unreleased]
 
+### Changed
+
+- `cultivars.multivariate.structural.heteroskedacity` is renamed to
+  `heteroskedasticity` (#389).
+
 ## [1.0.0a6] - 2026-11-24
 
 ### Changed
