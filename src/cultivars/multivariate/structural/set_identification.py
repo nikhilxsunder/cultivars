@@ -324,6 +324,7 @@ class SetIdentifiedSVARResult(_SummaryMixin):
             the box.
 
         Raises:
+            SpecificationError: If ``horizon`` is negative.
             NumericalError: If no rotation column satisfies the restrictions
                 -- unreachable after a successful ``identify()``, which has
                 already evaluated the impact bounds.
@@ -356,7 +357,12 @@ class SetIdentifiedSVARResult(_SummaryMixin):
             >>> running = sset.irf(1, cumulative=True)
             >>> bool(np.all(running[1, :, 1] <= bounds[0, :, 1] + bounds[1, :, 1] + 1e-12))
             True
+            >>> sset.irf(-1)
+            Traceback (most recent call last):
+            cultivars_engine.exceptions.SpecificationError: horizon must be non-negative; got -1.
         """
+        if horizon < 0:
+            raise SpecificationError(f"horizon must be non-negative; got {horizon}.")
         psi = self.source.ma_representation(horizon)
         loadings = np.einsum("hik,kl->hil", psi, self._factor)
         if cumulative:
