@@ -9,6 +9,11 @@ listed under Changed.
 
 ## [Unreleased]
 
+### Fixed
+
+- `ShortRunSVAR` and `MixedSVAR` restriction sentences no longer say
+  "1 cells" (#482).
+
 ## [1.0.0a6] - 2026-11-24
 
 ### Changed
