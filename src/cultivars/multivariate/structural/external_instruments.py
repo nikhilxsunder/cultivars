@@ -256,7 +256,7 @@ class ProxySVAR(_IdentificationModel[SVARResult]):
             cultivars_engine.exceptions.SpecificationError: unknown normalization variable 'q'; ...
         """
         super().__init__(result)
-        n = int(np.asarray(result.resid).shape[0])
+        n = result.resid.shape[0]
         z = np.asarray(instruments, dtype=np.float64)
         if z.ndim == 1:
             z = z[:, np.newaxis]
