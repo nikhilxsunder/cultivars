@@ -39,8 +39,8 @@ Dataframe export is optional and comes in through an extra:
 Install a pre-release
 ---------------------
 
-The default install resolves to 0.0.2, a stable-channel republish of
-1.0.0a4 with identical code. To get later pre-releases as they ship,
+The default install resolves to 0.0.3, a stable-channel republish of
+1.0.0a6 with identical code. To get later pre-releases as they ship,
 installers must be asked for them explicitly.
 
 .. tab-set::

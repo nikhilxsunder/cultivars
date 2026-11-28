@@ -49,7 +49,7 @@ Release status
 
    :bdg-warning:`API: stable in shape, not frozen` :bdg-secondary:`numerics: settling`
 
-   ``0.0.2`` is a stable-channel republish of ``1.0.0a4``: the code is
+   ``0.0.3`` is a stable-channel republish of ``1.0.0a6``: the code is
    identical, so a plain ``pip install cultivars`` resolves to it without
    ``--pre``. The model-fit-result pattern, the subpackage layout and the
    names of the public classes will not change before 1.0.0. Argument
