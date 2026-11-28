@@ -68,7 +68,7 @@ Which results qualify
 ---------------------
 
 Every tool reads its input by duck typing against a protocol in
-``cultivars.engine._core._protocols``. A result of your own that exposes
+``cultivars_engine._core._protocols``. A result of your own that exposes
 the same members is accepted.
 
 .. list-table::

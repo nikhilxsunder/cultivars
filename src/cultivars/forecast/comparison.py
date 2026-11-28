@@ -249,7 +249,7 @@ class ClarkWestTest(ForecastComparisonTest):
         the reference distribution.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -380,7 +380,7 @@ class MincerZarnowitzTest(ForecastComparisonTest):
         and the multi-step over-rejection warning when it applies.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -522,7 +522,7 @@ class EncompassingTest(ForecastComparisonTest):
         and notes giving the combination weight and the reference.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -672,7 +672,7 @@ class GiacominiWhiteTest(ForecastComparisonTest):
         differential, and the covariance and estimation-scheme caveats.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -846,7 +846,7 @@ class ForecastComparisonResult(_SummaryMixin):
         restate the nested-model caveat.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:

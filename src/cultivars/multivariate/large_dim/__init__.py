@@ -73,7 +73,7 @@ an import path names the family, the specification and the class. This
 package exposes only the modules.
 
 Layout. The public classes are thin: each validates its specification on
-a model base in ``cultivars._internals`` -- the Bayesian family on
+a model base in ``cultivars_engine._internals`` -- the Bayesian family on
 ``_BayesianVectorAutoRegressionModel`` and its Student-t, Gibbs and
 stochastic-volatility extensions, the penalized family on
 ``_SparseVectorAutoRegressionModel``, the factor stochastic-volatility

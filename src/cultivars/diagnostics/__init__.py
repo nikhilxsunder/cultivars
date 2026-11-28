@@ -95,7 +95,16 @@ Example:
     False
 """
 
-from . import breaks, cointegration, hypothesis, long_memory, nonlinearity, seasonality, unit_roots
+from . import (
+    breaks,
+    cointegration,
+    hypothesis,
+    long_memory,
+    nonlinearity,
+    seasonality,
+    stability,
+    unit_roots,
+)
 
 __all__ = [
     "breaks",
@@ -104,5 +113,6 @@ __all__ = [
     "long_memory",
     "nonlinearity",
     "seasonality",
+    "stability",
     "unit_roots",
 ]

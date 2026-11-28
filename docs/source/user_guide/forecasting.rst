@@ -770,7 +770,7 @@ The package draws nothing; pass the rows to a plotting library.
 How the pieces connect
 ----------------------
 
-- The :class:`~cultivars.engine._core._protocols.PredictiveResult` protocol
+- The :class:`~cultivars_engine._core._protocols.PredictiveResult` protocol
   (one method, ``forecast_paths(steps, *, seed)``) is what makes a result a
   density forecaster. ``Backtest`` checks it with ``isinstance``; the
   Bayesian VARs, ``ConditionalForecastResult`` and

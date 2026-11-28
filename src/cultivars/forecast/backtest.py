@@ -68,7 +68,7 @@ is the exact sample CRPS, ``_kernel_log_score`` the negative log
 predictive density by Gaussian kernel, and ``_pinball_loss`` the
 quantile loss; ``PredictiveResult`` is the protocol that marks a result
 as a density forecaster, and ``_validate_names`` / ``_variable_names``
-resolve the series labels. :class:`~cultivars._internals._SummaryMixin`
+resolve the series labels. :class:`~cultivars_engine._internals._SummaryMixin`
 gives the record its ``summary()``, ``str()``, and notebook rendering.
 
 References:
@@ -656,7 +656,7 @@ class BacktestResult(_SummaryMixin):
         tools the record can feed.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -1022,7 +1022,7 @@ class Backtest:
 
         Applies the forecasting convention and normalizes what comes back.
         The ``predict`` hook is called when given; otherwise a result
-        satisfying :class:`~cultivars._core.PredictiveResult` is asked for
+        satisfying :class:`~cultivars_engine._core.PredictiveResult` is asked for
         ``forecast_paths(H, seed=seed)`` and any other for ``forecast(H)``.
         The raw array is then read by shape, in this order: a
         ``(H, k, 3)`` low/mean/high summary, the ``forecast()`` of the

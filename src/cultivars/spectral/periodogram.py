@@ -455,7 +455,7 @@ class SpectrumEstimate(_SummaryMixin):
         that the peak search excludes the origin.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)

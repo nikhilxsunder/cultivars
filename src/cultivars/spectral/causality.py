@@ -412,7 +412,7 @@ class SpectralCausalityResult(_SummaryMixin):
         model.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -556,7 +556,7 @@ class SpectralCausality:
         """Validate the source surface and the grid.
 
         The result is checked against the
-        :class:`~cultivars._core.ClosedSystemResult` protocol at runtime,
+        :class:`~cultivars_engine._core.ClosedSystemResult` protocol at runtime,
         so a model that has not been fitted, or a univariate result, is
         refused by name.
 
@@ -860,7 +860,7 @@ class ConditionalSpectralCausalityResult(_SummaryMixin):
         fitted models.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -1010,7 +1010,7 @@ class ConditionalSpectralCausality:
         """Validate both surfaces and their variable alignment.
 
         Both results are checked against the
-        :class:`~cultivars._core.ClosedSystemResult` protocol, the grid
+        :class:`~cultivars_engine._core.ClosedSystemResult` protocol, the grid
         against its minimum, and the restricted system's names against
         the full system's with exactly one removed and the rest in the
         same relative order; that removed name is the cause.

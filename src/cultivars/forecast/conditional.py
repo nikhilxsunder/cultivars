@@ -57,7 +57,7 @@ forecast's.
 Layout. :func:`conditional_forecast` is the producer and
 :class:`ConditionalForecastResult` the record, which carries the paths,
 the implied shocks, and the modesty reading, and satisfies
-:class:`~cultivars._core.PredictiveResult` so that a fan chart or a
+:class:`~cultivars_engine._core.PredictiveResult` so that a fan chart or a
 density score reads it like any other density forecaster. The numerics
 live in ``_core``: ``_validate_conditions`` turns the name-to-path
 mapping into a ``(steps, k)`` grid with ``nan`` for free cells,
@@ -197,7 +197,7 @@ class ConditionalForecastResult(_SummaryMixin):
         the 16-84% band of a conditioned cell is degenerate at the
         condition. Interval (soft) conditions, which would widen it, are
         not implemented. The record satisfies the
-        :class:`~cultivars._core.PredictiveResult` protocol through
+        :class:`~cultivars_engine._core.PredictiveResult` protocol through
         :meth:`forecast_paths`, so a fan chart, a density score, or a
         model combination reads it like any other density forecaster,
         except that the horizon is fixed at construction.
@@ -335,7 +335,7 @@ class ConditionalForecastResult(_SummaryMixin):
         """The conditional paths, in the shape every scorer and fan chart reads.
 
         The member that makes the record a
-        :class:`~cultivars._core.PredictiveResult`. The paths were
+        :class:`~cultivars_engine._core.PredictiveResult`. The paths were
         simulated once, at construction, so nothing is drawn here: the
         stored ``(S, steps, k)`` array is returned as is.
 
@@ -407,7 +407,7 @@ class ConditionalForecastResult(_SummaryMixin):
         are hard.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:

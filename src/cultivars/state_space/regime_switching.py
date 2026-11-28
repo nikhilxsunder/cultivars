@@ -90,7 +90,7 @@ aliases of ``_MarkovSwitchingStateSpace``,
 ``_filters`` and ``_smoothers``. The estimator that fits the switching
 autoregression by maximum likelihood, and whose result exposes the
 fitted :class:`MarkovSwitchingSSM` as ``state_space``, is
-:class:`~cultivars.univariate.regime_switching.MSAR`; the multivariate
+:class:`~cultivars.univariate.regime_switching.MarkovSwitchingAR`; the multivariate
 forms are in :mod:`~cultivars.multivariate.regime_switching.markov_switching`.
 
 References:

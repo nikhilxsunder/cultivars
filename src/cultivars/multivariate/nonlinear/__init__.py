@@ -65,7 +65,7 @@ import path names the family, the specification and the class. This
 package exposes only the modules.
 
 Layout. The public classes are thin: the three observed-state models
-validate on ``_ObservedRegimeVectorModel`` in ``cultivars._internals``
+validate on ``_ObservedRegimeVectorModel`` in ``cultivars_engine._internals``
 and its threshold, smooth-transition and functional-coefficient
 extensions, the quantile model on ``_QuantileVectorAutoRegressionModel``,
 the time-varying models on ``_TimeVaryingVectorAutoRegressionModel``;

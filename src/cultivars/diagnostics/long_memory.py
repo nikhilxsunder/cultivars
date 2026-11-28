@@ -343,7 +343,7 @@ class LongMemoryEstimate(_HypothesisTest):
         while the GPH record notes its efficiency loss.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``str()``
+            The :class:`~cultivars_engine._core.SummaryTable` that ``str()``
             and the notebook renderer display.
 
         Example:

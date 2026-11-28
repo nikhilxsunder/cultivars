@@ -552,7 +552,7 @@ class GARCHResult(_ConditionalVarianceResult):
         where it is defined, and the reason it is withheld for EGARCH.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)
@@ -844,7 +844,7 @@ class FIGARCHResult(_ConditionalVarianceResult):
         verdict with ``d`` and state why no half-life is reported.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)
@@ -1151,7 +1151,7 @@ class ARMAGARCHResult(GARCHResult, _StationarityMixin, _InvertibilityMixin):
         formed.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)
@@ -1402,7 +1402,7 @@ class ARMAFIGARCHResult(FIGARCHResult, _StationarityMixin, _InvertibilityMixin):
         formed.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)

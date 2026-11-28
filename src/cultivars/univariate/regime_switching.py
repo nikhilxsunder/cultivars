@@ -866,7 +866,7 @@ class MarkovSwitchingARResult(_SummaryMixin, _SeriesMixin, _ComparisonMixin):
         of the transition rows, and the untestability of ``K``.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> import numpy as np

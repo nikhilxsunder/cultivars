@@ -27,7 +27,7 @@ what the coefficients are centred on, :meth:`coefficient_mean`; how far
 the data may pull each one away, :meth:`coefficient_variance`; and which
 pseudo-observations, if any, are stacked under the sample,
 :meth:`dummy_observations`. Every model that takes ``prior=`` reads the
-prior through those three hooks and a :class:`~cultivars._internals._PriorContext`
+prior through those three hooks and a :class:`~cultivars_engine._internals._PriorContext`
 describing the sample, so a prior knows nothing about the estimator and an
 estimator knows nothing about the prior beyond its moments and its rows.
 The Minnesota family lives in that interface directly. Litterman's prior
@@ -85,9 +85,9 @@ under public names: :class:`NoPrior`, the identity of composition, and
 the two volatility-law priors :class:`VolatilityPrior` and
 :class:`RandomWalkVolatilityPrior`, which the stochastic-volatility
 models read and which do not enter coefficient composition at all. The
-abstract base :class:`~cultivars._internals._Prior`, the adaptive base
-:class:`~cultivars._internals._AdaptivePrior`, the composite built by
-``+``, and the :class:`~cultivars._internals._PriorContext` record live in
+abstract base :class:`~cultivars_engine._internals._Prior`, the adaptive base
+:class:`~cultivars_engine._internals._AdaptivePrior`, the composite built by
+``+``, and the :class:`~cultivars_engine._internals._PriorContext` record live in
 ``_internals``; the generalized-inverse-Gaussian sampler the
 Dirichlet-Laplace and Normal-Gamma conditionals need lives in ``_core``.
 The consumers are :class:`~cultivars.multivariate.large_dim.bayesian.BVAR`
@@ -299,7 +299,7 @@ class MinnesotaPrior(Prior):
         * :class:`SumOfCoefficientsPrior` and
           :class:`DummyInitialObservationPrior` -- the dummy-observation
           components, for stacking with ``+``.
-        * :func:`~cultivars._core.minnesota_scales` -- the univariate
+        * :func:`~cultivars_engine._core.minnesota_scales` -- the univariate
           residual scales :math:`s_i`, computed once per sample by the
           estimator and passed in through the context.
 

@@ -25,7 +25,7 @@ Every test in the package returns a record rather than a tuple, and
 every record descends from :class:`HypothesisTest`: a statistic, a
 p-value that may be ``None``, :meth:`~HypothesisTest.reject` at a level,
 and a summary rendered once as text, as notebook HTML, and as a
-:class:`~cultivars._core.SummaryTable`. A study that collects verdicts
+:class:`~cultivars_engine._core.SummaryTable`. A study that collects verdicts
 from a unit-root test, a Granger-causality test, and a structural-break
 test then holds one type, not a union of three. Two branches specialize
 the base by how the null distribution is known. A

@@ -371,7 +371,7 @@ class MODWTResult(_SummaryMixin):
         of the bands, and the exact additivity of the components.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)
@@ -807,7 +807,7 @@ class WaveletCoherenceResult(_SummaryMixin):
         Octaves with no date outside the cone are omitted.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> t = np.arange(256.0)

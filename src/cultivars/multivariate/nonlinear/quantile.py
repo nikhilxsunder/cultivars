@@ -77,7 +77,7 @@ validates and sorts the levels, runs the :math:`k \times Q` programs over
 the shared design, computes the unconditional-quantile benchmark losses,
 and packs a ``_VectorQuantileFit``. :class:`QVARResult` takes its summary
 from ``_SummaryMixin`` and builds each level's companion through
-:func:`~cultivars._core.companion_matrix`. The conditional-mean system on
+:func:`~cultivars_engine._core.companion_matrix`. The conditional-mean system on
 the same design is
 :mod:`~cultivars.multivariate.reduced_form.vector_autoregression`; the
 other members of this package model the mean's coefficients as functions

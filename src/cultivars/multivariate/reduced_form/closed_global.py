@@ -62,7 +62,7 @@ only if the foreign aggregate is weakly exogenous for that unit's
 parameters, and that is a property of the data: a dominant unit whose
 partners adjust toward it fails it, by design, and should be modelled
 with a reduced foreign set. :meth:`GVARResult.weak_exogeneity_test` runs
-the Johansen-style auxiliary regression for an error-correction unit,
+the Harbo et al. (1998) auxiliary regression for an error-correction unit,
 :meth:`GVARResult.exogeneity_table` runs it for every unit that supports
 it, and the summary names any unit that fails. The other diagnostic the
 result keeps is :attr:`GVARResult.linkage_condition`, the condition number
@@ -107,6 +107,10 @@ References:
     Johansen, S. (1992). Cointegration in partial systems and the
     efficiency of single-equation analysis. *Journal of Econometrics*,
     52(3), 389-402.
+
+    Harbo, I., Johansen, S., Nielsen, B., & Rahbek, A. (1998). Asymptotic
+    inference on cointegrating rank in partial systems. *Journal of Business
+    & Economic Statistics*, 16(4), 388-399.
 
 Example:
     A dominant unit and two satellites that error-correct toward it, each
@@ -888,7 +892,7 @@ class GVAR:
                 ``i`` says how unit ``i`` sees the rest of the world; it must
                 have a zero diagonal, non-negative entries and unit row sums,
                 and is checked by
-                :func:`~cultivars._core._validators.validate_weights`.
+                :func:`~cultivars_engine._core._validators.validate_weights`.
             variable_labels: One entry per global column giving the *shared*
                 variable identity, so that a unit's foreign aggregate averages
                 like with like. Repeated across units: two entries labelled

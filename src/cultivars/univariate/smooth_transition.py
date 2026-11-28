@@ -481,7 +481,7 @@ class STARResult(_ObservedRegimeResult):
         specifications but do not test for nonlinearity.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> import numpy as np

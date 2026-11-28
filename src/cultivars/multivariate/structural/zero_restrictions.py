@@ -844,6 +844,12 @@ class ShortRunSVAR(_IdentificationModel[SVARResult]):
             True
             >>> diagonal.restriction[:41]
             'AB model with 4 fixed cells in the contem'
+
+            A lone free coefficient is reported in the singular:
+
+            >>> single = ShortRunSVAR(res, b=[[np.nan, 0.0], [0.0, 1.0]]).identify()
+            >>> single.restriction.split(", ")[1].split(".")[0]
+            '1 coefficient estimated by maximum likelihood'
         """
         k = self.k_endog
         sigma = np.asarray(self.source.sigma_u, dtype=np.float64)
@@ -895,9 +901,10 @@ class ShortRunSVAR(_IdentificationModel[SVARResult]):
             shock_names=self._labels,
             scheme="short-run",
             restriction=(
-                f"AB model with {fixed_a} fixed cells in the contemporaneous "
-                f"relations and {fixed_b} in the shock loadings, "
-                f"{self.n_free} coefficients estimated by maximum likelihood. "
+                f"AB model with {fixed_a} fixed cell{'' if fixed_a == 1 else 's'} "
+                f"in the contemporaneous relations and {fixed_b} in the shock "
+                f"loadings, {self.n_free} coefficient{'' if self.n_free == 1 else 's'} "
+                "estimated by maximum likelihood. "
                 "Where the restrictions exceed the exactly identifying count, "
                 "the over-identification test below is the data's verdict on "
                 "them; where they do not, the structure is an assumption the "
@@ -1178,6 +1185,22 @@ class MixedSVAR(_IdentificationModel[SVARResult]):
             True
             >>> dict(mixed.diagnostics)["At the long run"], mixed.restriction[:27]
             ('1', '0 cells fixed on impact and')
+
+            In three variables one impact zero and two long-run zeros
+            identify exactly, and the single impact cell reads in the
+            singular:
+
+            >>> y3 = np.zeros((602, 3))
+            >>> for t in range(1, 602):
+            ...     y3[t] = 0.4 * y3[t - 1] + rng.standard_normal(3)
+            >>> res3 = VAR(y3, order=1, names=("dy", "u", "r")).fit()
+            >>> three = MixedSVAR(
+            ...     res3,
+            ...     impact=[[nan, 0.0, nan], [nan, nan, nan], [nan, nan, nan]],
+            ...     long_run=[[nan, nan, 0.0], [nan, nan, 0.0], [nan, nan, nan]],
+            ... ).identify()
+            >>> three.restriction[:30]
+            '1 cell fixed on impact and 2 o'
             >>> MixedSVAR(res, impact=[[nan, 5.0], [nan, nan]], long_run=[[nan, nan], [nan, 0.0]])
             ...     # doctest: +ELLIPSIS
             Traceback (most recent call last):
@@ -1225,13 +1248,14 @@ class MixedSVAR(_IdentificationModel[SVARResult]):
                 column = impact[:, j]
                 if column[int(np.argmax(np.abs(column)))] < 0.0:
                     impact[:, j] = -column
+        n_impact = len(self._impact_cells)
         return SVARResult(
             source=self.source,
             impact=impact,
             shock_names=self._labels,
             scheme="mixed",
             restriction=(
-                f"{len(self._impact_cells)} cells fixed on impact and "
+                f"{n_impact} cell{'' if n_impact == 1 else 's'} fixed on impact and "
                 f"{len(self._long_cells)} on the cumulated long-run matrix, "
                 "solved jointly over rotations of the Cholesky factor. The "
                 "covariance is reproduced identically; the restrictions alone "

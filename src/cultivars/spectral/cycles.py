@@ -74,7 +74,7 @@ probability series, ``_concordance`` is the index, and
 ``_TURNING_POINT_RULES`` holds the quarterly and monthly triples. The
 band-pass filters in :mod:`~cultivars.spectral.band_pass` supply the
 cycle component for a growth-cycle chronology, and
-:class:`~cultivars.univariate.regime_switching.MSAR` the model-based
+:class:`~cultivars.univariate.regime_switching.MarkovSwitchingAR` the model-based
 recession probabilities a chronology is most often compared against.
 
 References:
@@ -187,7 +187,7 @@ class TurningPointsResult(_SummaryMixin):
           monthly rule sets.
         * :func:`concordance` -- the agreement of two chronologies, also
           reachable as :meth:`concordance`.
-        * :class:`~cultivars.univariate.regime_switching.MSAR` -- the
+        * :class:`~cultivars.univariate.regime_switching.MarkovSwitchingAR` -- the
           model-based alternative, whose smoothed regime probabilities
           this chronology can be compared against.
 
@@ -308,7 +308,7 @@ class TurningPointsResult(_SummaryMixin):
         what the ends of the sample cannot show.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable` that ``summary()``,
+            The :class:`~cultivars_engine._core.SummaryTable` that ``summary()``,
             ``str()``, and the notebook renderer display.
 
         Example:
@@ -616,7 +616,7 @@ def concordance(
     See Also:
         * :meth:`TurningPointsResult.concordance` -- the same measure
           as a method of a chronology.
-        * :class:`~cultivars.univariate.regime_switching.MSAR` -- whose
+        * :class:`~cultivars.univariate.regime_switching.MarkovSwitchingAR` -- whose
           smoothed regime probabilities are the usual second argument.
 
     References:

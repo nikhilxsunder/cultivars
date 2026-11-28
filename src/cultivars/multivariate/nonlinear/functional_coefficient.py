@@ -86,7 +86,7 @@ bandwidth, evaluates the curves and their sandwich standard errors, and
 packs a ``_VectorFunctionalFit``. :class:`FunctionalCoefficientVARResult`
 takes its summary from ``_SummaryMixin`` and builds the state-frozen
 companion for ``irf`` and ``stability_curve`` through
-:func:`~cultivars._core.companion_matrix`. The two-system and two-anchor
+:func:`~cultivars_engine._core.companion_matrix`. The two-system and two-anchor
 members of the family are :mod:`~cultivars.multivariate.nonlinear.threshold`
 and :mod:`~cultivars.multivariate.nonlinear.smooth_transition`; the
 model whose coefficients drift in time rather than in a state is
@@ -553,8 +553,6 @@ class FunctionalCoefficientVARResult(_SummaryMixin):
         """
         matrix = self._matrix_at(u)
         k, offset = self.k_endog, self._n_deterministic
-        if not self.order:
-            return np.zeros((0, k, k))
         return np.stack(
             [matrix[offset + lag * k : offset + (lag + 1) * k].T for lag in range(self.order)]
         )
@@ -743,7 +741,7 @@ class FunctionalCoefficientVARResult(_SummaryMixin):
         rows: list[tuple[str, ...]] = []
         for i, name in enumerate(self.names):
             own = f"{name}.L1"
-            if self.order and own in labels:
+            if own in labels:
                 column = labels.index(own)
                 rows.append(
                     (

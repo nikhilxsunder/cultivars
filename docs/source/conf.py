@@ -467,13 +467,13 @@ sphinx_gallery_conf: dict[str, object] = {
 # sphinx-remove-toctrees matches these as filesystem globs over the stub
 # files, suffix included. A class is the first dotted segment that starts with
 # a capital, and in the engine anything three segments below
-# ``cultivars.engine`` sits under a module. ``.github/workflows/docs.yml``
+# ``cultivars_engine`` sits under a module. ``.github/workflows/docs.yml``
 # passes the same list on the command line, so that a release tag cut before
 # this change is rebuilt with it; keep the two in step.
 remove_from_toctrees: list[str] = [
     "gen_modules/backreferences/*",
     "api/generated/*.[A-Z]*.*.rst",
-    "engine/generated/cultivars.engine.*.*.*.rst",
+    "engine/generated/cultivars_engine.*.*.*.rst",
     "engine/generated/*.[A-Z]*.rst",
 ]
 
@@ -581,7 +581,7 @@ def _document_reexports_as_classes() -> None:
 
     autodoc exposes no event for that decision, so the two properties that
     carry it are wrapped. ``doc_as_attr`` answers ``False`` for a top-level
-    class defined under ``cultivars.engine`` and documented outside it.
+    class defined under ``cultivars_engine`` and documented outside it.
     ``canonical_full_name`` answers ``None`` for the same objects: the engine
     reference documents the private name in its own right, and a
     ``:canonical:`` alias from each public home would collide when a class

@@ -61,7 +61,7 @@ path names the family, the specification and the class. This package
 exposes only the modules.
 
 Layout. The public classes are thin: each validates its specification
-on a model base in ``cultivars._internals`` and assembles its public
+on a model base in ``cultivars_engine._internals`` and assembles its public
 record from a packed fit, while the objectives, solvers, simulators,
 system builders and the shared result mixins live in ``_internals`` and
 the numerical primitives in ``_core``. Diagnostics to run before a fit

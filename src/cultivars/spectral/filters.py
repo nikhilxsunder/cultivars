@@ -353,7 +353,7 @@ class DecompositionFilterResult(_SummaryMixin):
         method set; the notes come from :meth:`_method_notes`.
 
         Returns:
-            The :class:`~cultivars._core.SummaryTable`.
+            The :class:`~cultivars_engine._core.SummaryTable`.
 
         Example:
             >>> rng = np.random.default_rng(0)
