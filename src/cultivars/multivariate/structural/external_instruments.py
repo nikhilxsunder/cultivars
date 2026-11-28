@@ -338,7 +338,7 @@ class ProxySVAR(_IdentificationModel[SVARResult]):
             Traceback (most recent call last):
             cultivars_engine.exceptions.NumericalError: the instrument has no first-stage ...
         """
-        resid = np.asarray(self.source.resid, dtype=np.float64)
+        resid = self.source.resid
         n = resid.shape[0]
         z = self._instruments
         m = self.k_instruments
@@ -357,7 +357,7 @@ class ProxySVAR(_IdentificationModel[SVARResult]):
         f_stat = (explained / m) / (residual / (n - m))
 
         relative = resid.T @ fitted / explained
-        sigma = np.asarray(self.source.sigma_u, dtype=np.float64)
+        sigma = self.source.sigma_u
         scale = float(relative @ np.linalg.solve(sigma, relative))
         column = (relative / np.sqrt(scale))[:, np.newaxis]
 
