@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/multivariate/nonlinear/smooth_transition.py
+# filepath: /src/cultivars/multivariate/nonlinear/__init__.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #

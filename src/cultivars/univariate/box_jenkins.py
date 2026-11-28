@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/univariate/arma.py
+# filepath: /src/cultivars/univariate/box_jenkins.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #

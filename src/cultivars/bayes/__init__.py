@@ -1,4 +1,4 @@
-# filepath: /src/cultivars/bayes/evidence.py
+# filepath: /src/cultivars/bayes/__init__.py
 #
 # Copyright (c) 2026 Nikhil Sunder
 #
